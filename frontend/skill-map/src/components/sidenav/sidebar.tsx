@@ -1,43 +1,158 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+'use client';
+
+import React, { ReactNode } from 'react';
 import {
-  AbsoluteCenter,
   Box,
-  Circle,
+  CloseButton,
   Flex,
-  HStack,
+  Icon,
   IconButton,
-  Link,
-  Stack,
   Text,
+  Drawer,
+  VStack,
 } from '@chakra-ui/react';
-import { Tooltip } from '../ui/tooltip';
+import {
+  FiHome,
+  FiTrendingUp,
+  FiCompass,
+  FiStar,
+  FiSettings,
+  FiMenu,
+} from 'react-icons/fi';
+import { IconType } from 'react-icons';
+import { useColorModeValue } from '../ui/color-mode';
+import { useSidebar } from './sidebar-context';
 
-import { useSidebarContext } from './sidebar-context';
+interface LinkItemProps {
+  name: string;
+  icon: IconType;
+}
 
-export function Sidebar() {
-  const { sideBarVisible, toggleSidebar } = useSidebarContext();
+const LinkItems: Array<LinkItemProps> = [
+  { name: 'Home', icon: FiHome },
+  { name: 'Trending', icon: FiTrendingUp },
+  { name: 'Explore', icon: FiCompass },
+  { name: 'Favourites', icon: FiStar },
+  { name: 'Settings', icon: FiSettings },
+];
+
+export default function SidebarLayout({ children }: { children: ReactNode }) {
+  const { open, setOpen } = useSidebar();
 
   return (
-    <Box
-      bg="bg.muted"
-      w={!sideBarVisible ? '0' : '260px'}
-      overflow="hidden"
-      transition=" width 0.3s"
-    >
-      <Stack h="full" px="3" py="2">
-        <Flex justify="space-between">
-          <Tooltip
-            content="Close sidebar"
-            positioning={{ placement: 'right' }}
-            showArrow
-          >
-            <IconButton variant="ghost" onClick={toggleSidebar}>
-              Open
-            </IconButton>
-          </Tooltip>
-        </Flex>
+    <Box minH="100vh">
+      <SidebarContent display={{ base: 'none', md: 'flex' }} />
 
-        <Stack px="2" gap="0" flex="1"></Stack>
-      </Stack>
+      {/* Mobile Drawer */}
+      <Drawer.Root
+        open={open}
+        onOpenChange={(e) => setOpen(e.open)}
+        placement={'start'}
+        size="xs"
+      >
+        <Drawer.Backdrop />
+        <Drawer.Positioner>
+          <Drawer.Content width={'60'}>
+            <Drawer.CloseTrigger />
+            <SidebarContent isDrawer />
+          </Drawer.Content>
+        </Drawer.Positioner>
+      </Drawer.Root>
+
+      {/* Page Content */}
+      <Box ml={{ base: 0, md: 20 }} h="full" p={4}>
+        {children}
+      </Box>
     </Box>
+  );
+}
+
+interface SidebarProps {
+  isDrawer?: boolean;
+  [key: string]: any;
+}
+
+const SidebarContent = ({ isDrawer, ...rest }: SidebarProps) => {
+  return (
+    <Flex
+      direction="column"
+      align="center"
+      justify="center"
+      bg="sidebar.bg"
+      borderRight="1px"
+      w={isDrawer ? '60' : '20'} // small width in desktop, full in drawer
+      pos="fixed"
+      h="full"
+      {...rest}
+    >
+      {isDrawer && (
+        <Flex h="20" alignItems="center" px="6" justifyContent="space-between">
+          <Text fontSize="2xl" fontWeight="bold">
+            Logo
+          </Text>
+        </Flex>
+      )}
+
+      <VStack gap={6} mt={isDrawer ? 4 : 0}>
+        {LinkItems.map((link) => (
+          <NavItem key={link.name} icon={link.icon}>
+            {isDrawer ? link.name : null}
+          </NavItem>
+        ))}
+      </VStack>
+    </Flex>
+  );
+};
+
+interface NavItemProps {
+  icon: IconType;
+  children?: ReactNode;
+  [key: string]: any;
+}
+
+const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
+  return (
+    <Flex
+      align="center"
+      p="2"
+      borderRadius="md"
+      role="group"
+      cursor="pointer"
+      _hover={{
+        bg: 'sidebar.linkHover',
+        color: 'text.primary',
+      }}
+      {...rest}
+    >
+      <Icon fontSize="20" as={icon} />
+      {children && <Text ml="3">{children}</Text>}
+    </Flex>
+  );
+};
+
+export function MobileNav() {
+  const { setOpen } = useSidebar();
+
+  return (
+    <Flex
+      px={4}
+      height="20"
+      alignItems="center"
+      bg="sidebar.bg"
+      justifyContent="flex-start"
+      display={{ base: 'flex', md: 'none' }}
+    >
+      <IconButton
+        variant="outline"
+        onClick={() => setOpen(true)}
+        aria-label="open menu"
+      >
+        <FiMenu />
+      </IconButton>
+      <Text fontSize="2xl" fontWeight="bold">
+        Logo
+      </Text>
+    </Flex>
   );
 }

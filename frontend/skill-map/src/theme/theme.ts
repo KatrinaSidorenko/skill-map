@@ -1,5 +1,5 @@
 import { createSystem, defaultConfig, defineConfig } from '@chakra-ui/react';
-import { buttonRecipe, cardRecipe, drawerRecipe } from './receips';
+import { buttonRecipe } from './receips';
 
 const config = defineConfig({
   theme: {
@@ -11,7 +11,8 @@ const config = defineConfig({
       },
       colors: {
         brand: {
-          50: { value: '#FDFDF5' }, // off-white
+          20: { value: '#FFFFFB' }, // pure white
+          50: { value: '#F1F1E6' }, // off-white
           100: { value: '#EAF3B2' }, // light green
           200: { value: '#9FBAF1' }, // light blue
           300: { value: '#3D568F' }, // deep blue
@@ -27,34 +28,40 @@ const config = defineConfig({
     },
     recipes: {
       button: buttonRecipe,
-      card: cardRecipe,
-      drawer: drawerRecipe,
     },
     semanticTokens: {
       colors: {
-        brand: {
-          solid: { value: '{colors.brand.500}' }, // button, main accents
-          contrast: { value: '{colors.brand.50}' }, // text on solid background
-          fg: { value: '{colors.brand.400}' }, // default text color
-          muted: { value: '{colors.brand.200}' }, // secondary text or muted elements
-          subtle: { value: '{colors.brand.100}' }, // subtle backgrounds or highlights
-          emphasized: { value: '{colors.brand.300}' }, // headings, emphasized items
-          focusRing: { value: '{colors.brand.800}' }, // focus outlines / ring
-          backgroundLight: { value: '{colors.brand.50}' }, // light page backgrounds
-          backgroundMuted: { value: '{colors.brand.100}' }, // section backgrounds
-          backgroundDark: { value: '{colors.brand.800}' }, // card / dark section bg
-          border: { value: '{colors.brand.200}' }, // borders, dividers
-          heading: { value: '{colors.brand.300}' }, // headings
-          accent: { value: '{colors.brand.500}' }, // links, highlights
-          danger: { value: '{colors.red.500}' }, // optional if you add red
-          warning: { value: '{colors.yellow.400}' }, // optional for alerts
+        bg: {
+          page: { value: '{colors.brand.50}' },
+          section: { value: '{colors.brand.20}' },
+          card: { value: '{colors.brand.800}' },
         },
         text: {
-          default: { value: '{colors.brand.400}' }, // main text
-          heading: { value: '{colors.brand.300}' }, // headings
-          muted: { value: '{colors.brand.200}' }, // secondary text
-          accent: { value: '{colors.brand.500}' }, // links / highlights
-          subtle: { value: '{colors.brand.100}' }, // placeholder text, muted text
+          primary: { value: '{colors.brand.400}' },
+          heading: { value: '{colors.brand.300}' },
+          muted: { value: '{colors.brand.200}' },
+          accent: { value: '{colors.brand.500}' },
+        },
+        button: {
+          solidBg: { value: '{colors.brand.500}' },
+          solidText: { value: '{colors.brand.50}' },
+          outlineBorder: { value: '{colors.brand.500}' },
+          subtleBg: { value: '{colors.brand.100}' },
+          subtleText: { value: '{colors.brand.500}' },
+        },
+        border: {
+          default: { value: '{colors.brand.200}' },
+          focus: { value: '{colors.brand.800}' },
+        },
+        states: {
+          danger: { value: '{colors.red.500}' },
+          warning: { value: '{colors.yellow.400}' },
+          success: { value: '{colors.green.500}' },
+        },
+        sidebar: {
+          bg: { value: '{colors.brand.20}' },
+          text: { value: '{colors.brand.400}' },
+          linkHover: { value: '{colors.brand.100}' },
         },
       },
     },
