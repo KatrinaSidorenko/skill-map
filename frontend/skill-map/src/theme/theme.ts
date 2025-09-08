@@ -34,11 +34,11 @@ const config = defineConfig({
         bg: {
           page: { value: '{colors.brand.50}' },
           section: { value: '{colors.brand.20}' },
-          card: { value: '{colors.brand.800}' },
+          card: { value: '{colors.brand.200}' },
         },
         text: {
           primary: { value: '{colors.brand.400}' },
-          heading: { value: '{colors.brand.300}' },
+          heading: { value: '{colors.brand.800}' },
           muted: { value: '{colors.brand.200}' },
           accent: { value: '{colors.brand.500}' },
         },

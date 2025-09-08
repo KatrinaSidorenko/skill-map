@@ -2,26 +2,9 @@
 'use client';
 
 import React, { ReactNode } from 'react';
-import {
-  Box,
-  CloseButton,
-  Flex,
-  Icon,
-  IconButton,
-  Text,
-  Drawer,
-  VStack,
-} from '@chakra-ui/react';
-import {
-  FiHome,
-  FiTrendingUp,
-  FiCompass,
-  FiStar,
-  FiSettings,
-  FiMenu,
-} from 'react-icons/fi';
+import { Box, Flex, Icon, Text, Drawer, VStack } from '@chakra-ui/react';
+import { FiHome, FiCompass, FiStar, FiSettings } from 'react-icons/fi';
 import { IconType } from 'react-icons';
-import { useColorModeValue } from '../ui/color-mode';
 import { useSidebar } from './sidebar-context';
 
 interface LinkItemProps {
@@ -31,7 +14,7 @@ interface LinkItemProps {
 
 const LinkItems: Array<LinkItemProps> = [
   { name: 'Home', icon: FiHome },
-  { name: 'Trending', icon: FiTrendingUp },
+  // { name: 'Trending', icon: FiTrendingUp },
   { name: 'Explore', icon: FiCompass },
   { name: 'Favourites', icon: FiStar },
   { name: 'Settings', icon: FiSettings },
@@ -130,29 +113,3 @@ const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
     </Flex>
   );
 };
-
-export function MobileNav() {
-  const { setOpen } = useSidebar();
-
-  return (
-    <Flex
-      px={4}
-      height="20"
-      alignItems="center"
-      bg="sidebar.bg"
-      justifyContent="flex-start"
-      display={{ base: 'flex', md: 'none' }}
-    >
-      <IconButton
-        variant="outline"
-        onClick={() => setOpen(true)}
-        aria-label="open menu"
-      >
-        <FiMenu />
-      </IconButton>
-      <Text fontSize="2xl" fontWeight="bold">
-        Logo
-      </Text>
-    </Flex>
-  );
-}

@@ -1,7 +1,7 @@
 import Container from '@/components/container/container';
 import Header from '@/components/header/header';
-import SidebarLayout, { MobileNav } from '@/components/sidenav/sidebar';
-import { SidebarProvider } from '@/components/sidenav/sidebar-context';
+import SidebarLayout from '@/components/sidebar/sidebar';
+import { SidebarProvider } from '@/components/sidebar/sidebar-context';
 import { Flex } from '@chakra-ui/react';
 
 export default function HomeLayout({
@@ -12,7 +12,6 @@ export default function HomeLayout({
   return (
     <SidebarProvider>
       <Flex minH="100dvh" direction="column">
-        <MobileNav />
         <SidebarLayout>
           <Flex direction="column" bg="bg.page" gap={4}>
             <Header />

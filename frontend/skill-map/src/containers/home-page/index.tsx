@@ -1,9 +1,7 @@
 'use client';
 
-import Container from '@/components/container/container';
-import Header from '@/components/header/header';
-import { Flex } from '@chakra-ui/react';
+import RoadmapGrid from '@/components/roadmap/roadmapGrid';
 
 export default function HomePage() {
-  return <h1>Home Page</h1>;
+  return <RoadmapGrid />;
 }
