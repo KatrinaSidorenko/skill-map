@@ -6,18 +6,20 @@ import { Box, Flex, Icon, Text, Drawer, VStack } from '@chakra-ui/react';
 import { FiHome, FiCompass, FiStar, FiSettings } from 'react-icons/fi';
 import { IconType } from 'react-icons';
 import { useSidebar } from './sidebar-context';
+import NextLink from 'next/link';
 
 interface LinkItemProps {
   name: string;
   icon: IconType;
+  link?: string;
 }
 
 const LinkItems: Array<LinkItemProps> = [
-  { name: 'Home', icon: FiHome },
+  { name: 'Home', icon: FiHome, link: '/' },
   // { name: 'Trending', icon: FiTrendingUp },
-  { name: 'Explore', icon: FiCompass },
-  { name: 'Favourites', icon: FiStar },
-  { name: 'Settings', icon: FiSettings },
+  { name: 'Explore', icon: FiCompass, link: '/explore' },
+  { name: 'Favourites', icon: FiStar, link: '/saved' },
+  { name: 'Settings', icon: FiSettings, link: '/settings' },
 ];
 
 export default function SidebarLayout({ children }: { children: ReactNode }) {
@@ -79,7 +81,7 @@ const SidebarContent = ({ isDrawer, ...rest }: SidebarProps) => {
 
       <VStack gap={6} mt={isDrawer ? 4 : 0}>
         {LinkItems.map((link) => (
-          <NavItem key={link.name} icon={link.icon}>
+          <NavItem key={link.name} icon={link.icon} link={link.link}>
             {isDrawer ? link.name : null}
           </NavItem>
         ))}
@@ -90,11 +92,12 @@ const SidebarContent = ({ isDrawer, ...rest }: SidebarProps) => {
 
 interface NavItemProps {
   icon: IconType;
+  link?: string;
   children?: ReactNode;
   [key: string]: any;
 }
 
-const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
+const NavItem = ({ icon, children, link, ...rest }: NavItemProps) => {
   return (
     <Flex
       align="center"
@@ -108,8 +111,13 @@ const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
       }}
       {...rest}
     >
-      <Icon fontSize="20" as={icon} />
-      {children && <Text ml="3">{children}</Text>}
+      <NextLink
+        href={link || '#'}
+        style={{ display: 'flex', alignItems: 'center' }}
+      >
+        <Icon fontSize="20" as={icon} />
+        {children && <Text ml="3">{children}</Text>}
+      </NextLink>
     </Flex>
   );
 };

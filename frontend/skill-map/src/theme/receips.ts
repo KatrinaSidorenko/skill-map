@@ -7,23 +7,18 @@ export const buttonRecipe = defineRecipe({
     justifyContent: 'center',
     borderRadius: 'md',
     transition: 'background-color 0.2s, color 0.2s',
-    fontWeight: 'semibold',
-    _focusVisible: {
-      outline: '2px solid',
-      outlineColor: 'border.focus',
-      outlineOffset: '2px',
-    },
   },
   variants: {
     visual: {
       solid: {
-        bg: 'button.solidBg',
-        color: 'button.solidText',
-        _hover: { bg: 'button.solidBg', filter: 'brightness(0.9)' },
-        _active: { bg: 'button.solidBg', filter: 'brightness(0.8)' },
+        bg: 'brand.20',
+        color: 'brand.900',
+        _hover: { bg: 'brand.100' },
+        _active: { bg: 'brand.100' },
       },
       outline: {
-        color: 'button.subtleText',
+        bg: 'brand.20',
+        color: 'brand.900',
         borderWidth: '1px',
         borderColor: 'button.outlineBorder',
         _hover: { bg: 'button.subtleBg' },
