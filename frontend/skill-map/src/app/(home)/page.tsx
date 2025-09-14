@@ -1,6 +1,6 @@
 'use client';
 
-import HomePage from "@/containers/home-page";
+import HomePage from "@/features/home";
 
 export default function Home() {
   return HomePage();

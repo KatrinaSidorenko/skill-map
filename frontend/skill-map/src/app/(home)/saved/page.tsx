@@ -1,4 +1,4 @@
-import SavedRoadmaps from '@/containers/saved-roadmaps';
+import SavedRoadmaps from '@/features/roadmaps/saved-roadmaps';
 
 export default function Page() {
   return <SavedRoadmaps />;

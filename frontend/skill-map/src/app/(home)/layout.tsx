@@ -1,4 +1,5 @@
 'use client';
+
 import Container from '@/components/container/container';
 import Header from '@/components/header/header';
 import SidebarLayout from '@/components/sidebar/sidebar';
@@ -17,7 +18,7 @@ export default function HomeLayout({
     <SidebarProvider>
       <Flex minH="100dvh" direction="column">
         <SidebarLayout>
-          <Flex direction="column" bg="bg.page" gap={4}>
+          <Flex direction="column" bg="bg.page" gap={4} h="full">
             {isHome && <Header />}
             <Container>{children}</Container>
           </Flex>

@@ -12,10 +12,12 @@ import {
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { FiStar } from 'react-icons/fi';
-import { FaStar } from "react-icons/fa";
+import { FaStar } from 'react-icons/fa';
+import { useAppDispatch } from '@/store/hooks';
+import { addOrRemoveRoadmap } from '@/features/roadmaps/store';
 
 interface RoadmapCardProps {
-  roadmap: Roadmap;
+  roadmap: PlainRoadmap;
 }
 
 export function RoadmapCard({ roadmap }: RoadmapCardProps) {
@@ -24,7 +26,6 @@ export function RoadmapCard({ roadmap }: RoadmapCardProps) {
     'in-progress': 'blue',
     completed: 'green',
   }[roadmap.status];
-  const saveRoadmap = (id: number) => {};
 
   return (
     <HoverCard.Root>
@@ -37,7 +38,7 @@ export function RoadmapCard({ roadmap }: RoadmapCardProps) {
           boxShadow="sm"
           _hover={{ boxShadow: 'md' }}
         >
-          <NextLink href={`/roadmaps/${roadmap.id}`} passHref>
+          <NextLink href={`/roadmap/${roadmap.id}`} passHref>
             <Image
               src={roadmap.image}
               alt={roadmap.name}
@@ -56,13 +57,6 @@ export function RoadmapCard({ roadmap }: RoadmapCardProps) {
                 w="full"
               >
                 <Badge colorScheme={statusColor}>{roadmap.status}</Badge>
-                <IconButton
-                  aria-label="Save Roadmap"
-                  size="sm"
-                  onClick={() => saveRoadmap(roadmap.id)}
-                >
-                  {roadmap.saved ? <FaStar /> : <FiStar />}
-                </IconButton>
               </Flex>
             </VStack>
           </NextLink>
