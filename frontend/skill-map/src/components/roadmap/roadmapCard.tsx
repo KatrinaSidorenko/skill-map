@@ -34,8 +34,9 @@ export function RoadmapCard({ roadmap }: RoadmapCardProps) {
           cursor="pointer"
           borderRadius="lg"
           overflow="hidden"
-          bg="bg.section"
+          bg="bg.card"
           boxShadow="sm"
+          padding={2}
           _hover={{ boxShadow: 'md' }}
         >
           <NextLink href={`/roadmap/${roadmap.id}`} passHref>
@@ -45,6 +46,7 @@ export function RoadmapCard({ roadmap }: RoadmapCardProps) {
               w="full"
               h="150px"
               objectFit="cover"
+              borderRadius="md"
             />
             <VStack align="start" p={4} gap={2}>
               <Text fontSize="lg" fontWeight="bold" color="text.heading">
