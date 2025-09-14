@@ -2,11 +2,20 @@
 'use client';
 
 import React, { ReactNode } from 'react';
-import { Box, Flex, Icon, Text, Drawer, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Icon,
+  Text,
+  Drawer,
+  VStack,
+  Button,
+  Link,
+} from '@chakra-ui/react';
 import { FiHome, FiCompass, FiStar, FiSettings } from 'react-icons/fi';
 import { IconType } from 'react-icons';
 import { useSidebar } from './sidebar-context';
-import NextLink from 'next/link';
+import { usePathname } from 'next/navigation';
 
 interface LinkItemProps {
   name: string;
@@ -15,7 +24,7 @@ interface LinkItemProps {
 }
 
 const LinkItems: Array<LinkItemProps> = [
-  { name: 'Home', icon: FiHome, link: '/' },
+  { name: 'Home', icon: FiHome, link: '/home' },
   // { name: 'Trending', icon: FiTrendingUp },
   { name: 'Explore', icon: FiCompass, link: '/explore' },
   { name: 'Favourites', icon: FiStar, link: '/saved' },
@@ -24,10 +33,14 @@ const LinkItems: Array<LinkItemProps> = [
 
 export default function SidebarLayout({ children }: { children: ReactNode }) {
   const { open, setOpen } = useSidebar();
+  const activePath = usePathname();
 
   return (
     <Box minH="100vh">
-      <SidebarContent display={{ base: 'none', md: 'flex' }} />
+      <SidebarContent
+        display={{ base: 'none', md: 'flex' }}
+        activePath={activePath}
+      />
 
       {/* Mobile Drawer */}
       <Drawer.Root
@@ -40,7 +53,7 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
         <Drawer.Positioner>
           <Drawer.Content width={'60'}>
             <Drawer.CloseTrigger />
-            <SidebarContent isDrawer />
+            <SidebarContent isDrawer activePath={activePath} />
           </Drawer.Content>
         </Drawer.Positioner>
       </Drawer.Root>
@@ -55,10 +68,11 @@ export default function SidebarLayout({ children }: { children: ReactNode }) {
 
 interface SidebarProps {
   isDrawer?: boolean;
+  activePath: string;
   [key: string]: any;
 }
 
-const SidebarContent = ({ isDrawer, ...rest }: SidebarProps) => {
+const SidebarContent = ({ isDrawer, activePath, ...rest }: SidebarProps) => {
   return (
     <Flex
       direction="column"
@@ -81,7 +95,12 @@ const SidebarContent = ({ isDrawer, ...rest }: SidebarProps) => {
 
       <VStack gap={6} mt={isDrawer ? 4 : 0}>
         {LinkItems.map((link) => (
-          <NavItem key={link.name} icon={link.icon} link={link.link}>
+          <NavItem
+            key={link.name}
+            icon={link.icon}
+            link={link.link}
+            isActive={activePath?.includes(link.link || '')}
+          >
             {isDrawer ? link.name : null}
           </NavItem>
         ))}
@@ -94,10 +113,12 @@ interface NavItemProps {
   icon: IconType;
   link?: string;
   children?: ReactNode;
+  isActive: boolean;
   [key: string]: any;
 }
 
-const NavItem = ({ icon, children, link, ...rest }: NavItemProps) => {
+const NavItem = ({ icon, children, link, isActive, ...rest }: NavItemProps) => {
+  console.log({ isActive });
   return (
     <Flex
       align="center"
@@ -111,13 +132,17 @@ const NavItem = ({ icon, children, link, ...rest }: NavItemProps) => {
       }}
       {...rest}
     >
-      <NextLink
-        href={link || '#'}
-        style={{ display: 'flex', alignItems: 'center' }}
+      <Link
+        href={link}
+        bg="transparent"
+        padding={0}
+        style={{ textDecoration: 'none' }}
       >
-        <Icon fontSize="20" as={icon} />
-        {children && <Text ml="3">{children}</Text>}
-      </NextLink>
+        <Button size="xs" bg={isActive ? 'brand.100' : 'transparent'}>
+          <Icon fontSize="20" as={icon} />
+          {children && <Text ml="3">{children}</Text>}
+        </Button>
+      </Link>
     </Flex>
   );
 };

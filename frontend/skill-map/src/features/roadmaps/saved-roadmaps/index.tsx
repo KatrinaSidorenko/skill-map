@@ -3,14 +3,14 @@
 import RoadmapGrid from '@/components/roadmap/roadmapGrid';
 import SearchContainer from '@/components/search-container';
 import SpinnerScreen from '@/components/spinner';
-import { useGetRoadmapsQuery } from '../api';
+import { useGetSavedRoadmapsQuery } from '../api';
 import { useState } from 'react';
 
 export default function SavedRoadmaps() {
   const [page, setPage] = useState(1);
   const pageSize = 6;
 
-  const { data, error, isLoading, isFetching } = useGetRoadmapsQuery({
+  const { data, error, isLoading, isFetching } = useGetSavedRoadmapsQuery({
     page,
     pageSize,
   });

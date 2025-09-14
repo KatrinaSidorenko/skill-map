@@ -37,7 +37,29 @@ export const roadmapApi = createApi({
         return { data: { roadmap: roadmap } };
       },
     }),
+    getSavedRoadmaps: builder.query<
+      PlainRoadmapsResponse,
+      { page?: number; pageSize?: number }
+    >({
+      async queryFn({ page = 1, pageSize = 10 }) {
+        // ✅ mock pagination
+        const start = (page - 1) * pageSize;
+        const paginated = roadmaps.slice(start, start + pageSize);
+        return {
+          data: {
+            roadmaps: paginated,
+            total: roadmaps.length,
+            page,
+            pageSize,
+          },
+        };
+      },
+    }),
   }),
 });
 
-export const { useGetRoadmapsQuery, useGetRoadmapByIdQuery } = roadmapApi;
+export const {
+  useGetRoadmapsQuery,
+  useGetRoadmapByIdQuery,
+  useGetSavedRoadmapsQuery,
+} = roadmapApi;
