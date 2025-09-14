@@ -31,7 +31,7 @@ export const roadmapApi = createApi({
         const roadmap = mockRoadmaps.find((r) => r.id === id);
 
         if (!roadmap) {
-          return { error: { status: 404, data: 'Not found' } as any };
+          return { error: { status: 404, data: 'Not found' } };
         }
 
         return { data: { roadmap: roadmap } };

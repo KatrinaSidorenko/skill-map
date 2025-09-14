@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { useState, useCallback } from 'react';
 import { FaStar } from 'react-icons/fa';
 import { FiStar } from 'react-icons/fi';
-import { IconButton, VStack, Text, Flex, Spinner } from '@chakra-ui/react';
+import { IconButton, VStack, Text, Flex } from '@chakra-ui/react';
 
 import {
   Edge,
@@ -68,7 +68,7 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
   }, [isLoading]);
 
   const onNodesChange = useCallback(
-    (changes) =>
+    (changes: NodeChange<Node>[]) =>
       setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
     [],
   );
