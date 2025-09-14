@@ -16,7 +16,7 @@ export default function HomeLayout({
   const isHome = pathname === '/';
   return (
     <SidebarProvider>
-      <Flex minH="100dvh" direction="column">
+      <Flex width="100vw" height="100vh" direction="column">
         <SidebarLayout>
           <Flex direction="column" bg="bg.page" gap={4} h="full">
             {isHome && <Header />}
