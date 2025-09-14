@@ -1,10 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState, useCallback } from 'react';
 import { FaStar } from 'react-icons/fa';
 import { FiStar } from 'react-icons/fi';
-import { IconButton, VStack, Text } from '@chakra-ui/react';
+import { IconButton, VStack, Text, Flex, Spinner } from '@chakra-ui/react';
 
 import {
   Edge,
@@ -14,77 +14,58 @@ import {
   ReactFlow,
   applyNodeChanges,
   applyEdgeChanges,
+  EdgeChange,
+  NodeChange,
 } from '@xyflow/react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { addOrRemoveRoadmap, selectPlainRoadmap } from '../store';
+import { addOrRemoveRoadmap, selectIsRoadmapSaved } from '../store';
 import '@xyflow/react/dist/style.css';
+import { useGetRoadmapByIdQuery } from '../api';
+import SpinnerScreen from '@/components/spinner';
 
-// export const initialNodes: Node[] = [
-//   {
-//     id: '1',
-//     position: { x: 0, y: 0 },
-//     data: { label: 'HTML & CSS' },
-//   },
-//   {
-//     id: '2',
-//     position: { x: 200, y: 100 },
-//     data: { label: 'JavaScript Fundamentals' },
-//   },
-//   {
-//     id: '3',
-//     position: { x: 0, y: 200 },
-//     data: { label: 'React.js' },
-//   },
-//   {
-//     id: '4',
-//     position: { x: 200, y: 200 },
-//     data: { label: 'TypeScript' },
-//   },
-//   {
-//     id: '5',
-//     position: { x: 100, y: 300 },
-//     data: { label: 'Frontend Tooling' },
-//   },
-// ];
+const getNodePosition = (index: number): { x: number; y: number } => ({
+  x: 0,
+  y: index * 150, // space nodes 150px apart vertically
+});
 
-const initialNodes = [
-  {
-    id: 'n1',
-    position: { x: 0, y: 0 },
-    data: { label: 'Node 1' },
-    type: 'input',
-  },
-  {
-    id: 'n2',
-    position: { x: 100, y: 100 },
-    data: { label: 'Node 2' },
-  },
-];
+export function mapRoadmapToReactFlow(roadmap: Roadmap): {
+  nodes: Node[];
+  edges: Edge[];
+} {
+  const nodes: Node[] = roadmap.nodes.map((n, index) => ({
+    id: String(n.id),
+    position: getNodePosition(index),
+    data: { label: n.title }, // show title in node
+  }));
 
-const initialEdges = [
-  {
-    id: 'n1-n2',
-    source: 'n1',
-    target: 'n2',
-  },
-];
+  const edges: Edge[] = roadmap.edges.map((e) => ({
+    id: `${e.source}-${e.target}`,
+    source: String(e.source),
+    target: String(e.target),
+  }));
 
-// export const initialEdges: Edge[] = [
-//   { id: '1-2', source: '1', target: '2' },
-//   { id: '2-3', source: '2', target: '3' },
-//   { id: '2-4', source: '2', target: '4' },
-//   { id: '3-5', source: '3', target: '5' },
-//   { id: '4-5', source: '4', target: '5' },
-// ];
+  return { nodes, edges };
+}
 
 export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
   const dispatch = useAppDispatch();
-  const roadmap = useAppSelector((state) =>
-    selectPlainRoadmap(state, Number(roadmapId)),
+  const { data, error, isLoading, isFetching } = useGetRoadmapByIdQuery(
+    Number(roadmapId),
   );
-
+  const isRoadmapSaved = useAppSelector((s) =>
+    selectIsRoadmapSaved(s, Number(roadmapId)),
+  );
+  const roadmap = data?.roadmap;
+  const { nodes: initialNodes, edges: initialEdges } = roadmap
+    ? mapRoadmapToReactFlow(roadmap)
+    : { nodes: [], edges: [] };
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
+
+  useEffect(() => {
+    setNodes(initialNodes);
+    setEdges(initialEdges);
+  }, [isLoading]);
 
   const onNodesChange = useCallback(
     (changes) =>
@@ -92,23 +73,22 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
     [],
   );
   const onEdgesChange = useCallback(
-    (changes) =>
+    (changes: EdgeChange[]) =>
       setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
     [],
   );
+
+  if (isLoading) {
+    return <SpinnerScreen />;
+  }
 
   if (!roadmap) {
     return <div>Roadmap not found</div>;
   }
 
-  //const { nodes, edges } = roadmapToFlow(roadmap);
-  // const nodes = initialNodes;
-  // const edges = initialEdges;
-
   return (
-    <VStack w="full" gap={4}>
-      {/* Header */}
-      <VStack>
+    <VStack w="full" gap={8}>
+      <Flex w="full" justify="space-between" direction="row" align="center">
         <Text fontSize="2xl" fontWeight="bold">
           {roadmap.name}
         </Text>
@@ -117,11 +97,10 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
           size="sm"
           onClick={() => dispatch(addOrRemoveRoadmap(Number(roadmapId)))}
         >
-          {roadmap.isSaved ? <FaStar /> : <FiStar />}
+          {isRoadmapSaved ? <FaStar /> : <FiStar />}
         </IconButton>
-      </VStack>
+      </Flex>
 
-      {/* React Flow Viewer */}
       <div style={{ width: '100%', height: '500px' }}>
         <ReactFlow
           nodes={nodes}

@@ -1,14 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import roadmapsSlice from '@/features/roadmaps/store';
+import { roadmapApi } from '@/features/roadmaps/api';
 
 export const store = configureStore({
   reducer: {
     [roadmapsSlice.name]: roadmapsSlice.reducer,
-    // [overviewPanelService.reducerPath]: overviewPanelService.reducer,
+    [roadmapApi.reducerPath]: roadmapApi.reducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
-  //   .concat(overviewPanelService.middleware),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(roadmapApi.middleware),
 });
 
 setupListeners(store.dispatch);

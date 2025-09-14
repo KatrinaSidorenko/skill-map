@@ -10,7 +10,11 @@ interface RoadmapNode {
   id: number;
   title: string;
   description: string;
-  nextNodeIds: number[];
+}
+
+interface RoadmapEdge {
+  source: number;
+  target: number;
 }
 
 interface Roadmap {
@@ -18,5 +22,16 @@ interface Roadmap {
   name: string;
   description: string;
   nodes: RoadmapNode[];
+  edges: RoadmapEdge[];
 }
 
+interface PlainRoadmapsResponse {
+  roadmaps: PlainRoadmap[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+interface RoadmapResponse {
+  roadmap: Roadmap;
+}

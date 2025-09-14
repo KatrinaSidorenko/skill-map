@@ -2,11 +2,11 @@ import { roadmaps } from '@/store/mock';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type InitialState = {
-  plain_roadmaps: PlainRoadmap[];
+  saved_roadmap_ids?: number[];
 };
 
 const initialState: InitialState = {
-  plain_roadmaps: roadmaps,
+  saved_roadmap_ids: [],
 };
 
 const roadmapsSlice = createSlice({
@@ -14,33 +14,31 @@ const roadmapsSlice = createSlice({
   initialState,
   reducers: {
     addOrRemoveRoadmap: (state, action: PayloadAction<number>) => {
-      const roadmap = state.plain_roadmaps.find((r) => r.id === action.payload);
-      if (roadmap) {
-        state.plain_roadmaps = state.plain_roadmaps.map((r) =>
-          r.id === action.payload ? { ...r, isSaved: !r.isSaved } : r,
+      state.saved_roadmap_ids = state.saved_roadmap_ids ?? [];
+      if (state.saved_roadmap_ids.includes(action.payload)) {
+        state.saved_roadmap_ids = state.saved_roadmap_ids.filter(
+          (id) => id !== action.payload,
         );
+      } else {
+        state.saved_roadmap_ids.push(action.payload);
       }
-    },
-    setPlainRoadmaps: (state, action: PayloadAction<PlainRoadmap[]>) => {
-      state.plain_roadmaps = action.payload;
+      // const roadmap = state.plain_roadmaps.find((r) => r.id === action.payload);
+      // if (roadmap) {
+      //   state.plain_roadmaps = state.plain_roadmaps.map((r) =>
+      //     r.id === action.payload ? { ...r, isSaved: !r.isSaved } : r,
+      //   );
+      // }
     },
   },
 });
 
-export const { addOrRemoveRoadmap, setPlainRoadmaps } = roadmapsSlice.actions;
+export const { addOrRemoveRoadmap } = roadmapsSlice.actions;
 
 export default roadmapsSlice;
 
 export const selectSavedRoadmapIds = (state: { roadmaps: InitialState }) =>
-  state.roadmaps.plain_roadmaps
-    .filter((roadmap) => roadmap.isSaved)
-    .map((roadmap) => roadmap.id);
-export const selectPlainRoadmaps = (state: { roadmaps: InitialState }) =>
-  state.roadmaps.plain_roadmaps;
-export const selectSavedRoadmaps = (state: { roadmaps: InitialState }) =>
-  state.roadmaps.plain_roadmaps.filter((roadmap) => roadmap.isSaved);
-
-export const selectPlainRoadmap = (
+  state.roadmaps.saved_roadmap_ids;
+export const selectIsRoadmapSaved = (
   state: { roadmaps: InitialState },
   id: number,
-) => state.roadmaps.plain_roadmaps.find((roadmap) => roadmap.id === id);
+) => state.roadmaps.saved_roadmap_ids?.includes(id);

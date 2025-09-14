@@ -1,18 +1,38 @@
 'use client';
 
 import RoadmapGrid from '@/components/roadmap/roadmapGrid';
-import { selectSavedRoadmaps } from '@/features/roadmaps/store';
-import { useAppSelector } from '@/store/hooks';
-import { Flex, Heading } from '@chakra-ui/react';
+import SearchContainer from '@/components/search-container';
+import SpinnerScreen from '@/components/spinner';
+import { useGetRoadmapsQuery } from '../api';
+import { useState } from 'react';
 
 export default function SavedRoadmaps() {
-  const savedRoadmaps = useAppSelector(selectSavedRoadmaps);
+  const [page, setPage] = useState(1);
+  const pageSize = 6;
+
+  const { data, error, isLoading, isFetching } = useGetRoadmapsQuery({
+    page,
+    pageSize,
+  });
+
+  const setPageSafe = (newPage: number) => {
+    if (newPage < 1) return 1;
+    setPage(newPage);
+    return newPage;
+  };
+
+  const roadmaps = data?.roadmaps ?? [];
+  if (isLoading) {
+    return <SpinnerScreen />;
+  }
+
   return (
-    <Flex direction="column" h="full" gap={8}>
-      <Heading size="2xl" mb={4} fontWeight="semibold">
-        Saved Roadmaps
-      </Heading>
-      <RoadmapGrid roadmaps={savedRoadmaps} />
-    </Flex>
+    <SearchContainer
+      disabled={isFetching}
+      page={page}
+      setPage={setPageSafe}
+      childeren={<RoadmapGrid roadmaps={roadmaps} />}
+      pageSize={pageSize}
+    />
   );
 }
