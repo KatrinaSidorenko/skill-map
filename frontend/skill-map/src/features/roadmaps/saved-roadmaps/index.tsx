@@ -2,9 +2,10 @@
 
 import RoadmapGrid from '@/components/roadmap/roadmapGrid';
 import SearchContainer from '@/components/search-container';
-import SpinnerScreen from '@/components/spinner';
+import SpinnerScreen from '@/components/base/spinner';
 import { useGetSavedRoadmapsQuery } from '../api';
 import { useState } from 'react';
+import ErrorScreen from '@/components/base/error';
 
 export default function SavedRoadmaps() {
   const [page, setPage] = useState(1);
@@ -22,6 +23,10 @@ export default function SavedRoadmaps() {
   };
 
   const roadmaps = data?.roadmaps ?? [];
+  if (error) {
+    return <ErrorScreen />;
+  }
+
   if (isLoading) {
     return <SpinnerScreen />;
   }

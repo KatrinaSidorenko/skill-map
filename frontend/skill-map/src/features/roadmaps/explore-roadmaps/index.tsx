@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import { useGetRoadmapsQuery } from '../api';
 import RoadmapGrid from '@/components/roadmap/roadmapGrid';
-import SpinnerScreen from '@/components/spinner';
+import SpinnerScreen from '@/components/base/spinner';
 import SearchContainer from '@/components/search-container';
+import ErrorScreen from '@/components/base/error';
 
 // todo: implement search and filtering
 export default function ExploreRoadmapsPage() {
@@ -23,6 +24,10 @@ export default function ExploreRoadmapsPage() {
   };
 
   const roadmaps = data?.roadmaps ?? [];
+  if (error) {
+    return <ErrorScreen />;
+  }
+  
   if (isLoading) {
     return <SpinnerScreen />;
   }

@@ -21,7 +21,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { addOrRemoveRoadmap, selectIsRoadmapSaved } from '../store';
 import '@xyflow/react/dist/style.css';
 import { useGetRoadmapByIdQuery } from '../api';
-import SpinnerScreen from '@/components/spinner';
+import SpinnerScreen from '@/components/base/spinner';
 
 const getNodePosition = (index: number): { x: number; y: number } => ({
   x: 0,

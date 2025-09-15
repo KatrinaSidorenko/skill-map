@@ -1,7 +1,7 @@
 'use client';
 
 import Container from '@/components/container/container';
-import Header from '@/components/header/header';
+import Header from '@/components/base/header/header';
 import SidebarLayout from '@/components/sidebar/sidebar';
 import { SidebarProvider } from '@/components/sidebar/sidebar-context';
 import { Flex } from '@chakra-ui/react';
