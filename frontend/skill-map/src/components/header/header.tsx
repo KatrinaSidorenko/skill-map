@@ -12,10 +12,11 @@ export default function Header() {
       direction="row"
       align="center"
       justify="space-between"
-      px={6}
-      py={4}
+      px={4}
+      py={2}
       bg="bg.section"
       borderRadius="lg"
+      w="full"
     >
       <Text fontSize="lg" fontWeight="bold" color="text.heading">
         Header

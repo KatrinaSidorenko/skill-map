@@ -17,6 +17,36 @@ export const roadmaps: PlainRoadmap[] = [
     image: 'https://picsum.photos/300',
     status: 'draft',
   },
+  {
+    id: 4,
+    name: 'Fullstack Developer',
+    image: 'https://picsum.photos/300',
+    status: 'draft',
+  },
+  {
+    id: 5,
+    name: 'Fullstack Developer',
+    image: 'https://picsum.photos/300',
+    status: 'draft',
+  },
+  {
+    id: 6,
+    name: 'Fullstack Developer',
+    image: 'https://picsum.photos/300',
+    status: 'draft',
+  },
+  {
+    id: 7,
+    name: 'Fullstack Developer',
+    image: 'https://picsum.photos/300',
+    status: 'draft',
+  },
+  {
+    id: 8,
+    name: 'Fullstack Developer',
+    image: 'https://picsum.photos/300',
+    status: 'draft',
+  },
 ];
 
 export const mockRoadmaps: Roadmap[] = [

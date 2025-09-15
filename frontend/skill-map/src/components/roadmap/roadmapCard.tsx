@@ -8,13 +8,8 @@ import {
   VStack,
   Box,
   Flex,
-  IconButton,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
-import { FiStar } from 'react-icons/fi';
-import { FaStar } from 'react-icons/fa';
-import { useAppDispatch } from '@/store/hooks';
-import { addOrRemoveRoadmap } from '@/features/roadmaps/store';
 
 interface RoadmapCardProps {
   roadmap: PlainRoadmap;
@@ -30,39 +25,37 @@ export function RoadmapCard({ roadmap }: RoadmapCardProps) {
   return (
     <HoverCard.Root>
       <HoverCard.Trigger>
-        <Box
-          cursor="pointer"
-          borderRadius="lg"
-          overflow="hidden"
-          bg="bg.card"
-          boxShadow="sm"
-          padding={2}
-          _hover={{ boxShadow: 'md' }}
-        >
-          <NextLink href={`/roadmap/${roadmap.id}`} passHref>
+        <NextLink href={`/roadmap/${roadmap.id}`} passHref>
+          <Flex
+            cursor="pointer"
+            borderRadius="lg"
+            overflow="hidden"
+            bg="bg.card"
+            opacity={0.95}
+            boxShadow="sm"
+            _hover={{ boxShadow: 'md' }}
+            align="center"
+            direction="row"
+            p={2}
+          >
             <Image
               src={roadmap.image}
               alt={roadmap.name}
-              w="full"
+              w="160px"
               h="150px"
               objectFit="cover"
               borderRadius="md"
+              flexShrink={0}
             />
-            <VStack align="start" p={4} gap={2}>
+
+            <VStack gap={2} p={4} align="start">
               <Text fontSize="lg" fontWeight="bold" color="text.heading">
                 {roadmap.name}
               </Text>
-              <Flex
-                direction="row"
-                align="center"
-                justify="space-between"
-                w="full"
-              >
-                <Badge colorScheme={statusColor}>{roadmap.status}</Badge>
-              </Flex>
+              <Badge colorScheme={statusColor}>{roadmap.status}</Badge>
             </VStack>
-          </NextLink>
-        </Box>
+          </Flex>
+        </NextLink>
       </HoverCard.Trigger>
     </HoverCard.Root>
   );

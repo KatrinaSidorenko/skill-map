@@ -12,14 +12,12 @@ export default function HomeLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const pathname = usePathname();
-  const isHome = pathname === '/';
   return (
     <SidebarProvider>
       <Flex width="100vw" height="100vh" direction="column">
         <SidebarLayout>
-          <Flex direction="column" bg="bg.page" gap={4} h="full">
-            {isHome && <Header />}
+          <Flex direction="column" bg="bg.page" gap={4} h="100%" w="100%">
+            <Header />
             <Container>{children}</Container>
           </Flex>
         </SidebarLayout>

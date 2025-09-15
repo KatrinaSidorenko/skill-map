@@ -118,11 +118,9 @@ interface NavItemProps {
 }
 
 const NavItem = ({ icon, children, link, isActive, ...rest }: NavItemProps) => {
-  console.log({ isActive });
   return (
     <Flex
       align="center"
-      p="2"
       borderRadius="md"
       role="group"
       cursor="pointer"

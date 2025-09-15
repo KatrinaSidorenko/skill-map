@@ -12,22 +12,29 @@ import { LuSearch } from 'react-icons/lu';
 import { AiOutlineArrowLeft, AiOutlineArrowRight } from 'react-icons/ai';
 
 interface SearchContainerProps {
-  childeren: React.ReactNode;
+  children: React.ReactNode;
   disabled: boolean;
   page: number;
   pageSize: number;
   setPage: (page: number) => number;
+  total: number;
 }
 
+// todo: fix pagination buttons
+// todo: implement search functionality
 export default function SearchContainer({
-  childeren,
+  children,
   disabled,
   page,
   setPage,
   pageSize,
+  total,
 }: SearchContainerProps) {
+  const totalPages = Math.ceil(total / pageSize);
+
   return (
-    <Flex gap={4} direction="column">
+    <Flex gap={4} direction="column" h="100%">
+      {/* Search input */}
       <Box
         w={{ base: '100%', sm: 'sm', md: 'md', lg: 'lg' }}
         alignSelf={{ base: 'stretch', md: 'flex-end' }}
@@ -43,37 +50,43 @@ export default function SearchContainer({
         </InputGroup>
       </Box>
 
-      <Box h="full" w="full" borderRadius="lg" p={4}>
-        {
-          <ScrollArea.Root>
-            <ScrollArea.Viewport>
-              <ScrollArea.Content>{childeren}</ScrollArea.Content>
-            </ScrollArea.Viewport>
-            <ScrollArea.Scrollbar>
-              <ScrollArea.Thumb />
-            </ScrollArea.Scrollbar>
-            <ScrollArea.Corner />
-          </ScrollArea.Root>
-        }
-      </Box>
+      {/* Scrollable area with pagination */}
+      <Flex
+        borderRadius="lg"
+        p={4}
+        flex="1"
+        direction="column"
+        justifyContent="space-between"
+        alignContent="center"
+      >
+        <ScrollArea.Root style={{ height: '100%', width: '100%' }}>
+          <ScrollArea.Viewport>
+            <ScrollArea.Content>{children}</ScrollArea.Content>
+          </ScrollArea.Viewport>
+          <ScrollArea.Scrollbar orientation="vertical">
+            <ScrollArea.Thumb />
+          </ScrollArea.Scrollbar>
+          <ScrollArea.Corner />
+        </ScrollArea.Root>
 
-      <Flex gap={4} alignSelf="center" position="fixed" bottom={10}>
-        <Button
-          onClick={() => setPage(Math.max(page - 1, 1))}
-          disabled={page === 1 || disabled}
-          variant="outline"
-          size="sm"
-        >
-          <AiOutlineArrowLeft />
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => setPage(page + 1)}
-          disabled={page < pageSize || disabled}
-          size="sm"
-        >
-          <AiOutlineArrowRight />
-        </Button>
+        <Flex gap={4} alignSelf="center" justify="center">
+          <Button
+            onClick={() => setPage(Math.max(page - 1, 1))}
+            disabled={page === 1 || disabled}
+            variant="outline"
+            size="sm"
+          >
+            <AiOutlineArrowLeft />
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setPage(page + 1)}
+            disabled={page >= totalPages || disabled}
+            size="sm"
+          >
+            <AiOutlineArrowRight />
+          </Button>
+        </Flex>
       </Flex>
     </Flex>
   );

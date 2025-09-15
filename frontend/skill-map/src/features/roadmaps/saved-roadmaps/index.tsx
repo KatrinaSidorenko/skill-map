@@ -31,8 +31,10 @@ export default function SavedRoadmaps() {
       disabled={isFetching}
       page={page}
       setPage={setPageSafe}
-      childeren={<RoadmapGrid roadmaps={roadmaps} />}
       pageSize={pageSize}
-    />
+      total={data?.total || 0}
+    >
+      <RoadmapGrid roadmaps={roadmaps} />
+    </SearchContainer>
   );
 }
