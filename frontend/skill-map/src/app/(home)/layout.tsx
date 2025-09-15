@@ -5,7 +5,6 @@ import Header from '@/components/header/header';
 import SidebarLayout from '@/components/sidebar/sidebar';
 import { SidebarProvider } from '@/components/sidebar/sidebar-context';
 import { Flex } from '@chakra-ui/react';
-import { usePathname } from 'next/navigation';
 
 export default function HomeLayout({
   children,

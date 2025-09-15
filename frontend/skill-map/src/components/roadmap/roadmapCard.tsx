@@ -1,14 +1,6 @@
 'use client';
 
-import {
-  HoverCard,
-  Image,
-  Text,
-  Badge,
-  VStack,
-  Box,
-  Flex,
-} from '@chakra-ui/react';
+import { HoverCard, Image, Text, Badge, VStack, Flex } from '@chakra-ui/react';
 import NextLink from 'next/link';
 
 interface RoadmapCardProps {
