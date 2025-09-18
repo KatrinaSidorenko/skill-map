@@ -14,7 +14,7 @@ export default function Header() {
       justify="space-between"
       px={4}
       py={2}
-      bg="bg.section"
+      bg="transparent"
       borderRadius="lg"
       w="full"
     >

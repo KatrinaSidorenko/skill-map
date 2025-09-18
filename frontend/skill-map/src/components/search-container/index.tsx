@@ -32,15 +32,11 @@ export default function SearchContainer({
 }: SearchContainerProps) {
   const totalPages = Math.ceil(total / pageSize);
 
+  // todo: column on small screens
   return (
-    <Flex gap={4} direction="column" h="100%">
-      {/* Search input */}
-      <Box
-        w={{ base: '100%', sm: 'sm', md: 'md', lg: 'lg' }}
-        alignSelf={{ base: 'stretch', md: 'flex-end' }}
-      >
+    <Flex gap={4} direction="row" h="100%">
+      <Box w="sm" p={4}>
         <InputGroup
-          flex="1"
           endElement={<LuSearch />}
           borderRadius="md"
           bg="bg.section"
@@ -50,7 +46,6 @@ export default function SearchContainer({
         </InputGroup>
       </Box>
 
-      {/* Scrollable area with pagination */}
       <Flex
         borderRadius="lg"
         p={4}

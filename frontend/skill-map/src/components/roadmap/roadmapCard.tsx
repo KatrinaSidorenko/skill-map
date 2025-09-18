@@ -34,7 +34,7 @@ export function RoadmapCard({ roadmap }: RoadmapCardProps) {
               src={roadmap.image}
               alt={roadmap.name}
               w="160px"
-              h="150px"
+              h="130px"
               objectFit="cover"
               borderRadius="md"
               flexShrink={0}

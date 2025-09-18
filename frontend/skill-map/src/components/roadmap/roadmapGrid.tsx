@@ -9,7 +9,7 @@ export default function RoadmapGrid({
   roadmaps: PlainRoadmap[];
 }) {
   return (
-    <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} gap={6}>
+    <SimpleGrid columns={{ base: 1, sm: 1, md: 2 }} gap={6}>
       {roadmaps.map((roadmap) => (
         <RoadmapCard key={roadmap.id} roadmap={roadmap} />
       ))}
