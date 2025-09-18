@@ -7,7 +7,6 @@ export default function Container({
 }) {
   return (
     <Box
-      flex="1"
       px={6}
       py={4}
       borderRadius="lg"

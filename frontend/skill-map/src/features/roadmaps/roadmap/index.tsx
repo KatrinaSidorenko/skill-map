@@ -1,28 +1,118 @@
 'use client';
 
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { addOrRemoveRoadmap, selectPlainRoadmap } from '../store';
-import { IconButton } from '@chakra-ui/react';
-import { FiStar } from 'react-icons/fi';
+import React, { useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { FaStar } from 'react-icons/fa';
+import { FiStar } from 'react-icons/fi';
+import { IconButton, VStack, Text, Flex } from '@chakra-ui/react';
+
+import {
+  Edge,
+  Node,
+  Controls,
+  Background,
+  ReactFlow,
+  applyNodeChanges,
+  applyEdgeChanges,
+  EdgeChange,
+  NodeChange,
+} from '@xyflow/react';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { addOrRemoveRoadmap, selectIsRoadmapSaved } from '../store';
+import '@xyflow/react/dist/style.css';
+import { useGetRoadmapByIdQuery } from '../api';
+import SpinnerScreen from '@/components/base/spinner';
+
+const getNodePosition = (index: number): { x: number; y: number } => ({
+  x: 0,
+  y: index * 150, // space nodes 150px apart vertically
+});
+
+export function mapRoadmapToReactFlow(roadmap: Roadmap): {
+  nodes: Node[];
+  edges: Edge[];
+} {
+  const nodes: Node[] = roadmap.nodes.map((n, index) => ({
+    id: String(n.id),
+    position: getNodePosition(index),
+    data: { label: n.title }, // show title in node
+  }));
+
+  const edges: Edge[] = roadmap.edges.map((e) => ({
+    id: `${e.source}-${e.target}`,
+    source: String(e.source),
+    target: String(e.target),
+  }));
+
+  return { nodes, edges };
+}
 
 export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
   const dispatch = useAppDispatch();
-  const roadmap = useAppSelector((state) =>
-    selectPlainRoadmap(state, Number(roadmapId)),
+  const { data, error, isLoading, isFetching } = useGetRoadmapByIdQuery(
+    Number(roadmapId),
   );
+  const isRoadmapSaved = useAppSelector((s) =>
+    selectIsRoadmapSaved(s, Number(roadmapId)),
+  );
+  const roadmap = data?.roadmap;
+  const { nodes: initialNodes, edges: initialEdges } = roadmap
+    ? mapRoadmapToReactFlow(roadmap)
+    : { nodes: [], edges: [] };
+  const [nodes, setNodes] = useState(initialNodes);
+  const [edges, setEdges] = useState(initialEdges);
+
+  useEffect(() => {
+    setNodes(initialNodes);
+    setEdges(initialEdges);
+  }, [isLoading]);
+
+  const onNodesChange = useCallback(
+    (changes: NodeChange<Node>[]) =>
+      setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
+    [],
+  );
+  const onEdgesChange = useCallback(
+    (changes: EdgeChange[]) =>
+      setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
+    [],
+  );
+
+  if (isLoading) {
+    return <SpinnerScreen />;
+  }
 
   if (!roadmap) {
     return <div>Roadmap not found</div>;
   }
 
   return (
-    <IconButton
-      aria-label="Save Roadmap"
-      size="sm"
-      onClick={() => dispatch(addOrRemoveRoadmap(Number(roadmapId)))}
-    >
-      {roadmap.isSaved ? <FaStar /> : <FiStar />}
-    </IconButton>
+    <VStack w="full" gap={8}>
+      <Flex w="full" justify="space-between" direction="row" align="center">
+        <Text fontSize="2xl" fontWeight="bold">
+          {roadmap.name}
+        </Text>
+        <IconButton
+          aria-label="Save Roadmap"
+          size="sm"
+          onClick={() => dispatch(addOrRemoveRoadmap(Number(roadmapId)))}
+        >
+          {isRoadmapSaved ? <FaStar /> : <FiStar />}
+        </IconButton>
+      </Flex>
+
+      <div style={{ width: '100%', height: '500px' }}>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          fitView
+        >
+          <Background />
+          <Controls />
+        </ReactFlow>
+      </div>
+    </VStack>
   );
 }

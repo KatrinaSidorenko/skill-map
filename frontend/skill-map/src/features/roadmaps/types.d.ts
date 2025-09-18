@@ -5,3 +5,33 @@ interface PlainRoadmap {
   status: 'draft' | 'in-progress' | 'completed';
   isSaved?: boolean;
 }
+
+interface RoadmapNode {
+  id: number;
+  title: string;
+  description: string;
+}
+
+interface RoadmapEdge {
+  source: number;
+  target: number;
+}
+
+interface Roadmap {
+  id: number;
+  name: string;
+  description: string;
+  nodes: RoadmapNode[];
+  edges: RoadmapEdge[];
+}
+
+interface PlainRoadmapsResponse {
+  roadmaps: PlainRoadmap[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+interface RoadmapResponse {
+  roadmap: Roadmap;
+}

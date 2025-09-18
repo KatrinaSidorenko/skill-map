@@ -31,6 +31,7 @@ export const buttonRecipe = defineRecipe({
       },
     },
     size: {
+      xs: { px: 0.5, py: 0.5, fontSize: 'xs' },
       sm: { px: 3, py: 1.5, fontSize: 'sm' },
       md: { px: 4, py: 2, fontSize: 'md' },
       lg: { px: 6, py: 3, fontSize: 'lg' },
