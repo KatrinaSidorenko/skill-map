@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SkillMap.Business.Roadmaps.Models;
 
-namespace SkillMap.Api.Models.CustomizedRoadmaps;
+namespace SkillMap.Api.Roadmaps.Models;
 
 public class ModifiedRoadmapResponse
 {

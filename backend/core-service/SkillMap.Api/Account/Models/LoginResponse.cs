@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace SkillMap.Api.Models.Account;
+namespace SkillMap.Api.Account.Models;
 
 public class LoginResponse
 {

@@ -1,7 +1,7 @@
 ﻿using SkillMap.Shared.Results;
 using System.Net;
 
-namespace SkillMap.Api.Middleware;
+namespace SkillMap.Api.Base.Middleware;
 
 public class ErrorHandlingMiddleware(RequestDelegate next, ILogger<ErrorHandlingMiddleware> logger)
 {

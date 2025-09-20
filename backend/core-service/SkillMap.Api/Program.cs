@@ -1,9 +1,9 @@
-using SkillMap.Api.Extensions;
 using SkillMap.Infrastructure;
 using SkillMap.Persistence;
 using SkillMap.Business;
 using Microsoft.AspNetCore.HttpLogging;
 using System.Diagnostics;
+using SkillMap.Api.Base.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -3,7 +3,7 @@ using SkillMap.Core.Constants;
 using SkillMap.Core.Entities;
 using System.ComponentModel.DataAnnotations;
 
-namespace SkillMap.Api.Models.Account;
+namespace SkillMap.Api.Account.Models;
 
 public class RegistrationRequest
 {

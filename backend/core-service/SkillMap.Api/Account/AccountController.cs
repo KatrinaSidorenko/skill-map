@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SkillMap.Api.Models.Account;
+using SkillMap.Api.Account.Models;
+using SkillMap.Api.Base;
 using SkillMap.Business.Account;
 
-namespace SkillMap.Api.Controllers;
+namespace SkillMap.Api.Account;
 
 [ApiController]
 public class AccountController : BaseController

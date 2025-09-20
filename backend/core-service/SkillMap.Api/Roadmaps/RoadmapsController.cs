@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SkillMap.Api.Models.CustomizedRoadmaps;
+using SkillMap.Api.Base;
 using SkillMap.Business.Roadmaps;
 using SkillMap.Business.Roadmaps.Models;
 using SkillMap.Core.Constants;
 using SkillMap.Shared;
 
-namespace SkillMap.Api.Controllers;
+namespace SkillMap.Api.Roadmaps;
 
 [ApiController]
 [Authorize]

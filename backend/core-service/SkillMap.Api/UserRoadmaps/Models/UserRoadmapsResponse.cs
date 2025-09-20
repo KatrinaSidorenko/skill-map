@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace SkillMap.Api.Models.UserRoadmaps;
+namespace SkillMap.Api.UserRoadmaps.Models;
 
 public class UserRoadmapsResponse
 {

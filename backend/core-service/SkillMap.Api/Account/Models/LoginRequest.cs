@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
-namespace SkillMap.Api.Models.Account;
+namespace SkillMap.Api.Account.Models;
 
 public class LoginRequest
 {

@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SkillMap.Api.Models.UserRoadmaps;
+using SkillMap.Api.Base;
 using SkillMap.Business.UserRoadmaps;
 using SkillMap.Core.Constants;
 
-namespace SkillMap.Api.Controllers;
+namespace SkillMap.Api.UserRoadmaps;
 
 [ApiController]
 [Authorize(Roles = Role.User)]

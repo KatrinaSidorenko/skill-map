@@ -4,7 +4,7 @@ using SkillMap.Business.Abstractions;
 using SkillMap.Core.Entities;
 using SkillMap.Shared.Results;
 
-namespace SkillMap.Api.Controllers;
+namespace SkillMap.Api.Base;
 
 [Route("api/[controller]")]
 
