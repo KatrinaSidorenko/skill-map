@@ -5,7 +5,7 @@ namespace SkillMap.Api.Account.Models;
 public class UserResponse
 {
     [JsonProperty("email")]
-    public string Email { get; set; } = string.Empty;
+    public string Email { get; set; }
     [JsonProperty("userName")]
-    public string UserName { get; set; } = string.Empty;
+    public string UserName { get; set; }
 }

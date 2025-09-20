@@ -6,6 +6,6 @@ namespace SkillMap.Business.Account;
 
 public interface IAccountService
 {
-    Task<Result<UserDto>> Login(string email, string password, CancellationToken ct);
+    Task<Result<UserDto>> Login(LoginDto loginDto, CancellationToken ct);
     Task<Result<bool>> Register(UserRegistrationDto userDto, CancellationToken ct);
 }

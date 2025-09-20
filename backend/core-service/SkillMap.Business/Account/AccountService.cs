@@ -10,11 +10,20 @@ namespace SkillMap.Business.Account;
 public class AccountService(
     ITokenService tokenService, 
     IRepository<AppUser> userRepository, 
+    IValidator<LoginDto> loginValidator,
     IValidator<UserRegistrationDto> userValidator,
     IPasswordHasher passwordHasher) : IAccountService
 {
-    public async Task<Result<UserDto>> Login(string email, string password, CancellationToken ct)
+    public async Task<Result<UserDto>> Login(LoginDto loginDto, CancellationToken ct)
     {
+        var validationResult = await loginValidator.ValidateAsync(loginDto, ct);
+        if (!validationResult.IsValid)
+        {
+            return ResultType.ValidationError<UserDto>(validationResult.GetErrors());
+        }
+
+        var email = loginDto.Email;
+        var password = loginDto.Password;
         var userResult = await userRepository.GetFirstOrDefaultAsync(x => x.Email == email, ct);
         if (!userResult.IsSuccessful || userResult.Data is null)
         {
@@ -28,12 +37,8 @@ public class AccountService(
         }
 
         var token = tokenService.GenerateToken(userResult.Data);
-        var userDto = new UserDto
-        {
-            Token = token,
-            Email = userResult.Data.Email,
-            UserName = userResult.Data.UserName,
-        };
+        var userDto = userResult.Data.ToUserDto();
+        userDto.Token = token;
 
         return Result.Success(userDto);
     }
@@ -47,7 +52,7 @@ public class AccountService(
         }
 
         var hashedPassword = passwordHasher.Hash(userDto.Password);
-        var appUser = AccountMapper.ToAppUser(userDto);
+        var appUser = userDto.ToAppUser();
         appUser.PasswordHash = hashedPassword;
 
         var userResult = await userRepository.GetFirstOrDefaultAsync(x => x.Email == appUser.Email, ct);

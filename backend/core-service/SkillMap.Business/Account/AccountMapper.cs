@@ -8,4 +8,5 @@ namespace SkillMap.Business.Account;
 public static partial class AccountMapper
 {
     public static partial AppUser ToAppUser(this UserRegistrationDto dto);
+    public static partial UserDto ToUserDto(this AppUser user);
 }

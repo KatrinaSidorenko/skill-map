@@ -17,34 +17,18 @@ public class AccountController : BaseController
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody]RegistrationRequest registrationRequest, CancellationToken ct)
     {
-        var result = await AccountService.Register(AccountMapper.ToUserRegistrationDto(registrationRequest), ct);
+        var result = await AccountService.Register(registrationRequest.ToUserRegistrationDto(), ct);
         return Response(result, r => Ok());
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody]LoginRequest loginRequest, CancellationToken ct)
     {
-        var result = await AccountService.Login(loginRequest.Email, loginRequest.Password, ct);
-        return Response(result, r => Ok(new LoginResponse
-        {
-            Token = r.Data.Token,
-            User = new UserResponse
-            {
-                Email = r.Data.Email,
-                UserName = r.Data.UserName,
-            }
-        }));
+        var result = await AccountService.Login(loginRequest.ToLoginDto(), ct);
+        return Response(result, r => Ok(r.Data.ToLoginResponse()));
     }
 
     [Authorize]
     [HttpGet("me")]
-    public async Task<IActionResult> GetMe(CancellationToken ct)
-    {
-        var user = CurrentUser;
-        return Ok(new UserResponse
-        {
-            Email = user.Email,
-            UserName = user.UserName,
-        });
-    }
+    public async Task<IActionResult> GetMe(CancellationToken ct) => Ok(CurrentUser.ToUserResponse());
 }
