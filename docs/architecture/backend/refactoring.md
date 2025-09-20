@@ -15,11 +15,17 @@ Database for core service is PostgreSQl + ORM (EF Core)
 }); - it will disapper with new roadmap contract
 
 ## Mapper
+https://mapperly.riok.app/docs/intro/ 
 Decided to use Riok.Mapperly
 Added to Bussines library 
 
 ## Validation
+https://docs.fluentvalidation.net/en/latest/start.html#
 Was added validation to bussiness layer with error codes
+
+### Error Codes
+- SE - System Error 
+- UIE - User Input Error
 
 ## ToDo
 [X] Add mapper
