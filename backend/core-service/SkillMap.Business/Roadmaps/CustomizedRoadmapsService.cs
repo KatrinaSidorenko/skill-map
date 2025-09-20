@@ -85,7 +85,7 @@ public class CustomizedRoadmapsService(
         var userRoadmapResult = await userRoadmapsService.GetUserRoadmap(userId, roadmapId, ct);
         if (!userRoadmapResult.IsSuccessful)
         {
-            return ResultTypes.UserRoadmapNotFound<bool>(userId, roadmapId);
+            return ResultType.UserRoadmapNotFound<bool>(userId, roadmapId);
         }
 
         var userRoadmap = userRoadmapResult.Data;
@@ -95,7 +95,7 @@ public class CustomizedRoadmapsService(
         var saveResult = await modificationsRepository.SaveChangesAsync(ct);
         if (!saveResult.IsSuccessful)
         {
-            return ResultTypes.FailedToDeleteRoadmap<bool>(userId, roadmapId);
+            return ResultType.FailedToDeleteRoadmap<bool>(userId, roadmapId);
         }
 
         _ = Task.Run(async () => await EnsureSnapshot(userRoadmapResult.Data.Id, roadmapId, ct), ct);
@@ -151,7 +151,7 @@ public class CustomizedRoadmapsService(
         var createResult = await CreateModification(userId, roadmapId, action, ct);
         if (!createResult.IsSuccessful)
         {
-            return ResultTypes.FailedToCreateRoadmap<NodeResponse>(userId, roadmapId);
+            return ResultType.FailedToCreateRoadmap<NodeResponse>(userId, roadmapId);
         }
 
         
@@ -175,7 +175,7 @@ public class CustomizedRoadmapsService(
         var customizedRoadmapResult = await GetRoadmap(userId, roadmapId, ct);
         if (!customizedRoadmapResult.IsSuccessful)
         {
-            return ResultTypes.RoadmapNotFound<double>(roadmapId);
+            return ResultType.RoadmapNotFound<double>(roadmapId);
         }
 
         var customizedRoadmap = customizedRoadmapResult.Data;
@@ -190,14 +190,14 @@ public class CustomizedRoadmapsService(
         var userRoadmapsResult = await userRoadmapsService.GetUserRoadmaps(userId, ct);
         if (!userRoadmapsResult.IsSuccessful)
         {
-            return ResultTypes.UserRoadmapNotFound<List<Roadmap>>(userId);
+            return ResultType.UserRoadmapNotFound<List<Roadmap>>(userId);
         }
 
         var userRoadmapIds = userRoadmapsResult.Data.Select(ur => ur.RoadmapId).ToList();
         var allRoadmapsResult = await roadmapService.GetRoadmaps(userRoadmapIds, ct);
         if (!allRoadmapsResult.IsSuccessful)
         {
-            return ResultTypes.RoadmapNotFound<List<Roadmap>>("");
+            return ResultType.RoadmapNotFound<List<Roadmap>>("");
         }
 
         var allRoadmaps = allRoadmapsResult.Data;
@@ -207,7 +207,7 @@ public class CustomizedRoadmapsService(
             var progressResult = await GetRoadmapProgress(userId, roadmap.Id, ct);
             if (!progressResult.IsSuccessful)
             {
-                return ResultTypes.RoadmapNotFound<List<Roadmap>>(roadmap.Id);
+                return ResultType.RoadmapNotFound<List<Roadmap>>(roadmap.Id);
             }
 
             var progress = progressResult.Data;
@@ -228,14 +228,14 @@ public class CustomizedRoadmapsService(
         var userRoadmapResult = await userRoadmapsService.GetUserRoadmap(userId, roadmapId, ct);
         if (!userRoadmapResult.IsSuccessful)
         {
-            return ResultTypes.UserRoadmapNotFound<CustomizedUerRoadmap>(userId, roadmapId);
+            return ResultType.UserRoadmapNotFound<CustomizedUerRoadmap>(userId, roadmapId);
         }
 
         var userRoadmap = userRoadmapResult.Data;
         var targetRoadmapResult = await GetTargetRoadmap(userRoadmap.Id, roadmapId, ct);
         if (!targetRoadmapResult.IsSuccessful)
         {
-            return ResultTypes.RoadmapNotFound<CustomizedUerRoadmap>(roadmapId);
+            return ResultType.RoadmapNotFound<CustomizedUerRoadmap>(roadmapId);
         }
 
         var (sourceNodes, sourceEdges, modificationsResult) = targetRoadmapResult.Data;
@@ -297,13 +297,13 @@ public class CustomizedRoadmapsService(
             var fullRoadmapResult = await roadmapService.GetFullPlainRoadmap(roadmapId, ct);
             if (!fullRoadmapResult.IsSuccessful)
             {
-                return ResultTypes.RoadmapNotFound<(List<NodeResponse> Nodes, List<(string Source, string Target)> Edges, List<RoadmapModification> Modifications)>(roadmapId);
+                return ResultType.RoadmapNotFound<(List<NodeResponse> Nodes, List<(string Source, string Target)> Edges, List<RoadmapModification> Modifications)>(roadmapId);
             }
             var fullRoadmap = fullRoadmapResult.Data;
             var modificationsResult = await modificationsRepository.GetAllAsync(m => m.UserRoadmapId == userRoadmapId);
             if (!modificationsResult.IsSuccessful)
             {
-                return ResultTypes.FailedToGetModifications<(List<NodeResponse> Nodes, List<(string Source, string Target)> Edges, List<RoadmapModification> Modifications)>(userRoadmapId, roadmapId);
+                return ResultType.FailedToGetModifications<(List<NodeResponse> Nodes, List<(string Source, string Target)> Edges, List<RoadmapModification> Modifications)>(userRoadmapId, roadmapId);
             }
 
             targetModifications = modificationsResult.Data?.ToList();

@@ -29,7 +29,7 @@ public class UserRoadmapsService(IRepository<UserRoadmap> userRoadmapsRepository
         var saveResult = await userRoadmapsRepository.SaveChangesAsync(ct);
         if (!saveResult.IsSuccessful)
         {
-            return ResultTypes.FailedToAddRoadmap<bool>(userId, roadmapId);
+            return ResultType.FailedToAddRoadmap<bool>(userId, roadmapId);
         }
 
         return Result.Success(true);
@@ -40,7 +40,7 @@ public class UserRoadmapsService(IRepository<UserRoadmap> userRoadmapsRepository
         var dbUserRoadmapResult = await userRoadmapsRepository.GetFirstOrDefaultAsync(ur => ur.UserId == userId && ur.RoadmapId == roadmapId, ct: ct);
         if (!dbUserRoadmapResult.HasData)
         {
-            return ResultTypes.UserRoadmapNotFound<UserRoadmapDto>(userId, roadmapId);
+            return ResultType.UserRoadmapNotFound<UserRoadmapDto>(userId, roadmapId);
         }
 
         var userRoadmap = new UserRoadmapDto
@@ -59,7 +59,7 @@ public class UserRoadmapsService(IRepository<UserRoadmap> userRoadmapsRepository
         var dbUserRoadmapsResult = await userRoadmapsRepository.GetAllAsync(ur => ur.UserId == userId && ur.IsActive, ct: ct);
         if (!dbUserRoadmapsResult.HasData)
         {
-            return ResultTypes.UserRoadmapNotFound<List<UserRoadmapDto>>(userId);
+            return ResultType.UserRoadmapNotFound<List<UserRoadmapDto>>(userId);
         }
 
         var userRoadmaps = dbUserRoadmapsResult.Data.Select(ur => new UserRoadmapDto
@@ -78,7 +78,7 @@ public class UserRoadmapsService(IRepository<UserRoadmap> userRoadmapsRepository
         var dbUserRoadmapResult = await userRoadmapsRepository.GetFirstOrDefaultAsync(ur => ur.UserId == userId && ur.RoadmapId == roadmapId, ct: ct);
         if (!dbUserRoadmapResult.HasData)
         {
-            return ResultTypes.UserRoadmapNotFound<bool>(userId, roadmapId);
+            return ResultType.UserRoadmapNotFound<bool>(userId, roadmapId);
         }
 
         dbUserRoadmapResult.Data.IsActive = false;
@@ -86,7 +86,7 @@ public class UserRoadmapsService(IRepository<UserRoadmap> userRoadmapsRepository
         var saveResult = await userRoadmapsRepository.SaveChangesAsync(ct);
         if (!saveResult.IsSuccessful)
         {
-            return ResultTypes.FailedToRemoveRoadmap<bool>(userId, roadmapId);
+            return ResultType.FailedToRemoveRoadmap<bool>(userId, roadmapId);
         }
 
         return Result.Success(true);

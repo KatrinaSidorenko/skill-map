@@ -24,7 +24,7 @@ public class RoadmapsCatalogHttpClient : IRoadmapsCatalogHttpClient
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError("Failed to get roadmaps from the catalog. Status code: {StatusCode}", response.StatusCode);
-                return ResultTypes.FailedToGetRoadmaps<List<Roadmap>>();
+                return ResultType.FailedToGetRoadmaps<List<Roadmap>>();
             }
 
             var content = await response.Content.ReadAsStringAsync(ct);
@@ -35,7 +35,7 @@ public class RoadmapsCatalogHttpClient : IRoadmapsCatalogHttpClient
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while getting roadmaps from the catalog.");
-            return ResultTypes.FailedToGetRoadmaps<List<Roadmap>>();
+            return ResultType.FailedToGetRoadmaps<List<Roadmap>>();
         }
     }
 
@@ -47,7 +47,7 @@ public class RoadmapsCatalogHttpClient : IRoadmapsCatalogHttpClient
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError("Failed to get the full roadmap from the catalog. Status code: {StatusCode}", response.StatusCode);
-                return ResultTypes.FailedToGetRoadmap<TreeResponse>(roadmapId);
+                return ResultType.FailedToGetRoadmap<TreeResponse>(roadmapId);
             }
 
             var content = await response.Content.ReadAsStringAsync(ct);
@@ -56,7 +56,7 @@ public class RoadmapsCatalogHttpClient : IRoadmapsCatalogHttpClient
             if (roadmap == null)
             {
                 _logger.LogError("Failed to deserialize the full roadmap response.");
-                return ResultTypes.FailedToGetRoadmap<TreeResponse>(roadmapId);
+                return ResultType.FailedToGetRoadmap<TreeResponse>(roadmapId);
             }
 
             return Result.Success(roadmap);
@@ -64,7 +64,7 @@ public class RoadmapsCatalogHttpClient : IRoadmapsCatalogHttpClient
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while getting the full roadmap from the catalog.");
-            return ResultTypes.FailedToGetRoadmap<TreeResponse>(roadmapId);
+            return ResultType.FailedToGetRoadmap<TreeResponse>(roadmapId);
         }
     }
 
@@ -76,7 +76,7 @@ public class RoadmapsCatalogHttpClient : IRoadmapsCatalogHttpClient
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError("Failed to get the full roadmap from the catalog. Status code: {StatusCode}", response.StatusCode);
-                return ResultTypes.FailedToGetRoadmap<TreePlainResponse>(roadmapId);
+                return ResultType.FailedToGetRoadmap<TreePlainResponse>(roadmapId);
             }
 
             var content = await response.Content.ReadAsStringAsync(ct);
@@ -85,7 +85,7 @@ public class RoadmapsCatalogHttpClient : IRoadmapsCatalogHttpClient
             if (roadmap == null)
             {
                 _logger.LogError("Failed to deserialize the full roadmap response.");
-                return ResultTypes.FailedToGetRoadmap<TreePlainResponse>(roadmapId);
+                return ResultType.FailedToGetRoadmap<TreePlainResponse>(roadmapId);
             }
 
             return Result.Success(roadmap);
@@ -93,7 +93,7 @@ public class RoadmapsCatalogHttpClient : IRoadmapsCatalogHttpClient
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while getting the full roadmap from the catalog.");
-            return ResultTypes.FailedToGetRoadmap<TreePlainResponse>(roadmapId);
+            return ResultType.FailedToGetRoadmap<TreePlainResponse>(roadmapId);
         }
     }
 }

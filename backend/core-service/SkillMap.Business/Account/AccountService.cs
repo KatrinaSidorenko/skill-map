@@ -12,13 +12,13 @@ public class AccountService(ITokenService tokenService, IRepository<AppUser> use
         var userResult = await userRepository.GetFirstOrDefaultAsync(x => x.Email == email, ct);
         if (!userResult.IsSuccessful || userResult.Data is null)
         {
-            return ResultTypes.UserNotFound<UserDto>(email);
+            return ResultType.UserNotFound<UserDto>(email);
         }
 
         var isPasswordValid = passwordHasher.Verify(password, userResult.Data.PasswordHash);
         if (!isPasswordValid)
         {
-            return ResultTypes.InvalidPassword<UserDto>(email);
+            return ResultType.InvalidPassword<UserDto>(email);
         }
 
         var token = tokenService.GenerateToken(userResult.Data);
@@ -40,14 +40,14 @@ public class AccountService(ITokenService tokenService, IRepository<AppUser> use
         var userResult = await userRepository.GetFirstOrDefaultAsync(x => x.Email == appUser.Email, ct);
         if (userResult?.Data is not null)
         {
-            return ResultTypes.UserWithSuchEmailAlreadyExists<bool>(appUser.Email);
+            return ResultType.UserWithSuchEmailAlreadyExists<bool>(appUser.Email);
         }
 
         await userRepository.AddAsync(appUser, ct);
         var result = await userRepository.SaveChangesAsync(ct);
         if (!result.IsSuccessful)
         {
-            return ResultTypes.FailedToCreateUser<bool>(appUser.Email);
+            return ResultType.FailedToCreateUser<bool>(appUser.Email);
         }
 
         return Result.Success(true);

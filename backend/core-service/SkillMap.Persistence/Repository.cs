@@ -1,7 +1,6 @@
 ﻿using SkillMap.Business.Abstractions;
 using SkillMap.Shared.Results;
 using System.Linq.Expressions;
-using SkillMap.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace SkillMap.Persistence;
@@ -28,7 +27,9 @@ internal class Repository<TEntity> : IRepository<TEntity>
     {
         var entity = await _dbSet.FindAsync(new object[] { id }, ct);
         if (entity == null)
-            return Result.Failure<bool>("not_found", $"{typeof(TEntity)} not found");
+        {
+            return ResultType.NotFound<bool>($"{typeof(TEntity)} with id {id} not found");
+        }
 
         _dbSet.Remove(entity);
         return Result.Success(true);
@@ -65,7 +66,9 @@ internal class Repository<TEntity> : IRepository<TEntity>
     {
         var entity = await _dbSet.FindAsync(new object[] { id }, ct);
         if (entity == null)
-            return Result.Failure<TEntity>("not_found", $"{typeof(TEntity)} not found");
+        {
+            return ResultType.NotFound<TEntity>($"{typeof(TEntity)} with id {id} not found");
+        }
 
         return Result.Success(entity);
     }
@@ -74,7 +77,9 @@ internal class Repository<TEntity> : IRepository<TEntity>
     {
         var entity = await _dbSet.FirstOrDefaultAsync(filter, ct);
         if (entity == null)
-            return Result.Failure<TEntity>("not_found", $"{typeof(TEntity)} not found");
+        {
+            return ResultType.NotFound<TEntity>($"{typeof(TEntity)} not found");
+        }
 
         return Result.Success(entity);
     }
@@ -91,7 +96,9 @@ internal class Repository<TEntity> : IRepository<TEntity>
     {
         var entity = await _dbSet.FirstOrDefaultAsync(filter, ct);
         if (entity == null)
-            return Result.Failure<TEntity>("not_found", $"{typeof(TEntity)} not found");
+        {
+            return ResultType.NotFound<TEntity>($"{typeof(TEntity)} not found");
+        }
         return Result.Success(entity);
     }
 
@@ -110,7 +117,7 @@ internal class Repository<TEntity> : IRepository<TEntity>
         }
         catch (Exception ex)
         {
-            return ResultTypes.FailedToSave<bool>(ex.Message);
+            return ResultType.FailedToSave<bool>(ex.Message);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace SkillMap.Shared.Results;
 
-public class ResultTypes
+public class ResultType
 {
     private const string FAILED_TO_SAVE = "failed_to_save";
     private const string FAILED_TO_CREATE = "failed_to_create";
@@ -12,11 +12,11 @@ public class ResultTypes
     private const string USER_ALREADY_EXISTS = "user_with_such_email_already_exists";
 
     public static Result<T> FailedToSave<T>(string message) => Result.Failure<T>(FAILED_TO_SAVE, message);
-    private static Result<T> FailedToGet<T>(string message) => Result.Failure<T>(FAILED_TO_GET, message);
-    private static Result<T> FailedToCreate<T>(string message) => Result.Failure<T>(FAILED_TO_CREATE, message);
-    private static Result<T> FailedToDelete<T>(string message) => Result.Failure<T>(FAILED_TO_DELETE, message);
-    private static Result<T> FailedToUpdate<T>(string message) => Result.Failure<T>(FAILED_TO_UPDATE, message);
-    private static Result<T> NotFound<T>(string message) => Result.Failure<T>(NOT_FOUND, message);
+    public static Result<T> FailedToGet<T>(string message) => Result.Failure<T>(FAILED_TO_GET, message);
+    public static Result<T> FailedToCreate<T>(string message) => Result.Failure<T>(FAILED_TO_CREATE, message);
+    public static Result<T> FailedToDelete<T>(string message) => Result.Failure<T>(FAILED_TO_DELETE, message);
+    public static Result<T> FailedToUpdate<T>(string message) => Result.Failure<T>(FAILED_TO_UPDATE, message);
+    public static Result<T> NotFound<T>(string message) => Result.Failure<T>(NOT_FOUND, message);
 
 
     public static Result<T> FailedToGetRoadmap<T>(string roadmapId) => FailedToGet<T>($"Failed to get roadmap with id {roadmapId}");
