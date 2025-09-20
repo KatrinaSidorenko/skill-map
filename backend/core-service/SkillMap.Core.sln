@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34525.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkillMap.Core", "SkillMap.Core\SkillMap.Core.csproj", "{EBD82555-0582-4DE7-B833-E424D63BDA77}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkillMap.Shared", "..\shared\SkillMap.Shared\SkillMap.Shared.csproj", "{FEAC087E-5838-4E91-AEAE-75A7853F1C74}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkillMap.Business", "SkillMap.Business\SkillMap.Business.csproj", "{58FCA2E2-5EDB-4B27-9905-B7F5CF71B770}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkillMap.Persistence", "SkillMap.Persistence\SkillMap.Persistence.csproj", "{E1F58EBD-61AB-44D1-9D8A-F1C5E938E453}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkillMap.Api", "SkillMap.Api\SkillMap.Api.csproj", "{7DED4DD1-1D4E-4975-B7A3-E0F963FB4C25}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkillMap.Infrastructure", "SkillMap.Infrastructure\SkillMap.Infrastructure.csproj", "{13B868F3-10C2-4560-AC33-8C82CC17C2DC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EBD82555-0582-4DE7-B833-E424D63BDA77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBD82555-0582-4DE7-B833-E424D63BDA77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBD82555-0582-4DE7-B833-E424D63BDA77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBD82555-0582-4DE7-B833-E424D63BDA77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEAC087E-5838-4E91-AEAE-75A7853F1C74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEAC087E-5838-4E91-AEAE-75A7853F1C74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEAC087E-5838-4E91-AEAE-75A7853F1C74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEAC087E-5838-4E91-AEAE-75A7853F1C74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58FCA2E2-5EDB-4B27-9905-B7F5CF71B770}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58FCA2E2-5EDB-4B27-9905-B7F5CF71B770}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58FCA2E2-5EDB-4B27-9905-B7F5CF71B770}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58FCA2E2-5EDB-4B27-9905-B7F5CF71B770}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1F58EBD-61AB-44D1-9D8A-F1C5E938E453}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1F58EBD-61AB-44D1-9D8A-F1C5E938E453}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1F58EBD-61AB-44D1-9D8A-F1C5E938E453}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1F58EBD-61AB-44D1-9D8A-F1C5E938E453}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DED4DD1-1D4E-4975-B7A3-E0F963FB4C25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DED4DD1-1D4E-4975-B7A3-E0F963FB4C25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DED4DD1-1D4E-4975-B7A3-E0F963FB4C25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DED4DD1-1D4E-4975-B7A3-E0F963FB4C25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13B868F3-10C2-4560-AC33-8C82CC17C2DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13B868F3-10C2-4560-AC33-8C82CC17C2DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13B868F3-10C2-4560-AC33-8C82CC17C2DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13B868F3-10C2-4560-AC33-8C82CC17C2DC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5EB29245-73C4-4B89-A10B-669AF0644D7A}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,6 @@
+@SkillMap.Api_HostAddress = http://localhost:5263
+
+GET {{SkillMap.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
