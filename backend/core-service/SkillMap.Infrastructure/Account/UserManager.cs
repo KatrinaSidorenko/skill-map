@@ -40,6 +40,5 @@ public class UserManager : IUserManager
             Email = email,
             Role = role
         };
-
     }
 }
