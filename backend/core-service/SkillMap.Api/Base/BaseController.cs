@@ -25,9 +25,15 @@ public class BaseController : ControllerBase
         return CurrentUser.Id;
     }
     protected IActionResult InternalServerError<T>(Result<T> result) => StatusCode(500, result.GetResultResponse());
-    protected IActionResult Response<T>(Result<T> result, Func<Result<T>, IActionResult> onSuccess = null)
+    protected IActionResult BadRequest<T>(Result<T> result) => StatusCode(400, result.GetResultResponse());
+    protected IActionResult Response<T>(Result<T> result, Func<Result<T>, IActionResult>? onSuccess = null)
     {
-        if (!result.IsSuccessful)
+        if (result.IsBadRequest())
+        {
+            return BadRequest(result);
+        }
+        
+        if (result.IsInternalError())
         {
             return InternalServerError(result);
         }

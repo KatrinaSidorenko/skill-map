@@ -9,7 +9,7 @@ public class ResultType
     public static Result<T> FailedToUpdate<T>(string message) => Result.Failure<T>(ErrorCode.FAILED_TO_UPDATE, message);
     public static Result<T> NotFound<T>(string message) => Result.Failure<T>(ErrorCode.NOT_FOUND, message);
     public static Result<T> ValidationError<T>(IEnumerable<string> errors) =>
-        Result.Failure<T>(ErrorCode.VALIDATION_ERROR, "Validation error: " + string.Join(", ", errors));
+        Result.Failure<T>(ErrorCode.VALIDATION_ERROR, "Validation error: " + string.Join(" | ", errors));
 
 
     public static Result<T> FailedToGetRoadmap<T>(string roadmapId) => FailedToGet<T>($"Failed to get roadmap with id {roadmapId}");

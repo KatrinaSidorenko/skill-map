@@ -7,5 +7,6 @@ namespace SkillMap.Api.Account;
 [Mapper]
 public static partial class AccountMapper
 {
+    [MapProperty(nameof(RegistrationRequest.Username), nameof(UserRegistrationDto.UserName))]
     public static partial UserRegistrationDto ToUserRegistrationDto(this RegistrationRequest registrationRequest);
 }

@@ -9,4 +9,9 @@ public static class ResultExtension
 
     public static ResultData GetResultResponse<T>(this Result<T> result)
         => new(result.Code, result.Message);
+
+    public static bool IsBadRequest<T>(this Result<T> result)
+        => !result.IsSuccessful && result.Code.Contains(ErrorCode.USER_INPUT_ERROR_PREFIX);
+    public static bool IsInternalError<T>(this Result<T> result)
+        => !result.IsSuccessful && result.Code.Contains(ErrorCode.SYSTEM_ERROR_PREFIX);
 }
