@@ -1,11 +1,17 @@
-﻿using SkillMap.Business.Abstractions;
+﻿using FluentValidation;
+using SkillMap.Business.Abstractions;
 using SkillMap.Business.Account.Models;
 using SkillMap.Core.Entities;
+using SkillMap.Shared.Extensions;
 using SkillMap.Shared.Results;
 
 namespace SkillMap.Business.Account;
 
-public class AccountService(ITokenService tokenService, IRepository<AppUser> userRepository, IPasswordHasher passwordHasher) : IAccountService
+public class AccountService(
+    ITokenService tokenService, 
+    IRepository<AppUser> userRepository, 
+    IValidator<UserRegistrationDto> userValidator,
+    IPasswordHasher passwordHasher) : IAccountService
 {
     public async Task<Result<UserDto>> Login(string email, string password, CancellationToken ct)
     {
@@ -32,9 +38,16 @@ public class AccountService(ITokenService tokenService, IRepository<AppUser> use
         return Result.Success(userDto);
     }
 
-    public async Task<Result<bool>> Register(AppUser appUser, CancellationToken ct)
+    public async Task<Result<bool>> Register(UserRegistrationDto userDto, CancellationToken ct)
     {
-        var hashedPassword = passwordHasher.Hash(appUser.PasswordHash);
+        var validationResult = await userValidator.ValidateAsync(userDto, ct);
+        if (!validationResult.IsValid)
+        {
+            return ResultType.ValidationError<bool>(validationResult.GetErrors());
+        }
+
+        var hashedPassword = passwordHasher.Hash(userDto.Password);
+        var appUser = AccountMapper.ToAppUser(userDto);
         appUser.PasswordHash = hashedPassword;
 
         var userResult = await userRepository.GetFirstOrDefaultAsync(x => x.Email == appUser.Email, ct);

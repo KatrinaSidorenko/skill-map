@@ -17,7 +17,7 @@ public class AccountController : BaseController
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody]RegistrationRequest registrationRequest, CancellationToken ct)
     {
-        var result = await AccountService.Register(registrationRequest.GetAppUser(), ct);
+        var result = await AccountService.Register(AccountMapper.ToUserRegistrationDto(registrationRequest), ct);
         return Response(result, r => Ok());
     }
 

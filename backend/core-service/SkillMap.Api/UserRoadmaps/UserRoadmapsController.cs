@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SkillMap.Api.Base;
+using SkillMap.Api.UserRoadmaps.Models;
 using SkillMap.Business.UserRoadmaps;
 using SkillMap.Core.Constants;
 

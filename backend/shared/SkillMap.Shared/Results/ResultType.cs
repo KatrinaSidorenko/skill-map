@@ -2,31 +2,24 @@
 
 public class ResultType
 {
-    private const string FAILED_TO_SAVE = "failed_to_save";
-    private const string FAILED_TO_CREATE = "failed_to_create";
-    private const string FAILED_TO_DELETE = "failed_to_delete";
-    private const string FAILED_TO_UPDATE = "failed_to_update";
-    private const string FAILED_TO_GET = "failed_to_get";
-    private const string NOT_FOUND = "not_found";
-    private const string INVALID_PASSWORD = "invalid_password";
-    private const string USER_ALREADY_EXISTS = "user_with_such_email_already_exists";
-
-    public static Result<T> FailedToSave<T>(string message) => Result.Failure<T>(FAILED_TO_SAVE, message);
-    public static Result<T> FailedToGet<T>(string message) => Result.Failure<T>(FAILED_TO_GET, message);
-    public static Result<T> FailedToCreate<T>(string message) => Result.Failure<T>(FAILED_TO_CREATE, message);
-    public static Result<T> FailedToDelete<T>(string message) => Result.Failure<T>(FAILED_TO_DELETE, message);
-    public static Result<T> FailedToUpdate<T>(string message) => Result.Failure<T>(FAILED_TO_UPDATE, message);
-    public static Result<T> NotFound<T>(string message) => Result.Failure<T>(NOT_FOUND, message);
+    public static Result<T> FailedToSave<T>(string message) => Result.Failure<T>(ErrorCode.FAILED_TO_SAVE, message);
+    public static Result<T> FailedToGet<T>(string message) => Result.Failure<T>(ErrorCode.FAILED_TO_GET, message);
+    public static Result<T> FailedToCreate<T>(string message) => Result.Failure<T>(ErrorCode.FAILED_TO_CREATE, message);
+    public static Result<T> FailedToDelete<T>(string message) => Result.Failure<T>(ErrorCode.FAILED_TO_DELETE, message);
+    public static Result<T> FailedToUpdate<T>(string message) => Result.Failure<T>(ErrorCode.FAILED_TO_UPDATE, message);
+    public static Result<T> NotFound<T>(string message) => Result.Failure<T>(ErrorCode.NOT_FOUND, message);
+    public static Result<T> ValidationError<T>(IEnumerable<string> errors) =>
+        Result.Failure<T>(ErrorCode.VALIDATION_ERROR, "Validation error: " + string.Join(", ", errors));
 
 
     public static Result<T> FailedToGetRoadmap<T>(string roadmapId) => FailedToGet<T>($"Failed to get roadmap with id {roadmapId}");
     public static Result<T> UserWithSuchEmailAlreadyExists<T>(string email) =>
-        Result.Failure<T>(USER_ALREADY_EXISTS, $"User with email {email} already exists");
+        Result.Failure<T>(ErrorCode.USER_ALREADY_EXISTS, $"User with email {email} already exists");
     public static Result<T> FailedToCreateUser<T>(string email) =>
         FailedToCreate<T>($"Failed to create user with email {email}");
     public static Result<T> UserNotFound<T>(string email) => NotFound<T>($"User with email {email} not found");
     public static Result<T> InvalidPassword<T>(string email) =>
-        Result.Failure<T>(INVALID_PASSWORD, $"Invalid password for user with email {email}");
+        Result.Failure<T>(ErrorCode.INVALID_PASSWORD, $"Invalid password for user with email {email}");
 
 
     // USER ROADMAP

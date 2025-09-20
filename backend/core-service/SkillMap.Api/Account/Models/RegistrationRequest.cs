@@ -8,23 +8,14 @@ namespace SkillMap.Api.Account.Models;
 public class RegistrationRequest
 {
     [Required]
-    [MinLength(6)]
     [JsonProperty("username")]
-    public string Username { get; set; } = string.Empty;
+    public string Username { get; set; } 
     [Required]
-    [EmailAddress]
     [JsonProperty("email")]
-    public string Email { get; set; } = string.Empty;
+    public string Email { get; set; } 
     [Required]
-    [MinLength(6)]
     [JsonProperty("password")]
-    public string Password { get; set; } = string.Empty;
-
-    public AppUser GetAppUser() => new()
-    {
-        UserName = Username,
-        Email = Email,
-        PasswordHash = Password,
-        Role = Role.User,
-    };
+    public string Password { get; set; }
+    [JsonProperty("role")]
+    public string Role { get; set; }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using SkillMap.Business.Account;
 using SkillMap.Business.Roadmaps;
 using SkillMap.Business.UserRoadmaps;
@@ -11,7 +12,9 @@ public static class LayerRegistration
     {
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IUserRoadmapsService, UserRoadmapsService>();
-        services.AddScoped<ICustomizedRoadmapsService, CustomizedRoadmapsService>();    
+        services.AddScoped<ICustomizedRoadmapsService, CustomizedRoadmapsService>();
+
+        services.AddValidatorsFromAssemblies([typeof(IAccountService).Assembly]);
 
         return services;
     }
