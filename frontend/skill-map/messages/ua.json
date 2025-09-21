@@ -1,5 +1,16 @@
 {
-    "header": {
-        "welocme": "Вітаю"
-    }
+  "header": {
+    "welocme": "Вітаю"
+  },
+  "auth": {
+    "login": "Увійти",
+    "logout": "Вийти",
+    "signup": "Зареєструватися",
+    "email": "Електронна пошта",
+    "enterEmail": "Введіть електронну пошту",
+    "password": "Пароль",
+    "forgotPassword": "Забули пароль?",
+    "noAccount": "Немає акаунту? ",
+    "signUpHere": "Зареєструйтеся тут"
+  }
 }

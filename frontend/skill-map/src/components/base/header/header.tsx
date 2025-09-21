@@ -5,12 +5,12 @@ import { FiMenu } from 'react-icons/fi';
 import React from 'react';
 import { useAppSelector } from '@/store/hooks';
 import { selectUser } from '@/features/account/store';
-import { useTranslations } from 'next-intl';
+import useLocalization from '@/i18n/useLocalization';
 
 export default function Header() {
   const { setOpen } = useSidebar();
   const user = useAppSelector(selectUser);
-  const headerTranslations = useTranslations('header');
+  const { getHeaderTranslations } = useLocalization();
 
   return (
     <Flex
@@ -34,8 +34,8 @@ export default function Header() {
       </IconButton>
       <Text fontSize="lg" fontWeight="bold" color="text.heading">
         {user
-          ? `{headerTranslations('welocme')}, ${user.username}`
-          : headerTranslations('welocme')}
+          ? `{getHeaderTranslations('welcome')}, ${user.username}`
+          : getHeaderTranslations('welcome')}
       </Text>
       <Avatar.Root>
         <Avatar.Fallback name={user?.username ?? ''} />
