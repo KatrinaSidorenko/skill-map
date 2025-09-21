@@ -4,7 +4,7 @@ namespace SkillMap.Business.Roadmaps.Models;
 
 public class CustomizedUerRoadmap
 {
-    public Roadmap Roadmap { get; set; }
+    public RoadmapDto Roadmap { get; set; }
     public List<CustomizedUserRoadmapLearningItem> LearningItems { get; set; }
 }
 

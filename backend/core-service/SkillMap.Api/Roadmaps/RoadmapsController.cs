@@ -23,19 +23,13 @@ public class RoadmapsController : BaseController
     [HttpGet]
     public async Task<IActionResult> GetAll(CancellationToken ct)
     {
-        var userId = GetUserId();
-        var result = await CustomizedRoadmapsService.GetAllRoadmaps(userId, ct);
+        var result = await CustomizedRoadmapsService.GetAllRoadmaps(GetUserId(), ct);
 
         return Response(result, (r) =>
         {
-            return Ok(new
+            return Ok(new PlainRoadmapsResponse
             {
-                Roadmaps = r.Data.Select(ur => new
-                {
-                    ur.Id,
-                    ur.Title,
-                    ur.Progress,
-                }).ToList()
+                Roadmaps = r.Data.Select(ur => ur.ToRoadmapResponse()).ToList()
             });
         });
     }

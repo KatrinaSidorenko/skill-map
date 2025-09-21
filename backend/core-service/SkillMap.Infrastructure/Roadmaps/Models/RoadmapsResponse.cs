@@ -6,5 +6,5 @@ namespace SkillMap.Infrastructure.Roadmaps.Models;
 public class RoadmapsResponse
 {
     [JsonProperty("roadmaps")]
-    public List<Roadmap> Roadmaps { get; set; }
+    public List<RoadmapDto> Roadmaps { get; set; }
 }

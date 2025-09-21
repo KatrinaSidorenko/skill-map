@@ -185,33 +185,33 @@ public class CustomizedRoadmapsService(
         return Result.Success(Math.Round((completedNodes.Count / (double)allNodes.Count) * 100));
     }
 
-    public async Task<Result<List<Roadmap>>> GetAllRoadmaps(long userId, CancellationToken ct)
+    public async Task<Result<List<RoadmapDto>>> GetAllRoadmaps(long userId, CancellationToken ct)
     {
         var userRoadmapsResult = await userRoadmapsService.GetUserRoadmaps(userId, ct);
         if (!userRoadmapsResult.IsSuccessful)
         {
-            return ResultType.UserRoadmapNotFound<List<Roadmap>>(userId);
+            return ResultType.UserRoadmapNotFound<List<RoadmapDto>>(userId);
         }
 
         var userRoadmapIds = userRoadmapsResult.Data.Select(ur => ur.RoadmapId).ToList();
         var allRoadmapsResult = await roadmapService.GetRoadmaps(userRoadmapIds, ct);
         if (!allRoadmapsResult.IsSuccessful)
         {
-            return ResultType.RoadmapNotFound<List<Roadmap>>("");
+            return ResultType.RoadmapNotFound<List<RoadmapDto>>("");
         }
 
         var allRoadmaps = allRoadmapsResult.Data;
-        var roadmapsWithProgress = new List<Roadmap>();
+        var roadmapsWithProgress = new List<RoadmapDto>();
         foreach (var roadmap in allRoadmaps)
         {
             var progressResult = await GetRoadmapProgress(userId, roadmap.Id, ct);
             if (!progressResult.IsSuccessful)
             {
-                return ResultType.RoadmapNotFound<List<Roadmap>>(roadmap.Id);
+                return ResultType.RoadmapNotFound<List<RoadmapDto>>(roadmap.Id);
             }
 
             var progress = progressResult.Data;
-            roadmapsWithProgress.Add(new Roadmap
+            roadmapsWithProgress.Add(new RoadmapDto
             {
                 Id = roadmap.Id,
                 Title = roadmap.Title,
@@ -251,7 +251,7 @@ public class CustomizedRoadmapsService(
 
         return Result.Success(new CustomizedUerRoadmap
         {
-            Roadmap = new Roadmap
+            Roadmap = new RoadmapDto
             {
                 Id = rootNode.Id,
                 Title = rootNode.Title,

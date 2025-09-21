@@ -7,5 +7,5 @@ public interface IRoadmapService
 {
     Task<Result<TreePlainResponse>> GetFullPlainRoadmap(string roadmapId, CancellationToken ct);
     Task<Result<TreeResponse>> GetFullRoadmap(string roadmapId, CancellationToken ct);
-    Task<Result<List<Roadmap>>> GetRoadmaps(List<string> roadmapIds, CancellationToken ct);
+    Task<Result<List<RoadmapDto>>> GetRoadmaps(List<string> roadmapIds, CancellationToken ct);
 }

@@ -16,7 +16,7 @@ public class RoadmapsCatalogHttpClient : IRoadmapsCatalogHttpClient
         _logger = logger;
     }
 
-    public async Task<Result<List<Roadmap>>> GetAllRoadmaps(CancellationToken ct)
+    public async Task<Result<List<RoadmapDto>>> GetAllRoadmaps(CancellationToken ct)
     {
         try
         {
@@ -24,7 +24,7 @@ public class RoadmapsCatalogHttpClient : IRoadmapsCatalogHttpClient
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError("Failed to get roadmaps from the catalog. Status code: {StatusCode}", response.StatusCode);
-                return ResultType.FailedToGetRoadmaps<List<Roadmap>>();
+                return ResultType.FailedToGetRoadmaps<List<RoadmapDto>>();
             }
 
             var content = await response.Content.ReadAsStringAsync(ct);
@@ -35,7 +35,7 @@ public class RoadmapsCatalogHttpClient : IRoadmapsCatalogHttpClient
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while getting roadmaps from the catalog.");
-            return ResultType.FailedToGetRoadmaps<List<Roadmap>>();
+            return ResultType.FailedToGetRoadmaps<List<RoadmapDto>>();
         }
     }
 

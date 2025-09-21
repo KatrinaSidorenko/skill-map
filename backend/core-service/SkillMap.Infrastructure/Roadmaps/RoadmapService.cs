@@ -7,7 +7,7 @@ namespace SkillMap.Infrastructure.Roadmaps;
 
 public class RoadmapService(IRoadmapsCatalogHttpClient catalogHttpClient) : IRoadmapService
 {
-    public async Task<Result<List<Roadmap>>> GetRoadmaps(List<string> roadmapIds, CancellationToken ct)
+    public async Task<Result<List<RoadmapDto>>> GetRoadmaps(List<string> roadmapIds, CancellationToken ct)
     {
         // todo: add logic to get roadmaps by ids
         var response = await catalogHttpClient.GetAllRoadmaps(ct);

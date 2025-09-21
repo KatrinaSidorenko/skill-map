@@ -6,7 +6,7 @@ namespace SkillMap.Api.Roadmaps.Models;
 public class ModifiedRoadmapResponse
 {
     [JsonProperty("rootNode")]
-    public Roadmap Roadmap { get; set; }
+    public RoadmapDto Roadmap { get; set; }
 
     [JsonProperty("nodes")]
     public List<ModifiedNodeResponse> Nodes { get; set; } = new List<ModifiedNodeResponse>();

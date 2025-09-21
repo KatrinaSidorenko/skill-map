@@ -5,7 +5,7 @@ namespace SkillMap.Infrastructure.Roadmaps.Client;
 
 public interface IRoadmapsCatalogHttpClient
 {
-    Task<Result<List<Roadmap>>> GetAllRoadmaps(CancellationToken ct);
+    Task<Result<List<RoadmapDto>>> GetAllRoadmaps(CancellationToken ct);
     Task<Result<TreePlainResponse>> GetFullPlainRoadmap(string roadmapId, CancellationToken ct);
     Task<Result<TreeResponse>> GetFullRoadmap(string roadmapId, CancellationToken ct);
 }

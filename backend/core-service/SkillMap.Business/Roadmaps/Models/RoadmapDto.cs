@@ -2,7 +2,7 @@
 
 namespace SkillMap.Business.Roadmaps.Models;
 
-public class Roadmap
+public class RoadmapDto
 {
     [JsonProperty("id")]
     public string Id { get; set; }
