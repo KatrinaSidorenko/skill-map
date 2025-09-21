@@ -7,7 +7,7 @@ namespace SkillMap.Business.UserRoadmaps;
 
 public class UserRoadmapsService(IRepository<UserRoadmap> userRoadmapsRepository) : IUserRoadmapsService
 {
-    public async Task<Result<bool>> AddRoadmap(long userId, string roadmapId, CancellationToken ct)
+    public async Task<Result<bool>> LinkRoadmap(long userId, string roadmapId, CancellationToken ct)
     {
         var dbUserRoadmapResult = await userRoadmapsRepository.GetFirstOrDefaultAsync(ur => ur.UserId == userId && ur.RoadmapId == roadmapId, ct: ct);
         if (dbUserRoadmapResult.HasData)
@@ -43,15 +43,7 @@ public class UserRoadmapsService(IRepository<UserRoadmap> userRoadmapsRepository
             return ResultType.UserRoadmapNotFound<UserRoadmapDto>(userId, roadmapId);
         }
 
-        var userRoadmap = new UserRoadmapDto
-        {
-            Id = dbUserRoadmapResult.Data.Id,
-            UserId = dbUserRoadmapResult.Data.UserId,
-            RoadmapId = dbUserRoadmapResult.Data.RoadmapId,
-            IsActive = dbUserRoadmapResult.Data.IsActive
-        };
-
-        return Result.Success(userRoadmap);
+        return Result.Success(dbUserRoadmapResult.Data.ToUserRoadmapDto());
     }
 
     public async Task<Result<List<UserRoadmapDto>>> GetUserRoadmaps(long userId, CancellationToken ct)
@@ -62,15 +54,7 @@ public class UserRoadmapsService(IRepository<UserRoadmap> userRoadmapsRepository
             return ResultType.UserRoadmapNotFound<List<UserRoadmapDto>>(userId);
         }
 
-        var userRoadmaps = dbUserRoadmapsResult.Data.Select(ur => new UserRoadmapDto
-        {
-            Id = ur.Id,
-            UserId = ur.UserId,
-            RoadmapId = ur.RoadmapId,
-            IsActive = ur.IsActive
-        }).ToList();
-
-        return Result.Success(userRoadmaps);
+        return Result.Success(dbUserRoadmapsResult.Data.Select(ur => ur.ToUserRoadmapDto()).ToList());
     }
 
     public async Task<Result<bool>> RemoveRoadmap(long userId, string roadmapId, CancellationToken ct)
@@ -91,6 +75,4 @@ public class UserRoadmapsService(IRepository<UserRoadmap> userRoadmapsRepository
 
         return Result.Success(true);
     }
-
-
 }

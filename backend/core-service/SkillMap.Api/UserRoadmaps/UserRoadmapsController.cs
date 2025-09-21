@@ -20,33 +20,26 @@ public class UserRoadmapsController : BaseController
     [HttpPost("{roadmapId}")]
     public async Task<IActionResult> AddRoadmap(string roadmapId, CancellationToken ct)
     {
-        var userId = GetUserId();
-        var result = await UserRoadmapsService.AddRoadmap(userId, roadmapId, ct);
+        var result = await UserRoadmapsService.LinkRoadmap(GetUserId(), roadmapId, ct);
         return Response(result);
     }
 
     [HttpDelete("{roadmapId}")]
     public async Task<IActionResult> RemoveRoadmap(string roadmapId, CancellationToken ct)
     {
-        var userId = GetUserId();
-        var result = await UserRoadmapsService.RemoveRoadmap(userId, roadmapId, ct);
+        var result = await UserRoadmapsService.RemoveRoadmap(GetUserId(), roadmapId, ct);
         return Response(result);
     }
 
     [HttpGet]
     public async Task<IActionResult> GetUserRoadmaps(CancellationToken ct)
     {
-        var userId = GetUserId();
-        var result = await UserRoadmapsService.GetUserRoadmaps(userId, ct);
+        var result = await UserRoadmapsService.GetUserRoadmaps(GetUserId(), ct);
         return Response(result, (r) =>
         {
             return Ok(new UserRoadmapsResponse
             {
-                Roadmaps = r.Data.Select(ur => new UserRoadmapResponse
-                {
-                    Id = ur.Id,
-                    RoadmapId = ur.RoadmapId
-                }).ToList()
+                Roadmaps = r.Data.Select(ur => ur.ToUserRoadmapResponse()).ToList()
             });
         });
     }
