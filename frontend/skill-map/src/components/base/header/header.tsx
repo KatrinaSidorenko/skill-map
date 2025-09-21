@@ -34,11 +34,11 @@ export default function Header() {
       </IconButton>
       <Text fontSize="lg" fontWeight="bold" color="text.heading">
         {user
-          ? `{headerTranslations('welocme')}, ${user.name}`
+          ? `{headerTranslations('welocme')}, ${user.username}`
           : headerTranslations('welocme')}
       </Text>
       <Avatar.Root>
-        <Avatar.Fallback name={user?.name ?? ''} />
+        <Avatar.Fallback name={user?.username ?? ''} />
         <Avatar.Image
           src={user?.avatarUrl ?? 'https://avatar.iran.liara.run/public'}
         />
