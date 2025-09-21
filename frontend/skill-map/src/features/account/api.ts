@@ -1,5 +1,6 @@
 import { baseQuery } from '@/store/baseQuery';
 import { createApi } from '@reduxjs/toolkit/query';
+import { setUser } from './store';
 
 export const accountApi = createApi({
   reducerPath: 'accountApi',
@@ -11,6 +12,10 @@ export const accountApi = createApi({
         method: 'POST',
         body: credentials,
       }),
+      onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+        const { data } = await queryFulfilled;
+        dispatch(setUser(data.user));
+      },
     }),
     register: builder.mutation<void, RegistrationReguest>({
       query: (userData) => ({

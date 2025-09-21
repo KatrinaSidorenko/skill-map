@@ -6,6 +6,6 @@ public class UserResponse
 {
     [JsonProperty("email")]
     public string Email { get; set; }
-    [JsonProperty("userName")]
+    [JsonProperty("username")]
     public string UserName { get; set; }
 }
