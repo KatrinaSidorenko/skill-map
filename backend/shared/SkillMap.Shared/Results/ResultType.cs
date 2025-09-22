@@ -53,4 +53,8 @@ public class ResultType
 
     public static Result<T> FailedToSendEmail<T>(string email) =>
         Result.Failure<T>(ErrorCode.EMAIL_SENDING_FAILED, $"Failed to send email to {email}");
+    public static Result<T> InvalidOrExpiredToken<T>() =>
+        Result.Failure<T>(ErrorCode.INVALID_OR_EXPIRED_TOKEN, "The provided token is invalid or has expired");
+    public static Result<T> FailedToUpdatePassword<T>(string email) =>
+        FailedToUpdate<T>($"Failed to update password for user with email {email}");
 }

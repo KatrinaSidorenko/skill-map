@@ -34,4 +34,5 @@ public class ErrorCode
 
     // Email errors
     public const string EMAIL_SENDING_FAILED = SYSTEM_ERROR_PREFIX + "12"; // SE12
+    public const string INVALID_OR_EXPIRED_TOKEN = USER_INPUT_ERROR_PREFIX + "11"; // UIE11
 }

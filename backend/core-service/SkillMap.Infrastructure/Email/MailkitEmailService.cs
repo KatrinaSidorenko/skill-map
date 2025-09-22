@@ -20,7 +20,7 @@ public class MailkitEmailService : IEmailService
         _logger = logger;
     }
 
-    public async Task<Result<bool>> SendEmailAsync(string to, string subject, string body, bool isHtml = true)
+    public async Task<Result<bool>> SendEmailAsync(string to, string subject, string body, bool isHtml = true, CancellationToken ct = default)
     {
         var email = new MimeMessage();
         email.From.Add(new MailboxAddress(_options.FromName, _options.FromEmail));
@@ -34,6 +34,8 @@ public class MailkitEmailService : IEmailService
 
         try
         {
+            ct.ThrowIfCancellationRequested();
+
             using var smtp = new SmtpClient();
             _logger.LogInformation("Connecting to SMTP server {SmtpServer}:{SmtpPort}", _options.SmtpServer, _options.SmtpPort);
             await smtp.ConnectAsync(_options.SmtpServer, _options.SmtpPort, SecureSocketOptions.StartTls);

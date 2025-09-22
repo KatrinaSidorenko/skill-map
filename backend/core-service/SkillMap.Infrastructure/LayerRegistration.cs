@@ -6,6 +6,7 @@ using SkillMap.Infrastructure.Cache;
 using SkillMap.Infrastructure.Email;
 using SkillMap.Infrastructure.Roadmaps;
 using SkillMap.Infrastructure.Roadmaps.Client;
+using SkillMap.Shared.Options;
 
 namespace SkillMap.Infrastructure;
 
@@ -22,6 +23,7 @@ public static class LayerRegistration
         services.AddScoped<ICacheService, InMemoryCacheService>();
         services.AddMemoryCache();
         services.AddTransient<IEmailService, MailkitEmailService>();
+        services.Configure<EmailOptions>(configuration.GetSection(EmailOptions.SectionName));
 
         services.AddRoadmapsCatalogHttpClientRegistration(configuration);
         services.AddScoped<IRoadmapService, RoadmapService>();

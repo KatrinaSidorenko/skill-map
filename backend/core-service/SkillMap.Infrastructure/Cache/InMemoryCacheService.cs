@@ -4,8 +4,9 @@ namespace SkillMap.Infrastructure.Cache;
 
 public class InMemoryCacheService(IMemoryCache cache) : ICacheService
 {
-    public Task SetAsync<T>(string key, T value, TimeSpan? absoluteExpirationRelativeToNow = null)
+    public Task SetAsync<T>(string key, T value, TimeSpan? absoluteExpirationRelativeToNow = null, CancellationToken ct = default)
     {
+        ct.ThrowIfCancellationRequested();
         var options = new MemoryCacheEntryOptions
         {
             AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow ?? TimeSpan.FromMinutes(5)
@@ -16,13 +17,13 @@ public class InMemoryCacheService(IMemoryCache cache) : ICacheService
         return Task.CompletedTask;
     }
 
-    public Task<T?> GetAsync<T>(string key)
+    public Task<T?> GetAsync<T>(string key, CancellationToken ct = default)
     {
         var success = cache.TryGetValue(key, out T? value);
         return Task.FromResult(success ? value : default);
     }
 
-    public Task<(bool found, T? value)> TryGetAsync<T>(string key)
+    public Task<(bool found, T? value)> TryGetAsync<T>(string key, CancellationToken ct = default)
     {
         if (cache.TryGetValue(key, out var cached) && cached is T casted)
         {
@@ -32,7 +33,7 @@ public class InMemoryCacheService(IMemoryCache cache) : ICacheService
         return Task.FromResult((false, default(T)));
     }
 
-    public Task RemoveAsync(string key)
+    public Task RemoveAsync(string key, CancellationToken ct = default)
     {
         cache.Remove(key);
         return Task.CompletedTask;
