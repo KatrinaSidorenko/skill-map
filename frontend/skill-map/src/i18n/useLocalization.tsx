@@ -15,6 +15,7 @@ interface ILocalization {
     passwordMinLength: string;
     noAccount: string;
     signUpHere: string;
+    loginFailed: string;
   };
 }
 export default function useLocalization() {

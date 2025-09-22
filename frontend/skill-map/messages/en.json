@@ -12,6 +12,7 @@
     "forgotPassword": "Forgot Password?",
     "noAccount": "Don't have an account? ",
     "signUpHere": "Sign up here",
-    "passwordMinLength": "Password must be at least 6 characters"
+    "passwordMinLength": "Password must be at least 6 characters",
+    "loginFailed": "Login failed. Please try again."
   }
 }

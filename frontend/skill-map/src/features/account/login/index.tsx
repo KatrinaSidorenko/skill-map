@@ -17,6 +17,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLoginMutation } from '../api';
+import { toaster } from '@/components/ui/toaster';
 
 type LoginSchema = {
   email: string;
@@ -47,7 +48,12 @@ export default function LoginComponent() {
       await login(data).unwrap();
       router.push('/home');
     } catch (error) {
-      console.error('Login failed:', error);
+      toaster.create({
+        title: getAuthTranslations('loginFailed'),
+        type: 'error',
+        //description: 'Login failed. Please try again.',
+        closable: true,
+      });
     }
   };
 

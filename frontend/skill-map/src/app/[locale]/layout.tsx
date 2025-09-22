@@ -1,4 +1,5 @@
 import { Provider } from '@/components/ui/provider';
+import { Toaster } from '@/components/ui/toaster';
 import { routing } from '@/i18n/routing';
 import { ReduxProvider } from '@/store/providers';
 import { firaCode, inter, nunito } from '@/theme/fonts';
@@ -26,7 +27,10 @@ export default async function RootLayout({
       <body suppressHydrationWarning>
         <NextIntlClientProvider>
           <ReduxProvider>
-            <Provider>{children}</Provider>
+            <Provider>
+              {children}
+              <Toaster />
+            </Provider>
           </ReduxProvider>
         </NextIntlClientProvider>
       </body>
