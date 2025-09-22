@@ -13,6 +13,11 @@
     "noAccount": "Don't have an account? ",
     "signUpHere": "Sign up here",
     "passwordMinLength": "Password must be at least 6 characters",
-    "loginFailed": "Login failed. Please try again."
+    "loginFailed": "Login failed. Please try again.",
+    "SE6": "User with this email not found",
+    "UIE1": "Invalid password"
+  },
+  "erros": {
+    "SE6": "Not found"
   }
 }

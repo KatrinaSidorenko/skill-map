@@ -18,6 +18,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLoginMutation } from '../api';
 import { toaster } from '@/components/ui/toaster';
+import { getResponseInfo as retrieveErrorData } from '@/store/helpers';
 
 type LoginSchema = {
   email: string;
@@ -48,10 +49,16 @@ export default function LoginComponent() {
       await login(data).unwrap();
       router.push('/home');
     } catch (error) {
+      const errorData = retrieveErrorData(error);
+      let description = '';
+      if (errorData) {
+        description = getAuthTranslations(errorData.code);
+      }
+
       toaster.create({
         title: getAuthTranslations('loginFailed'),
         type: 'error',
-        //description: 'Login failed. Please try again.',
+        description: description,
         closable: true,
       });
     }

@@ -22,7 +22,7 @@ export function RoadmapCard({ roadmap }: RoadmapCardProps) {
             cursor="pointer"
             borderRadius="lg"
             overflow="hidden"
-            bg="bg.card"
+            bg="brand.50"
             opacity={0.95}
             boxShadow="sm"
             _hover={{ boxShadow: 'md' }}

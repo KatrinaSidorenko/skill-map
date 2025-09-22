@@ -16,6 +16,8 @@ interface ILocalization {
     noAccount: string;
     signUpHere: string;
     loginFailed: string;
+    SE6: string;
+    UIE1: string;
   };
 }
 export default function useLocalization() {

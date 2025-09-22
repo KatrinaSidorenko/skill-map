@@ -4,7 +4,7 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 
 export const accountApi = createApi({
   reducerPath: 'accountApi',
-  baseQuery: baseQuery('/api/account'),
+  baseQuery: baseQuery('/account'),
   endpoints: (builder) => ({
     login: builder.mutation<AuthResponse, LoginRequest>({
       query: (credentials) => ({

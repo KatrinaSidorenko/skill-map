@@ -34,7 +34,7 @@ export default function Header() {
       </IconButton>
       <Text fontSize="lg" fontWeight="bold" color="text.heading">
         {user
-          ? `{getHeaderTranslations('welcome')}, ${user.username}`
+          ? `${getHeaderTranslations('welcome')}, ${user.username}`
           : getHeaderTranslations('welcome')}
       </Text>
       <Avatar.Root>
