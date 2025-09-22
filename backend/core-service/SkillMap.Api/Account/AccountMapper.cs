@@ -14,5 +14,10 @@ public static partial class AccountMapper
 
     [MapProperty(nameof(UserDto), nameof(LoginResponse.User))]
     public static partial LoginResponse ToLoginResponse(this UserDto userDto);
+
+    [MapProperty(nameof(UserDto.UserName), nameof(UserResponse.Username))]
+    public static partial UserResponse ToUserResponse(this UserDto userDto);
+
+    [MapProperty(nameof(AppUser.UserName), nameof(UserResponse.Username))]
     public static partial UserResponse ToUserResponse(this AppUser userDto);
 }
