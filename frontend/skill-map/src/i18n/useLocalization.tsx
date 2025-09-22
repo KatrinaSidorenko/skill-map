@@ -12,6 +12,7 @@ interface ILocalization {
     enterEmail: string;
     password: string;
     forgotPassword: string;
+    passwordMinLength: string;
     noAccount: string;
     signUpHere: string;
   };

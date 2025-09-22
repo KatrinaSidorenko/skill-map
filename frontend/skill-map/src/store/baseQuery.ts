@@ -9,3 +9,4 @@ export const baseQuery = (baseUrl: string) =>
       return headers;
     },
   });
+

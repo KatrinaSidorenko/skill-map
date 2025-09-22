@@ -7,7 +7,7 @@ interface AppUser {
 
 type Role = 'user' | 'mentor' | 'admin';
 
-interface RegistrationReguest {
+interface RegistrationRequest {
   email: string;
   password: string;
   username: string;
