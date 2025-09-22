@@ -27,14 +27,14 @@ export default async function RootLayout({
     >
       <body suppressHydrationWarning>
         <NextIntlClientProvider>
-          <AuthProvider>
-            <ReduxProvider>
+          <ReduxProvider>
+            <AuthProvider>
               <Provider>
                 {children}
                 <Toaster />
               </Provider>
-            </ReduxProvider>
-          </AuthProvider>
+            </AuthProvider>
+          </ReduxProvider>
         </NextIntlClientProvider>
       </body>
     </html>

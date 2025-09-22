@@ -19,6 +19,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useLoginMutation } from '../api';
 import { toaster } from '@/components/ui/toaster';
 import { getResponseInfo as retrieveErrorData } from '@/store/helpers';
+import { useAuth } from '../useAuthContext';
 
 type LoginSchema = {
   email: string;
@@ -29,6 +30,7 @@ export default function LoginComponent() {
   const [visible, setVisible] = useState(false);
   const { getAuthTranslations } = useLocalization();
   const router = useRouter();
+  const { login: setToken } = useAuth();
 
   const loginSchema = z.object({
     email: z.string(),
@@ -46,7 +48,8 @@ export default function LoginComponent() {
   const [login, { isLoading }] = useLoginMutation();
   const onSubmit = async (data: LoginSchema) => {
     try {
-      await login(data).unwrap();
+      const res = await login(data).unwrap();
+      setToken(res.token);
       router.push('/home');
     } catch (error) {
       const errorData = retrieveErrorData(error);

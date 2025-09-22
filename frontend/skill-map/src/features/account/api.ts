@@ -24,7 +24,17 @@ export const accountApi = createApi({
         body: userData,
       }),
     }),
+    getMe: builder.query<AppUser, void>({
+      query: () => ({
+        url: '/me',
+        method: 'GET',
+      }),
+      onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+        const { data } = await queryFulfilled;
+        dispatch(setUser(data));
+      },
+    }),
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation } = accountApi;
+export const { useLoginMutation, useRegisterMutation, useLazyGetMeQuery } = accountApi;
