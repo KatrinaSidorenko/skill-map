@@ -1,3 +1,6 @@
+'use client';
+import LoginComponent from '@/features/account/login';
+
 export default function LoginPage() {
-  return <div>Login Page</div>;
+  return <LoginComponent />;
 }

@@ -9,14 +9,20 @@ const config = defineConfig({
         body: { value: 'var(--font-inter)' },
         mono: { value: 'var(--font-fira-code)' },
       },
+
+      // main color pallete
+      // text - #1F1F1F (blackish)
+      // bg - #FFFFFF (white)
+      // accent - #B9FF66 (green)
+      // muted - #F4F4F4 (gray)
       colors: {
         brand: {
-          20: { value: '#FFFFFB' }, // pure white
-          50: { value: '#F1F1E6' }, // off-white
-          100: { value: '#EAF3B2' }, // light green
-          200: { value: '#9FBAF1' }, // light blue
-          300: { value: '#3D568F' }, // deep blue
-          400: { value: '#232323' }, // dark gray
+          20: { value: '#F4F4F4' }, // gray
+          50: { value: '#FFFFFF' }, // white
+          100: { value: '#CDF0A5' }, // light green
+          200: { value: '#B9FF66' }, // green
+          300: { value: '#5C5F5A' }, // light black
+          400: { value: '#1F1F1F' }, // blackish
           500: { value: '#3D568F' },
           600: { value: '#334674' },
           700: { value: '#2A3659' },
@@ -34,13 +40,14 @@ const config = defineConfig({
         bg: {
           page: { value: '{colors.brand.50}' },
           section: { value: '{colors.brand.20}' },
-          card: { value: '{colors.brand.200}' },
+          accent: { value: '{colors.brand.100}' },
+          primaryAccent: { value: '{colors.brand.200}' },
         },
         text: {
           primary: { value: '{colors.brand.400}' },
           heading: { value: '{colors.brand.800}' },
-          muted: { value: '{colors.brand.200}' },
-          accent: { value: '{colors.brand.500}' },
+          muted: { value: '{colors.brand.100}' },
+          accent: { value: '{colors.brand.200}' },
         },
         button: {
           solidBg: { value: '{colors.brand.500}' },
