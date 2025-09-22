@@ -51,4 +51,6 @@ public class ResultType
     public static Result<T> FailedToSave<T>(long userId, string roadmapId) => 
         FailedToSave<T>($"Failed to save customized roadmap {roadmapId} for user {userId}");
 
+    public static Result<T> FailedToSendEmail<T>(string email) =>
+        Result.Failure<T>(ErrorCode.EMAIL_SENDING_FAILED, $"Failed to send email to {email}");
 }

@@ -31,4 +31,7 @@ public class ErrorCode
     public const string EMAIL_REQUIRED      = USER_INPUT_ERROR_PREFIX + "8"; // UIE8
     public const string PASSWORD_REQUIRED   = USER_INPUT_ERROR_PREFIX + "9"; // UIE9
     public const string INVALID_INPUT       = USER_INPUT_ERROR_PREFIX + "10"; // UIE10
+
+    // Email errors
+    public const string EMAIL_SENDING_FAILED = SYSTEM_ERROR_PREFIX + "12"; // SE12
 }

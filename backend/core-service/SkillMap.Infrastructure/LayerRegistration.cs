@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using SkillMap.Business.Abstractions;
 using SkillMap.Infrastructure.Account;
+using SkillMap.Infrastructure.Cache;
+using SkillMap.Infrastructure.Email;
 using SkillMap.Infrastructure.Roadmaps;
 using SkillMap.Infrastructure.Roadmaps.Client;
 
@@ -16,6 +18,10 @@ public static class LayerRegistration
         services.AddScoped<IUserManager, UserManager>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
+        services.AddScoped<IResetAccountService, ResetAccountService>();
+        services.AddScoped<ICacheService, InMemoryCacheService>();
+        services.AddMemoryCache();
+        services.AddTransient<IEmailService, MailkitEmailService>();
 
         services.AddRoadmapsCatalogHttpClientRegistration(configuration);
         services.AddScoped<IRoadmapService, RoadmapService>();
