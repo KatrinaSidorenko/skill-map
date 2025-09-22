@@ -28,6 +28,27 @@ public class AccountController : BaseController
         return Response(result, r => Ok(r.Data.ToLoginResponse()));
     }
 
+    [HttpGet("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromQuery]string email, CancellationToken ct)
+    {
+        var result = await AccountService.ResetPassword(email, ct);
+        return Response(result, r => Ok());
+    }
+
+    [HttpGet("verify-reset-token")]
+    public async Task<IActionResult> VerifyResetToken([FromQuery]string email, [FromQuery]string token, CancellationToken ct)
+    {
+        var result = await AccountService.VerifyResetToken(email, token, ct);
+        return Response(result, r => Ok());
+    }
+
+    [HttpPost("set-new-password")]
+    public async Task<IActionResult> SetNewPassword([FromBody]SetNewPasswordRequest setNewPasswordRequest, CancellationToken ct)
+    {
+        var result = await AccountService.SetNewPassword(setNewPasswordRequest.ToSetNewPasswordDto(), ct);
+        return Response(result, r => Ok());
+    }
+
     [Authorize]
     [HttpGet("me")]
     public async Task<IActionResult> GetMe(CancellationToken ct) => Ok(CurrentUser.ToUserResponse());

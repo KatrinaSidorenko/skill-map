@@ -70,4 +70,19 @@ public class AccountService(
 
         return Result.Success(true);
     }
+
+    public async Task<Result<object>> ResetPassword(string email, CancellationToken ct)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<Result<object>> SetNewPassword(SetNewPasswordDto setNewPasswordDto, CancellationToken ct)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<Result<object>> VerifyResetToken(string email, string token, CancellationToken ct)
+    {
+        throw new NotImplementedException();
+    }
 }
