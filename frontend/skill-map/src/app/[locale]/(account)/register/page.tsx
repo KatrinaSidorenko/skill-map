@@ -1,3 +1,5 @@
+import RegisterComponent from '@/features/account/register';
+
 export default function Register() {
-  return <div>Register Page</div>;
+  return <RegisterComponent />;
 }

@@ -5,7 +5,7 @@ interface AppUser {
   avatarUrl?: string;
 }
 
-type Role = 'user' | 'mentor' | 'admin';
+type Role = 'User' | 'Mentor' | 'Admin';
 
 interface RegistrationRequest {
   email: string;

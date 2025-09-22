@@ -2,7 +2,7 @@
   "header": {
     "welocme": "Welocme"
   },
-  "auth" : {
+  "auth": {
     "login": "Login",
     "logout": "Logout",
     "signup": "Sign Up",
@@ -14,8 +14,16 @@
     "signUpHere": "Sign up here",
     "passwordMinLength": "Password must be at least 6 characters",
     "loginFailed": "Login failed. Please try again.",
+    "registerFailed": "Registration failed. Please try again.",
+    "username": "Username",
+    "eneterUsername": "Enter username",
+    "register": "Register",
+    "haveAccount": "Already have an account? ",
+    "loginHere": "Login here",
+
     "SE6": "User with this email not found",
-    "UIE1": "Invalid password"
+    "UIE1": "Invalid password",
+    "UIE2": "Email already in use"
   },
   "erros": {
     "SE6": "Not found"
