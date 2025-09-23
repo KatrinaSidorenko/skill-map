@@ -1,4 +1,5 @@
-﻿using SkillMap.Business.Abstractions;
+﻿using Microsoft.Extensions.Logging;
+using SkillMap.Business.Abstractions;
 using SkillMap.Infrastructure.Cache;
 using SkillMap.Infrastructure.Email;
 using SkillMap.Shared.Results;
@@ -7,16 +8,16 @@ using System.Text;
 
 namespace SkillMap.Infrastructure.Account;
 
-public class ResetAccountService(IEmailService emailService, ICacheService cacheService) : IResetAccountService
+public class ResetAccountService(IEmailService emailService, ICacheService cacheService, ILogger<IResetAccountService> logger) : IResetAccountService
 {
     private const int TokenExpirationMinutes = 10;
     private const string CacheKeyPrefix = "reset_token";
-    public static string GenerateSecureToken(int length = 64)
+    public static string GenerateSecureToken(int byteLength = 64, bool urlSafe = true)
     {
-        using var rng = new RNGCryptoServiceProvider();
-        var tokenData = new byte[length];
-        rng.GetBytes(tokenData);
-        return Convert.ToBase64String(tokenData);
+        var tokenData = new byte[byteLength];
+        RandomNumberGenerator.Fill(tokenData);
+
+        return GetSafeToken(Convert.ToBase64String(tokenData));
     }
 
     public static string HashToken(string token)
@@ -24,13 +25,23 @@ public class ResetAccountService(IEmailService emailService, ICacheService cache
         using var sha256 = SHA256.Create();
         var tokenBytes = Encoding.UTF8.GetBytes(token);
         var hashedBytes = sha256.ComputeHash(tokenBytes);
-        return Convert.ToBase64String(hashedBytes);
+        
+        return GetSafeToken(Convert.ToBase64String(hashedBytes));
+    }
+
+    private static string GetSafeToken(string token)
+    {
+        return token.Replace('+', '-')
+                    .Replace('/', '_')
+                    .TrimEnd('=');
     }
 
     public async Task<Result<bool>> ResetPassword(string email, CancellationToken ct)
     {
         var token = GenerateSecureToken();
         var hashedToken = HashToken(token);
+        
+        logger.LogWarning("token: {Token}, hashedToken: {HashedToken}", token, hashedToken);
         var key = $"{CacheKeyPrefix}:{hashedToken}";
         await cacheService.SetAsync(key, email, TimeSpan.FromMinutes(TokenExpirationMinutes), ct);
 

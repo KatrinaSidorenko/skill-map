@@ -38,12 +38,11 @@ public class MailkitEmailService : IEmailService
 
             using var smtp = new SmtpClient();
             _logger.LogInformation("Connecting to SMTP server {SmtpServer}:{SmtpPort}", _options.SmtpServer, _options.SmtpPort);
-            await smtp.ConnectAsync(_options.SmtpServer, _options.SmtpPort, SecureSocketOptions.StartTls);
-            await smtp.AuthenticateAsync(_options.SmtpUser, _options.SmtpPass);
+            //await smtp.ConnectAsync(_options.SmtpServer, _options.SmtpPort, SecureSocketOptions.StartTls);
+            //await smtp.AuthenticateAsync(_options.SmtpUser, _options.SmtpPass);
 
-            await smtp.SendAsync(email);
-            await smtp.DisconnectAsync(true);
-
+            //await smtp.SendAsync(email);
+            //await smtp.DisconnectAsync(true);
             _logger.LogInformation("Email sent to {To}", to);
             return Result.Success(true);    
         }

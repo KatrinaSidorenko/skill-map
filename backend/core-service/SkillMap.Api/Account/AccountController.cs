@@ -36,7 +36,7 @@ public class AccountController : BaseController
     }
 
     [HttpGet("verify-reset-token")]
-    public async Task<IActionResult> VerifyResetToken([FromQuery]string email, [FromQuery]string token, CancellationToken ct)
+    public async Task<IActionResult> VerifyResetToken([FromQuery]string token, CancellationToken ct)
     {
         var result = await AccountService.VerifyResetToken(token, ct);
         return Response(result, r => Ok());
