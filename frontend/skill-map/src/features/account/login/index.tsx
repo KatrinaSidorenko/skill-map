@@ -17,9 +17,8 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLoginMutation } from '../api';
-import { toaster } from '@/components/ui/toaster';
-import { getResponseInfo as retrieveErrorData } from '@/store/helpers';
 import { useAuth } from '../useAuthContext';
+import { useAuthErrorsHandler } from '../useAuthErrorsHandler';
 
 type LoginSchema = {
   email: string;
@@ -31,6 +30,7 @@ export default function LoginComponent() {
   const { getAuthTranslations } = useLocalization();
   const router = useRouter();
   const { login: setToken } = useAuth();
+  const { triggerWrapper } = useAuthErrorsHandler('login');
 
   const loginSchema = z.object({
     email: z.string(),
@@ -47,24 +47,13 @@ export default function LoginComponent() {
 
   const [login, { isLoading }] = useLoginMutation();
   const onSubmit = async (data: LoginSchema) => {
-    try {
+    const loginAction = async () => {
       const res = await login(data).unwrap();
       setToken(res.token);
       router.push('/home');
-    } catch (error) {
-      const errorData = retrieveErrorData(error);
-      let description = '';
-      if (errorData) {
-        description = getAuthTranslations(errorData.code);
-      }
+    };
 
-      toaster.create({
-        title: getAuthTranslations('loginFailed'),
-        type: 'error',
-        description: description,
-        closable: true,
-      });
-    }
+    await triggerWrapper(loginAction());
   };
 
   return (
@@ -127,7 +116,7 @@ export default function LoginComponent() {
       </Button>
 
       <Text textAlign="center">
-        <Link color="text.accent" href="/forgot-password" fontWeight="medium">
+        <Link color="brand.300" href="/forgot-password" fontWeight="medium">
           {getAuthTranslations('forgotPassword')}
         </Link>
       </Text>
@@ -135,7 +124,7 @@ export default function LoginComponent() {
       <Box mt={6}>
         <Text textAlign="center">
           {getAuthTranslations('noAccount')}{' '}
-          <Link color="text.accent" href="/register" fontWeight="medium">
+          <Link color="brand.300" href="/register" fontWeight="medium">
             {getAuthTranslations('signUpHere')}
           </Link>
         </Text>

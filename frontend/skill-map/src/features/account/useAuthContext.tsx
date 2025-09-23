@@ -2,8 +2,8 @@
 
 import { useAppSelector } from '@/store/hooks';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { selectToken } from './store';
-import { useRouter } from 'next/navigation';
+import { selectToken, selectUser } from './store';
+import { usePathname, useRouter } from 'next/navigation';
 import { useLazyGetMeQuery } from './api';
 
 interface AuthContextType {
@@ -16,13 +16,18 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const TOKEN_KEY = 'skill-map-token';
 
+const SKIP_AUTH_PAGES = ['/login', '/register', '/forgot-password'];
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const token = useAppSelector(selectToken);
+  const userData = useAppSelector(selectUser);
   const router = useRouter();
+  const path = usePathname();
   const [getMeTrigger] = useLazyGetMeQuery({});
 
   const login = (token: string) => {
@@ -35,26 +40,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }
 
   useEffect(() => {
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (token) {
-      setIsAuthenticated(true);
-      async function fetchUser() {
-        try {
-          await getMeTrigger().unwrap();
-        } catch (error) {
-          console.error('Failed to fetch user data:', error);
-          localStorage.removeItem(TOKEN_KEY);
-          setIsAuthenticated(false);
-        }
-      }
-
-      fetchUser();
-      router.replace('/home');
-    } else {
-      router.replace('/login');
+    if (SKIP_AUTH_PAGES.some((p) => path.includes(p))) {
+      console.log('Skipping auth check for path:', path);
+      return;
     }
 
-    setIsLoading(false);
+    if (!isInitialized) {
+      // Ensure this block runs only once
+      setIsInitialized(true);
+
+      const token = localStorage.getItem(TOKEN_KEY);
+      if (token && !userData) {
+        console.log('Token found, fetching user data...');
+        setIsAuthenticated(true);
+        async function fetchUser() {
+          try {
+            await getMeTrigger().unwrap(); // todo: store user in local store
+            if (SKIP_AUTH_PAGES.some((p) => path.includes(p))) {
+              router.replace('/home');
+            }
+          } catch (error) {
+            console.error('Failed to fetch user data:', error);
+            localStorage.removeItem(TOKEN_KEY);
+            setIsAuthenticated(false);
+          }
+        }
+
+        fetchUser();
+      } else {
+        router.replace('/login');
+      }
+
+      setIsLoading(false);
+    }
   }, []);
 
   const logout = () => {

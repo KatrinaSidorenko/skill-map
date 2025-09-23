@@ -7,7 +7,6 @@ interface AppUser {
 
 type Role = 'User' | 'Mentor' | 'Admin';
 
-
 interface RegistrationRequest {
   email: string;
   password: string;
@@ -26,6 +25,10 @@ interface AuthResponse {
 }
 
 interface SetNewPasswordRequest {
+  token: string;
+  password: string;
+}
+
+interface PasswordResetRequest {
   email: string;
-  
 }

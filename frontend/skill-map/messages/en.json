@@ -20,10 +20,29 @@
     "register": "Register",
     "haveAccount": "Already have an account? ",
     "loginHere": "Login here",
+    "resetPassword": "Reset Password",
+    "sendResetLink": "Send Reset Link",
+    "checkEmail": "Check your email for the reset link.",
+    "newPassword": "New Password",
+    "enterNewPassword": "Enter new password",
+    "confirmNewPassword": "Confirm New Password",
+    "setNewPassword": "Set New Password",
+    "passwordsMustMatch": "Passwords must match",
+    "backToLogin": "Back to Login",
+    "resetFailed": "Password reset failed. Please try again.",
+    "token": "Reset Token",
+    "enterToken": "Enter the reset token",
+    "verifyToken": "Verify Token",
+    "confirmPassword": "Confirm Password",
+    "passwordResetSuccess": "Password has been reset successfully. You can now log in with your new password.",
+    "resetPasswordFailed": "Password reset failed. Please try again.",
+    "verifyTokenFailed": "Token verification failed. Please check the token and try again.",
 
     "SE6": "User with this email not found",
     "UIE1": "Invalid password",
-    "UIE2": "Email already in use"
+    "UIE2": "Email already in use",
+    "UIE11": "Invalid reset token",
+    "SE12": "Failed to send email. Please try again later."
   },
   "erros": {
     "SE6": "Not found"

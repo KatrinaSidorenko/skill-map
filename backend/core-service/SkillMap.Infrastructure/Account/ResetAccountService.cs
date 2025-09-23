@@ -8,6 +8,7 @@ using System.Text;
 
 namespace SkillMap.Infrastructure.Account;
 
+// todo: add rate limiting to prevent abuse
 public class ResetAccountService(IEmailService emailService, ICacheService cacheService, ILogger<IResetAccountService> logger) : IResetAccountService
 {
     private const int TokenExpirationMinutes = 10;
@@ -62,6 +63,7 @@ public class ResetAccountService(IEmailService emailService, ICacheService cache
     {
         var hashedToken = HashToken(token);
         var key = $"{CacheKeyPrefix}:{hashedToken}";
+        logger.LogWarning("Verifying token. Key: {Key}", key);
         var cachedResult = await cacheService.TryGetAsync<string>(key, ct);
         if (!cachedResult.found || cachedResult.value is null)
         {

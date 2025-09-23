@@ -34,7 +34,34 @@ export const accountApi = createApi({
         dispatch(setUser(data));
       },
     }),
+    resetPassword: builder.mutation<void, PasswordResetRequest>({
+      query: (request) => ({
+        url: '/reset-password',
+        method: 'POST',
+        body: request,
+      }),
+    }),
+    setNewPassword: builder.mutation<void, SetNewPasswordRequest>({
+      query: (request) => ({
+        url: '/set-new-password',
+        method: 'POST',
+        body: request,
+      }),
+    }),
+    verifyToken: builder.mutation<void, { token: string }>({
+      query: ({ token }) => ({
+        url: `/verify-token?token=${token}`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation, useLazyGetMeQuery } = accountApi;
+export const {
+  useLoginMutation,
+  useRegisterMutation,
+  useLazyGetMeQuery,
+  useResetPasswordMutation,
+  useVerifyTokenMutation,
+  useSetNewPasswordMutation,
+} = accountApi;
