@@ -15,7 +15,8 @@ import {
 import { FiHome, FiCompass, FiStar, FiSettings } from 'react-icons/fi';
 import { IconType } from 'react-icons';
 import { useSidebar } from './sidebar-context';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 
 interface LinkItemProps {
   name: string;
@@ -73,6 +74,8 @@ interface SidebarProps {
 }
 
 const SidebarContent = ({ isDrawer, activePath, ...rest }: SidebarProps) => {
+  const router = useRouter();
+
   return (
     <Flex
       direction="column"
@@ -100,6 +103,7 @@ const SidebarContent = ({ isDrawer, activePath, ...rest }: SidebarProps) => {
             icon={link.icon}
             link={link.link}
             isActive={activePath?.includes(link.link || '')}
+            router={router}
           >
             {isDrawer ? link.name : null}
           </NavItem>
@@ -115,9 +119,17 @@ interface NavItemProps {
   children?: ReactNode;
   isActive: boolean;
   [key: string]: any;
+  router: AppRouterInstance;
 }
 
-const NavItem = ({ icon, children, link, isActive, ...rest }: NavItemProps) => {
+const NavItem = ({
+  icon,
+  children,
+  link,
+  isActive,
+  router,
+  ...rest
+}: NavItemProps) => {
   return (
     <Flex
       align="center"
@@ -131,7 +143,7 @@ const NavItem = ({ icon, children, link, isActive, ...rest }: NavItemProps) => {
       {...rest}
     >
       <Link
-        href={link}
+        onClick={() => router.push(link || '/home')}
         bg="transparent"
         padding={0}
         style={{ textDecoration: 'none' }}
