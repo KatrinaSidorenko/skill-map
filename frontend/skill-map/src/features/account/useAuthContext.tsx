@@ -55,7 +55,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setIsAuthenticated(true);
         async function fetchUser() {
           try {
-            await getMeTrigger().unwrap(); // todo: store user in local store
+            await getMeTrigger().unwrap();
             if (SKIP_AUTH_PAGES.some((p) => path.includes(p))) {
               router.replace('/home');
             }
