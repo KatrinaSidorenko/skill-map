@@ -1,3 +1,5 @@
+import ForgotPasswordComponent from "@/features/account/fogot-password";
+
 export default function ForgotPasswordPage() {
-  return <div>Forgot Password Page</div>;
+  return <ForgotPasswordComponent />;
 }

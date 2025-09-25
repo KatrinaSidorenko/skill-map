@@ -20,4 +20,5 @@ public static partial class AccountMapper
 
     [MapProperty(nameof(AppUser.UserName), nameof(UserResponse.Username))]
     public static partial UserResponse ToUserResponse(this AppUser userDto);
+    public static partial SetNewPasswordDto ToSetNewPasswordDto(this SetNewPasswordRequest setNewPasswordRequest);
 }

@@ -8,4 +8,7 @@ public interface IAccountService
 {
     Task<Result<UserDto>> Login(LoginDto loginDto, CancellationToken ct);
     Task<Result<bool>> Register(UserRegistrationDto userDto, CancellationToken ct);
+    Task<Result<bool>> ResetPassword(string email, CancellationToken ct);
+    Task<Result<bool>> SetNewPassword(SetNewPasswordDto setNewPasswordDto, CancellationToken ct);
+    Task<Result<bool>> VerifyResetToken(string token, CancellationToken ct);
 }

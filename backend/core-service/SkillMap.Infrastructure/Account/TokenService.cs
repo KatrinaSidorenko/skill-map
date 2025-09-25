@@ -33,7 +33,8 @@ public class TokenService : ITokenService
 
         var expires = DateTime.UtcNow.AddMinutes(_jwtOptions.ExpiryInMinutes);
 
-        var secToken = new JwtSecurityToken(_jwtOptions.Issuer,
+        var secToken = new JwtSecurityToken(
+            _jwtOptions.Issuer,
             _jwtOptions.Audience,
             claims,
             expires: expires,

@@ -23,3 +23,12 @@ interface AuthResponse {
   token: string;
   user: AppUser;
 }
+
+interface SetNewPasswordRequest {
+  token: string;
+  password: string;
+}
+
+interface PasswordResetRequest {
+  email: string;
+}

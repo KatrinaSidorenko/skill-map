@@ -4,7 +4,7 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 
 export const accountApi = createApi({
   reducerPath: 'accountApi',
-  baseQuery: baseQuery('/account'),
+  baseQuery: baseQuery('account'),
   endpoints: (builder) => ({
     login: builder.mutation<AuthResponse, LoginRequest>({
       query: (credentials) => ({
@@ -24,7 +24,44 @@ export const accountApi = createApi({
         body: userData,
       }),
     }),
+    getMe: builder.query<AppUser, void>({
+      query: () => ({
+        url: '/me',
+        method: 'GET',
+      }),
+      onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+        const { data } = await queryFulfilled;
+        dispatch(setUser(data));
+      },
+    }),
+    resetPassword: builder.mutation<void, PasswordResetRequest>({
+      query: (request) => ({
+        url: '/reset-password',
+        method: 'POST',
+        body: request,
+      }),
+    }),
+    setNewPassword: builder.mutation<void, SetNewPasswordRequest>({
+      query: (request) => ({
+        url: '/set-new-password',
+        method: 'POST',
+        body: request,
+      }),
+    }),
+    verifyToken: builder.mutation<void, { token: string }>({
+      query: ({ token }) => ({
+        url: `/verify-token?token=${token}`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation } = accountApi;
+export const {
+  useLoginMutation,
+  useRegisterMutation,
+  useLazyGetMeQuery,
+  useResetPasswordMutation,
+  useVerifyTokenMutation,
+  useSetNewPasswordMutation,
+} = accountApi;

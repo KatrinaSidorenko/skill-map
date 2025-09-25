@@ -12,6 +12,7 @@ public class AccountService(
     IRepository<AppUser> userRepository, 
     IValidator<LoginDto> loginValidator,
     IValidator<UserRegistrationDto> userValidator,
+    IResetAccountService resetAccountService,
     IPasswordHasher passwordHasher) : IAccountService
 {
     public async Task<Result<UserDto>> Login(LoginDto loginDto, CancellationToken ct)
@@ -70,4 +71,42 @@ public class AccountService(
 
         return Result.Success(true);
     }
+
+    public async Task<Result<bool>> ResetPassword(string email, CancellationToken ct)
+    {
+        var userResult = await userRepository.GetFirstOrDefaultAsync(x => x.Email == email, ct);
+        if (!userResult.IsSuccessful || userResult.Data is null)
+        {
+            return ResultType.UserNotFound<bool>(email);
+        }
+
+        return await resetAccountService.ResetPassword(email, ct);
+    }
+
+    public async Task<Result<bool>> SetNewPassword(SetNewPasswordDto setNewPasswordDto, CancellationToken ct)
+    {
+        var emailResult = await resetAccountService.GetEmailByToken(setNewPasswordDto.Token, ct);
+        if (!emailResult.IsSuccessful || emailResult.Data is null)
+        {
+            return ResultType.InvalidOrExpiredToken<bool>();
+        }
+        var email = emailResult.Data;
+        var userResult = await userRepository.GetFirstOrDefaultAsync(x => x.Email == email, ct);
+        if (!userResult.IsSuccessful || userResult.Data is null)
+        {
+            return ResultType.UserNotFound<bool>(email);
+        }
+        var user = userResult.Data;
+        user.PasswordHash = passwordHasher.Hash(setNewPasswordDto.Password);
+        await userRepository.UpdateAsync(user, ct);
+        var result = await userRepository.SaveChangesAsync(ct);
+        if (!result.IsSuccessful)
+        {
+            return ResultType.FailedToUpdatePassword<bool>(email);
+        }
+        return Result.Success(true);
+    }
+
+    public async Task<Result<bool>> VerifyResetToken(string token, CancellationToken ct)
+         => await resetAccountService.VerifyResetToken(token, ct);
 }

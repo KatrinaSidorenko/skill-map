@@ -17,8 +17,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRegisterMutation } from '../api';
-import { toaster } from '@/components/ui/toaster';
-import { getResponseInfo as retrieveErrorData } from '@/store/helpers';
+import { useAuthErrorsHandler } from '../useAuthErrorsHandler';
 
 type RegisterSchema = {
   username: string;
@@ -30,6 +29,7 @@ type RegisterSchema = {
 export default function RegisterComponent() {
   const [visible, setVisible] = useState(false);
   const { getAuthTranslations } = useLocalization();
+  const { triggerWrapper } = useAuthErrorsHandler('register');
   const router = useRouter();
 
   const accountCreationSchema = z.object({
@@ -49,7 +49,7 @@ export default function RegisterComponent() {
 
   const [userRegister, { isLoading }] = useRegisterMutation();
   const onSubmit = async (data: RegisterSchema) => {
-    try {
+    const registerAction = async () => {
       await userRegister({
         email: data.email,
         password: data.password,
@@ -57,21 +57,9 @@ export default function RegisterComponent() {
         role: data.role as Role,
       }).unwrap();
       router.push('/login');
-    } catch (error) {
-      const errorData = retrieveErrorData(error);
-      console.log('errorData', errorData);
-      let description = '';
-      if (errorData) {
-        description = getAuthTranslations(errorData.code);
-      }
+    };
 
-      toaster.create({
-        title: getAuthTranslations('registerFailed'),
-        type: 'error',
-        description: description,
-        closable: true,
-      });
-    }
+    await triggerWrapper(registerAction());
   };
 
   return (
@@ -153,7 +141,7 @@ export default function RegisterComponent() {
       <Box mt={6}>
         <Text textAlign="center">
           {getAuthTranslations('haveAccount')}{' '}
-          <Link color="text.accent" href="/login" fontWeight="medium">
+          <Link color="brand.300" href="/login" fontWeight="medium">
             {getAuthTranslations('loginHere')}
           </Link>
         </Text>
