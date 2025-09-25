@@ -22,30 +22,8 @@ import { addOrRemoveRoadmap, selectIsRoadmapSaved } from '../store';
 import '@xyflow/react/dist/style.css';
 import { useGetRoadmapByIdQuery } from '../api';
 import SpinnerScreen from '@/components/base/spinner';
+import { mapRoadmapToReactFlow } from '../helpers';
 
-const getNodePosition = (index: number): { x: number; y: number } => ({
-  x: 0,
-  y: index * 150, // space nodes 150px apart vertically
-});
-
-export function mapRoadmapToReactFlow(roadmap: Roadmap): {
-  nodes: Node[];
-  edges: Edge[];
-} {
-  const nodes: Node[] = roadmap.nodes.map((n, index) => ({
-    id: String(n.id),
-    position: getNodePosition(index),
-    data: { label: n.title }, // show title in node
-  }));
-
-  const edges: Edge[] = roadmap.edges.map((e) => ({
-    id: `${e.source}-${e.target}`,
-    source: String(e.source),
-    target: String(e.target),
-  }));
-
-  return { nodes, edges };
-}
 
 export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
   const dispatch = useAppDispatch();
