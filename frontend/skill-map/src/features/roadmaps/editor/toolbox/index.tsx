@@ -7,7 +7,7 @@ import {
   IoIosRemoveCircleOutline,
 } from 'react-icons/io';
 
-import { CiEdit } from 'react-icons/ci';
+import { HiBars3 } from "react-icons/hi2";
 
 type ToolboxProps = {
   onAddNode: () => void;
@@ -15,7 +15,6 @@ type ToolboxProps = {
   onEditNode: () => void;
   onToggleSidebar: () => void;
   hasSelection: boolean;
-  isNodeSelected: boolean;
 };
 
 export default function Toolbox({
@@ -24,7 +23,6 @@ export default function Toolbox({
   onEditNode,
   onToggleSidebar,
   hasSelection,
-  isNodeSelected,
 }: ToolboxProps) {
   return (
     <Box
@@ -57,21 +55,22 @@ export default function Toolbox({
           <IoIosRemoveCircleOutline size={24} />
         </IconButton>
 
-        <IconButton
+        {/* <IconButton
           aria-label="Edit Node"
           colorScheme="blue"
           disabled={!isNodeSelected}
           onClick={onEditNode}
         >
           <CiEdit size={24} />
-        </IconButton>
+        </IconButton> */}
 
-        {/* <IconButton
+        <IconButton
           aria-label="Open Sidebar"
-          //icon={<FaBars />}
           colorScheme="gray"
           onClick={onToggleSidebar}
-        /> */}
+        >
+          <HiBars3 size={24} />
+        </IconButton>
       </HStack>
     </Box>
   );

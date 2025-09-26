@@ -24,6 +24,7 @@ import SpinnerScreen from '@/components/base/spinner';
 import { mapRoadmapToReactFlow } from '../helpers';
 import { toaster } from '@/components/ui/toaster';
 import Toolbox from './toolbox';
+import NodeSidebar from './sidebar';
 
 export default function RoadmapEditor({ roadmapId }: { roadmapId: string }) {
   const { data, error, isLoading } = useGetRoadmapByIdQuery(Number(roadmapId));
@@ -35,6 +36,7 @@ export default function RoadmapEditor({ roadmapId }: { roadmapId: string }) {
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
   const [selected, setSelected] = useState<Node | Edge | null>(null);
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
   const { fitView } = useReactFlow();
 
   // Sync roadmap changes
@@ -55,7 +57,6 @@ export default function RoadmapEditor({ roadmapId }: { roadmapId: string }) {
     [],
   );
 
-  // Add node
   const handleAddNode = useCallback(() => {
     const newNode: Node = {
       id: uuidv4(),
@@ -64,10 +65,6 @@ export default function RoadmapEditor({ roadmapId }: { roadmapId: string }) {
       type: 'default',
     };
     setNodes((nds) => [...nds, newNode]);
-    toaster.success({
-      title: 'Node added',
-      description: 'A new node has been added to the roadmap.',
-    });
     setTimeout(() => fitView(), 200); // adjust viewport
   }, [fitView]);
 
@@ -79,30 +76,25 @@ export default function RoadmapEditor({ roadmapId }: { roadmapId: string }) {
     setSelected(edge);
   }, []);
 
-  // Delete active element with "Delete" key
+  const removeElement = () => {
+    if (!selected) return;
+    if ('source' in selected && 'target' in selected) {
+      // Edge
+      setEdges((eds) => eds.filter((ed) => ed.id !== selected.id));
+    } else {
+      // Node
+      setNodes((nds) => nds.filter((n) => n.id !== selected.id));
+      setEdges((eds) =>
+        eds.filter(
+          (ed) => ed.source !== selected.id && ed.target !== selected.id,
+        ),
+      );
+    }
+  };
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Delete' && selected) {
-        if ('source' in selected && 'target' in selected) {
-          // Edge
-          setEdges((eds) => eds.filter((ed) => ed.id !== selected.id));
-          toaster.success({
-            title: 'Edge removed',
-            description: 'The selected edge has been removed.',
-          });
-        } else {
-          // Node
-          setNodes((nds) => nds.filter((n) => n.id !== selected.id));
-          setEdges((eds) =>
-            eds.filter(
-              (ed) => ed.source !== selected.id && ed.target !== selected.id,
-            ),
-          );
-          toaster.success({
-            title: 'Node removed',
-            description: 'The selected node has been removed.',
-          });
-        }
+        removeElement();
         setSelected(null);
       }
     };
@@ -114,10 +106,23 @@ export default function RoadmapEditor({ roadmapId }: { roadmapId: string }) {
   // Add edge on connect
   const onConnect = useCallback((connection: Connection) => {
     setEdges((eds) => addEdge({ ...connection, animated: true }, eds));
-    toaster.success({
-      title: 'Edge added',
-      description: 'A new edge has been added to the roadmap.',
-    });
+  }, []);
+
+  const handleEditNode = useCallback(() => {
+    if (!selected || 'source' in selected) return;
+    setSidebarOpen(true);
+  }, [selected]);
+
+  // Save node changes from sidebar
+  const handleSaveNode = useCallback((updatedNode: Node) => {
+    setNodes((nds) =>
+      nds.map((n) => (n.id === updatedNode.id ? updatedNode : n)),
+    );
+  }, []);
+
+  // Sidebar toggle
+  const handleToggleSidebar = useCallback(() => {
+    setSidebarOpen((prev) => !prev);
   }, []);
 
   if (isLoading) {
@@ -155,11 +160,16 @@ export default function RoadmapEditor({ roadmapId }: { roadmapId: string }) {
       </div>
       <Toolbox
         onAddNode={handleAddNode}
-        onRemoveSelected={() => {}}
+        onRemoveSelected={removeElement}
         onEditNode={() => {}}
-        onToggleSidebar={() => {}}
+        onToggleSidebar={handleToggleSidebar}
         hasSelection={!!selected}
-        isNodeSelected={!!selected && !('source' in selected)}
+      />
+      <NodeSidebar
+        open={isSidebarOpen}
+        onOpenChange={setSidebarOpen}
+        node={selected && !('source' in selected) ? selected : null}
+        onSave={handleSaveNode}
       />
     </VStack>
   );
