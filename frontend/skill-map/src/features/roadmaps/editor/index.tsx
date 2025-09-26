@@ -145,7 +145,6 @@ function RoadmapEditor({ roadmap }: { roadmap: Roadmap }) {
     setSidebarOpen((prev) => !prev);
   }, []);
 
-  console.log('selected', selected);
   return (
     <>
       <div
