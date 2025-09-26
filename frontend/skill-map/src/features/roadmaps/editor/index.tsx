@@ -17,18 +17,44 @@ import {
   useReactFlow,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { VStack, Text, Flex, Button, IconButton } from '@chakra-ui/react';
+import { Flex, VStack, Text, Button } from '@chakra-ui/react';
+import { IoChevronBackOutline } from 'react-icons/io5';
 
-import { useGetRoadmapByIdQuery } from '../api';
-import SpinnerScreen from '@/components/base/spinner';
 import { mapRoadmapToReactFlow } from '../helpers';
-import { toaster } from '@/components/ui/toaster';
 import Toolbox from './toolbox';
 import NodeSidebar from './sidebar';
+import { useRouter } from 'next/navigation';
 
-export default function RoadmapEditor({ roadmapId }: { roadmapId: string }) {
-  const { data, error, isLoading } = useGetRoadmapByIdQuery(Number(roadmapId));
-  const roadmap = data?.roadmap;
+function RoadmapEditorContainer({ children }: { children: React.ReactNode }) {
+  return (
+    <VStack w="full" gap={6}>
+      {children}
+    </VStack>
+  );
+}
+
+function RoadmapEditorHeader(roadmap: { name: string }) {
+  const router = useRouter();
+  return (
+    <Flex
+      w="full"
+      justify="space-between"
+      align="center"
+      bg="bg.section"
+      p={2}
+      borderRadius="lg"
+    >
+      <Button variant="ghost" onClick={() => router.replace('/home')}>
+        <IoChevronBackOutline size="24" />
+      </Button>
+      <Text fontSize="xl" fontWeight="semibold" pr={2}>
+        {roadmap.name}
+      </Text>
+    </Flex>
+  );
+}
+
+function RoadmapEditor({ roadmap }: { roadmap: Roadmap }) {
   const { nodes: initialNodes, edges: initialEdges } = roadmap
     ? mapRoadmapToReactFlow(roadmap)
     : { nodes: [], edges: [] };
@@ -38,12 +64,6 @@ export default function RoadmapEditor({ roadmapId }: { roadmapId: string }) {
   const [selected, setSelected] = useState<Node | Edge | null>(null);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const { fitView } = useReactFlow();
-
-  // Sync roadmap changes
-  useEffect(() => {
-    setNodes(initialNodes);
-    setEdges(initialEdges);
-  }, [isLoading]);
 
   const onNodesChange = useCallback(
     (changes: NodeChange<Node>[]) =>
@@ -125,25 +145,11 @@ export default function RoadmapEditor({ roadmapId }: { roadmapId: string }) {
     setSidebarOpen((prev) => !prev);
   }, []);
 
-  if (isLoading) {
-    return <SpinnerScreen />;
-  }
-
-  if (!roadmap) {
-    return <div>Roadmap not found</div>;
-  }
-
   return (
-    <VStack w="full" gap={6}>
-      {/* Header */}
-      <Flex w="full" justify="space-between" align="center">
-        <Text fontSize="2xl" fontWeight="bold">
-          {roadmap.name}
-        </Text>
-      </Flex>
-
-      {/* Canvas */}
-      <div style={{ width: '100%', height: '80vh' }}>
+    <>
+      <div
+        style={{ width: '100%', height: '80vh', backgroundColor: 'bg.page' }}
+      >
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -171,6 +177,10 @@ export default function RoadmapEditor({ roadmapId }: { roadmapId: string }) {
         node={selected && !('source' in selected) ? selected : null}
         onSave={handleSaveNode}
       />
-    </VStack>
+    </>
   );
 }
+
+RoadmapEditor.Container = RoadmapEditorContainer;
+RoadmapEditor.Header = RoadmapEditorHeader;
+export default RoadmapEditor;

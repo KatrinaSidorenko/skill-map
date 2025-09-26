@@ -40,7 +40,7 @@ export default function NodeSidebar({
       open={open}
       onOpenChange={(e) => onOpenChange(e.open)}
       placement="end"
-      size="xs"
+      size="md"
     >
       <Drawer.Backdrop />
       <Drawer.Positioner>
