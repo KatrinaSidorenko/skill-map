@@ -99,10 +99,8 @@ function RoadmapEditor({ roadmap }: { roadmap: Roadmap }) {
   const removeElement = () => {
     if (!selected) return;
     if ('source' in selected && 'target' in selected) {
-      // Edge
       setEdges((eds) => eds.filter((ed) => ed.id !== selected.id));
     } else {
-      // Node
       setNodes((nds) => nds.filter((n) => n.id !== selected.id));
       setEdges((eds) =>
         eds.filter(
@@ -110,7 +108,9 @@ function RoadmapEditor({ roadmap }: { roadmap: Roadmap }) {
         ),
       );
     }
+    setSelected(null);
   };
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Delete' && selected) {
@@ -145,6 +145,7 @@ function RoadmapEditor({ roadmap }: { roadmap: Roadmap }) {
     setSidebarOpen((prev) => !prev);
   }, []);
 
+  console.log('selected', selected);
   return (
     <>
       <div
@@ -167,9 +168,9 @@ function RoadmapEditor({ roadmap }: { roadmap: Roadmap }) {
       <Toolbox
         onAddNode={handleAddNode}
         onRemoveSelected={removeElement}
-        onEditNode={() => {}}
         onToggleSidebar={handleToggleSidebar}
         hasSelection={!!selected}
+        isNode={selected ? !('source' in selected) : false}
       />
       <NodeSidebar
         open={isSidebarOpen}
