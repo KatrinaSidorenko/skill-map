@@ -100,7 +100,7 @@ internal class RoadmapRepository : IRoadmapRepository
         catch (Exception ex)
         {
             Logger.Error(ex, "Failed to execute commands");
-            return ResultTypes.FailedToSave<bool>(ex.Message);
+            return ResultType.FailedToSave<bool>(ex.Message);
         }
         finally
         {
@@ -122,7 +122,7 @@ internal class RoadmapRepository : IRoadmapRepository
         catch (Exception ex)
         {
             Logger.Error(ex, "Failed to execute commands");
-            return ResultTypes.FailedToSave<bool>(ex.Message);
+            return ResultType.FailedToSave<bool>(ex.Message);
         }
     }
 
@@ -182,7 +182,7 @@ internal class RoadmapRepository : IRoadmapRepository
         catch (Exception ex)
         {
             Logger.Error(ex, "Failed to get roadmap {roadmapId}", roadmapId);
-            return ResultTypes.FailedToGetRoadmap<(List<Dictionary<string, object>> Nodes, List<Dictionary<string, object>> Edges)>(ex.Message);
+            return ResultType.FailedToGetRoadmap<(List<Dictionary<string, object>> Nodes, List<Dictionary<string, object>> Edges)>(ex.Message);
         }
     }
 
@@ -191,7 +191,7 @@ internal class RoadmapRepository : IRoadmapRepository
         var sourceRoadmapResult = await GetSourceRoadmap(roadmapId, cancellationToken);
         if (!sourceRoadmapResult.IsSuccessful)
         {
-            return ResultTypes.FailedToGetRoadmap<(List<NodeDto> Nodes, List<EdgeDto> Edges)>(sourceRoadmapResult.Message);
+            return ResultType.FailedToGetRoadmap<(List<NodeDto> Nodes, List<EdgeDto> Edges)>(sourceRoadmapResult.Message);
         }
 
         var (nodes, edges) = sourceRoadmapResult.Data;
@@ -214,7 +214,7 @@ internal class RoadmapRepository : IRoadmapRepository
             var response = await session.ExecuteReadAsync(async tx =>
             {
                 var result = await tx.RunAsync(query);
-                var nodes = new List<NodeDao>();
+                var nodes = new List<NodeDto>();
                 while (await result.FetchAsync())
                 {
                     var node = result.Current["r"].As<INode>().Properties.ToDictionary().ToNodeDto();
@@ -229,7 +229,7 @@ internal class RoadmapRepository : IRoadmapRepository
         catch (Exception ex)
         {
             Logger.Error(ex, "Failed to get all roadmaps");
-            return ResultTypes.FailedToGetRoadmap<List<NodeDao>>(ex.Message);
+            return ResultType.FailedToGetRoadmap<List<NodeDto>>(ex.Message);
         }
     }
 

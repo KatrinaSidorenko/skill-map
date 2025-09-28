@@ -1,11 +1,10 @@
-﻿using LearningPlatform.Roadmap.Business;
-using LearningPlatform.Roadmap.Business.Algo;
+﻿using LearningPlatform.Roadmap.Business.Algo;
 using LearningPlatform.Roadmap.Business.Contracts;
 using LearningPlatform.Roadmap.Business.Contracts.Models;
 using LearningPlatform.Roadmap.Business.Helpers;
 using SkillMap.Shared.Results;
 
-namespace SkillMap.Application;
+namespace LearningPlatform.Roadmap.Business;
 
 public class RoadmapRetriever : IRetriever
 {

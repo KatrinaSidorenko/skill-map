@@ -15,7 +15,6 @@ public class PlainRoadmapResponse
 
     [JsonProperty("title")]
     public string Title { get; set; }
-
-    [JsonProperty("progress")]
-    public double Progress { get; set; }
+    [JsonProperty("imageUrl")]
+    public string ImageUrl { get; set; }
 }

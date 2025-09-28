@@ -1,4 +1,5 @@
-﻿using SkillMap.Business.Roadmaps.Models;
+﻿using LearningPlatform.Roadmap.Business.Contracts.Constants;
+using SkillMap.Business.Roadmaps.Models;
 using SkillMap.Shared;
 using SkillMap.Shared.Extensions;
 using System.Runtime.CompilerServices;
@@ -7,21 +8,6 @@ namespace SkillMap.Business.Roadmaps.Helpers;
 
 public static class TreeResponseExtensions
 {
-    public static (List<NodeResponse> Nodes, Dictionary<string, List<string>> Edges) ToGraph(this TreeResponse treeResponse)
-    {
-        var nodes = new List<NodeResponse>();
-        var edges = new Dictionary<string, List<string>>();
-
-        nodes.Add(new NodeResponse
-        {
-            Id = treeResponse.Id,
-            Title = treeResponse.Title,
-            Type = "roadmap"
-        });
-
-        return (nodes, edges).ToGraph(treeResponse.Nodes);
-    }
-
     public static (List<NodeResponse> Nodes, Dictionary<string, List<string>> Edges) ToGraph(
         this (List<NodeResponse> Nodes, Dictionary<string, List<string>> Edges) graph,
         List<NodeResponse> nodes)

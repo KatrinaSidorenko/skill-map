@@ -1,4 +1,4 @@
-﻿using SkillMap.Application.OutPorts.Persistence;
+﻿using LearningPlatform.Roadmap.Business.Contracts.Models;
 using SkillMap.Shared.Extensions;
 
 
@@ -6,7 +6,7 @@ namespace SkillMap.Persistence.Neo4j.Helpers;
 
 public static class IdGenerator
 {
-    public static NodeDao GenerateInnerId(this NodeDao nodeDto)
+    public static NodeDto GenerateInnerId(this NodeDto nodeDto)
     {
         if (nodeDto == null)
             throw new ArgumentNullException(nameof(nodeDto));
@@ -19,7 +19,7 @@ public static class IdGenerator
         return copy;
     }
 
-    public static EdgeDao<NodeDao> GenerateInnerId(this EdgeDao<NodeDao> edgeDto)
+    public static EdgeDto GenerateInnerId(this EdgeDto edgeDto)
     {
         if (edgeDto == null)
             throw new ArgumentNullException(nameof(edgeDto));

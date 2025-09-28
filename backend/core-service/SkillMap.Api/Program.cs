@@ -1,11 +1,7 @@
 using SkillMap.Infrastructure;
 using SkillMap.Persistence;
 using SkillMap.Business;
-using Microsoft.AspNetCore.HttpLogging;
-using System.Diagnostics;
 using SkillMap.Api.Base.Extensions;
-using SkillMap.Persistence.Neo4j;
-using SkillMap.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,5 +1,5 @@
 ﻿using LearningPlatform.Roadmap.Business.Contracts.Constants;
-using SkillMap.Application.OutPorts.Persistence;
+using LearningPlatform.Roadmap.Business.Contracts.Models;
 
 namespace SkillMap.Persistence.Neo4j.Helpers;
 
@@ -15,7 +15,7 @@ public static class RoadmapLabelConstants
     public const string SUBTOPIC = "SUBTOPIC";
     public const string RESOURCE = "RESOURCE";
 
-    public static string GetLabel(this NodeDao node)
+    public static string GetLabel(this NodeDto node)
         => node.Type switch
         {
             NodeType.Roadmap => ROADMAP,
@@ -25,7 +25,7 @@ public static class RoadmapLabelConstants
             _ => throw new ArgumentOutOfRangeException(nameof(node), $"Unknown node type: {node.Type}")
         };
 
-    public static string GetLabel(this EdgeDao<NodeDao> edge)
+    public static string GetLabel(this EdgeDto edge)
     {
         if (edge.Source.Type.IsRoadmap() && edge.Target.Type.IsTopic())
         {

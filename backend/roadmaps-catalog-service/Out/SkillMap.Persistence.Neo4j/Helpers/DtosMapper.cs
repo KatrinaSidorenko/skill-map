@@ -1,5 +1,5 @@
-﻿using Neo4j.Driver;
-using SkillMap.Application.OutPorts.Persistence;
+﻿using LearningPlatform.Roadmap.Business.Contracts.Models;
+using Neo4j.Driver;
 using SkillMap.Shared.Extensions;
 
 namespace SkillMap.Persistence.Neo4j.Helpers;
@@ -26,9 +26,9 @@ public static class DtosMapper
         return dict;
     }
 
-    public static NodeDao ToNodeDto(this Dictionary<string, object> dict)
+    public static NodeDto ToNodeDto(this Dictionary<string, object> dict)
     {
-        var node = new NodeDao
+        var node = new NodeDto
         {
             Id = dict.GetOrDefault("id") as string,
             ExternalId = dict.GetOrDefault("externalId") as string,
@@ -44,12 +44,12 @@ public static class DtosMapper
         return node;
     }
 
-    public static EdgeDao<NodeDao> ToEdgeDto(this Dictionary<string, object> dict, Dictionary<string, NodeDao> nodesDict)
+    public static EdgeDto ToEdgeDto(this Dictionary<string, object> dict, Dictionary<string, NodeDto> nodesDict)
     {
         var sourceId = dict.GetOrDefault("source_id") as string;
         var targetId = dict.GetOrDefault("target_id") as string;
 
-        var edge = new EdgeDao<NodeDao>
+        var edge = new EdgeDto
         {
             Id = dict.GetOrDefault("id") as string,
             Source = nodesDict.GetOrDefault(sourceId),

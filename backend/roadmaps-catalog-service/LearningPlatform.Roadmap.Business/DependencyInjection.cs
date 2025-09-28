@@ -1,7 +1,7 @@
 ﻿using LearningPlatform.Roadmap.Business.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace SkillMap.Application;
+namespace LearningPlatform.Roadmap.Business;
 
 public static class DependencyInjection
 {
@@ -9,6 +9,7 @@ public static class DependencyInjection
     {
         services.AddTransient<IRetriever, RoadmapRetriever>();
         services.AddTransient<IMigrator, RoadmapMigrator>();
+        services.AddScoped<IRoadmapService, RoadmapService>();
         return services;
     }
 }

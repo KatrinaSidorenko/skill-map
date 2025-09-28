@@ -1,4 +1,4 @@
-﻿using SkillMap.Application.OutPorts.Persistence;
+﻿using LearningPlatform.Roadmap.Business.Contracts.Models;
 using SkillMap.Persistence.Neo4j.Helpers;
 using SkillMap.Shared.Extensions;
 
@@ -6,7 +6,7 @@ namespace SkillMap.Persistence.Neo4j.Helpers;
 
 public static class CommandsBuilder
 {
-    public static Command CreateNodeCommand(this NodeDao node, string migrationId = null)
+    public static Command CreateNodeCommand(this NodeDto node, string migrationId = null)
     {
         var nodeProps = new Dictionary<string, object>
         {
@@ -42,7 +42,7 @@ public static class CommandsBuilder
 
     }
 
-    public static Command CreateEdgeCommand(this EdgeDao<NodeDao> edge, Dictionary<string, NodeDao> nodesByExId, string migrationId = null)
+    public static Command CreateEdgeCommand(this EdgeDto edge, Dictionary<string, NodeDto> nodesByExId, string migrationId = null)
     {
         var edgeProps = new Dictionary<string, object>
         {
@@ -75,7 +75,7 @@ public static class CommandsBuilder
         };
     }
 
-    public static Command CreateEdgeCommand(this EdgeDao<NodeDao> edge, string migrationId = null)
+    public static Command CreateEdgeCommand(this EdgeDto edge, string migrationId = null)
     {
         var edgeProps = new Dictionary<string, object>
         {

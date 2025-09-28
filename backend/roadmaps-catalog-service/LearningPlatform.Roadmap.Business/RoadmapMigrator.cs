@@ -3,7 +3,7 @@ using LearningPlatform.Roadmap.Business.Contracts;
 using LearningPlatform.Roadmap.Business.Contracts.Constants;
 using LearningPlatform.Roadmap.Business.Contracts.Models;
 
-namespace SkillMap.Application;
+namespace LearningPlatform.Roadmap.Business;
 
 public class RoadmapMigrator : IMigrator
 {

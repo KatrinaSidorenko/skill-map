@@ -1,4 +1,6 @@
-﻿using SkillMap.Business.Roadmaps.Models;
+﻿using LearningPlatform.Roadmap.Business.Algo;
+using LearningPlatform.Roadmap.Business.Contracts.Constants;
+using SkillMap.Business.Roadmaps.Models;
 using SkillMap.Core.Constants;
 using SkillMap.Core.Entities;
 using SkillMap.Shared;
@@ -118,59 +120,59 @@ public static class ModificationsHelper
         }
     }
 
-    public static (List<NodeResponse>, List<(string Source, string Target)>) GetTreeWithModifications(this (List<NodeResponse>, List<(string Source, string Target)>) sourceRoadmap, List<RoadmapModification> modifications)
-    {
-        var createdNodesModifications = modifications
-           .Where(m => m.Action == ModificationAction.Create)
-           .GetCreatedNodes();
+    //public static (List<NodeResponse>, List<(string Source, string Target)>) GetTreeWithModifications(this (List<NodeResponse>, List<(string Source, string Target)>) sourceRoadmap, List<RoadmapModification> modifications)
+    //{
+    //    var createdNodesModifications = modifications
+    //       .Where(m => m.Action == ModificationAction.Create)
+    //       .GetCreatedNodes();
 
-        var (createdNodes, createdEdges) = (new List<NodeResponse>(), new Dictionary<string, List<string>>()).ToGraph(createdNodesModifications);
+    //    var (createdNodes, createdEdges) = (new List<NodeResponse>(), new Dictionary<string, List<string>>()).ToGraph(createdNodesModifications);
 
-        var (nodes, edges) = sourceRoadmap;
-        var rootNode = nodes.FirstOrDefault(n => n.Type.IsRoadmap());
-        nodes.AddRange(createdNodes);
+    //    var (nodes, edges) = sourceRoadmap;
+    //    var rootNode = nodes.FirstOrDefault(n => n.Type.IsRoadmap());
+    //    nodes.AddRange(createdNodes);
 
-        var plainEdges = createdEdges
-            .SelectMany(e => e.Value.Select(t => (Source: e.Key, Target: t)))
-            .ToList();
-        edges.AddRange(plainEdges);
+    //    var plainEdges = createdEdges
+    //        .SelectMany(e => e.Value.Select(t => (Source: e.Key, Target: t)))
+    //        .ToList();
+    //    edges.AddRange(plainEdges);
 
-        var nodesDictionary = nodes.ToDictionary(n => n.Id, n => n);
+    //    var nodesDictionary = nodes.ToDictionary(n => n.Id, n => n);
 
-        var modificationsByActions = modifications
-            .GroupBy(m => m.Action)
-            .ToDictionary(g => g.Key, g => g.ToList());
-        nodesDictionary.ApplyModifications(modificationsByActions);
+    //    var modificationsByActions = modifications
+    //        .GroupBy(m => m.Action)
+    //        .ToDictionary(g => g.Key, g => g.ToList());
+    //    nodesDictionary.ApplyModifications(modificationsByActions);
 
-        var topicsAndSubtopics = nodes.Where(n => !n.Type.IsResource()).ToList();
-        var targetEdges = edges
-            .Where(e => topicsAndSubtopics.Any(n => n.Id == e.Source) && topicsAndSubtopics.Any(n => n.Id == e.Target))
-            .ToList();
-        var sortedNodes = TopologicalSort.SortNodes(topicsAndSubtopics, targetEdges);
-        var sortedNodesIndexing = sortedNodes
-            .Select((n, i) => new
-            {
-                n.Id,
-                Index = i,
-            })
-            .ToDictionary(n => n.Id, n => (int?)n.Index);
-        nodes.ApplyIndexing(sortedNodesIndexing);
+    //    var topicsAndSubtopics = nodes.Where(n => !n.Type.IsResource()).ToList();
+    //    var targetEdges = edges
+    //        .Where(e => topicsAndSubtopics.Any(n => n.Id == e.Source) && topicsAndSubtopics.Any(n => n.Id == e.Target))
+    //        .ToList();
+    //    var sortedNodes = TopologicalSort.SortNodes(topicsAndSubtopics, targetEdges);
+    //    var sortedNodesIndexing = sortedNodes
+    //        .Select((n, i) => new
+    //        {
+    //            n.Id,
+    //            Index = i,
+    //        })
+    //        .ToDictionary(n => n.Id, n => (int?)n.Index);
+    //    nodes.ApplyIndexing(sortedNodesIndexing);
 
-        var itemsToDelete = (modificationsByActions.GetOrDefault(ModificationAction.Delete) ?? new List<RoadmapModification>())
-         .Select(m => m.ExternalItemId)
-         .ToList();
+    //    var itemsToDelete = (modificationsByActions.GetOrDefault(ModificationAction.Delete) ?? new List<RoadmapModification>())
+    //     .Select(m => m.ExternalItemId)
+    //     .ToList();
 
-        nodes = nodes
-            .Where(n => !itemsToDelete.Contains(n.Id))
-            .ToList();
+    //    nodes = nodes
+    //        .Where(n => !itemsToDelete.Contains(n.Id))
+    //        .ToList();
 
-        edges = edges
-            .Where(e => !itemsToDelete.Contains(e.Source) && !itemsToDelete.Contains(e.Target))
-            .ToList();
+    //    edges = edges
+    //        .Where(e => !itemsToDelete.Contains(e.Source) && !itemsToDelete.Contains(e.Target))
+    //        .ToList();
 
 
-        return (nodes, edges);
-    }
+    //    return (nodes, edges);
+    //}
 
     public static (List<NodeResponse>, List<(string Source, string Target)>) ApplyModifications(this (List<NodeResponse>, List<(string Source, string Target)>) sourceRoadmap, List<RoadmapModification> modifications)
     {
@@ -216,23 +218,23 @@ public static class ModificationsHelper
         return (nodes, edges);
     }
 
-    public static void ApplySortingAndIndexing(this (List<NodeResponse>, List<(string Source, string Target)>) sourceRoadmap)
-    {
-        var (nodes, edges) = sourceRoadmap;
-        var topicsAndSubtopics = nodes.Where(n => !n.Type.IsResource()).ToList();
-        var targetEdges = edges
-            .Where(e => topicsAndSubtopics.Any(n => n.Id == e.Source) && topicsAndSubtopics.Any(n => n.Id == e.Target))
-            .ToList();
-        var sortedNodes = TopologicalSort.SortNodes(topicsAndSubtopics, targetEdges);
-        var sortedNodesIndexing = sortedNodes
-            .Where(n => !n.IsDeleted)
-            .Select((n, i) => new
-            {
-                n.Id,
-                Index = i,
-            })
-            .ToDictionary(n => n.Id, n => (int?)n.Index);
+    //public static void ApplySortingAndIndexing(this (List<NodeResponse>, List<(string Source, string Target)>) sourceRoadmap)
+    //{
+    //    var (nodes, edges) = sourceRoadmap;
+    //    var topicsAndSubtopics = nodes.Where(n => !n.Type.IsResource()).ToList();
+    //    var targetEdges = edges
+    //        .Where(e => topicsAndSubtopics.Any(n => n.Id == e.Source) && topicsAndSubtopics.Any(n => n.Id == e.Target))
+    //        .ToList();
+    //    var sortedNodes = TopologicalSort.SortNodes(topicsAndSubtopics, targetEdges);
+    //    var sortedNodesIndexing = sortedNodes
+    //        .Where(n => !n.IsDeleted)
+    //        .Select((n, i) => new
+    //        {
+    //            n.Id,
+    //            Index = i,
+    //        })
+    //        .ToDictionary(n => n.Id, n => (int?)n.Index);
 
-        nodes.ApplyIndexing(sortedNodesIndexing);
-    }
+    //    nodes.ApplyIndexing(sortedNodesIndexing);
+    //}
 }
