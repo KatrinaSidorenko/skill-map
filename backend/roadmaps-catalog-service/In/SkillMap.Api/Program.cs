@@ -3,7 +3,6 @@ using SkillMap.Application;
 using SkillMap.DataSource.RoadmapSh;
 using SkillMap.Persistence.Neo4j;
 using SkillMap.Api.Middleware;
-using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,12 +11,7 @@ builder.Services.AddRouting(options =>
     options.LowercaseUrls = true;
 });
 
-builder.Services.AddControllers()
-    .AddNewtonsoftJson(options =>
-    {
-        options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore; // or .Serialize
-        options.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.Objects;
-    });
+builder.Services.AddControllers();
 
 builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)

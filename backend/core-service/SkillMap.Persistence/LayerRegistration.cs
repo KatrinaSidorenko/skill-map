@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SkillMap.Business.Abstractions;
+using SkillMap.Persistence.Neo4j;
 
 namespace SkillMap.Persistence;
 
@@ -15,6 +16,7 @@ public static class LayerRegistration
                    .UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddNeo4jPersistence(configuration);
 
         return services;
     }

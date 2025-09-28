@@ -7,11 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Neo4j.Driver" Version="5.27.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\LearningPlatform.Roadmap.Business.Contracts\LearningPlatform.Roadmap.Business.Contracts.csproj" />
+    <ProjectReference Include="..\..\shared\SkillMap.Shared\SkillMap.Shared.csproj" />
   </ItemGroup>
 
 </Project>

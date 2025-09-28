@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using LearningPlatform.Roadmap.Business.Contracts;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Neo4j.Driver;
-using SkillMap.Application.OutPorts.Persistence;
 
 namespace SkillMap.Persistence.Neo4j;
 

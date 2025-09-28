@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SkillMap.Api.Base;
 using SkillMap.Api.Roadmaps.Models;
+using SkillMap.Business.Abstractions;
 using SkillMap.Business.Roadmaps;
 using SkillMap.Business.Roadmaps.Models;
 using SkillMap.Core.Constants;
@@ -15,12 +15,21 @@ namespace SkillMap.Api.Roadmaps;
 public class RoadmapsController : BaseController
 {
     private ICustomizedRoadmapsService CustomizedRoadmapsService { get; }
-    public RoadmapsController(ICustomizedRoadmapsService customizedRoadmaps)
+    private IRoadmapService RoadmapService { get; }
+    public RoadmapsController(ICustomizedRoadmapsService customizedRoadmaps, IRoadmapService roadmapService)
     {
         CustomizedRoadmapsService = customizedRoadmaps ?? throw new ArgumentNullException(nameof(customizedRoadmaps));
+        RoadmapService = roadmapService ?? throw new ArgumentNullException(nameof(roadmapService));
     }
 
-    [HttpGet]
+    //[HttpGet]
+    //public async Task<IActionResult> GetAllPlainRoadmaps([FromQuery]PaginationRequest paginationRequest, CancellationToken ct)
+    //{
+
+    //}
+
+
+    [HttpGet("saved")]
     public async Task<IActionResult> GetAll(CancellationToken ct)
     {
         var result = await CustomizedRoadmapsService.GetAllRoadmaps(GetUserId(), ct);

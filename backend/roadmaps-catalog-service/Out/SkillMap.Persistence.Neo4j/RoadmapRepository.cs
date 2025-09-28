@@ -1,8 +1,7 @@
-﻿using Neo4j.Driver;
-using SkillMap.Application.OutPorts.Persistence;
+﻿using LearningPlatform.Roadmap.Business.Contracts;
+using LearningPlatform.Roadmap.Business.Contracts.Models;
+using Neo4j.Driver;
 using SkillMap.Persistence.Neo4j.Helpers;
-using SkillMap.Persistence.Neo4j.Models;
-using SkillMap.Shared.Models;
 using SkillMap.Shared.Results;
 using ISerilogLogger = Serilog.ILogger;
 
@@ -19,7 +18,7 @@ internal class RoadmapRepository : IRoadmapRepository
         DbSettings = dbSettings ?? throw new ArgumentNullException(nameof(dbSettings));
         Logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
-    public async Task<bool> Save((List<NodeDto> Nodes, List<EdgeDto<NodeDto>> Edges) graph, CancellationToken ct = default)
+    public async Task<bool> Save((List<NodeDto> Nodes, List<EdgeDto> Edges) graph, CancellationToken ct = default)
     {
         if (graph.Nodes == null || graph.Edges == null)
             throw new ArgumentNullException(nameof(graph));
@@ -71,7 +70,7 @@ internal class RoadmapRepository : IRoadmapRepository
         return await ExecuteCommands(nodeCreateCommands, ct);
     }
 
-    public async Task<Result<bool>> AddEdges(List<EdgeDto<NodeDto>> edges, CancellationToken ct = default)
+    public async Task<Result<bool>> AddEdges(List<EdgeDto> edges, CancellationToken ct = default)
     {
         var newEdges = edges.Select(e => e.GenerateInnerId()).ToList();
         var edgeCreateCommands = newEdges
@@ -187,12 +186,12 @@ internal class RoadmapRepository : IRoadmapRepository
         }
     }
 
-    public async Task<Result<(List<NodeDto> Nodes, List<EdgeDto<NodeDto>> Edges)>> GetRoadmap(string roadmapId, CancellationToken cancellationToken)
+    public async Task<Result<(List<NodeDto> Nodes, List<EdgeDto> Edges)>> GetRoadmap(string roadmapId, CancellationToken cancellationToken)
     {
         var sourceRoadmapResult = await GetSourceRoadmap(roadmapId, cancellationToken);
         if (!sourceRoadmapResult.IsSuccessful)
         {
-            return ResultTypes.FailedToGetRoadmap<(List<NodeDto> Nodes, List<EdgeDto<NodeDto>> Edges)>(sourceRoadmapResult.Message);
+            return ResultTypes.FailedToGetRoadmap<(List<NodeDto> Nodes, List<EdgeDto> Edges)>(sourceRoadmapResult.Message);
         }
 
         var (nodes, edges) = sourceRoadmapResult.Data;
@@ -215,7 +214,7 @@ internal class RoadmapRepository : IRoadmapRepository
             var response = await session.ExecuteReadAsync(async tx =>
             {
                 var result = await tx.RunAsync(query);
-                var nodes = new List<NodeDto>();
+                var nodes = new List<NodeDao>();
                 while (await result.FetchAsync())
                 {
                     var node = result.Current["r"].As<INode>().Properties.ToDictionary().ToNodeDto();
@@ -230,7 +229,7 @@ internal class RoadmapRepository : IRoadmapRepository
         catch (Exception ex)
         {
             Logger.Error(ex, "Failed to get all roadmaps");
-            return ResultTypes.FailedToGetRoadmap<List<NodeDto>>(ex.Message);
+            return ResultTypes.FailedToGetRoadmap<List<NodeDao>>(ex.Message);
         }
     }
 

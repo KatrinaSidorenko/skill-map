@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>a1829f11-e294-4b32-ba11-46c025cdc92d</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,9 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Application\SkillMap.Application.InPorts\SkillMap.Application.InPorts.csproj" />
-    <ProjectReference Include="..\..\Application\SkillMap.Application.OutPorts\SkillMap.Application.OutPorts.csproj" />
-    <ProjectReference Include="..\..\Application\SkillMap.Application\SkillMap.Application.csproj" />
     <ProjectReference Include="..\..\Out\SkillMap.DataSource.RoadmapSh\SkillMap.DataSource.RoadmapSh.csproj" />
     <ProjectReference Include="..\..\Out\SkillMap.Persistence.Neo4j\SkillMap.Persistence.Neo4j.csproj" />
   </ItemGroup>

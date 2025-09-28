@@ -6,8 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Application\SkillMap.Application.OutPorts\SkillMap.Application.OutPorts.csproj" />
-  </ItemGroup>
-
 </Project>
