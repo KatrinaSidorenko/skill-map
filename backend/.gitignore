@@ -156,6 +156,8 @@ dist-ssr
 *.njsproj
 *.sw?
 
+.vs/*
+
 # Ignore Visual Studio specific files
 /roadmaps-catalog-service/.vs/
 /core-service/.vs/

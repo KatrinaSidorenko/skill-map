@@ -1,5 +1,8 @@
-﻿namespace SkillMap.Shared.Results;
+﻿using System.Net;
 
+namespace SkillMap.Shared.Results;
+
+public record ExceptionResponse(HttpStatusCode StatusCode, string Message);
 public class Result<T>
 {
     public bool IsSuccessful { get; }

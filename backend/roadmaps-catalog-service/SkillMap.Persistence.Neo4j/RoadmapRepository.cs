@@ -1,0 +1,277 @@
+﻿using LearningPlatform.Roadmap.Business.Contracts;
+using LearningPlatform.Roadmap.Business.Contracts.Models;
+using Microsoft.Extensions.Logging;
+using Neo4j.Driver;
+using SkillMap.Persistence.Neo4j.Helpers;
+using SkillMap.Shared.Models;
+using SkillMap.Shared.Results;
+
+namespace SkillMap.Persistence.Neo4j;
+
+internal class RoadmapRepository : IRoadmapRepository
+{
+    private IDriver Driver { get; }
+    private DbSettings DbSettings { get; }
+    private ILogger<IRoadmapRepository> Logger { get; }
+    public RoadmapRepository(IDriver driver, DbSettings dbSettings, ILogger<IRoadmapRepository> logger)
+    {
+        Driver = driver ?? throw new ArgumentNullException(nameof(driver));
+        DbSettings = dbSettings ?? throw new ArgumentNullException(nameof(dbSettings));
+        Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+    public async Task<bool> Save((List<NodeDto> Nodes, List<EdgeDto> Edges) graph, CancellationToken ct = default)
+    {
+        if (graph.Nodes == null || graph.Edges == null)
+            throw new ArgumentNullException(nameof(graph));
+        var migrationId = Guid.NewGuid().ToString("N");
+
+        var nodes = graph.Nodes.Select(n => n.GenerateInnerId()).ToList();
+        var nodesByExId = nodes
+            .GroupBy(n => n.ExternalId ?? n.Id)
+            .ToDictionary(n => n.Key, n => n.FirstOrDefault());
+        var edges = graph.Edges.Select(e => e.GenerateInnerId()).ToList();
+
+        var nodeCreateCommands = nodes
+            .Select(n => n.CreateNodeCommand(migrationId))
+            .ToList();
+
+        var edgeCreateCommands = edges
+            .Select(e => e.CreateEdgeCommand(nodesByExId, migrationId))
+            .ToList();
+
+        using var session = Driver.AsyncSession(s => s.WithDatabase(DbSettings.Name));
+        using var transaction = await session.BeginTransactionAsync();
+
+        try
+        {
+            await ExecuteCommands(transaction, nodeCreateCommands, ct);
+            await ExecuteCommands(transaction, edgeCreateCommands, ct);
+            await transaction.CommitAsync();
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            throw ex;
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+
+        return true;
+    }
+
+    public async Task<Result<bool>> AddNodes(List<NodeDto> nodes, CancellationToken ct = default)
+    {
+        var newNodes = nodes.Select(n => n.GenerateInnerId()).ToList();
+        var nodeCreateCommands = newNodes
+           .Select(n => n.CreateNodeCommand())
+           .ToList();
+
+        return await ExecuteCommands(nodeCreateCommands, ct);
+    }
+
+    public async Task<Result<bool>> AddEdges(List<EdgeDto> edges, CancellationToken ct = default)
+    {
+        var newEdges = edges.Select(e => e.GenerateInnerId()).ToList();
+        var edgeCreateCommands = newEdges
+            .Select(e => e.CreateEdgeCommand())
+            .ToList();
+
+        return await ExecuteCommands(edgeCreateCommands, ct);
+    }
+
+    // todo: extract to some base repository
+    public async Task<Result<bool>> ExecuteCommands(List<Command> commands, CancellationToken ct)
+    {
+        using var session = Driver.AsyncSession(s => s.WithDatabase(DbSettings.Name));
+        using var transaction = await session.BeginTransactionAsync();
+
+        try
+        {
+            foreach (var command in commands)
+            {
+                await transaction.RunAsync(command.Text, command.Value);
+            }
+
+            await transaction.CommitAsync();
+
+            return Result.Success(true);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to execute commands");
+            return ResultType.FailedToSave<bool>(ex.Message);
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+    }
+
+    public async Task<Result<bool>> ExecuteCommands(IAsyncTransaction transaction, List<Command> commands, CancellationToken ct)
+    {
+        try
+        {
+            foreach (var command in commands)
+            {
+                await transaction.RunAsync(command.Text, command.Value);
+            }
+
+            return Result.Success(true);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to execute commands");
+            return ResultType.FailedToSave<bool>(ex.Message);
+        }
+    }
+
+    public async Task<Result<(List<Dictionary<string, object>> Nodes, List<Dictionary<string, object>> Edges)>> GetSourceRoadmap(string roadmapId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var query = @"
+                MATCH (r:ROADMAP {id: $id})
+                OPTIONAL MATCH path = (r)-[*0..]->(connected)
+                RETURN r, path, connected";
+
+            var (response, _, _) = await Driver.ExecutableQuery(query)
+                .WithConfig(new QueryConfig(database: DbSettings.Name))
+                .WithParameters(new { id = roadmapId })
+                .ExecuteAsync();
+
+            var nodesSet = new Dictionary<long, Dictionary<string, object>>();
+            var edgesSet = new Dictionary<long, Dictionary<string, object>>();
+
+            foreach (var record in response)
+            {
+                var rNode = record["r"]?.As<INode>();
+                if (rNode != null && !nodesSet.ContainsKey(rNode.Id))
+                {
+                    nodesSet[rNode.Id] = rNode.ToDict();
+                }
+
+                var connected = record["connected"]?.As<INode>();
+                if (connected != null && !nodesSet.ContainsKey(connected.Id))
+                {
+                    nodesSet[connected.Id] = connected.ToDict();
+                }
+
+                if (record["path"] is IPath path)
+                {
+                    foreach (var node in path.Nodes)
+                    {
+                        if (!nodesSet.ContainsKey(node.Id))
+                        {
+                            nodesSet[node.Id] = node.ToDict();
+                        }
+                    }
+
+                    foreach (var rel in path.Relationships)
+                    {
+                        if (!edgesSet.ContainsKey(rel.Id))
+                        {
+                            edgesSet[rel.Id] = rel.ToDict(nodesSet);
+                        }
+                    }
+                }
+            }
+
+            return Result.Success((nodesSet.Values.ToList(), edgesSet.Values.ToList()));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to get roadmap {roadmapId}", roadmapId);
+            return ResultType.FailedToGetRoadmap<(List<Dictionary<string, object>> Nodes, List<Dictionary<string, object>> Edges)>(ex.Message);
+        }
+    }
+
+    public async Task<Result<(List<NodeDto> Nodes, List<EdgeDto> Edges)>> GetRoadmap(string roadmapId, CancellationToken cancellationToken)
+    {
+        var sourceRoadmapResult = await GetSourceRoadmap(roadmapId, cancellationToken);
+        if (!sourceRoadmapResult.IsSuccessful)
+        {
+            return ResultType.FailedToGetRoadmap<(List<NodeDto> Nodes, List<EdgeDto> Edges)>(sourceRoadmapResult.Message);
+        }
+
+        var (nodes, edges) = sourceRoadmapResult.Data;
+        var nodesDict = nodes.Select(n => n.ToNodeDto())
+            .ToDictionary(n => n.Id, n => n);
+        var edgesList = edges.Select(e => e.ToEdgeDto(nodesDict)).ToList();
+        var nodesList = nodesDict.Values.ToList();
+
+        return Result.Success((nodesList, edgesList));
+    }
+
+    public async Task<Result<PaginationResult<List<NodeDto>>>> GetAllPlainRoadmaps(PaginationParams paginationParams, CancellationToken ct)
+    {
+        try
+        {
+            using var session = Driver.AsyncSession(s => s.WithDatabase(DbSettings.Name));
+            var query = @"
+                MATCH (r:ROADMAP)
+                RETURN r
+                SKIP $skip
+                LIMIT $limit";
+            var response = await session.ExecuteReadAsync(async tx =>
+            {
+                var result = await tx.RunAsync(query, new
+                {
+                    skip = paginationParams.Skip,
+                    limit = paginationParams.PageSize
+                });
+
+                var nodes = new List<NodeDto>();
+                while (await result.FetchAsync())
+                {
+                    var node = result.Current["r"].As<INode>().Properties.ToDictionary().ToNodeDto();
+                    nodes.Add(node);
+                }
+                return nodes;
+            });
+
+            var countQuery = @"MATCH (r:ROADMAP) RETURN count(r) as total";
+            var totalCount = await session.ExecuteReadAsync(async tx =>
+            {
+                var result = await tx.RunAsync(countQuery);
+                await result.FetchAsync();
+                return result.Current["total"].As<int>();
+            });
+
+            await session.CloseAsync();
+            
+            return Result.Success(new PaginationResult<List<NodeDto>>
+            {
+                Result = response,
+                TotalCount = totalCount,
+            });
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to get all roadmaps");
+            return ResultType.FailedToGetRoadmap<PaginationResult<List<NodeDto>>>(ex.Message);
+        }
+    }
+
+    public async Task<Result<bool>> UpdateNodesDescription(Dictionary<string, string> nodesPropsToUpdate, CancellationToken ct)
+    {
+        var commands = new List<Command>();
+        foreach(var nP in nodesPropsToUpdate)
+        {
+            var command = new Command
+            {
+                Text = "MATCH (n) WHERE n.externalId = $externalId SET n.description = $description",
+                Value = new Dictionary<string, object>
+                {
+                    { "externalId", nP.Key },
+                    { "description", nP.Value }
+                }
+            };
+
+            commands.Add(command);
+        }
+
+        return await ExecuteCommands(commands, ct);
+    }
+}

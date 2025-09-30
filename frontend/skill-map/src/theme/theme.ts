@@ -15,6 +15,7 @@ const config = defineConfig({
       // bg - #FFFFFF (white)
       // accent - #B9FF66 (green)
       // muted - #F4F4F4 (gray)
+      // error -rgb(203, 96, 102) (red)
       colors: {
         brand: {
           20: { value: '#F4F4F4' }, // gray
@@ -29,6 +30,7 @@ const config = defineConfig({
           800: { value: '#20263E' },
           900: { value: '#161A28' },
           950: { value: '#0D0F14' },
+          1000: { value: '#cb6065' },
         },
       },
     },

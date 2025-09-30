@@ -4,7 +4,7 @@ import { BiError } from 'react-icons/bi';
 export default function ErrorScreen() {
   return (
     <Flex w="full" h="full" alignItems="center" justifyContent="center">
-      <BiError size="3em" color="red" />
+      <BiError size="3em" color="brand.1000" />
     </Flex>
   );
 }

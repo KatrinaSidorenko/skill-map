@@ -23,3 +23,8 @@ export function mapRoadmapToReactFlow(roadmap: Roadmap): {
 
   return { nodes, edges };
 }
+
+export const defaultPagination = {
+  pageSize: 6,
+  pageNumber: 1,
+}

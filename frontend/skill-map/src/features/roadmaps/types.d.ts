@@ -1,7 +1,7 @@
 interface PlainRoadmap {
   id: number;
-  name: string;
-  image: string;
+  title: string;
+  imageUrl: string;
   status: 'draft' | 'in-progress' | 'completed';
   isSaved?: boolean;
 }
@@ -28,10 +28,13 @@ interface Roadmap {
 interface PlainRoadmapsResponse {
   roadmaps: PlainRoadmap[];
   total: number;
-  page: number;
-  pageSize: number;
 }
 
 interface RoadmapResponse {
   roadmap: Roadmap;
+}
+
+interface PaginationConfig {
+  pageSize: number;
+  pageNumber: number;
 }
