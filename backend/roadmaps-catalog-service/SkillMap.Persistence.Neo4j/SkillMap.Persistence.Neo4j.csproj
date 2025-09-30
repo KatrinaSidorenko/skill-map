@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\LearningPlatform.Roadmap.Business.Contracts\LearningPlatform.Roadmap.Business.Contracts.csproj" />
+    <ProjectReference Include="..\LearningPlatform.Roadmap.Business.Contracts\LearningPlatform.Roadmap.Business.Contracts.csproj" />
   </ItemGroup>
 
 </Project>
