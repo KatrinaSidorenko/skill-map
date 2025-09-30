@@ -13,8 +13,9 @@ export default function Container({
       py={4}
       borderRadius="lg"
       bg={isSection ? 'bg.section' : 'bg.page'}
-      w="full"
-      h="full"
+      width={'full'}
+      height={'full'}
+      overflow={'auto'}
     >
       {children}
     </Box>

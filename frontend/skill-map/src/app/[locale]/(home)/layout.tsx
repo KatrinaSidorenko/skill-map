@@ -13,14 +13,12 @@ export default function HomeLayout({
 }>) {
   return (
     <SidebarProvider>
-      <Flex width="100vw" height="100vh" direction="column">
-        <SidebarLayout>
-          <Flex direction="column" bg="bg.page" gap={4} h="100%" w="100%">
-            <Header />
-            <Container>{children}</Container>
-          </Flex>
-        </SidebarLayout>
-      </Flex>
+      <SidebarLayout>
+        <Flex bg="bg.page" gap={4} height="100vh" direction="column">
+          <Header />
+          <Container>{children}</Container>
+        </Flex>
+      </SidebarLayout>
     </SidebarProvider>
   );
 }

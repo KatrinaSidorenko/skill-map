@@ -49,4 +49,5 @@ export const {
   useGetRoadmapsQuery,
   useGetRoadmapByIdQuery,
   useGetSavedRoadmapsQuery,
+  useLazyGetRoadmapsQuery
 } = roadmapApi;
