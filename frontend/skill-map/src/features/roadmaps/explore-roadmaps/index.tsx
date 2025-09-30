@@ -6,15 +6,17 @@ import RoadmapGrid from '@/components/roadmap/roadmapGrid';
 import SpinnerScreen from '@/components/base/spinner';
 import SearchContainer from '@/components/search-container';
 import ErrorScreen from '@/components/base/error';
+import { defaultPagination } from '../helpers';
 
 // todo: implement search and filtering
 export default function ExploreRoadmapsPage() {
-  const [page, setPage] = useState(1);
-  const pageSize = 6;
+  const { pageSize: deafultPageSize, pageNumber: defaultPageNumber } =
+    defaultPagination;
+  const [page, setPage] = useState(defaultPageNumber);
 
   const { data, error, isLoading, isFetching } = useGetRoadmapsQuery({
-    page,
-    pageSize,
+    pageNumber: page,
+    pageSize: deafultPageSize,
   });
 
   const setPageSafe = (newPage: number) => {
@@ -27,7 +29,7 @@ export default function ExploreRoadmapsPage() {
   if (error) {
     return <ErrorScreen />;
   }
-  
+
   if (isLoading) {
     return <SpinnerScreen />;
   }
@@ -37,7 +39,7 @@ export default function ExploreRoadmapsPage() {
       disabled={isFetching}
       page={page}
       setPage={setPageSafe}
-      pageSize={pageSize}
+      pageSize={deafultPageSize}
       total={data?.total || 0}
     >
       <RoadmapGrid roadmaps={roadmaps} />

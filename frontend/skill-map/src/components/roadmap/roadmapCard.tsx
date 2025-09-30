@@ -1,5 +1,6 @@
 'use client';
 
+import { MOCK_IMAGE_URL } from '@/store/mock';
 import { HoverCard, Image, Text, Badge, VStack, Flex } from '@chakra-ui/react';
 import NextLink from 'next/link';
 
@@ -31,8 +32,8 @@ export function RoadmapCard({ roadmap }: RoadmapCardProps) {
             p={2}
           >
             <Image
-              src={roadmap.image}
-              alt={roadmap.name}
+              src={roadmap.imageUrl ?? MOCK_IMAGE_URL}
+              alt={roadmap.title}
               w="160px"
               h="130px"
               objectFit="cover"
@@ -42,7 +43,7 @@ export function RoadmapCard({ roadmap }: RoadmapCardProps) {
 
             <VStack gap={2} p={4} align="start">
               <Text fontSize="lg" fontWeight="bold" color="text.heading">
-                {roadmap.name}
+                {roadmap.title}
               </Text>
               <Badge colorScheme={statusColor}>{roadmap.status}</Badge>
             </VStack>

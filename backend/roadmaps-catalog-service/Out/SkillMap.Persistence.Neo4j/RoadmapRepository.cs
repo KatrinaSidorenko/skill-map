@@ -1,9 +1,10 @@
 ﻿using LearningPlatform.Roadmap.Business.Contracts;
 using LearningPlatform.Roadmap.Business.Contracts.Models;
+using Microsoft.Extensions.Logging;
 using Neo4j.Driver;
 using SkillMap.Persistence.Neo4j.Helpers;
+using SkillMap.Shared.Models;
 using SkillMap.Shared.Results;
-using ISerilogLogger = Serilog.ILogger;
 
 namespace SkillMap.Persistence.Neo4j;
 
@@ -11,8 +12,8 @@ internal class RoadmapRepository : IRoadmapRepository
 {
     private IDriver Driver { get; }
     private DbSettings DbSettings { get; }
-    private ISerilogLogger Logger { get; }
-    public RoadmapRepository(IDriver driver, DbSettings dbSettings, ISerilogLogger logger)
+    private ILogger<IRoadmapRepository> Logger { get; }
+    public RoadmapRepository(IDriver driver, DbSettings dbSettings, ILogger<IRoadmapRepository> logger)
     {
         Driver = driver ?? throw new ArgumentNullException(nameof(driver));
         DbSettings = dbSettings ?? throw new ArgumentNullException(nameof(dbSettings));
@@ -99,7 +100,7 @@ internal class RoadmapRepository : IRoadmapRepository
         }
         catch (Exception ex)
         {
-            Logger.Error(ex, "Failed to execute commands");
+            Logger.LogError(ex, "Failed to execute commands");
             return ResultType.FailedToSave<bool>(ex.Message);
         }
         finally
@@ -121,7 +122,7 @@ internal class RoadmapRepository : IRoadmapRepository
         }
         catch (Exception ex)
         {
-            Logger.Error(ex, "Failed to execute commands");
+            Logger.LogError(ex, "Failed to execute commands");
             return ResultType.FailedToSave<bool>(ex.Message);
         }
     }
@@ -181,7 +182,7 @@ internal class RoadmapRepository : IRoadmapRepository
         }
         catch (Exception ex)
         {
-            Logger.Error(ex, "Failed to get roadmap {roadmapId}", roadmapId);
+            Logger.LogError(ex, "Failed to get roadmap {roadmapId}", roadmapId);
             return ResultType.FailedToGetRoadmap<(List<Dictionary<string, object>> Nodes, List<Dictionary<string, object>> Edges)>(ex.Message);
         }
     }
@@ -203,17 +204,24 @@ internal class RoadmapRepository : IRoadmapRepository
         return Result.Success((nodesList, edgesList));
     }
 
-    public async Task<Result<List<NodeDto>>> GetAllRoadmaps(CancellationToken ct)
+    public async Task<Result<PaginationResult<List<NodeDto>>>> GetAllPlainRoadmaps(PaginationParams paginationParams, CancellationToken ct)
     {
         try
         {
             using var session = Driver.AsyncSession(s => s.WithDatabase(DbSettings.Name));
             var query = @"
                 MATCH (r:ROADMAP)
-                RETURN r";
+                RETURN r
+                SKIP $skip
+                LIMIT $limit";
             var response = await session.ExecuteReadAsync(async tx =>
             {
-                var result = await tx.RunAsync(query);
+                var result = await tx.RunAsync(query, new
+                {
+                    skip = paginationParams.Skip,
+                    limit = paginationParams.PageSize
+                });
+
                 var nodes = new List<NodeDto>();
                 while (await result.FetchAsync())
                 {
@@ -223,13 +231,26 @@ internal class RoadmapRepository : IRoadmapRepository
                 return nodes;
             });
 
+            var countQuery = @"MATCH (r:ROADMAP) RETURN count(r) as total";
+            var totalCount = await session.ExecuteReadAsync(async tx =>
+            {
+                var result = await tx.RunAsync(countQuery);
+                await result.FetchAsync();
+                return result.Current["total"].As<int>();
+            });
+
             await session.CloseAsync();
-            return Result.Success(response);
+            
+            return Result.Success(new PaginationResult<List<NodeDto>>
+            {
+                Result = response,
+                TotalCount = totalCount,
+            });
         }
         catch (Exception ex)
         {
-            Logger.Error(ex, "Failed to get all roadmaps");
-            return ResultType.FailedToGetRoadmap<List<NodeDto>>(ex.Message);
+            Logger.LogError(ex, "Failed to get all roadmaps");
+            return ResultType.FailedToGetRoadmap<PaginationResult<List<NodeDto>>>(ex.Message);
         }
     }
 

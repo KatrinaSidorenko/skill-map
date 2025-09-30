@@ -41,8 +41,8 @@ public class RoadmapRetriever : IRetriever
         return Result.Success((validNodes, validEdges));
     }
 
-    public async Task<Result<List<NodeDto>>> GetAllRoadmaps(CancellationToken ct = default)
-    {
-        return await RoadmapRepository.GetAllRoadmaps(ct);
-    }
+    //public async Task<Result<List<NodeDto>>> GetAllRoadmaps(CancellationToken ct = default)
+    //{
+    //    return await RoadmapRepository.GetAllPlainRoadmaps(ct);
+    //}
 }

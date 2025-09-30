@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace LearningPlatform.Roadmap.Business.Contracts.Constants;
+﻿namespace LearningPlatform.Roadmap.Business.Contracts.Constants;
 
 // todo: extract to domain -> domain to library
 public static class NodeType
@@ -20,4 +18,7 @@ public static class NodeType
 
     public static bool IsResource(this string type)
         => type == Resource;
+
+    // ADITINAL PROPS KEYS
+    public const string ImageUrl = "image_url";
 }

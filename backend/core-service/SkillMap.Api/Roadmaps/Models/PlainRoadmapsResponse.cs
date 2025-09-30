@@ -1,8 +1,9 @@
 ﻿using Newtonsoft.Json;
+using SkillMap.Api.Base.Pagination;
 
 namespace SkillMap.Api.Roadmaps.Models;
 
-public class PlainRoadmapsResponse
+public class PlainRoadmapsResponse : PaginationResponse
 {
     [JsonProperty("roadmaps")]
     public List<PlainRoadmapResponse> Roadmaps { get; set; }

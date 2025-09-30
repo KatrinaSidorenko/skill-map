@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SkillMap.Api.Base;
+using SkillMap.Api.Base.Pagination;
 using SkillMap.Api.Roadmaps.Models;
 using SkillMap.Business.Roadmaps;
 using SkillMap.Business.Roadmaps.Models;
@@ -22,14 +23,15 @@ public class RoadmapsController : BaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllPlainRoadmaps([FromQuery] PaginationRequest paginationRequest, CancellationToken ct)
+    public async Task<IActionResult> GetAllPlainRoadmaps([FromQuery]PaginationRequest paginationRequest, CancellationToken ct)
     {
-        var plainRoadmaps = await RoadmapService.GetPlainRoadmaps(paginationRequest.PageNumber, paginationRequest.PageSize, ct);
+        var plainRoadmaps = await RoadmapService.GetPlainRoadmaps(paginationRequest.ToParams(), ct);
         return Response(plainRoadmaps, (r) =>
         {
             return Ok(new PlainRoadmapsResponse
             {
-                Roadmaps = r.Data.Select(r => r.ToRoadmapResponse()).ToList()
+                Roadmaps = r.Data.Result.Select(r => r.ToRoadmapResponse()).ToList(),
+                TotalCount = r.Data.TotalCount
             });
         });
     }
