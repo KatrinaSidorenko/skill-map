@@ -1,4 +1,4 @@
-import { Edge, Node } from "@xyflow/react";
+import { Edge, Node } from '@xyflow/react';
 
 const getNodePosition = (index: number): { x: number; y: number } => ({
   x: 0,
@@ -27,4 +27,4 @@ export function mapRoadmapToReactFlow(roadmap: Roadmap): {
 export const defaultPagination = {
   pageSize: 6,
   pageNumber: 1,
-}
+};

@@ -40,6 +40,12 @@ public class RoadmapService(
         }
 
         var (nodes, edges) = roadmapResult.Data;
+        if (nodes == null || !nodes?.Any() == true)
+        {
+            Log.Error("Roadmap with ID {RoadmapId} does not exist or has no nodes", roadmapId);
+            return ResultType.RoadmapNotFound<RoadmapDto>(roadmapId);
+        }
+
         var startNode = nodes.FirstOrDefault(n => n.Type == NodeType.Roadmap);
         if (startNode == null)
         {

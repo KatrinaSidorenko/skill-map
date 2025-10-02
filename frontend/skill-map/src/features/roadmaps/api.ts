@@ -1,7 +1,6 @@
 import { baseQuery } from '@/store/baseQuery';
-import { mockRoadmaps, roadmaps } from '@/store/mock';
+import { roadmaps } from '@/store/mock';
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { get } from 'http';
 
 export const roadmapApi = createApi({
   reducerPath: 'roadmapApi',
@@ -14,7 +13,7 @@ export const roadmapApi = createApi({
         params: { pageSize, pageNumber },
       }),
     }),
-    getRoadmapById: builder.query<RoadmapResponse, number>({
+    getRoadmapById: builder.query<RoadmapResponse, string>({
       query: (id) => ({
         url: `/${id}`,
         method: 'GET',

@@ -7,7 +7,6 @@ import { FiStar } from 'react-icons/fi';
 import { IconButton, VStack, Text, Flex } from '@chakra-ui/react';
 
 import {
-  Edge,
   Node,
   Controls,
   Background,
@@ -28,9 +27,8 @@ import ErrorScreen from '@/components/base/error';
 
 export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
   const dispatch = useAppDispatch();
-  const { data, error, isLoading, isFetching } = useGetRoadmapByIdQuery(
-    Number(roadmapId),
-  );
+  const { data, error, isLoading, isFetching } =
+    useGetRoadmapByIdQuery(roadmapId);
   const isRoadmapSaved = useAppSelector((s) =>
     selectIsRoadmapSaved(s, Number(roadmapId)),
   );
@@ -44,7 +42,9 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
   useEffect(() => {
     setNodes(initialNodes);
     setEdges(initialEdges);
-  }, [isLoading]);
+    console.log('initialNodes', initialNodes);
+    console.log('initialEdges', initialEdges);
+  }, [isLoading, isFetching]);
 
   const onNodesChange = useCallback(
     (changes: NodeChange<Node>[]) =>
@@ -90,7 +90,8 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
-          fitView
+          panOnDrag
+          zoomOnScroll
         >
           <Background />
           <Controls />

@@ -7,6 +7,12 @@ namespace LearningPlatform.Roadmap.Business.Mappers;
 
 public static class RoadmapMapper
 {
+    public static string RemoveDashFromGuid(this string id)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(id));
+        return id.Replace("-", string.Empty);
+    }
     public static PlainRoadmapDto ToPlainRoadmap(this NodeDto nodeDto)
     {
         if (nodeDto == null)
@@ -32,7 +38,7 @@ public static class RoadmapMapper
             throw new ArgumentNullException(nameof(nodeDto));
         return new Node
         {
-            Id = nodeDto.ExternalId,
+            Id = nodeDto.Id.RemoveDashFromGuid(),
             Title = nodeDto.Title,
             Description = nodeDto.Description
         };
@@ -53,8 +59,8 @@ public static class RoadmapMapper
         return new Edge
         {
             Id = edgeDto.Id,
-            Source = edgeDto.Source?.Id,
-            Target = edgeDto.Target?.Id,
+            Source = edgeDto.Source?.Id.RemoveDashFromGuid(),
+            Target = edgeDto.Target?.Id.RemoveDashFromGuid(),
         };
     }
 

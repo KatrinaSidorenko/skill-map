@@ -1,5 +1,5 @@
 interface PlainRoadmap {
-  id: number;
+  id: string;
   title: string;
   imageUrl: string;
   status: 'draft' | 'in-progress' | 'completed';
@@ -7,18 +7,18 @@ interface PlainRoadmap {
 }
 
 interface RoadmapNode {
-  id: number;
+  id: string;
   title: string;
   description: string;
 }
 
 interface RoadmapEdge {
-  source: number;
-  target: number;
+  source: string;
+  target: string;
 }
 
 interface Roadmap {
-  id: number;
+  id: string;
   title: string;
   description: string;
   nodes: RoadmapNode[];

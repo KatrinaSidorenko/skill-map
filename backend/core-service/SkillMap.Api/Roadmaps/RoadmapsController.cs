@@ -34,7 +34,7 @@ public class RoadmapsController : BaseController
         });
     }
 
-    [HttpGet("roadmapId")]
+    [HttpGet("{roadmapId}")]
     public async Task<IActionResult> GetRoadmap([FromRoute] string roadmapId, CancellationToken ct)
     {
         var result = await RoadmapService.GetRoadmap(roadmapId, ct);
