@@ -54,9 +54,7 @@ public class RoadmapService(
         }
 
         var topicsAndSubTopics = nodes.Where(n => n.Type == NodeType.Topic || n.Type == NodeType.SubTopic).ToList();
-        var targetEdges = edges.Where(e => topicsAndSubTopics.Any(n => n.Id == e.Target?.Id) || topicsAndSubTopics.Any(n => n.Id == e.Source?.Id)).ToList();
-        //var test = nodes.GroupBy(n => n.Id)
-        //    .ToDictionary(g => g.Key, g => g.ToList());
+        var targetEdges = edges.Where(e => topicsAndSubTopics.Any(n => n.Id == e.Target?.Id)).ToList();
 
         return Result.Success(new RoadmapDto
         {

@@ -8,7 +8,7 @@ using SkillMap.Core.Constants;
 namespace SkillMap.Api.UserRoadmaps;
 
 [ApiController]
-[Authorize(Roles = Role.User)]
+//[Authorize(Roles = Role.User)]
 public class UserRoadmapsController : BaseController
 {
     private IUserRoadmapsService UserRoadmapsService { get; }
@@ -17,8 +17,8 @@ public class UserRoadmapsController : BaseController
         UserRoadmapsService = userRoadmapsService ?? throw new ArgumentNullException(nameof(userRoadmapsService));
     }
 
-    [HttpPost("{roadmapId}")]
-    public async Task<IActionResult> AddRoadmap(string roadmapId, CancellationToken ct)
+    [HttpPost("save")]
+    public async Task<IActionResult> AddRoadmap([FromQuery]string roadmapId, CancellationToken ct)
     {
         var result = await UserRoadmapsService.LinkRoadmap(GetUserId(), roadmapId, ct);
         return Response(result);

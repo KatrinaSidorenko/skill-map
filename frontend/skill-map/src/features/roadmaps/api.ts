@@ -4,19 +4,25 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 
 export const roadmapApi = createApi({
   reducerPath: 'roadmapApi',
-  baseQuery: baseQuery('roadmaps'),
+  baseQuery: baseQuery(''),
   endpoints: (builder) => ({
     getRoadmaps: builder.query<PlainRoadmapsResponse, PaginationConfig>({
       query: ({ pageSize, pageNumber }) => ({
-        url: '',
+        url: 'roadmaps',
         method: 'GET',
         params: { pageSize, pageNumber },
       }),
     }),
     getRoadmapById: builder.query<RoadmapResponse, string>({
       query: (id) => ({
-        url: `/${id}`,
+        url: `roadmaps/${id}`,
         method: 'GET',
+      }),
+    }),
+    saveRoadmap: builder.mutation<void, { id: string }>({
+      query: ({ id }) => ({
+        url: `userroadmaps/save?roadmapId=${id}`,
+        method: 'POST',
       }),
     }),
     getSavedRoadmaps: builder.query<
@@ -45,4 +51,5 @@ export const {
   useGetRoadmapByIdQuery,
   useGetSavedRoadmapsQuery,
   useLazyGetRoadmapsQuery,
+  useSaveRoadmapMutation,
 } = roadmapApi;

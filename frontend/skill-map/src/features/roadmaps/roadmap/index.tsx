@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { useState, useCallback } from 'react';
 import { FaStar } from 'react-icons/fa';
 import { FiStar } from 'react-icons/fi';
-import { IconButton, VStack, Text, Flex } from '@chakra-ui/react';
+import { IconButton, VStack, Text, Flex, Spinner } from '@chakra-ui/react';
 
 import {
   Node,
@@ -19,19 +19,23 @@ import {
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { addOrRemoveRoadmap, selectIsRoadmapSaved } from '../store';
 import '@xyflow/react/dist/style.css';
-import { useGetRoadmapByIdQuery } from '../api';
+import { useGetRoadmapByIdQuery, useSaveRoadmapMutation } from '../api';
 import SpinnerScreen from '@/components/base/spinner';
 import { mapRoadmapToReactFlow } from '../helpers';
 import NotFound from '@/components/base/notfound';
 import ErrorScreen from '@/components/base/error';
+import { retrieveErrorData } from '@/store/helpers';
+import { toaster } from '@/components/ui/toaster';
 
 export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
   const dispatch = useAppDispatch();
   const { data, error, isLoading, isFetching } =
     useGetRoadmapByIdQuery(roadmapId);
   const isRoadmapSaved = useAppSelector((s) =>
-    selectIsRoadmapSaved(s, Number(roadmapId)),
+    selectIsRoadmapSaved(s, roadmapId),
   );
+  const [saveRoadmapTrigger, { isLoading: isSavingRoadmap }] =
+    useSaveRoadmapMutation();
   const roadmap = data?.roadmap;
   const { nodes: initialNodes, edges: initialEdges } = roadmap
     ? mapRoadmapToReactFlow(roadmap)
@@ -42,8 +46,6 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
   useEffect(() => {
     setNodes(initialNodes);
     setEdges(initialEdges);
-    console.log('initialNodes', initialNodes);
-    console.log('initialEdges', initialEdges);
   }, [isLoading, isFetching]);
 
   const onNodesChange = useCallback(
@@ -56,6 +58,27 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
       setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
     [],
   );
+
+  const saveRoadmap = () => {
+    try {
+      saveRoadmapTrigger({ id: roadmapId }).unwrap();
+      dispatch(addOrRemoveRoadmap(roadmapId));
+    } catch (error) {
+      const errorData = retrieveErrorData(error);
+      let description = '';
+      if (errorData) {
+        //description = getAuthTranslations(errorData.code);
+        description = errorData.message;
+      }
+      toaster.create({
+        //title: getAuthTranslations('setNewPasswordFailed'),
+        title: 'Save Roadmap Failed',
+        type: 'error',
+        description: description,
+        closable: true,
+      });
+    }
+  };
 
   if (isLoading || isFetching) {
     return <SpinnerScreen />;
@@ -78,9 +101,15 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
         <IconButton
           aria-label="Save Roadmap"
           size="sm"
-          onClick={() => dispatch(addOrRemoveRoadmap(Number(roadmapId)))}
+          onClick={() => saveRoadmap()}
         >
-          {isRoadmapSaved ? <FaStar /> : <FiStar />}
+          {isSavingRoadmap ? (
+            <Spinner color="blue.500" animationDuration="0.8s" size="sm" />
+          ) : isRoadmapSaved ? (
+            <FaStar />
+          ) : (
+            <FiStar />
+          )}
         </IconButton>
       </Flex>
 
