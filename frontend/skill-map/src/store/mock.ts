@@ -53,7 +53,7 @@ export const roadmaps: PlainRoadmap[] = [
 export const mockRoadmaps: Roadmap[] = [
   {
     id: 1,
-    name: 'Frontend Developer',
+    title: 'Frontend Developer',
     description: 'Learn the skills required to become a frontend engineer.',
     nodes: [
       {
@@ -97,7 +97,7 @@ export const mockRoadmaps: Roadmap[] = [
   },
   {
     id: 2,
-    name: 'Backend Developer',
+    title: 'Backend Developer',
     description: 'Skills and technologies for backend engineering.',
     nodes: [
       {
@@ -140,7 +140,7 @@ export const mockRoadmaps: Roadmap[] = [
   },
   {
     id: 3,
-    name: 'Fullstack Developer',
+    title: 'Fullstack Developer',
     description:
       'Combine frontend and backend skills into fullstack expertise.',
     nodes: [

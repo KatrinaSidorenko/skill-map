@@ -5,8 +5,6 @@ using SkillMap.Api.Base;
 using SkillMap.Api.Base.Pagination;
 using SkillMap.Api.Roadmaps.Models;
 using SkillMap.Business.Roadmaps;
-using SkillMap.Business.Roadmaps.Models;
-using SkillMap.Core.Constants;
 
 namespace SkillMap.Api.Roadmaps;
 
@@ -34,6 +32,16 @@ public class RoadmapsController : BaseController
                 TotalCount = r.Data.TotalCount
             });
         });
+    }
+
+    [HttpGet("roadmapId")]
+    public async Task<IActionResult> GetRoadmap([FromRoute] string roadmapId, CancellationToken ct)
+    {
+        var result = await RoadmapService.GetRoadmap(roadmapId, ct);
+        return Response(result, (r) => Ok(new RoadmapResponse
+        {
+            Roadmap = r.Data
+        }));
     }
 
 

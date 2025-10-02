@@ -1,6 +1,7 @@
 import { baseQuery } from '@/store/baseQuery';
 import { mockRoadmaps, roadmaps } from '@/store/mock';
 import { createApi } from '@reduxjs/toolkit/query/react';
+import { get } from 'http';
 
 export const roadmapApi = createApi({
   reducerPath: 'roadmapApi',
@@ -14,15 +15,10 @@ export const roadmapApi = createApi({
       }),
     }),
     getRoadmapById: builder.query<RoadmapResponse, number>({
-      async queryFn(id) {
-        const roadmap = mockRoadmaps.find((r) => r.id === id);
-
-        if (!roadmap) {
-          return { error: { status: 404, data: 'Not found' } };
-        }
-
-        return { data: { roadmap: roadmap } };
-      },
+      query: (id) => ({
+        url: `/${id}`,
+        method: 'GET',
+      }),
     }),
     getSavedRoadmaps: builder.query<
       PlainRoadmapsResponse,
@@ -49,5 +45,5 @@ export const {
   useGetRoadmapsQuery,
   useGetRoadmapByIdQuery,
   useGetSavedRoadmapsQuery,
-  useLazyGetRoadmapsQuery
+  useLazyGetRoadmapsQuery,
 } = roadmapApi;

@@ -187,7 +187,7 @@ internal class RoadmapRepository : IRoadmapRepository
         }
     }
 
-    public async Task<Result<(List<NodeDto> Nodes, List<EdgeDto> Edges)>> GetRoadmap(string roadmapId, CancellationToken cancellationToken)
+    public async Task<Result<(List<NodeDto> Nodes, List<EdgeDto> Edges)>> GetRoadmapById(string roadmapId, CancellationToken cancellationToken)
     {
         var sourceRoadmapResult = await GetSourceRoadmap(roadmapId, cancellationToken);
         if (!sourceRoadmapResult.IsSuccessful)

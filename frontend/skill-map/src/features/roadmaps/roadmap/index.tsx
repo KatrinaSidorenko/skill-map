@@ -23,7 +23,8 @@ import '@xyflow/react/dist/style.css';
 import { useGetRoadmapByIdQuery } from '../api';
 import SpinnerScreen from '@/components/base/spinner';
 import { mapRoadmapToReactFlow } from '../helpers';
-
+import NotFound from '@/components/base/notfound';
+import ErrorScreen from '@/components/base/error';
 
 export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
   const dispatch = useAppDispatch();
@@ -56,19 +57,23 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
     [],
   );
 
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return <SpinnerScreen />;
   }
 
   if (!roadmap) {
-    return <div>Roadmap not found</div>;
+    return <NotFound />;
+  }
+
+  if (error) {
+    return <ErrorScreen />;
   }
 
   return (
     <VStack w="full" gap={8}>
       <Flex w="full" justify="space-between" direction="row" align="center">
         <Text fontSize="2xl" fontWeight="bold">
-          {roadmap.name}
+          {roadmap.title}
         </Text>
         <IconButton
           aria-label="Save Roadmap"

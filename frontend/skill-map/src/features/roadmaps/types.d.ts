@@ -19,7 +19,7 @@ interface RoadmapEdge {
 
 interface Roadmap {
   id: number;
-  name: string;
+  title: string;
   description: string;
   nodes: RoadmapNode[];
   edges: RoadmapEdge[];
