@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SkillMap.Api.Base;
-using SkillMap.Api.Base.Pagination;
+using SkillMap.Api.Base.Searching;
 using SkillMap.Api.Roadmaps.Models;
 using SkillMap.Business.Roadmaps;
 

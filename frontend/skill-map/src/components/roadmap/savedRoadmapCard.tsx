@@ -5,7 +5,7 @@ import { HoverCard, Image, Text, Badge, VStack, Flex } from '@chakra-ui/react';
 import NextLink from 'next/link';
 
 interface RoadmapCardProps {
-  roadmap: PlainRoadmap;
+  roadmap: SavedPlainRoadmap;
 }
 
 export function RoadmapCard({ roadmap }: RoadmapCardProps) {
@@ -39,7 +39,15 @@ export function RoadmapCard({ roadmap }: RoadmapCardProps) {
               <Text fontSize="lg" fontWeight="bold" color="text.heading">
                 {roadmap.title}
               </Text>
-              {/* <Badge colorScheme={statusColor}>{roadmap.status}</Badge> */}
+              <Badge>{roadmap.status}</Badge>
+            </VStack>
+            <VStack gap={2} p={4} align="end">
+              <Text fontSize="md" color="text.body">
+                Progress: {roadmap.progress}%
+              </Text>
+              <Text fontSize="sm" color="text.muted">
+                Saved on: {new Date(roadmap.savedAt).toLocaleDateString()}
+              </Text>
             </VStack>
           </Flex>
         </NextLink>

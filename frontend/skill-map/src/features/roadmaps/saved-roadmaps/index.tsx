@@ -1,7 +1,7 @@
 'use client';
 
 import SpinnerScreen from '@/components/base/spinner';
-import { useLazyGetRoadmapsQuery } from '../api';
+import { useLazyGetSavedRoadmapsQuery } from '../api';
 import { useEffect, useRef, useState } from 'react';
 import ErrorScreen from '@/components/base/error';
 import { Box, Flex, Input, InputGroup, Spinner } from '@chakra-ui/react';
@@ -19,12 +19,12 @@ export default function SavedRoadmaps() {
 
   // Lazy query hook
   const [fetchRoadmaps, { data, error, isLoading, isFetching }] =
-    useLazyGetRoadmapsQuery();
+    useLazyGetSavedRoadmapsQuery();
 
   // Fetch data when page changes
   useEffect(() => {
     if (!hasMore) return;
-    fetchRoadmaps({ pageNumber: page, pageSize: defaultPageSize });
+    fetchRoadmaps({ pageNumber: page, pageSize: defaultPageSize, query: null });
   }, [page, fetchRoadmaps, hasMore, defaultPageSize]);
 
   // Accumulate new items

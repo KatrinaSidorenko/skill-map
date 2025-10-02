@@ -20,27 +20,17 @@ export const roadmapApi = createApi({
     }),
     saveRoadmap: builder.mutation<void, { id: string }>({
       query: ({ id }) => ({
-        url: `userroadmaps/save?roadmapId=${id}`,
+        url: `userroadmaps/save`,
         method: 'POST',
+        params: { roadmapId: id },
       }),
     }),
-    getSavedRoadmaps: builder.query<
-      PlainRoadmapsResponse,
-      { page?: number; pageSize?: number }
-    >({
-      async queryFn({ page = 1, pageSize = 10 }) {
-        // ✅ mock pagination
-        // const start = (page - 1) * pageSize;
-        // const paginated = roadmaps.slice(start, start + pageSize);
-        return {
-          data: {
-            roadmaps: [],
-            total: 0,
-            page,
-            pageSize,
-          },
-        };
-      },
+    getSavedRoadmaps: builder.query<SavedPlainRoadmapsResponse, SearchConfig>({
+      query: ({ pageSize, pageNumber, query }) => ({
+        url: 'modifiedroadmaps',
+        method: 'GET',
+        params: { pageSize, pageNumber, query },
+      }),
     }),
   }),
 });
@@ -48,7 +38,7 @@ export const roadmapApi = createApi({
 export const {
   useGetRoadmapsQuery,
   useGetRoadmapByIdQuery,
-  useGetSavedRoadmapsQuery,
+  useLazyGetSavedRoadmapsQuery,
   useLazyGetRoadmapsQuery,
   useSaveRoadmapMutation,
 } = roadmapApi;

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace SkillMap.Api.Base.Pagination;
+namespace SkillMap.Api.Base.Searching;
 
 public abstract class PaginationResponse
 {

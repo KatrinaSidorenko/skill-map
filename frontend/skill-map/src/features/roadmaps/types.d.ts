@@ -2,8 +2,13 @@ interface PlainRoadmap {
   id: string;
   title: string;
   imageUrl: string;
-  status: 'draft' | 'in-progress' | 'completed';
   isSaved?: boolean;
+}
+
+interface SavedPlainRoadmap extends PlainRoadmap {
+  progress: number; // percentage of completion
+  savedAt: string; // ISO date string
+  status: 'not-started' | 'in-progress' | 'completed';
 }
 
 interface RoadmapNode {
@@ -25,9 +30,18 @@ interface Roadmap {
   edges: RoadmapEdge[];
 }
 
-interface PlainRoadmapsResponse {
-  roadmaps: PlainRoadmap[];
+interface IPaginationResponse {
   total: number;
+  page: number;
+  pageSize: number;
+}
+
+interface PlainRoadmapsResponse extends IPaginationResponse {
+  roadmaps: PlainRoadmap[];
+}
+
+interface SavedPlainRoadmapsResponse extends IPaginationResponse {
+  roadmaps: SavedPlainRoadmap[];
 }
 
 interface RoadmapResponse {
@@ -37,4 +51,8 @@ interface RoadmapResponse {
 interface PaginationConfig {
   pageSize: number;
   pageNumber: number;
+}
+
+interface SearchConfig extends PaginationConfig {
+  query: string | null;
 }

@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using SkillMap.Api.Base.Pagination;
+using SkillMap.Api.Base.Searching;
 
 namespace SkillMap.Api.Roadmaps.Models;
 
