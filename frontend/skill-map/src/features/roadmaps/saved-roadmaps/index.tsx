@@ -1,45 +1,102 @@
 'use client';
 
-import RoadmapGrid from '@/components/roadmap/roadmapGrid';
-import SearchContainer from '@/components/search-container';
 import SpinnerScreen from '@/components/base/spinner';
-import { useGetSavedRoadmapsQuery } from '../api';
-import { useState } from 'react';
+import { useLazyGetRoadmapsQuery } from '../api';
+import { useEffect, useRef, useState } from 'react';
 import ErrorScreen from '@/components/base/error';
+import { Box, Flex, Input, InputGroup, Spinner } from '@chakra-ui/react';
+import { LuSearch } from 'react-icons/lu';
+import { defaultPagination } from '../helpers';
+import { RoadmapCard } from '@/components/roadmap/roadmapCard';
 
 export default function SavedRoadmaps() {
-  const [page, setPage] = useState(1);
-  const pageSize = 6;
+  const { pageSize: defaultPageSize, pageNumber: defaultPageNumber } =
+    defaultPagination;
 
-  const { data, error, isLoading, isFetching } = useGetSavedRoadmapsQuery({
-    page,
-    pageSize,
-  });
+  const [page, setPage] = useState(defaultPageNumber);
+  const [items, setItems] = useState<PlainRoadmap[]>([]);
+  const [hasMore, setHasMore] = useState(true);
 
-  const setPageSafe = (newPage: number) => {
-    if (newPage < 1) return 1;
-    setPage(newPage);
-    return newPage;
-  };
+  // Lazy query hook
+  const [fetchRoadmaps, { data, error, isLoading, isFetching }] =
+    useLazyGetRoadmapsQuery();
 
-  const roadmaps = data?.roadmaps ?? [];
-  if (error) {
-    return <ErrorScreen />;
-  }
+  // Fetch data when page changes
+  useEffect(() => {
+    if (!hasMore) return;
+    fetchRoadmaps({ pageNumber: page, pageSize: defaultPageSize });
+  }, [page, fetchRoadmaps, hasMore, defaultPageSize]);
 
-  if (isLoading) {
-    return <SpinnerScreen />;
-  }
+  // Accumulate new items
+  useEffect(() => {
+    if (data?.roadmaps) {
+      const newItems = data.roadmaps.filter(
+        (newItem) => !items.some((item) => item.id === newItem.id),
+      );
+      setItems((prev) => [...prev, ...newItems]);
+
+      if (data.roadmaps.length < defaultPageSize) {
+        setHasMore(false);
+      }
+    }
+  }, [data]);
+
+  // Infinite scroll observer
+  const loaderRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!hasMore || isFetching) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setPage((prev) => prev + 1);
+        }
+      },
+      { threshold: 1.0 },
+    );
+
+    if (loaderRef.current) observer.observe(loaderRef.current);
+    return () => {
+      if (loaderRef.current) observer.unobserve(loaderRef.current);
+    };
+  }, [hasMore, isFetching]);
+
+  if (error) return <ErrorScreen />;
+  if (isLoading && page === 1) return <SpinnerScreen />;
 
   return (
-    <SearchContainer
-      disabled={isFetching}
-      page={page}
-      setPage={setPageSafe}
-      pageSize={pageSize}
-      total={data?.total || 0}
+    <Flex
+      direction="column"
+      gap={4}
+      alignItems="center"
+      justifyContent="center"
     >
-      <RoadmapGrid roadmaps={roadmaps} />
-    </SearchContainer>
+      {/* Search bar */}
+      <Box w="sm" p={4} mb={8}>
+        <InputGroup
+          borderRadius="md"
+          bg="bg.page"
+          boxShadow="sm"
+          endElement={<LuSearch />}
+        >
+          <Input placeholder="Search roadmaps..." />
+        </InputGroup>
+      </Box>
+
+      {/* Roadmap grid */}
+      <Box flex="1" w="full" px={4}>
+        <Flex direction="column" gap={4} alignItems="stretch">
+          {items.map((roadmap) => (
+            <RoadmapCard key={roadmap.id} roadmap={roadmap} />
+          ))}
+        </Flex>
+
+        {hasMore && (
+          <Box ref={loaderRef} display="flex" justifyContent="center" py={4}>
+            {isFetching && <Spinner />}
+          </Box>
+        )}
+      </Box>
+    </Flex>
   );
 }

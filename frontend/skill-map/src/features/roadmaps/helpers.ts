@@ -61,6 +61,6 @@ export function mapRoadmapToReactFlow(roadmap: Roadmap): {
 }
 
 export const defaultPagination = {
-  pageSize: 6,
+  pageSize: 3,
   pageNumber: 1,
 };

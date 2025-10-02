@@ -67,7 +67,6 @@ export default function ExploreRoadmapsPage() {
   return (
     <Flex
       direction="column"
-      h="100%"
       gap={4}
       alignItems="center"
       justifyContent="center"

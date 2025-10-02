@@ -1,5 +1,4 @@
 import { baseQuery } from '@/store/baseQuery';
-import { roadmaps } from '@/store/mock';
 import { createApi } from '@reduxjs/toolkit/query/react';
 
 export const roadmapApi = createApi({
@@ -31,12 +30,12 @@ export const roadmapApi = createApi({
     >({
       async queryFn({ page = 1, pageSize = 10 }) {
         // ✅ mock pagination
-        const start = (page - 1) * pageSize;
-        const paginated = roadmaps.slice(start, start + pageSize);
+        // const start = (page - 1) * pageSize;
+        // const paginated = roadmaps.slice(start, start + pageSize);
         return {
           data: {
-            roadmaps: paginated,
-            total: roadmaps.length,
+            roadmaps: [],
+            total: 0,
             page,
             pageSize,
           },

@@ -18,7 +18,7 @@ public class UserRoadmapsController : BaseController
     }
 
     [HttpPost("save")]
-    public async Task<IActionResult> AddRoadmap([FromQuery]string roadmapId, CancellationToken ct)
+    public async Task<IActionResult> SaveRoadmap([FromQuery]string roadmapId, CancellationToken ct)
     {
         var result = await UserRoadmapsService.LinkRoadmap(GetUserId(), roadmapId, ct);
         return Response(result);
