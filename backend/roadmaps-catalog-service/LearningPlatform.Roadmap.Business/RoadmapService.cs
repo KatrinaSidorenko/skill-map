@@ -53,13 +53,18 @@ public class RoadmapService(
             return ResultType.RoadmapNotFound<RoadmapDto>(roadmapId);
         }
 
+        var topicsAndSubTopics = nodes.Where(n => n.Type == NodeType.Topic || n.Type == NodeType.SubTopic).ToList();
+        var targetEdges = edges.Where(e => topicsAndSubTopics.Any(n => n.Id == e.Target?.Id) || topicsAndSubTopics.Any(n => n.Id == e.Source?.Id)).ToList();
+        //var test = nodes.GroupBy(n => n.Id)
+        //    .ToDictionary(g => g.Key, g => g.ToList());
+
         return Result.Success(new RoadmapDto
         {
             Id = startNode.Id,
             Title = startNode.Title,
             Description = startNode.Description,
-            Nodes = nodes.ToNodes(),
-            Edges = edges.ToEdges()
+            Nodes = topicsAndSubTopics.ToNodes(),
+            Edges = targetEdges.ToEdges()
         });
     }
 }

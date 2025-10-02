@@ -1,9 +1,45 @@
 import { Edge, Node } from '@xyflow/react';
+import dagre from '@dagrejs/dagre';
 
 const getNodePosition = (index: number): { x: number; y: number } => ({
   x: 0,
   y: index * 150, // space nodes 150px apart vertically
 });
+
+const nodeWidth = 180;
+const nodeHeight = 100;
+
+export function getLayoutedElements(
+  nodes: Node[],
+  edges: Edge[],
+  direction: 'TB' | 'RL' = 'RL',
+) {
+  const dagreGraph = new dagre.graphlib.Graph();
+  dagreGraph.setDefaultEdgeLabel(() => ({}));
+
+  dagreGraph.setGraph({ rankdir: direction });
+
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+  });
+
+  edges.forEach((edge) => {
+    dagreGraph.setEdge(edge.source, edge.target);
+  });
+
+  dagre.layout(dagreGraph);
+
+  const layoutedNodes = nodes.map((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    node.position = {
+      x: nodeWithPosition.x - nodeWidth / 2,
+      y: nodeWithPosition.y - nodeHeight / 2,
+    };
+    return node;
+  });
+
+  return { nodes: layoutedNodes, edges };
+}
 
 export function mapRoadmapToReactFlow(roadmap: Roadmap): {
   nodes: Node[];
@@ -21,7 +57,7 @@ export function mapRoadmapToReactFlow(roadmap: Roadmap): {
     target: String(e.target),
   }));
 
-  return { nodes, edges };
+  return getLayoutedElements(nodes, edges, 'TB');
 }
 
 export const defaultPagination = {

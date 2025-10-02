@@ -90,8 +90,18 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
-          panOnDrag
-          zoomOnScroll
+          onInit={(instance) => {
+            instance.fitView(); // fit everything
+            setTimeout(() => {
+              const rootNode = nodes[0];
+              console.log('rootNode', rootNode);
+              if (rootNode) {
+                instance.setCenter(rootNode.position.x, rootNode.position.y, {
+                  zoom: 1,
+                });
+              }
+            }, 200); // small delay lets fitView finish
+          }}
         >
           <Background />
           <Controls />
