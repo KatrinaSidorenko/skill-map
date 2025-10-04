@@ -5,11 +5,11 @@ export const roadmapApi = createApi({
   reducerPath: 'roadmapApi',
   baseQuery: baseQuery(''),
   endpoints: (builder) => ({
-    getRoadmaps: builder.query<PlainRoadmapsResponse, PaginationConfig>({
-      query: ({ pageSize, pageNumber }) => ({
+    getRoadmaps: builder.query<PaginationResponse<PlainRoadmap>, SearchConfig>({
+      query: ({ pageSize, pageNumber, query }) => ({
         url: 'roadmaps',
         method: 'GET',
-        params: { pageSize, pageNumber },
+        params: { pageSize, pageNumber, query },
       }),
     }),
     getRoadmapById: builder.query<RoadmapResponse, string>({
@@ -25,7 +25,10 @@ export const roadmapApi = createApi({
         params: { roadmapId: id },
       }),
     }),
-    getSavedRoadmaps: builder.query<SavedPlainRoadmapsResponse, SearchConfig>({
+    getSavedRoadmaps: builder.query<
+      PaginationResponse<SavedPlainRoadmap>,
+      SearchConfig
+    >({
       query: ({ pageSize, pageNumber, query }) => ({
         url: 'modifiedroadmaps',
         method: 'GET',

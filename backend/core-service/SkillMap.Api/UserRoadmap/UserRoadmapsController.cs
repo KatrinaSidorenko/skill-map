@@ -31,15 +31,6 @@ public class UserRoadmapsController : BaseController
         return Response(result);
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetUserPlainRoadmaps(CancellationToken ct)
-    {
-        //var result = await UserRoadmapsService.GetUserRoadmaps(GetUserId(), ct);
-        //return Response(result, (r) =>
-        //{
-        //    return Ok(r.Data.Select(ur => ur.RoadmapId).ToList());
-        //});
-    }
 
     //[HttpGet]
     //public async Task<IActionResult> GetUserRoadmaps(CancellationToken ct)

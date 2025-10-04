@@ -1,3 +1,3 @@
 ﻿namespace SkillMap.Shared.Models;
 
-public record SearchingParams(string Query, PaginationParams PaginationParams);
+public record SearchingParams(string SearchTermByName, PaginationParams PaginationParams);

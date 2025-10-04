@@ -5,6 +5,7 @@ using SkillMap.Shared.Results;
 namespace LearningPlatform.Roadmap.Business.Contracts;
 public interface IRoadmapService
 {
-    Task<Result<PaginationResult<List<PlainRoadmapDto>>>> GetPlainRoadmaps(PaginationParams paginationParams, CancellationToken ct);
-    Task<Result<RoadmapDto>> GetRoadmap(string roadmapId, CancellationToken ct);
+    Task<Result<PaginationResult<List<PlainRoadmapDto>>>> GetPlainRoadmaps(SearchingParams @params, CancellationToken ct);
+    Task<Result<RoadmapDto>> GetRoadmapById(string roadmapId, CancellationToken ct);
+    Task<Result<PaginationResult<List<PlainRoadmapDto>>>> GetPlainRoadmapsByIds(List<string> roadmapIds, SearchingParams @params, CancellationToken ct);
 }

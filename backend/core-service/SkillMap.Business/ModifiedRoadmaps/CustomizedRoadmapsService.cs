@@ -2,6 +2,8 @@
 using LearningPlatform.Roadmap.Business.Contracts.Constants;
 using Microsoft.Extensions.DependencyInjection;
 using SkillMap.Business.Abstractions;
+using SkillMap.Business.ModifiedRoadmaps.Mappers;
+using SkillMap.Business.ModifiedRoadmaps.Models;
 using SkillMap.Business.Roadmaps.Helpers;
 using SkillMap.Business.Roadmaps.Mappers;
 using SkillMap.Business.Roadmaps.Models;
@@ -10,6 +12,7 @@ using SkillMap.Core.Constants;
 using SkillMap.Core.Entities;
 using SkillMap.Shared.Extensions;
 using SkillMap.Shared.Gzip;
+using SkillMap.Shared.Models;
 using SkillMap.Shared.Results;
 
 namespace SkillMap.Business.Roadmaps;
@@ -33,9 +36,28 @@ public class CustomizedRoadmapsService(
         throw new NotImplementedException();
     }
 
-    public Task<Result<List<RoadmapDto>>> GetPlainRoadmapsWithUserMetadata(long userId, CancellationToken ct)
+    public async Task<Result<PaginationResult<List<PlainRoadmapWithDetailsDto>>>> GetPlainRoadmapsWithUserMetadata(long userId, SearchingParams @params, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        var userRoadmapsResult = await userRoadmapsService.GetUserRoadmaps(userId, ct);
+        if (!userRoadmapsResult.IsSuccessful)
+        {
+            return ResultType.UserRoadmapNotFound<PaginationResult<List<PlainRoadmapWithDetailsDto>>>(userId);
+        }
+
+        var userRoadmapIds = userRoadmapsResult.Data.Select(ur => ur.RoadmapId).ToHashSet();
+        var paginatedRoadmapsResult = await roadmapService.GetPlainRoadmapsByIds([.. userRoadmapIds], @params, ct);
+        if (!paginatedRoadmapsResult.IsSuccessful)
+        {
+            return ResultType.RoadmapNotFound<PaginationResult<List<PlainRoadmapWithDetailsDto>>>("");
+        }
+
+        var allRoadmaps = paginatedRoadmapsResult.Data.Result;
+
+        return Result.Success(new PaginationResult<List<PlainRoadmapWithDetailsDto>>
+        {
+            Result = allRoadmaps.Select(r => r.ToPlainRoadmapWithDetailsDto()).ToList(),
+            TotalCount = paginatedRoadmapsResult.Data.TotalCount,
+        });
     }
 
     public Task<Result<CustomizedUerRoadmap>> GetRoadmap(long userId, string roadmapId, CancellationToken ct)

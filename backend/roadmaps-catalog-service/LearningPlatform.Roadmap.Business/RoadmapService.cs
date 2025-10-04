@@ -14,9 +14,9 @@ public class RoadmapService(
     IRoadmapRepository roadmapRepository, 
     ILogger<IRoadmapService> logger) : IRoadmapService
 {
-    public async Task<Result<PaginationResult<List<PlainRoadmapDto>>>> GetPlainRoadmaps(PaginationParams paginationParams, CancellationToken ct)
+    public async Task<Result<PaginationResult<List<PlainRoadmapDto>>>> GetPlainRoadmaps(SearchingParams @params, CancellationToken ct)
     {
-        var paginatedResult = await roadmapRepository.GetAllPlainRoadmaps(paginationParams, ct);
+        var paginatedResult = await roadmapRepository.GetAllPlainRoadmaps(@params, ct);
         if (!paginatedResult.IsSuccessful)
         {
             Log.Error("Failed to get plain roadmaps: {Error}", paginatedResult.Message);
@@ -30,7 +30,7 @@ public class RoadmapService(
         });
     }
 
-    public async Task<Result<RoadmapDto>> GetRoadmap(string roadmapId, CancellationToken ct)
+    public async Task<Result<RoadmapDto>> GetRoadmapById(string roadmapId, CancellationToken ct)
     {
         var roadmapResult = await roadmapRepository.GetRoadmapById(roadmapId, ct);
         if (!roadmapResult.IsSuccessful)
@@ -63,6 +63,21 @@ public class RoadmapService(
             Description = startNode.Description,
             Nodes = topicsAndSubTopics.ToNodes(),
             Edges = targetEdges.ToEdges()
+        });
+    }
+
+    public async Task<Result<PaginationResult<List<PlainRoadmapDto>>>> GetPlainRoadmapsByIds(List<string> roadmapIds, SearchingParams @params, CancellationToken ct)
+    {
+        var paginatedResult = await roadmapRepository.GetPlainRoadmapsByIds(roadmapIds, @params, ct);
+        if (!paginatedResult.IsSuccessful)
+        {
+            Log.Error("Failed to get plain roadmaps by IDs: {Error}", paginatedResult.Message);
+            return ResultType.FailedToGetRoadmaps<PaginationResult<List<PlainRoadmapDto>>>();
+        }
+        return Result.Success(new PaginationResult<List<PlainRoadmapDto>>
+        {
+            Result = paginatedResult.Data.Result?.ToPlainRoadmaps() ?? [],
+            TotalCount = paginatedResult.Data.TotalCount
         });
     }
 }

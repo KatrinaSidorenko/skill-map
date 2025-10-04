@@ -1,7 +1,14 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Box, Flex, Input, InputGroup, Spinner } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Flex,
+  Input,
+  InputGroup,
+  Spinner,
+} from '@chakra-ui/react';
 import { LuSearch } from 'react-icons/lu';
 import ErrorScreen from '@/components/base/error';
 import SpinnerScreen from '@/components/base/spinner';
@@ -17,29 +24,43 @@ export default function ExploreRoadmapsPage() {
   const [items, setItems] = useState<PlainRoadmap[]>([]);
   const [hasMore, setHasMore] = useState(true);
 
+  // Separate input vs active search query
+  const [searchInput, setSearchInput] = useState('');
+  const [search, setSearch] = useState<string | null>(null);
+
   // Lazy query hook
   const [fetchRoadmaps, { data, error, isLoading, isFetching }] =
     useLazyGetRoadmapsQuery();
 
-  // Fetch data when page changes
+  // Fetch data when page or search changes
   useEffect(() => {
-    if (!hasMore) return;
-    fetchRoadmaps({ pageNumber: page, pageSize: defaultPageSize });
-  }, [page, fetchRoadmaps, hasMore, defaultPageSize]);
+    fetchRoadmaps({
+      pageNumber: page,
+      pageSize: defaultPageSize,
+      query: search,
+    });
+  }, [page, search]);
 
-  // Accumulate new items
+  // Update items when data arrives
   useEffect(() => {
-    if (data?.roadmaps) {
-      const newItems = data.roadmaps.filter(
-        (newItem) => !items.some((item) => item.id === newItem.id),
-      );
-      setItems((prev) => [...prev, ...newItems]);
+    if (data?.items) {
+      if (page === 1) {
+        // Reset on new search
+        setItems(data.items);
+      } else {
+        // Append new items without duplicates
+        const newItems = data.items.filter(
+          (newItem) => !items.some((item) => item.id === newItem.id),
+        );
+        setItems((prev) => [...prev, ...newItems]);
+      }
 
-      if (data.roadmaps.length < defaultPageSize) {
+      // If less than pageSize → no more data
+      if (data.items.length < defaultPageSize) {
         setHasMore(false);
       }
     }
-  }, [data]);
+  }, [data, page]);
 
   // Infinite scroll observer
   const loaderRef = useRef<HTMLDivElement | null>(null);
@@ -61,6 +82,14 @@ export default function ExploreRoadmapsPage() {
     };
   }, [hasMore, isFetching]);
 
+  // Handle pressing search button
+  const handleSearch = () => {
+    setItems([]);
+    setPage(1);
+    setHasMore(true);
+    setSearch(searchInput.trim().length > 0 ? searchInput.trim() : '');
+  };
+
   if (error) return <ErrorScreen />;
   if (isLoading && page === 1) return <SpinnerScreen />;
 
@@ -71,15 +100,19 @@ export default function ExploreRoadmapsPage() {
       alignItems="center"
       justifyContent="center"
     >
-      {/* Search bar */}
+      {/* Search bar with button */}
       <Box w="sm" p={4} mb={8}>
-        <InputGroup
-          borderRadius="md"
-          bg="bg.page"
-          boxShadow="sm"
-          endElement={<LuSearch />}
-        >
-          <Input placeholder="Search roadmaps..." />
+        <InputGroup borderRadius="md" bg="bg.page" boxShadow="sm">
+          <>
+            <Input
+              placeholder="Search roadmaps..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
+            <Button onClick={handleSearch} variant="ghost">
+              <LuSearch />
+            </Button>
+          </>
         </InputGroup>
       </Box>
 

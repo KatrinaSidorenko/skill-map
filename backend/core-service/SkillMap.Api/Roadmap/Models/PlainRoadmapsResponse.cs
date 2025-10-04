@@ -3,12 +3,6 @@ using SkillMap.Api.Base.Searching;
 
 namespace SkillMap.Api.Roadmaps.Models;
 
-public class PlainRoadmapsResponse : PaginationResponse
-{
-    [JsonProperty("roadmaps")]
-    public List<PlainRoadmapResponse> Roadmaps { get; set; }
-}
-
 public class PlainRoadmapResponse
 {
     [JsonProperty("id")]

@@ -1,13 +1,13 @@
 'use client';
 
-import SpinnerScreen from '@/components/base/spinner';
-import { useLazyGetSavedRoadmapsQuery } from '../api';
 import { useEffect, useRef, useState } from 'react';
-import ErrorScreen from '@/components/base/error';
 import { Box, Flex, Input, InputGroup, Spinner } from '@chakra-ui/react';
 import { LuSearch } from 'react-icons/lu';
-import { defaultPagination } from '../helpers';
+import ErrorScreen from '@/components/base/error';
+import SpinnerScreen from '@/components/base/spinner';
 import { RoadmapCard } from '@/components/roadmap/roadmapCard';
+import { defaultPagination } from '../helpers';
+import { useLazyGetSavedRoadmapsQuery } from '../api';
 
 export default function SavedRoadmaps() {
   const { pageSize: defaultPageSize, pageNumber: defaultPageNumber } =
@@ -16,30 +16,41 @@ export default function SavedRoadmaps() {
   const [page, setPage] = useState(defaultPageNumber);
   const [items, setItems] = useState<PlainRoadmap[]>([]);
   const [hasMore, setHasMore] = useState(true);
+  const [search, setSearch] = useState<string | null>('');
 
   // Lazy query hook
   const [fetchRoadmaps, { data, error, isLoading, isFetching }] =
     useLazyGetSavedRoadmapsQuery();
 
-  // Fetch data when page changes
+  // Fetch data when page changes or query changes
   useEffect(() => {
     if (!hasMore) return;
-    fetchRoadmaps({ pageNumber: page, pageSize: defaultPageSize, query: null });
-  }, [page, fetchRoadmaps, hasMore, defaultPageSize]);
+    fetchRoadmaps({
+      pageNumber: page,
+      pageSize: defaultPageSize,
+      query: search,
+    });
+  }, [page, search, fetchRoadmaps, hasMore, defaultPageSize]);
 
-  // Accumulate new items
+  // Accumulate new items or reset on query change
   useEffect(() => {
-    if (data?.roadmaps) {
-      const newItems = data.roadmaps.filter(
-        (newItem) => !items.some((item) => item.id === newItem.id),
-      );
-      setItems((prev) => [...prev, ...newItems]);
+    if (data?.items) {
+      if (page === 1) {
+        // replace items when starting new search
+        setItems(data.items);
+      } else {
+        // append for infinite scroll
+        const newItems = data.items.filter(
+          (newItem) => !items.some((item) => item.id === newItem.id),
+        );
+        setItems((prev) => [...prev, ...newItems]);
+      }
 
-      if (data.roadmaps.length < defaultPageSize) {
+      if (data.items.length < defaultPageSize) {
         setHasMore(false);
       }
     }
-  }, [data]);
+  }, [data, page]);
 
   // Infinite scroll observer
   const loaderRef = useRef<HTMLDivElement | null>(null);
@@ -61,6 +72,15 @@ export default function SavedRoadmaps() {
     };
   }, [hasMore, isFetching]);
 
+  // Handle search input change
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.trim();
+    setItems([]);
+    setPage(1);
+    setHasMore(true);
+    setSearch(value.length > 0 ? value : null);
+  };
+
   if (error) return <ErrorScreen />;
   if (isLoading && page === 1) return <SpinnerScreen />;
 
@@ -79,11 +99,15 @@ export default function SavedRoadmaps() {
           boxShadow="sm"
           endElement={<LuSearch />}
         >
-          <Input placeholder="Search roadmaps..." />
+          <Input
+            placeholder="Search roadmaps..."
+            onChange={handleSearch}
+            defaultValue={search ?? ''}
+          />
         </InputGroup>
       </Box>
 
-      {/* Roadmap grid */}
+      {/* Roadmap list */}
       <Box flex="1" w="full" px={4}>
         <Flex direction="column" gap={4} alignItems="stretch">
           {items.map((roadmap) => (

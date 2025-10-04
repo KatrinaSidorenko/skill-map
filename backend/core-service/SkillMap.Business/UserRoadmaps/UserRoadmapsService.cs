@@ -49,7 +49,7 @@ public class UserRoadmapsService(IRepository<UserRoadmap> userRoadmapsRepository
     public async Task<Result<List<UserRoadmapDto>>> GetUserRoadmaps(long userId, CancellationToken ct)
     {
         var dbUserRoadmapsResult = await userRoadmapsRepository.GetAllAsync(ur => ur.UserId == userId && ur.IsActive, ct: ct);
-        if (!dbUserRoadmapsResult.HasData)
+        if (!dbUserRoadmapsResult.IsSuccessful)
         {
             return ResultType.UserRoadmapNotFound<List<UserRoadmapDto>>(userId);
         }

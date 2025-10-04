@@ -8,7 +8,7 @@ interface PlainRoadmap {
 interface SavedPlainRoadmap extends PlainRoadmap {
   progress: number; // percentage of completion
   savedAt: string; // ISO date string
-  status: 'not-started' | 'in-progress' | 'completed';
+  status: 'NotStarted' | 'InProgress' | 'Completed';
 }
 
 interface RoadmapNode {
@@ -30,19 +30,20 @@ interface Roadmap {
   edges: RoadmapEdge[];
 }
 
-interface IPaginationResponse {
+interface PaginationResponse<TItem> {
   total: number;
   page: number;
   pageSize: number;
+  items: TItem[];
 }
 
-interface PlainRoadmapsResponse extends IPaginationResponse {
-  roadmaps: PlainRoadmap[];
-}
+// interface PlainRoadmapsResponse extends IPaginationResponse {
+//   roadmaps: PlainRoadmap[];
+// }
 
-interface SavedPlainRoadmapsResponse extends IPaginationResponse {
-  roadmaps: SavedPlainRoadmap[];
-}
+// interface SavedPlainRoadmapsResponse extends IPaginationResponse {
+//   roadmaps: SavedPlainRoadmap[];
+// }
 
 interface RoadmapResponse {
   roadmap: Roadmap;

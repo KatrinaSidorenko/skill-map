@@ -11,5 +11,6 @@ public interface IRoadmapRepository
     Task<Result<bool>> UpdateNodesDescription(Dictionary<string, string> nodesPropsToUpdate, CancellationToken ct);
     Task<Result<bool>> AddNodes(List<NodeDto> nodes, CancellationToken ct = default);
     Task<Result<bool>> AddEdges(List<EdgeDto> edges, CancellationToken ct = default);
-    Task<Result<PaginationResult<List<NodeDto>>>> GetAllPlainRoadmaps(PaginationParams paginationParams, CancellationToken ct);
+    Task<Result<PaginationResult<List<NodeDto>>>> GetAllPlainRoadmaps(SearchingParams @params, CancellationToken ct);
+    Task<Result<PaginationResult<List<NodeDto>>>> GetPlainRoadmapsByIds(List<string> roadmapIds, SearchingParams @params, CancellationToken ct);
 }
