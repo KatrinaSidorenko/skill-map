@@ -53,11 +53,24 @@ public class CustomizedRoadmapsService(
 
         var allRoadmaps = paginatedRoadmapsResult.Data.Result;
 
+        // add calculate logic for progress
+        // status of roadmap
+
         return Result.Success(new PaginationResult<List<PlainRoadmapWithDetailsDto>>
         {
             Result = allRoadmaps.Select(r => r.ToPlainRoadmapWithDetailsDto()).ToList(),
             TotalCount = paginatedRoadmapsResult.Data.TotalCount,
         });
+    }
+
+    private async Task<Result<double>> GetRoadmapProgress(long userId, string roadmapId, CancellationToken ct)
+    {
+        throw new NotImplementedException();
+    }
+
+    private async Task<string> GetRoadmapStatus(long userId, string roadmapId, CancellationToken ct)
+    {
+
     }
 
     public Task<Result<CustomizedUerRoadmap>> GetRoadmap(long userId, string roadmapId, CancellationToken ct)

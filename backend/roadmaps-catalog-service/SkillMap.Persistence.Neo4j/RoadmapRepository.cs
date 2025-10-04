@@ -21,6 +21,8 @@ internal class RoadmapRepository : IRoadmapRepository
     }
     public async Task<bool> Save((List<NodeDto> Nodes, List<EdgeDto> Edges) graph, CancellationToken ct = default)
     {
+        ct.ThrowIfCancellationRequested();
+
         if (graph.Nodes == null || graph.Edges == null)
             throw new ArgumentNullException(nameof(graph));
         var migrationId = Guid.NewGuid().ToString("N");
@@ -84,6 +86,8 @@ internal class RoadmapRepository : IRoadmapRepository
     // todo: extract to some base repository
     public async Task<Result<bool>> ExecuteCommands(List<Command> commands, CancellationToken ct)
     {
+        ct.ThrowIfCancellationRequested();
+
         using var session = Driver.AsyncSession(s => s.WithDatabase(DbSettings.Name));
         using var transaction = await session.BeginTransactionAsync();
 
@@ -111,6 +115,8 @@ internal class RoadmapRepository : IRoadmapRepository
 
     public async Task<Result<bool>> ExecuteCommands(IAsyncTransaction transaction, List<Command> commands, CancellationToken ct)
     {
+        ct.ThrowIfCancellationRequested();
+
         try
         {
             foreach (var command in commands)
@@ -129,6 +135,8 @@ internal class RoadmapRepository : IRoadmapRepository
 
     public async Task<Result<(List<Dictionary<string, object>> Nodes, List<Dictionary<string, object>> Edges)>> GetSourceRoadmap(string roadmapId, CancellationToken cancellationToken = default)
     {
+        ct.ThrowIfCancellationRequested();
+
         try
         {
             var query = @"
@@ -189,6 +197,8 @@ internal class RoadmapRepository : IRoadmapRepository
 
     public async Task<Result<(List<NodeDto> Nodes, List<EdgeDto> Edges)>> GetRoadmapById(string roadmapId, CancellationToken cancellationToken)
     {
+        ct.ThrowIfCancellationRequested();
+
         var sourceRoadmapResult = await GetSourceRoadmap(roadmapId, cancellationToken);
         if (!sourceRoadmapResult.IsSuccessful)
         {
@@ -206,6 +216,8 @@ internal class RoadmapRepository : IRoadmapRepository
 
     public async Task<Result<PaginationResult<List<NodeDto>>>> GetAllPlainRoadmaps(SearchingParams @params, CancellationToken ct)
     {
+        ct.ThrowIfCancellationRequested();
+
         try
         {
             using var session = Driver.AsyncSession(s => s.WithDatabase(DbSettings.Name));
@@ -293,6 +305,7 @@ internal class RoadmapRepository : IRoadmapRepository
 
     public async Task<Result<PaginationResult<List<NodeDto>>>> GetPlainRoadmapsByIds(List<string> roadmapIds, SearchingParams @params, CancellationToken ct)
     {
+        ct.ThrowIfCancellationRequested();
         try
         {
             using var session = Driver.AsyncSession(s => s.WithDatabase(DbSettings.Name));
