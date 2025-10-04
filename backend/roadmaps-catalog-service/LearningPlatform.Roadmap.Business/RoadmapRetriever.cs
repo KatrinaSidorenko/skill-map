@@ -16,7 +16,7 @@ public class RoadmapRetriever : IRetriever
 
     public async Task<Result<(List<NodeDto> Nodes, List<EdgeDto> Edges)>> RetrieveByIdAsync(string roadmapId, CancellationToken ct = default)
     {
-        var roadmapResult = await RoadmapRepository.GetRoadmap(roadmapId, ct);
+        var roadmapResult = await RoadmapRepository.GetRoadmapById(roadmapId, ct);
         if (!roadmapResult.IsSuccessful)
         {
             return roadmapResult;

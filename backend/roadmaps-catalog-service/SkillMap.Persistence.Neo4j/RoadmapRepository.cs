@@ -21,6 +21,8 @@ internal class RoadmapRepository : IRoadmapRepository
     }
     public async Task<bool> Save((List<NodeDto> Nodes, List<EdgeDto> Edges) graph, CancellationToken ct = default)
     {
+        ct.ThrowIfCancellationRequested();
+
         if (graph.Nodes == null || graph.Edges == null)
             throw new ArgumentNullException(nameof(graph));
         var migrationId = Guid.NewGuid().ToString("N");
@@ -84,6 +86,8 @@ internal class RoadmapRepository : IRoadmapRepository
     // todo: extract to some base repository
     public async Task<Result<bool>> ExecuteCommands(List<Command> commands, CancellationToken ct)
     {
+        ct.ThrowIfCancellationRequested();
+
         using var session = Driver.AsyncSession(s => s.WithDatabase(DbSettings.Name));
         using var transaction = await session.BeginTransactionAsync();
 
@@ -111,6 +115,8 @@ internal class RoadmapRepository : IRoadmapRepository
 
     public async Task<Result<bool>> ExecuteCommands(IAsyncTransaction transaction, List<Command> commands, CancellationToken ct)
     {
+        ct.ThrowIfCancellationRequested();
+
         try
         {
             foreach (var command in commands)
@@ -129,6 +135,8 @@ internal class RoadmapRepository : IRoadmapRepository
 
     public async Task<Result<(List<Dictionary<string, object>> Nodes, List<Dictionary<string, object>> Edges)>> GetSourceRoadmap(string roadmapId, CancellationToken cancellationToken = default)
     {
+        ct.ThrowIfCancellationRequested();
+
         try
         {
             var query = @"
@@ -187,8 +195,10 @@ internal class RoadmapRepository : IRoadmapRepository
         }
     }
 
-    public async Task<Result<(List<NodeDto> Nodes, List<EdgeDto> Edges)>> GetRoadmap(string roadmapId, CancellationToken cancellationToken)
+    public async Task<Result<(List<NodeDto> Nodes, List<EdgeDto> Edges)>> GetRoadmapById(string roadmapId, CancellationToken cancellationToken)
     {
+        ct.ThrowIfCancellationRequested();
+
         var sourceRoadmapResult = await GetSourceRoadmap(roadmapId, cancellationToken);
         if (!sourceRoadmapResult.IsSuccessful)
         {
@@ -204,13 +214,20 @@ internal class RoadmapRepository : IRoadmapRepository
         return Result.Success((nodesList, edgesList));
     }
 
-    public async Task<Result<PaginationResult<List<NodeDto>>>> GetAllPlainRoadmaps(PaginationParams paginationParams, CancellationToken ct)
+    public async Task<Result<PaginationResult<List<NodeDto>>>> GetAllPlainRoadmaps(SearchingParams @params, CancellationToken ct)
     {
+        ct.ThrowIfCancellationRequested();
+
         try
         {
             using var session = Driver.AsyncSession(s => s.WithDatabase(DbSettings.Name));
             var query = @"
                 MATCH (r:ROADMAP)
+                WHERE 
+                  CASE
+                    WHEN $searchTerm IS NULL OR trim($searchTerm) = '' THEN true
+                    ELSE toLower(r.title) CONTAINS toLower($searchTerm)
+                  END
                 RETURN r
                 SKIP $skip
                 LIMIT $limit";
@@ -218,8 +235,9 @@ internal class RoadmapRepository : IRoadmapRepository
             {
                 var result = await tx.RunAsync(query, new
                 {
-                    skip = paginationParams.Skip,
-                    limit = paginationParams.PageSize
+                    skip = @params.PaginationParams.Skip,
+                    limit = @params.PaginationParams.PageSize,
+                    searchTerm = @params.SearchTermByName
                 });
 
                 var nodes = new List<NodeDto>();
@@ -231,10 +249,20 @@ internal class RoadmapRepository : IRoadmapRepository
                 return nodes;
             });
 
-            var countQuery = @"MATCH (r:ROADMAP) RETURN count(r) as total";
+            var countQuery = 
+                @"MATCH (r:ROADMAP) 
+                    WHERE 
+                        CASE
+                        WHEN $searchTerm IS NULL OR trim($searchTerm) = '' THEN true
+                        ELSE toLower(r.title) CONTAINS toLower($searchTerm)
+                        END
+                RETURN count(r) as total";
             var totalCount = await session.ExecuteReadAsync(async tx =>
             {
-                var result = await tx.RunAsync(countQuery);
+                var result = await tx.RunAsync(countQuery, new
+                {
+                    searchTerm = @params.SearchTermByName
+                });
                 await result.FetchAsync();
                 return result.Current["total"].As<int>();
             });
@@ -273,5 +301,74 @@ internal class RoadmapRepository : IRoadmapRepository
         }
 
         return await ExecuteCommands(commands, ct);
+    }
+
+    public async Task<Result<PaginationResult<List<NodeDto>>>> GetPlainRoadmapsByIds(List<string> roadmapIds, SearchingParams @params, CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+        try
+        {
+            using var session = Driver.AsyncSession(s => s.WithDatabase(DbSettings.Name));
+            var query = @"
+                MATCH (r:ROADMAP)
+                WHERE r.id IN $ids
+                AND (
+                  CASE
+                    WHEN $searchTerm IS NULL OR trim($searchTerm) = '' THEN true
+                    ELSE toLower(r.title) CONTAINS toLower($searchTerm)
+                  END
+                )
+                RETURN r
+                SKIP $skip
+                LIMIT $limit";
+            var response = await session.ExecuteReadAsync(async tx =>
+            {
+                var result = await tx.RunAsync(query, new
+                {
+                    ids = roadmapIds,
+                    skip = @params.PaginationParams.Skip,
+                    limit = @params.PaginationParams.PageSize,
+                    searchTerm = @params.SearchTermByName
+                });
+                var nodes = new List<NodeDto>();
+                while (await result.FetchAsync())
+                {
+                    var node = result.Current["r"].As<INode>().Properties.ToDictionary().ToNodeDto();
+                    nodes.Add(node);
+                }
+                return nodes;
+            });
+            var countQuery = @"
+                MATCH (r:ROADMAP) 
+                WHERE r.id IN $ids 
+                AND (
+                  CASE
+                    WHEN $searchTerm IS NULL OR trim($searchTerm) = '' THEN true
+                    ELSE toLower(r.title) CONTAINS toLower($searchTerm)
+                  END
+                )
+                RETURN count(r) as total";
+            var totalCount = await session.ExecuteReadAsync(async tx =>
+            {
+                var result = await tx.RunAsync(countQuery, new 
+                { 
+                    ids = roadmapIds,
+                    searchTerm = @params.SearchTermByName
+                });
+                await result.FetchAsync();
+                return result.Current["total"].As<int>();
+            });
+            await session.CloseAsync();
+            return Result.Success(new PaginationResult<List<NodeDto>>
+            {
+                Result = response,
+                TotalCount = totalCount,
+            });
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to get roadmaps by ids");
+            return ResultType.FailedToGetRoadmap<PaginationResult<List<NodeDto>>>(ex.Message);
+        }
     }
 }

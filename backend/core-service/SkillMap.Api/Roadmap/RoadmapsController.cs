@@ -1,12 +1,11 @@
 ﻿using LearningPlatform.Roadmap.Business.Contracts;
+using LearningPlatform.Roadmap.Business.Contracts.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SkillMap.Api.Base;
-using SkillMap.Api.Base.Pagination;
+using SkillMap.Api.Base.Searching;
 using SkillMap.Api.Roadmaps.Models;
 using SkillMap.Business.Roadmaps;
-using SkillMap.Business.Roadmaps.Models;
-using SkillMap.Core.Constants;
 
 namespace SkillMap.Api.Roadmaps;
 
@@ -14,26 +13,34 @@ namespace SkillMap.Api.Roadmaps;
 [Authorize]
 public class RoadmapsController : BaseController
 {
-    private ICustomizedRoadmapsService CustomizedRoadmapsService { get; }
     private IRoadmapService RoadmapService { get; }
-    public RoadmapsController(ICustomizedRoadmapsService customizedRoadmaps, IRoadmapService roadmapService)
+    public RoadmapsController(IRoadmapService roadmapService)
     {
-        CustomizedRoadmapsService = customizedRoadmaps ?? throw new ArgumentNullException(nameof(customizedRoadmaps));
         RoadmapService = roadmapService ?? throw new ArgumentNullException(nameof(roadmapService));
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllPlainRoadmaps([FromQuery]PaginationRequest paginationRequest, CancellationToken ct)
+    public async Task<IActionResult> GetAllPlainRoadmaps([FromQuery]SearchingRequest @params, CancellationToken ct)
     {
-        var plainRoadmaps = await RoadmapService.GetPlainRoadmaps(paginationRequest.ToParams(), ct);
-        return Response(plainRoadmaps, (r) =>
+        var plainRoadmapsResult = await RoadmapService.GetPlainRoadmaps(@params.ToParams(), ct);
+        return Response(plainRoadmapsResult, (r) =>
         {
-            return Ok(new PlainRoadmapsResponse
+            return Ok(new PaginationResponse<PlainRoadmapResponse>()
             {
-                Roadmaps = r.Data.Result.Select(r => r.ToRoadmapResponse()).ToList(),
-                TotalCount = r.Data.TotalCount
+                TotalCount = plainRoadmapsResult.Data.TotalCount,
+                Items = r.Data.Result.Select(r => r.ToRoadmapResponse()).ToList()
             });
         });
+    }
+
+    [HttpGet("{roadmapId}")]
+    public async Task<IActionResult> GetRoadmap([FromRoute] string roadmapId, CancellationToken ct)
+    {
+        var result = await RoadmapService.GetRoadmapById(roadmapId, ct);
+        return Response(result, (r) => Ok(new RoadmapResponse
+        {
+            Roadmap = r.Data
+        }));
     }
 
 

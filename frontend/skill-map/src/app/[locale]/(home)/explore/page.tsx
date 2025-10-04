@@ -1,4 +1,4 @@
-import ExploreRoadmapsPage from '@/features/roadmaps/explore-roadmaps/index2';
+import ExploreRoadmapsPage from '@/features/roadmaps/explore-roadmaps';
 
 export default function Page() {
   return <ExploreRoadmapsPage />;

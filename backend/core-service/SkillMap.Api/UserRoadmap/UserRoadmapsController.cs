@@ -8,7 +8,7 @@ using SkillMap.Core.Constants;
 namespace SkillMap.Api.UserRoadmaps;
 
 [ApiController]
-[Authorize(Roles = Role.User)]
+//[Authorize(Roles = Role.User)]
 public class UserRoadmapsController : BaseController
 {
     private IUserRoadmapsService UserRoadmapsService { get; }
@@ -17,8 +17,8 @@ public class UserRoadmapsController : BaseController
         UserRoadmapsService = userRoadmapsService ?? throw new ArgumentNullException(nameof(userRoadmapsService));
     }
 
-    [HttpPost("{roadmapId}")]
-    public async Task<IActionResult> AddRoadmap(string roadmapId, CancellationToken ct)
+    [HttpPost("save")]
+    public async Task<IActionResult> SaveRoadmap([FromQuery]string roadmapId, CancellationToken ct)
     {
         var result = await UserRoadmapsService.LinkRoadmap(GetUserId(), roadmapId, ct);
         return Response(result);
@@ -31,16 +31,17 @@ public class UserRoadmapsController : BaseController
         return Response(result);
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetUserRoadmaps(CancellationToken ct)
-    {
-        var result = await UserRoadmapsService.GetUserRoadmaps(GetUserId(), ct);
-        return Response(result, (r) =>
-        {
-            return Ok(new UserRoadmapsResponse
-            {
-                Roadmaps = r.Data.Select(ur => ur.ToUserRoadmapResponse()).ToList()
-            });
-        });
-    }
+
+    //[HttpGet]
+    //public async Task<IActionResult> GetUserRoadmaps(CancellationToken ct)
+    //{
+    //    var result = await UserRoadmapsService.GetUserRoadmaps(GetUserId(), ct);
+    //    return Response(result, (r) =>
+    //    {
+    //        return Ok(new UserRoadmapsResponse
+    //        {
+    //            Roadmaps = r.Data.Select(ur => ur.ToUserRoadmapResponse()).ToList()
+    //        });
+    //    });
+    //}
 }

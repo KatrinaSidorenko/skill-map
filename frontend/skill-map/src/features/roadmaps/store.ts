@@ -2,7 +2,7 @@ import { roadmaps } from '@/store/mock';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type InitialState = {
-  saved_roadmap_ids?: number[];
+  saved_roadmap_ids?: string[];
 };
 
 const initialState: InitialState = {
@@ -13,7 +13,7 @@ const roadmapsSlice = createSlice({
   name: 'roadmaps',
   initialState,
   reducers: {
-    addOrRemoveRoadmap: (state, action: PayloadAction<number>) => {
+    addOrRemoveRoadmap: (state, action: PayloadAction<string>) => {
       state.saved_roadmap_ids = state.saved_roadmap_ids ?? [];
       if (state.saved_roadmap_ids.includes(action.payload)) {
         state.saved_roadmap_ids = state.saved_roadmap_ids.filter(
@@ -40,5 +40,5 @@ export const selectSavedRoadmapIds = (state: { roadmaps: InitialState }) =>
   state.roadmaps.saved_roadmap_ids;
 export const selectIsRoadmapSaved = (
   state: { roadmaps: InitialState },
-  id: number,
+  id: string,
 ) => state.roadmaps.saved_roadmap_ids?.includes(id);

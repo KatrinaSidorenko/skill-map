@@ -6,17 +6,22 @@ import { useForm } from 'react-hook-form';
 import { PasswordInput } from '@/components/ui/password-input';
 import { useState } from 'react';
 
-type FormValues = z.infer<{
-  newPassword: string;
-  confirmPassword: string;
-}>;
+const schema = z
+  .object({
+    newPassword: z.string().min(6, 'Password must be at least 6 characters'),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: 'Passwords must match',
+  });
+type FormValues = z.infer<typeof schema>;
 
 export function NewPasswordForm({
   onSubmit,
   isLoading,
   getAuthTranslations,
 }: {
-  onSubmit: (data: FormValues) => void | Promise<void>;
+  onSubmit: (data: FormValues) => Promise<void>;
   isLoading: boolean;
   getAuthTranslations: (key: keyof ILocalization['auth']) => string;
 }) {
