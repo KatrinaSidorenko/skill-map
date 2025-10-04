@@ -26,7 +26,7 @@ export default function ExploreRoadmapsPage() {
 
   // Separate input vs active search query
   const [searchInput, setSearchInput] = useState('');
-  const [search, setSearch] = useState<string | null>(null);
+  const [search, setSearch] = useState<string | null>('');
 
   // Lazy query hook
   const [fetchRoadmaps, { data, error, isLoading, isFetching }] =

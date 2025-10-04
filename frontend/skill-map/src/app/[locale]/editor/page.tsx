@@ -7,8 +7,8 @@ import { ReactFlowProvider } from '@xyflow/react';
 import Container from '@/components/container/container';
 
 export default function EditorPage() {
-  const roadmapId = '1';
-  const { data, error, isLoading } = useGetRoadmapByIdQuery(Number(roadmapId));
+  const roadmapId = 'fcad7a41-a483-4b84-b26a-ee4f6816c576';
+  const { data, error, isLoading } = useGetRoadmapByIdQuery(roadmapId);
   const roadmap = data?.roadmap;
 
   if (!roadmap) {

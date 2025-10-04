@@ -1,6 +1,6 @@
 'use client';
 import useLocalization from '@/i18n/useLocalization';
-import { VStack, Text, Button, Link } from '@chakra-ui/react';
+import { VStack, Text, Link } from '@chakra-ui/react';
 import {
   useResetPasswordMutation,
   useSetNewPasswordMutation,
@@ -71,7 +71,10 @@ export default function ForgotPasswordComponent() {
   };
 
   // Step 3: set new password
-  const onPasswordSubmit = async (data: { newPassword: string }) => {
+  const onPasswordSubmit = async (data: {
+    newPassword: string;
+    confirmPassword: string;
+  }) => {
     try {
       await triggerSetNewPassword({
         token,
@@ -118,7 +121,7 @@ export default function ForgotPasswordComponent() {
       )}
       {step === 'done' && (
         <>
-          <Text color="green.500" fontWeight="bold" textAlign="center">
+          <Text fontWeight="bold" textAlign="center">
             {getAuthTranslations('passwordResetSuccess')}
           </Text>
           <Link color="brand.300" href="/login" fontWeight="medium">
