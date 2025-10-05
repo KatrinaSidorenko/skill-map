@@ -12,7 +12,7 @@ const nodeHeight = 100;
 export function getLayoutedElements(
   nodes: Node[],
   edges: Edge[],
-  direction: 'TB' | 'RL' = 'RL',
+  direction: 'TB' | 'LR' = 'LR',
 ) {
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
@@ -48,7 +48,33 @@ export function mapRoadmapToReactFlow(roadmap: Roadmap): {
   const nodes: Node[] = roadmap.nodes.map((n, index) => ({
     id: String(n.id),
     position: getNodePosition(index),
-    data: { label: n.title }, // show title in node
+    data: {
+      label: n.title,
+      description: n.description,
+    }, // show title in node
+  }));
+
+  const edges: Edge[] = roadmap.edges.map((e) => ({
+    id: `${e.source}-${e.target}`,
+    source: String(e.source),
+    target: String(e.target),
+  }));
+
+  return getLayoutedElements(nodes, edges, 'TB');
+}
+
+export function mapRoadmapToReactFlowForSaved(roadmap: SavedRoadmap): {
+  nodes: Node[];
+  edges: Edge[];
+} {
+  const nodes: Node[] = roadmap.nodes.map((n, index) => ({
+    id: String(n.id),
+    position: getNodePosition(index),
+    data: {
+      label: n.title,
+      description: n.description,
+      status: n.status,
+    },
   }));
 
   const edges: Edge[] = roadmap.edges.map((e) => ({

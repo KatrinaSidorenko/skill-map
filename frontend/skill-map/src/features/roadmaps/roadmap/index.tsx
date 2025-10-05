@@ -22,7 +22,7 @@ import '@xyflow/react/dist/style.css';
 import { useGetRoadmapByIdQuery, useSaveRoadmapMutation } from '../api';
 import SpinnerScreen from '@/components/base/spinner';
 import { mapRoadmapToReactFlow } from '../helpers';
-import NotFound from '@/components/base/notfound';
+import NotFoundScreen from '@/components/base/notfound';
 import ErrorScreen from '@/components/base/error';
 import { retrieveErrorData } from '@/store/helpers';
 import { toaster } from '@/components/ui/toaster';
@@ -85,7 +85,7 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
   }
 
   if (!roadmap) {
-    return <NotFound />;
+    return <NotFoundScreen />;
   }
 
   if (error) {

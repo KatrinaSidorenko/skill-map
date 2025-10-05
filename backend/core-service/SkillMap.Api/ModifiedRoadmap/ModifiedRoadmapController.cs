@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SkillMap.Api.Base;
 using SkillMap.Api.Base.Searching;
 using SkillMap.Api.ModifiedRoadmap.Models;
-using SkillMap.Api.Roadmaps.Models;
 using SkillMap.Business.Roadmaps;
 
 namespace SkillMap.Api.ModifiedRoadmap;
@@ -24,6 +23,20 @@ public class ModifiedRoadmapsController(ICustomizedRoadmapsService customizedRoa
                 Items = r.Data.Result.Select(r => r.ToResponse()).ToList()
             });
         });
+    }
+
+    [HttpGet("{roadmapId}")]
+    public async Task<IActionResult> GetSavedRoadmap([FromRoute]string roadmapId, CancellationToken ct)
+    {
+        var result = await customizedRoadmapsService.GetRoadmap(GetUserId(), roadmapId, ct);
+        return Response(result, (r) => Ok(result.Data));
+    }
+
+    [HttpPost("save-change/{roadmapId}")]
+    public async Task<IActionResult> SaveChanges([FromRoute] string roadmapId, [FromBody] LearningItemChangeRequest item, CancellationToken ct)
+    {
+        var result = await customizedRoadmapsService.SaveLearningItemChange(GetUserId(), roadmapId, item.ToChnage(), ct);
+        return Response(result, (r) => Created());
     }
 
 }

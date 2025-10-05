@@ -1,3 +1,5 @@
+type LearningStatus = 'notstarted' | 'inprogress' | 'completed';
+
 interface PlainRoadmap {
   id: string;
   title: string;
@@ -8,7 +10,7 @@ interface PlainRoadmap {
 interface SavedPlainRoadmap extends PlainRoadmap {
   progress: number; // percentage of completion
   savedAt: string; // ISO date string
-  status: 'NotStarted' | 'InProgress' | 'Completed';
+  status: LearningStatus;
 }
 
 interface RoadmapNode {
@@ -28,6 +30,22 @@ interface Roadmap {
   description: string;
   nodes: RoadmapNode[];
   edges: RoadmapEdge[];
+}
+
+interface SavedRoadmap {
+  id: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  nodes: ModifiedNode[];
+  edges: RoadmapEdge[];
+  progress: number; // percentage of completion
+  savedAt: string; // ISO date string
+  status: LearningStatus;
+}
+
+interface ModifiedNode extends RoadmapNode {
+  status: LearningStatus;
 }
 
 interface PaginationResponse<TItem> {

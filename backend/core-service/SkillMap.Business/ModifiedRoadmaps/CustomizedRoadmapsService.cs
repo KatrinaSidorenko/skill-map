@@ -1,5 +1,7 @@
 ﻿using LearningPlatform.Roadmap.Business.Contracts;
 using LearningPlatform.Roadmap.Business.Contracts.Constants;
+using LearningPlatform.Roadmap.Business.Contracts.Models;
+using LearningPlatform.Roadmap.Business.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using SkillMap.Business.Abstractions;
 using SkillMap.Business.ModifiedRoadmaps.Mappers;
@@ -63,24 +65,80 @@ public class CustomizedRoadmapsService(
         });
     }
 
+    // todo: create optimized query to db for target node types in order to exclude resources
     private async Task<Result<double>> GetRoadmapProgress(long userId, string roadmapId, CancellationToken ct)
     {
+        // get full roadmap (set of nodes)
+        var roadmap = new List<NodeDto>();
+        roadmap = roadmap.Where(r => r.IsTopic() || r.IsSubTopic()).ToList(); // in order to exclude resources 
+
+        // what about the deleted items?
+        // get user modifications for the roadmap
+
+        // calculate the total count of items
+        // calculate the completed count of items
+
+        // progress = completed / total * 100
         throw new NotImplementedException();
     }
 
     private async Task<string> GetRoadmapStatus(long userId, string roadmapId, CancellationToken ct)
     {
-
-    }
-
-    public Task<Result<CustomizedUerRoadmap>> GetRoadmap(long userId, string roadmapId, CancellationToken ct)
-    {
         throw new NotImplementedException();
     }
 
-    public Task<Result<bool>> Update(long userId, string roadmapId, LearningItemSnapshot item, CancellationToken ct)
+    public async Task<Result<SavedUerRoadmap>> GetRoadmap(long userId, string roadmapId, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        var sourceRoadmapResult = await roadmapService.GetRoadmapById(roadmapId, ct); // todo: this is already without resources 
+        if (!sourceRoadmapResult.IsSuccessful)
+        {
+            return ResultType.RoadmapNotFound<SavedUerRoadmap>(roadmapId);
+        }
+
+        var sourceRoadmap = sourceRoadmapResult.Data;
+        
+        return Result.Success(new SavedUerRoadmap
+        {
+            Id = sourceRoadmap.Id,
+            Title = sourceRoadmap.Title,
+            Description = sourceRoadmap.Description,
+            Status = LearningStatus.NotStarted.ToString(),
+            Progress = 0,
+            Nodes = sourceRoadmap.Nodes
+                .Select(n => new ModifiedNode
+                {
+                    Id = n.Id,
+                    Title = n.Title,
+                    Description = n.Description,
+                    Status = LearningStatus.NotStarted.ToString(),
+                }).ToList(),
+            Edges = sourceRoadmap.Edges,
+        });
+    }
+
+    public async Task<Result<bool>> SaveLearningItemChange(long userId, string roadmapId, LearningItemChange item, CancellationToken ct)
+    {
+        var userRoadmapResult = await userRoadmapsService.GetUserRoadmap(userId, roadmapId, ct);
+        if (!userRoadmapResult.IsSuccessful)
+        {
+            return ResultType.UserRoadmapNotFound<bool>(userId, roadmapId);
+        }
+
+        var action = new RoadmapModification
+        {
+            ExternalItemId = item.Id,
+            Metadata = item.SerializeOrDefault(),
+            Action = ModificationAction.SnapshotUpdate,
+        };
+
+        await modificationsRepository.AddAsync(action, ct);
+        var saveResult = await modificationsRepository.SaveChangesAsync(ct);
+        if (!saveResult.IsSuccessful)
+        {
+            return ResultType.FailedToApplyModifications<bool>(userId, roadmapId);
+        }
+
+        return Result.Success(true);
     }
 
     public Task<Result<bool>> UpdateStatus(long userId, string roadmapId, string itemId, UpdateStatusMetadata metadata, CancellationToken ct)

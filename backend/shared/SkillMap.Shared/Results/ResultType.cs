@@ -46,6 +46,9 @@ public class ResultType
         FailedToGet<T>($"Failed to get customized roadmap {roadmapId} for user {userId}");
     public static Result<T> FailedToGetModifications<T>(long userId, string roadmapId) =>
         FailedToGet<T>($"Failed to get modifications for roadmap {roadmapId} for user {userId}");
+    public static Result<T> FailedToApplyModifications<T>(long userId, string roadmapId) =>
+        FailedToSave<T>($"Failed to apply modifications to customized roadmap {roadmapId} for user {userId}");
+
     public static Result<T> FailedToCreateRoadmap<T>(long userId, string roadmapId) =>
         FailedToCreate<T>($"Failed to create customized roadmap {roadmapId} for user {userId}");
     public static Result<T> FailedToSave<T>(long userId, string roadmapId) => 

@@ -4,7 +4,6 @@ using LearningPlatform.Roadmap.Business.Contracts.Models;
 using LearningPlatform.Roadmap.Business.Mappers;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using SkillMap.Api.Roadmaps.Models;
 using SkillMap.Shared.Models;
 using SkillMap.Shared.Results;
 

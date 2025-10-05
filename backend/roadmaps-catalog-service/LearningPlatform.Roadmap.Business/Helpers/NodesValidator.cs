@@ -12,4 +12,6 @@ public static class NodesValidator
         => nodes.Any(node => node.Type == NodeType.Roadmap);
     public static bool IsTopic(this NodeDto node)
         => node.Type == NodeType.Topic;
+    public static bool IsSubTopic(this NodeDto node)
+        => node.Type == NodeType.SubTopic;
 }

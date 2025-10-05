@@ -1,38 +1,81 @@
-'use client';
+import {
+  Drawer,
+  VStack,
+  Text,
+  Input,
+  Textarea,
+  Button,
+  HStack,
+  Flex,
+  Separator,
+} from '@chakra-ui/react';
+import { useState, useEffect } from 'react';
+import type { Node } from '@xyflow/react';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { selectRoadmapId, selectSelectedElement, updateNode } from '../store';
+import StatusSelect from './status-select';
+import useLocalization from '@/i18n/useLocalization';
+import { useSaveLearningItemChangesMutation } from '../../api';
+import { toaster } from '@/components/ui/toaster';
 
-import React, { useState, useEffect } from 'react';
-import { Drawer, VStack, Button, Input, Text } from '@chakra-ui/react';
-import { Node } from '@xyflow/react';
-
-type NodeSidebarProps = {
+interface NodeSidebarProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  node: Node | null;
-  onSave: (updatedNode: Node) => void;
-};
+}
 
-export default function NodeSidebar({
-  open,
-  onOpenChange,
-  node,
-  onSave,
-}: NodeSidebarProps) {
+export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
+  const dispatch = useAppDispatch();
+  const roadmapId = useAppSelector(selectRoadmapId);
+  const node = useAppSelector(selectSelectedElement);
+  const { getEditorTranslations } = useLocalization();
+  const [saveChange] = useSaveLearningItemChangesMutation();
+
   const [label, setLabel] = useState('');
+  const [description, setDescription] = useState('');
+  const [status, setStatus] = useState<string[]>([]);
 
   useEffect(() => {
     if (node) {
-      const nodeData = node.data as { label: string };
-      setLabel(nodeData.label ?? '');
+      setLabel((node.data?.label as string) ?? '');
+      setDescription((node.data?.description as string) ?? '');
+      setStatus([(node.data?.status as string) ?? 'notstarted']);
     }
   }, [node]);
 
-  const handleSave = () => {
-    if (!node) return;
-    onSave({
-      ...node,
-      data: { ...node.data, label },
-    });
-    onOpenChange(false);
+  const handleSave = async () => {
+    if (!node || !roadmapId) return;
+
+    try {
+      await saveChange({
+        roadmapId,
+        change: {
+          id: node.id,
+          title: label,
+          description,
+          status: (status[0] || 'notstarted') as LearningStatus,
+        },
+      }).unwrap();
+
+      dispatch(
+        updateNode({
+          ...node,
+          data: {
+            ...node.data,
+            label,
+            description,
+            status,
+          },
+        } as Node),
+      );
+
+      onOpenChange(false);
+    } catch (err) {
+      toaster.create({
+        type: 'error',
+        closable: true,
+        title: getEditorTranslations('failedToSaveChanges'),
+      });
+    }
   };
 
   return (
@@ -44,18 +87,60 @@ export default function NodeSidebar({
     >
       <Drawer.Backdrop />
       <Drawer.Positioner>
-        <Drawer.Content width="60">
-          <Drawer.CloseTrigger />
-          <VStack align="stretch" p={4} gap={6}>
-            <Text>Node Label</Text>
-            <Input
-              value={label}
-              onChange={(e) => setLabel(e.target.value)}
-              placeholder="Enter node label"
-            />
-            <Button colorScheme="blue" onClick={handleSave}>
-              Save
-            </Button>
+        <Drawer.Content borderRadius="2xl" bg="white" shadow="lg">
+          <VStack align="stretch" p={6} gap={8}>
+            <Flex justify="space-between" align="center">
+              <Text fontSize="lg" fontWeight="semibold">
+                {getEditorTranslations('nodeProperties')}
+              </Text>
+              <Drawer.CloseTrigger />
+            </Flex>
+
+            <Separator />
+
+            {/* Label */}
+            <VStack align="stretch" gap={2}>
+              <Text fontSize="sm" fontWeight="medium" color="gray.600">
+                {getEditorTranslations('label')}
+              </Text>
+              <Input
+                size="sm"
+                value={label}
+                onChange={(e) => setLabel(e.target.value)}
+                placeholder={getEditorTranslations('enterNodeLabel')}
+              />
+            </VStack>
+
+            {/* Description */}
+            <VStack align="stretch" gap={2}>
+              <Text fontSize="sm" fontWeight="medium" color="gray.600">
+                {getEditorTranslations('description')}
+              </Text>
+              <Textarea
+                size="sm"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder={getEditorTranslations('enterNodeDescription')}
+                resize="vertical"
+              />
+            </VStack>
+
+            <StatusSelect value={status} onChange={setStatus} />
+            <Separator />
+
+            {/* Actions */}
+            <HStack justify="flex-end" gap={3}>
+              <Button
+                variant="ghost"
+                onClick={() => onOpenChange(false)}
+                size="sm"
+              >
+                {getEditorTranslations('cancel')}
+              </Button>
+              <Button colorScheme="blue" onClick={handleSave} size="sm">
+                {getEditorTranslations('apply')}
+              </Button>
+            </HStack>
           </VStack>
         </Drawer.Content>
       </Drawer.Positioner>

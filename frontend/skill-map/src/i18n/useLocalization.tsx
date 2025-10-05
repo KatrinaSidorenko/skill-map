@@ -11,8 +11,13 @@ export default function useLocalization() {
     return translation(`auth.${key}`);
   };
 
+  const getEditorTranslations = (key: keyof ILocalization['editor']) => {
+    return translation(`editor.${key}`);
+  };
+
   return {
     getHeaderTranslations,
     getAuthTranslations,
+    getEditorTranslations,
   };
 }
