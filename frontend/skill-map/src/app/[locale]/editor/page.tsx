@@ -1,19 +1,45 @@
 'use client';
 import SpinnerScreen from '@/components/base/spinner';
-import { useGetRoadmapByIdQuery } from '@/features/roadmaps/api';
+import { useGetSavedRoadmapQuery } from '@/features/roadmaps/api';
 import RoadmapEditor from '@/features/roadmaps/editor';
 import { Flex } from '@chakra-ui/react';
 import { ReactFlowProvider } from '@xyflow/react';
 import Container from '@/components/container/container';
+import ErrorScreen from '@/components/base/error';
+import { useAppDispatch } from '@/store/hooks';
+import { setPlainRiadmap, setRoadmap } from '@/features/roadmaps/editor/store';
 
 export default function EditorPage() {
+  const dispatch = useAppDispatch();
   const roadmapId = 'fcad7a41-a483-4b84-b26a-ee4f6816c576';
-  const { data, error, isLoading } = useGetRoadmapByIdQuery(roadmapId);
-  const roadmap = data?.roadmap;
+  const { data, error, isLoading } = useGetSavedRoadmapQuery(roadmapId);
+  const roadmap = data;
 
   if (!roadmap) {
     return <div>Roadmap not found</div>;
   }
+
+  if (error) {
+    return <ErrorScreen />;
+  }
+
+  dispatch(
+    setPlainRiadmap({
+      id: roadmap.id,
+      title: roadmap.title,
+      description: roadmap.description,
+      progress: roadmap.progress,
+      status: roadmap.status,
+      savedAt: roadmap.savedAt,
+      imageUrl: roadmap.imageUrl,
+    } as SavedPlainRoadmap),
+  );
+  dispatch(
+    setRoadmap({
+      nodes: roadmap.nodes,
+      edges: roadmap.edges,
+    }),
+  );
 
   return (
     <Flex width="100vw" height="100vh" direction="column">
@@ -23,8 +49,8 @@ export default function EditorPage() {
         ) : (
           <ReactFlowProvider>
             <RoadmapEditor.Container>
-              <RoadmapEditor.Header {...roadmap} />
-              <RoadmapEditor roadmap={roadmap} />
+              <RoadmapEditor.Header />
+              <RoadmapEditor />
             </RoadmapEditor.Container>
           </ReactFlowProvider>
         )}

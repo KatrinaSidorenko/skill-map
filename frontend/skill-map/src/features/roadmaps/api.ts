@@ -35,6 +35,12 @@ export const roadmapApi = createApi({
         params: { pageSize, pageNumber, query },
       }),
     }),
+    getSavedRoadmap: builder.query<SavedRoadmap, string>({
+      query: (id) => ({
+        url: `modifiedroadmaps/${id}`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -44,4 +50,5 @@ export const {
   useLazyGetSavedRoadmapsQuery,
   useLazyGetRoadmapsQuery,
   useSaveRoadmapMutation,
+  useGetSavedRoadmapQuery,
 } = roadmapApi;

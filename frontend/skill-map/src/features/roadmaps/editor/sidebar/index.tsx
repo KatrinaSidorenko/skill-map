@@ -2,21 +2,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { Drawer, VStack, Button, Input, Text } from '@chakra-ui/react';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { selectSelectedElement, updateNode } from '../store';
 import { Node } from '@xyflow/react';
 
 type NodeSidebarProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  node: Node | null;
-  onSave: (updatedNode: Node) => void;
 };
 
-export default function NodeSidebar({
-  open,
-  onOpenChange,
-  node,
-  onSave,
-}: NodeSidebarProps) {
+export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
+  const dispatch = useAppDispatch();
+  const node = useAppSelector(selectSelectedElement);
   const [label, setLabel] = useState('');
 
   useEffect(() => {
@@ -28,10 +25,12 @@ export default function NodeSidebar({
 
   const handleSave = () => {
     if (!node) return;
-    onSave({
-      ...node,
-      data: { ...node.data, label },
-    });
+    dispatch(
+      updateNode({
+        ...node,
+        data: { ...node.data, label },
+      } as Node),
+    );
     onOpenChange(false);
   };
 

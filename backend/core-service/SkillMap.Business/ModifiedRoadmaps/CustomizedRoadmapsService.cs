@@ -1,5 +1,7 @@
 ﻿using LearningPlatform.Roadmap.Business.Contracts;
 using LearningPlatform.Roadmap.Business.Contracts.Constants;
+using LearningPlatform.Roadmap.Business.Contracts.Models;
+using LearningPlatform.Roadmap.Business.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using SkillMap.Business.Abstractions;
 using SkillMap.Business.ModifiedRoadmaps.Mappers;
@@ -63,14 +65,26 @@ public class CustomizedRoadmapsService(
         });
     }
 
+    // todo: create optimized query to db for target node types in order to exclude resources
     private async Task<Result<double>> GetRoadmapProgress(long userId, string roadmapId, CancellationToken ct)
     {
+        // get full roadmap (set of nodes)
+        var roadmap = new List<NodeDto>();
+        roadmap = roadmap.Where(r => r.IsTopic() || r.IsSubTopic()).ToList(); // in order to exclude resources 
+
+        // what about the deleted items?
+        // get user modifications for the roadmap
+
+        // calculate the total count of items
+        // calculate the completed count of items
+
+        // progress = completed / total * 100
         throw new NotImplementedException();
     }
 
     private async Task<string> GetRoadmapStatus(long userId, string roadmapId, CancellationToken ct)
     {
-
+        throw new NotImplementedException();
     }
 
     public Task<Result<CustomizedUerRoadmap>> GetRoadmap(long userId, string roadmapId, CancellationToken ct)
