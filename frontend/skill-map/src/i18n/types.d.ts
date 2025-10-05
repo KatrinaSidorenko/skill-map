@@ -42,4 +42,19 @@ interface ILocalization {
     SE12: string;
     UIE11: string;
   };
+  editor: {
+    apply: string;
+    cancel: string;
+    delete: string;
+    nodeProperties: string;
+    notStarted: string;
+    inProgress: string;
+    completed: string;
+    status: string;
+    description: string;
+    label: string;
+    enterNodeLabel: string;
+    enterNodeDescription: string;
+    selectStatus: string;
+  };
 }

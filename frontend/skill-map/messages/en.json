@@ -44,6 +44,21 @@
     "UIE11": "Invalid reset token",
     "SE12": "Failed to send email. Please try again later."
   },
+  "editor": {
+    "apply": "Apply",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "nodeProperties": "Node Properties",
+    "notStarted": "Not Started",
+    "inProgress": "In Progress",
+    "completed": "Completed",
+    "status": "Status",
+    "description": "Description",
+    "label": "Label",
+    "enterNodeLabel": "Enter node label",
+    "enterNodeDescription": "Enter node description",
+    "selectStatus": "Select status"
+  },
   "erros": {
     "SE6": "Not found"
   }

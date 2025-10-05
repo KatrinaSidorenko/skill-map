@@ -1,5 +1,6 @@
 'use client';
 
+import useLocalization from '@/i18n/useLocalization';
 import {
   Select,
   Portal,
@@ -8,14 +9,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
-const statuses = createListCollection({
-  items: [
-    { label: 'Not Started', value: 'notstarted' },
-    { label: 'In Progress', value: 'inprogress' },
-    { label: 'Done', value: 'done' },
-  ],
-});
-
 export default function StatusSelect({
   value,
   onChange,
@@ -23,12 +16,19 @@ export default function StatusSelect({
   value: string[];
   onChange: (val: string[]) => void;
 }) {
-  console.log({ value });
+  const { getEditorTranslations } = useLocalization();
+  const statuses = createListCollection({
+    items: [
+      { label: getEditorTranslations('notStarted'), value: 'notstarted' },
+      { label: getEditorTranslations('inProgress'), value: 'inprogress' },
+      { label: getEditorTranslations('completed'), value: 'done' },
+    ],
+  });
 
   return (
     <VStack align="stretch" gap={2}>
       <Text fontSize="sm" fontWeight="medium" color="gray.600">
-        Status
+        {getEditorTranslations('status')}
       </Text>
       <Select.Root
         collection={statuses}
@@ -40,7 +40,9 @@ export default function StatusSelect({
         <Select.HiddenSelect />
         <Select.Control>
           <Select.Trigger>
-            <Select.ValueText placeholder="Select status" />
+            <Select.ValueText
+              placeholder={getEditorTranslations('selectStatus')}
+            />
           </Select.Trigger>
           <Select.IndicatorGroup>
             <Select.Indicator />

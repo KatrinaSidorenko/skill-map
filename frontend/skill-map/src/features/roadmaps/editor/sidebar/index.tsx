@@ -14,6 +14,7 @@ import type { Node } from '@xyflow/react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { selectSelectedElement, updateNode } from '../store';
 import StatusSelect from './status-select';
+import useLocalization from '@/i18n/useLocalization';
 
 interface NodeSidebarProps {
   open: boolean;
@@ -23,6 +24,7 @@ interface NodeSidebarProps {
 export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
   const dispatch = useAppDispatch();
   const node = useAppSelector(selectSelectedElement);
+  const { getEditorTranslations } = useLocalization();
 
   const [label, setLabel] = useState('');
   const [description, setDescription] = useState('');
@@ -32,7 +34,7 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
     if (node) {
       setLabel((node.data?.label as string) ?? '');
       setDescription((node.data?.description as string) ?? '');
-      // setStatus([(node.data?.status as string) ?? 'notstarted']);
+      setStatus([(node.data?.status as string) ?? 'notstarted']);
     }
   }, [node]);
 
@@ -63,10 +65,9 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
       <Drawer.Positioner>
         <Drawer.Content borderRadius="2xl" bg="white" shadow="lg">
           <VStack align="stretch" p={6} gap={8}>
-            {/* Header */}
             <Flex justify="space-between" align="center">
               <Text fontSize="lg" fontWeight="semibold">
-                Node Properties
+                {getEditorTranslations('nodeProperties')}
               </Text>
               <Drawer.CloseTrigger />
             </Flex>
@@ -76,26 +77,26 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
             {/* Label */}
             <VStack align="stretch" gap={2}>
               <Text fontSize="sm" fontWeight="medium" color="gray.600">
-                Label
+                {getEditorTranslations('label')}
               </Text>
               <Input
                 size="sm"
                 value={label}
                 onChange={(e) => setLabel(e.target.value)}
-                placeholder="Enter node label"
+                placeholder={getEditorTranslations('enterNodeLabel')}
               />
             </VStack>
 
             {/* Description */}
             <VStack align="stretch" gap={2}>
               <Text fontSize="sm" fontWeight="medium" color="gray.600">
-                Description
+                {getEditorTranslations('description')}
               </Text>
               <Textarea
                 size="sm"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Add a short description..."
+                placeholder={getEditorTranslations('enterNodeDescription')}
                 resize="vertical"
               />
             </VStack>
@@ -110,10 +111,10 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
                 onClick={() => onOpenChange(false)}
                 size="sm"
               >
-                Cancel
+                {getEditorTranslations('cancel')}
               </Button>
               <Button colorScheme="blue" onClick={handleSave} size="sm">
-                Save
+                {getEditorTranslations('apply')}
               </Button>
             </HStack>
           </VStack>

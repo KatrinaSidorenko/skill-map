@@ -39,6 +39,21 @@
     "UIE11": "Невірний токен скидання",
     "SE12": "Failed to send email. Please try again later."
   },
+  "editor": {
+    "apply": "Застосувати",
+    "cancel": "Скасувати",
+    "delete": "Видалити",
+    "nodeProperties": "Властивості вузла",
+    "notStarted": "Не розпочато",
+    "inProgress": "В процесі",
+    "completed": "Завершено",
+    "status": "Статус",
+    "description": "Опис",
+    "label": "Назва",
+    "enterNodeLabel": "Введіть назву вузла",
+    "enterNodeDescription": "Введіть опис вузла",
+    "selectStatus": "Виберіть статус"
+  },
   "erros": {
     "SE6": "Не знайдено"
   }
