@@ -126,6 +126,7 @@ public class CustomizedRoadmapsService(
 
         var action = new RoadmapModification
         {
+            UserRoadmapId = userRoadmapResult.Data.Id,
             ExternalItemId = item.Id,
             Metadata = item.SerializeOrDefault(),
             Action = ModificationAction.SnapshotUpdate,
