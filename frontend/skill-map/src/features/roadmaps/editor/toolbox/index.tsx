@@ -15,9 +15,11 @@ import {
   addNode,
   deleteEdge,
   deleteNode,
+  selectRoadmapId,
   selectSelectedElement,
   setSelectedElement,
 } from '../store';
+import { useDeleteLearningItemMutation } from '../../api';
 
 type ToolboxProps = {
   onToggleSidebar: () => void;
@@ -26,17 +28,31 @@ type ToolboxProps = {
 export default function Toolbox({ onToggleSidebar }: ToolboxProps) {
   const dispatch = useAppDispatch();
   const selected = useAppSelector(selectSelectedElement);
+  const roadmapId = useAppSelector(selectRoadmapId);
   const hasSelection = !!selected;
   const isNode = selected ? !('source' in selected) : false;
+  const [deleteItem] = useDeleteLearningItemMutation();
 
-  const onRemoveSelected = () => {
-    if (!selected) return;
-    if ('source' in selected && 'target' in selected) {
-      dispatch(deleteEdge(selected.id));
-    } else {
-      dispatch(deleteNode(selected.id));
+  const onRemoveSelected = async () => {
+    if (!selected || !roadmapId) return;
+    try {
+      if ('source' in selected && 'target' in selected) {
+        await deleteItem({
+          roadmapId,
+          item: { id: selected.id, type: 'edge' },
+        }).unwrap();
+        dispatch(deleteEdge(selected.id));
+      } else {
+        await deleteItem({
+          roadmapId,
+          item: { id: selected.id, type: 'node' },
+        }).unwrap();
+        dispatch(deleteNode(selected.id));
+      }
+      dispatch(setSelectedElement(null));
+    } catch (error) {
+      console.error('Failed to delete item:', error);
     }
-    dispatch(setSelectedElement(null));
   };
 
   useEffect(() => {

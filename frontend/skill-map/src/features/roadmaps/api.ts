@@ -51,6 +51,16 @@ export const roadmapApi = createApi({
         body: change,
       }),
     }),
+    deleteLearningItem: builder.mutation<
+      void,
+      { roadmapId: string; item: DeleteLearningItemRequest }
+    >({
+      query: ({ roadmapId, item }) => ({
+        url: `modifiedroadmaps/delete/${roadmapId}`,
+        method: 'POST',
+        body: item,
+      }),
+    }),
   }),
 });
 
@@ -62,4 +72,5 @@ export const {
   useSaveRoadmapMutation,
   useGetSavedRoadmapQuery,
   useSaveLearningItemChangesMutation,
+  useDeleteLearningItemMutation,
 } = roadmapApi;

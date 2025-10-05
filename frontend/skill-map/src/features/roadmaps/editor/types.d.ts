@@ -2,4 +2,9 @@ interface NodeContent {
   label: string;
 }
 
-type LearningItemChangeRequest = ModifiedNode
+type LearningItemChangeRequest = ModifiedNode;
+
+interface DeleteLearningItemRequest {
+  id: string;
+  type: 'node' | 'edge';
+}

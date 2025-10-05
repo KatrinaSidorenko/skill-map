@@ -9,5 +9,6 @@ namespace SkillMap.Api.ModifiedRoadmap;
 public static partial class ModifiedRoadmapsMapper
 {
     public static partial SavedPlainRoadmapResponse ToResponse(this PlainRoadmapWithDetailsDto dto);
-    public static partial LearningItemChange ToChnage(this LearningItemChangeRequest request);
+    public static partial LearningItemChange ToChange(this LearningItemChangeRequest request);
+    public static partial DeleteLearningItemChange ToChange(this DeleteLearningItemRequest request);
 }

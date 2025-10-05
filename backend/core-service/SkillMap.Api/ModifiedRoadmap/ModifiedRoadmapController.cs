@@ -33,10 +33,16 @@ public class ModifiedRoadmapsController(ICustomizedRoadmapsService customizedRoa
     }
 
     [HttpPost("save-change/{roadmapId}")]
-    public async Task<IActionResult> SaveChanges([FromRoute] string roadmapId, [FromBody] LearningItemChangeRequest item, CancellationToken ct)
+    public async Task<IActionResult> SaveChanges([FromRoute] string roadmapId, [FromBody]LearningItemChangeRequest item, CancellationToken ct)
     {
-        var result = await customizedRoadmapsService.SaveLearningItemChange(GetUserId(), roadmapId, item.ToChnage(), ct);
-        return Response(result, (r) => Created());
+        var result = await customizedRoadmapsService.SaveLearningItemChange(GetUserId(), roadmapId, item.ToChange(), ct);
+        return Response(result, (r) => NoContent());
     }
 
+    [HttpPost("delete/{roadmapId}")]
+    public async Task<IActionResult> DeleteSavedRoadmap([FromRoute] string roadmapId, [FromBody]DeleteLearningItemRequest deleteLearningItem, CancellationToken ct)
+    {
+        var result = await customizedRoadmapsService.SaveDeleteItemChange(GetUserId(), roadmapId, deleteLearningItem.ToChange(),  ct);
+        return Response(result, (r) => NoContent());
+    }
 }
