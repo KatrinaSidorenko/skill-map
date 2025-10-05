@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 
 namespace SkillMap.Business.Roadmaps.Models;
-public class LearningItemSnapshot
+public class LearningItemChange
 {
     [JsonProperty("id")]
     public string Id { get; set; }

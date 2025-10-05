@@ -60,7 +60,7 @@ public static class ModificationsHelper
         var snapshotUpdates = (modificationsByActions.GetOrDefault(ModificationAction.SnapshotUpdate) ?? new List<RoadmapModification>())
             .Select(m => new {
                 m.UpdatedAt,
-                Metadata = m.Metadata?.DeserializeOrDefault<LearningItemSnapshot>()
+                Metadata = m.Metadata?.DeserializeOrDefault<LearningItemChange>()
             })
             .Where(m => m != null)
             .GroupBy(m => m.Metadata?.Id)
