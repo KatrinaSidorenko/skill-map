@@ -28,7 +28,6 @@ import {
   setNodeChanges,
   setSelectedElement,
 } from './store';
-import StatusSelect from './sidebar/status-select';
 
 function RoadmapEditorContainer({ children }: { children: React.ReactNode }) {
   return (
@@ -41,8 +40,6 @@ function RoadmapEditorContainer({ children }: { children: React.ReactNode }) {
 function RoadmapEditorHeader() {
   const roadmap = useAppSelector(selectPlainRoadmap);
   const router = useRouter();
-  const [status, setStatus] = useState<string[]>([]);
-
   return (
     <Flex
       w="full"
@@ -55,7 +52,6 @@ function RoadmapEditorHeader() {
       <Button variant="ghost" onClick={() => router.replace('/home')}>
         <IoChevronBackOutline size="24" />
       </Button>
-      <StatusSelect value={status} onChange={setStatus} />
 
       <Text fontSize="xl" fontWeight="semibold" pr={2}>
         {roadmap?.title || 'Untitled Roadmap'}
