@@ -149,28 +149,28 @@ public static class TreeResponseExtensions
         }
     }
 
-    public static List<CustomizedUserRoadmapLearningItem> GetAllFlattenNodes(this List<CustomizedUserRoadmapLearningItem> treeResponse)
-    {
-        var nodes = new List<CustomizedUserRoadmapLearningItem>();
+    //public static List<CustomizedUserRoadmapLearningItem> GetAllFlattenNodes(this List<CustomizedUserRoadmapLearningItem> treeResponse)
+    //{
+    //    var nodes = new List<CustomizedUserRoadmapLearningItem>();
 
-        foreach (var child in treeResponse)
-        {
-            nodes.AddRange(child.GetAllNodes());
-        }
+    //    foreach (var child in treeResponse)
+    //    {
+    //        nodes.AddRange(child.GetAllNodes());
+    //    }
 
-        return nodes;
-    }
+    //    return nodes;
+    //}
 
-    private static List<CustomizedUserRoadmapLearningItem> GetAllNodes(this CustomizedUserRoadmapLearningItem node)
-    {
-        var nodes = new List<CustomizedUserRoadmapLearningItem> { node };
+    //private static List<CustomizedUserRoadmapLearningItem> GetAllNodes(this CustomizedUserRoadmapLearningItem node)
+    //{
+    //    var nodes = new List<CustomizedUserRoadmapLearningItem> { node };
 
-        foreach (var child in node.Children)
-        {
-            nodes.AddRange(child.GetAllNodes());
-        }
+    //    foreach (var child in node.Children)
+    //    {
+    //        nodes.AddRange(child.GetAllNodes());
+    //    }
 
-        return nodes;
-    }
+    //    return nodes;
+    //}
 }
 

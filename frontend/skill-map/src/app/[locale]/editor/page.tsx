@@ -8,12 +8,34 @@ import Container from '@/components/container/container';
 import ErrorScreen from '@/components/base/error';
 import { useAppDispatch } from '@/store/hooks';
 import { setPlainRiadmap, setRoadmap } from '@/features/roadmaps/editor/store';
+import { useEffect } from 'react';
 
 export default function EditorPage() {
   const dispatch = useAppDispatch();
   const roadmapId = 'fcad7a41-a483-4b84-b26a-ee4f6816c576';
   const { data, error, isLoading } = useGetSavedRoadmapQuery(roadmapId);
   const roadmap = data;
+
+  useEffect(() => {
+    if (!roadmap) return;
+    dispatch(
+      setPlainRiadmap({
+        id: roadmap.id,
+        title: roadmap.title,
+        description: roadmap.description,
+        progress: roadmap.progress,
+        status: roadmap.status,
+        savedAt: roadmap.savedAt,
+        imageUrl: roadmap.imageUrl,
+      } as SavedPlainRoadmap),
+    );
+    dispatch(
+      setRoadmap({
+        nodes: roadmap.nodes,
+        edges: roadmap.edges,
+      }),
+    );
+  }, [roadmap, dispatch]);
 
   if (!roadmap) {
     return <div>Roadmap not found</div>;
@@ -22,24 +44,6 @@ export default function EditorPage() {
   if (error) {
     return <ErrorScreen />;
   }
-
-  dispatch(
-    setPlainRiadmap({
-      id: roadmap.id,
-      title: roadmap.title,
-      description: roadmap.description,
-      progress: roadmap.progress,
-      status: roadmap.status,
-      savedAt: roadmap.savedAt,
-      imageUrl: roadmap.imageUrl,
-    } as SavedPlainRoadmap),
-  );
-  dispatch(
-    setRoadmap({
-      nodes: roadmap.nodes,
-      edges: roadmap.edges,
-    }),
-  );
 
   return (
     <Flex width="100vw" height="100vh" direction="column">

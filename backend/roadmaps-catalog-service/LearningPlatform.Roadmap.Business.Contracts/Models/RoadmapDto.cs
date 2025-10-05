@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace SkillMap.Api.Roadmaps.Models;
+namespace LearningPlatform.Roadmap.Business.Contracts.Models;
 
 public class RoadmapDto
 {

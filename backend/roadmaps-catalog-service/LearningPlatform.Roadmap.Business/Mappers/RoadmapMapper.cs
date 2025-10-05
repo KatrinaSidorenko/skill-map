@@ -1,6 +1,5 @@
 ﻿using LearningPlatform.Roadmap.Business.Contracts.Constants;
 using LearningPlatform.Roadmap.Business.Contracts.Models;
-using SkillMap.Api.Roadmaps.Models;
 using SkillMap.Shared.Extensions;
 
 namespace LearningPlatform.Roadmap.Business.Mappers;

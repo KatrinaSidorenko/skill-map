@@ -24,6 +24,6 @@ public class ModifiedNodeResponse
     [JsonProperty("index")]
     public int Index { get; set; }
 
-    [JsonProperty("children")]
-    public List<CustomizedUserRoadmapLearningItem> Children { get; set; }
+    //[JsonProperty("children")]
+    //public List<CustomizedUserRoadmapLearningItem> Children { get; set; }
 }

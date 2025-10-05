@@ -133,7 +133,8 @@ internal class RoadmapRepository : IRoadmapRepository
         }
     }
 
-    public async Task<Result<(List<Dictionary<string, object>> Nodes, List<Dictionary<string, object>> Edges)>> GetSourceRoadmap(string roadmapId, CancellationToken cancellationToken = default)
+    public async Task<Result<(List<Dictionary<string, object>> Nodes, List<Dictionary<string, object>> Edges)>> 
+        GetSourceRoadmap(string roadmapId, CancellationToken ct = default)
     {
         ct.ThrowIfCancellationRequested();
 
@@ -195,11 +196,11 @@ internal class RoadmapRepository : IRoadmapRepository
         }
     }
 
-    public async Task<Result<(List<NodeDto> Nodes, List<EdgeDto> Edges)>> GetRoadmapById(string roadmapId, CancellationToken cancellationToken)
+    public async Task<Result<(List<NodeDto> Nodes, List<EdgeDto> Edges)>> GetRoadmapById(string roadmapId, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
 
-        var sourceRoadmapResult = await GetSourceRoadmap(roadmapId, cancellationToken);
+        var sourceRoadmapResult = await GetSourceRoadmap(roadmapId, ct);
         if (!sourceRoadmapResult.IsSuccessful)
         {
             return ResultType.FailedToGetRoadmap<(List<NodeDto> Nodes, List<EdgeDto> Edges)>(sourceRoadmapResult.Message);

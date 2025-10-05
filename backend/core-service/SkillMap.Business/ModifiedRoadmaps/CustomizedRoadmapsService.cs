@@ -87,9 +87,33 @@ public class CustomizedRoadmapsService(
         throw new NotImplementedException();
     }
 
-    public Task<Result<CustomizedUerRoadmap>> GetRoadmap(long userId, string roadmapId, CancellationToken ct)
+    public async Task<Result<SavedUerRoadmap>> GetRoadmap(long userId, string roadmapId, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        var sourceRoadmapResult = await roadmapService.GetRoadmapById(roadmapId, ct); // todo: this is alreday without resources 
+        if (!sourceRoadmapResult.IsSuccessful)
+        {
+            return ResultType.RoadmapNotFound<SavedUerRoadmap>(roadmapId);
+        }
+
+        var sourceRoadmap = sourceRoadmapResult.Data;
+        
+        return Result.Success(new SavedUerRoadmap
+        {
+            Id = sourceRoadmap.Id,
+            Title = sourceRoadmap.Title,
+            Description = sourceRoadmap.Description,
+            Status = LearningStatus.NotStarted.ToString(),
+            Progress = 0,
+            Nodes = sourceRoadmap.Nodes
+                .Select(n => new ModifiedNode
+                {
+                    Id = n.Id,
+                    Title = n.Title,
+                    Description = n.Description,
+                    Status = LearningStatus.NotStarted.ToString(),
+                }).ToList(),
+            Edges = sourceRoadmap.Edges,
+        });
     }
 
     public Task<Result<bool>> Update(long userId, string roadmapId, LearningItemSnapshot item, CancellationToken ct)
