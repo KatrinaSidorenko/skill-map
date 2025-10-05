@@ -56,5 +56,6 @@ interface ILocalization {
     enterNodeLabel: string;
     enterNodeDescription: string;
     selectStatus: string;
+    failedToSaveChanges: string;
   };
 }

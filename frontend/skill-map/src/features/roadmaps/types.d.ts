@@ -1,4 +1,4 @@
-type LearningStatus = 'NotStarted' | 'InProgress' | 'Completed';
+type LearningStatus = 'notstarted' | 'inprogress' | 'completed';
 
 interface PlainRoadmap {
   id: string;

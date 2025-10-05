@@ -57,7 +57,8 @@
     "label": "Label",
     "enterNodeLabel": "Enter node label",
     "enterNodeDescription": "Enter node description",
-    "selectStatus": "Select status"
+    "selectStatus": "Select status",
+    "failedToSaveChanges": "Failed to save changes. Please try again."
   },
   "erros": {
     "SE6": "Not found"

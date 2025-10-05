@@ -41,6 +41,16 @@ export const roadmapApi = createApi({
         method: 'GET',
       }),
     }),
+    saveLearningItemChanges: builder.mutation<
+      void,
+      { roadmapId: string; change: LearningItemChangeRequest }
+    >({
+      query: ({ roadmapId, change }) => ({
+        url: `modifiedroadmaps/save-change/${roadmapId}`,
+        method: 'POST',
+        body: change,
+      }),
+    }),
   }),
 });
 
@@ -51,4 +61,5 @@ export const {
   useLazyGetRoadmapsQuery,
   useSaveRoadmapMutation,
   useGetSavedRoadmapQuery,
+  useSaveLearningItemChangesMutation,
 } = roadmapApi;

@@ -29,14 +29,14 @@ public class ModifiedRoadmapsController(ICustomizedRoadmapsService customizedRoa
     public async Task<IActionResult> GetSavedRoadmap([FromRoute]string roadmapId, CancellationToken ct)
     {
         var result = await customizedRoadmapsService.GetRoadmap(GetUserId(), roadmapId, ct);
-        return Response(result, (r) => Created());
+        return Response(result, (r) => Ok(result.Data));
     }
 
     [HttpPost("save-change/{roadmapId}")]
     public async Task<IActionResult> SaveChanges([FromRoute] string roadmapId, [FromBody] LearningItemChangeRequest item, CancellationToken ct)
     {
         var result = await customizedRoadmapsService.SaveLearningItemChange(GetUserId(), roadmapId, item.ToChnage(), ct);
-        return Response(result, (r) => Ok());
+        return Response(result, (r) => Created());
     }
 
 }

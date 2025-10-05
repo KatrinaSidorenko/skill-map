@@ -52,7 +52,8 @@
     "label": "Назва",
     "enterNodeLabel": "Введіть назву вузла",
     "enterNodeDescription": "Введіть опис вузла",
-    "selectStatus": "Виберіть статус"
+    "selectStatus": "Виберіть статус",
+    "failedToSaveChanges": "Не вдалося зберегти зміни. Спробуйте ще раз."
   },
   "erros": {
     "SE6": "Не знайдено"

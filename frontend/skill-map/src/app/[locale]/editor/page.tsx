@@ -14,7 +14,8 @@ import NotFoundScreen from '@/components/base/notfound';
 export default function EditorPage() {
   const dispatch = useAppDispatch();
   const roadmapId = 'fcad7a41-a483-4b84-b26a-ee4f6816c576';
-  const { data, error, isLoading } = useGetSavedRoadmapQuery(roadmapId);
+  const { data, error, isLoading, isFetching } =
+    useGetSavedRoadmapQuery(roadmapId);
   const roadmap = data;
 
   useEffect(() => {
@@ -38,7 +39,7 @@ export default function EditorPage() {
     );
   }, [roadmap, dispatch]);
 
-  if (!roadmap) {
+  if (!roadmap && !isLoading && !isFetching) {
     return <NotFoundScreen />;
   }
 
@@ -49,7 +50,7 @@ export default function EditorPage() {
   return (
     <Flex width="100vw" height="100vh" direction="column">
       <Container isSection={false}>
-        {isLoading ? (
+        {isLoading || isFetching ? (
           <SpinnerScreen />
         ) : (
           <ReactFlowProvider>

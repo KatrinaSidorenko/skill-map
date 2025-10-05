@@ -109,5 +109,7 @@ export const selectSelectedElement = (state: { roadmapEditor: InitialState }) =>
   state.roadmapEditor.selectedElement;
 export const selectPlainRoadmap = (state: { roadmapEditor: InitialState }) =>
   state.roadmapEditor.plainRoadmap;
+export const selectRoadmapId = (state: { roadmapEditor: InitialState }) =>
+  state.roadmapEditor.roadmapId;
 
 export default roadmapEditorSlice;

@@ -12,9 +12,11 @@ import {
 import { useState, useEffect } from 'react';
 import type { Node } from '@xyflow/react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { selectSelectedElement, updateNode } from '../store';
+import { selectRoadmapId, selectSelectedElement, updateNode } from '../store';
 import StatusSelect from './status-select';
 import useLocalization from '@/i18n/useLocalization';
+import { useSaveLearningItemChangesMutation } from '../../api';
+import { toaster } from '@/components/ui/toaster';
 
 interface NodeSidebarProps {
   open: boolean;
@@ -23,8 +25,10 @@ interface NodeSidebarProps {
 
 export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
   const dispatch = useAppDispatch();
+  const roadmapId = useAppSelector(selectRoadmapId);
   const node = useAppSelector(selectSelectedElement);
   const { getEditorTranslations } = useLocalization();
+  const [saveChange] = useSaveLearningItemChangesMutation();
 
   const [label, setLabel] = useState('');
   const [description, setDescription] = useState('');
@@ -38,20 +42,40 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
     }
   }, [node]);
 
-  const handleSave = () => {
-    if (!node) return;
-    dispatch(
-      updateNode({
-        ...node,
-        data: {
-          ...node.data,
-          label,
+  const handleSave = async () => {
+    if (!node || !roadmapId) return;
+
+    try {
+      await saveChange({
+        roadmapId,
+        change: {
+          id: node.id,
+          title: label,
           description,
-          status,
+          status: (status[0] || 'notstarted') as LearningStatus,
         },
-      } as Node),
-    );
-    onOpenChange(false);
+      }).unwrap();
+
+      dispatch(
+        updateNode({
+          ...node,
+          data: {
+            ...node.data,
+            label,
+            description,
+            status,
+          },
+        } as Node),
+      );
+
+      onOpenChange(false);
+    } catch (err) {
+      toaster.create({
+        type: 'error',
+        closable: true,
+        title: getEditorTranslations('failedToSaveChanges'),
+      });
+    }
   };
 
   return (
