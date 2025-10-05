@@ -9,7 +9,7 @@ import {
   Node,
   NodeChange,
 } from '@xyflow/react';
-import { mapRoadmapToReactFlow } from '../helpers';
+import { mapRoadmapToReactFlowForSaved } from '../helpers';
 
 type InitialState = {
   plainRoadmap: SavedPlainRoadmap | null;
@@ -34,14 +34,14 @@ const roadmapEditorSlice = createSlice({
     setRoadmap: (
       state,
       action: PayloadAction<{
-        nodes: RoadmapNode[];
+        nodes: ModifiedNode[];
         edges: RoadmapEdge[];
       }>,
     ) => {
-      const { nodes, edges } = mapRoadmapToReactFlow({
+      const { nodes, edges } = mapRoadmapToReactFlowForSaved({
         nodes: action.payload.nodes,
         edges: action.payload.edges,
-      } as Roadmap);
+      } as SavedRoadmap);
       state.nodes = nodes;
       state.edges = edges;
     },

@@ -89,7 +89,7 @@ public class CustomizedRoadmapsService(
 
     public async Task<Result<SavedUerRoadmap>> GetRoadmap(long userId, string roadmapId, CancellationToken ct)
     {
-        var sourceRoadmapResult = await roadmapService.GetRoadmapById(roadmapId, ct); // todo: this is alreday without resources 
+        var sourceRoadmapResult = await roadmapService.GetRoadmapById(roadmapId, ct); // todo: this is already without resources 
         if (!sourceRoadmapResult.IsSuccessful)
         {
             return ResultType.RoadmapNotFound<SavedUerRoadmap>(roadmapId);

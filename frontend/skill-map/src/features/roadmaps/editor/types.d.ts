@@ -1,0 +1,3 @@
+interface NodeContent {
+  label: string;
+}

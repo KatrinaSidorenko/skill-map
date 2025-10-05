@@ -9,6 +9,7 @@ import ErrorScreen from '@/components/base/error';
 import { useAppDispatch } from '@/store/hooks';
 import { setPlainRiadmap, setRoadmap } from '@/features/roadmaps/editor/store';
 import { useEffect } from 'react';
+import NotFoundScreen from '@/components/base/notfound';
 
 export default function EditorPage() {
   const dispatch = useAppDispatch();
@@ -38,7 +39,7 @@ export default function EditorPage() {
   }, [roadmap, dispatch]);
 
   if (!roadmap) {
-    return <div>Roadmap not found</div>;
+    return <NotFoundScreen />;
   }
 
   if (error) {

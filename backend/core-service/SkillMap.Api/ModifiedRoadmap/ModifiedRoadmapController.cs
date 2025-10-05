@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SkillMap.Api.Base;
 using SkillMap.Api.Base.Searching;
 using SkillMap.Api.ModifiedRoadmap.Models;
-using SkillMap.Api.Roadmaps.Models;
 using SkillMap.Business.Roadmaps;
 
 namespace SkillMap.Api.ModifiedRoadmap;
