@@ -142,6 +142,32 @@ public class CustomizedRoadmapsService(
         return Result.Success(true);
     }
 
+    public async Task<Result<bool>> SaveDeleteItemChange(long userId, string roadmapId, DeleteLearningItemChange itemChange, CancellationToken ct)
+    {
+        var userRoadmapResult = await userRoadmapsService.GetUserRoadmap(userId, roadmapId, ct);
+        if (!userRoadmapResult.IsSuccessful)
+        {
+            return ResultType.UserRoadmapNotFound<bool>(userId, roadmapId);
+        }
+
+        var action = new RoadmapModification
+        {
+            UserRoadmapId = userRoadmapResult.Data.Id,
+            ExternalItemId = itemChange.Id,
+            Action = ModificationAction.Delete,
+            Metadata = itemChange.SerializeOrDefault(),
+        };
+
+        await modificationsRepository.AddAsync(action, ct);
+        var saveResult = await modificationsRepository.SaveChangesAsync(ct);
+        if (!saveResult.IsSuccessful)
+        {
+            return ResultType.FailedToApplyModifications<bool>(userId, roadmapId);
+        }
+
+        return Result.Success(true);
+    }
+
     public Task<Result<bool>> UpdateStatus(long userId, string roadmapId, string itemId, UpdateStatusMetadata metadata, CancellationToken ct)
     {
         throw new NotImplementedException();
