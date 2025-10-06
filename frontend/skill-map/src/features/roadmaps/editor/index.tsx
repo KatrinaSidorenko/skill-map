@@ -85,7 +85,7 @@ function RoadmapEditor() {
   }, []);
 
   const onConnect = useCallback((connection: Connection) => {
-    dispatch(setEdge(connection));
+    dispatch(setEdge(connection)); // todo: add edge
   }, []);
 
   // Sidebar toggle
