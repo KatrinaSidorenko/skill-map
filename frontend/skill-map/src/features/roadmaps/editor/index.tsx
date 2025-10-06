@@ -51,7 +51,7 @@ function RoadmapEditorHeader() {
       p={2}
       borderRadius="lg"
     >
-      <Button variant="ghost" onClick={() => router.replace('/home')}>
+      <Button size="sm" variant="ghost" onClick={() => router.replace('/home')}>
         <IoChevronBackOutline size="24" />
       </Button>
 
@@ -88,16 +88,20 @@ function RoadmapEditor() {
     dispatch(setSelectedElement(edge));
   }, []);
 
-  const onConnect = useCallback((connection: Connection) => {
-    dispatch(setEdge(connection));
-    createEdge({
-      roadmapId: roadmapId!,
-      edge: {
-        sourceId: connection.source!,
-        targetId: connection.target!,
-      },
-    }).unwrap();
-  }, []);
+  const onConnect = useCallback(
+    (connection: Connection) => {
+      dispatch(setEdge(connection));
+      if (!roadmapId) return;
+      createEdge({
+        roadmapId: roadmapId,
+        edge: {
+          sourceId: connection.source!,
+          targetId: connection.target!,
+        },
+      }).unwrap();
+    },
+    [roadmapId],
+  );
 
   // Sidebar toggle
   const handleToggleSidebar = useCallback(() => {

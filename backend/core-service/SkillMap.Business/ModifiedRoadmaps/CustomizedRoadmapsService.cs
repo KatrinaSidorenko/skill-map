@@ -28,11 +28,6 @@ public class CustomizedRoadmapsService(
 {
     private const int MaxModificationsCount = 5;
 
-    public Task<Result<NodeResponse>> Create(long userId, string roadmapId, CreateLearningItemMetadata itemMetadata, CancellationToken ct)
-    {
-        throw new NotImplementedException();
-    }
-
     public Task<Result<bool>> DeleteRoadmap(long userId, string roadmapId, string itemId, CancellationToken ct)
     {
         throw new NotImplementedException();
@@ -174,8 +169,8 @@ public class CustomizedRoadmapsService(
     {
         var action = new RoadmapModification
         {
-            ExternalItemId = connection.SourceId,
-            InnerItemId = connection.TargetId,
+            ExternalItemId = NumericExtensions.CreateGuidWithoutDashes(),
+            Metadata = connection.SerializeOrDefault(),
             Action = ModificationAction.CreateConnection,
         };
         return await SaveModification(userId, roadmapId, action, ct);

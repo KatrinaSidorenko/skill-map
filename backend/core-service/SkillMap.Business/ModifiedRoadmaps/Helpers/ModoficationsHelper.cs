@@ -10,36 +10,36 @@ namespace SkillMap.Business.Roadmaps.Helpers;
 
 public static class ModificationsHelper
 {
-    public static List<NodeResponse> GetCreatedNodes(this IEnumerable<RoadmapModification> nodes)
-    {
-        var createdNodes = nodes.Select(m =>
-         {
-             var metadata = m.Metadata?.DeserializeOrDefault<CreateLearningItemMetadata>();
-             if (metadata == null)
-             {
-                 return null;
-             }
+    //public static List<NodeResponse> GetCreatedNodes(this IEnumerable<RoadmapModification> nodes)
+    //{
+    //    var createdNodes = nodes.Select(m =>
+    //     {
+    //         var metadata = m.Metadata?.DeserializeOrDefault<CreateLearningItemMetadata>();
+    //         if (metadata == null)
+    //         {
+    //             return null;
+    //         }
 
-             var node = new NodeResponse
-             {
-                 Id = m.InnerItemId,
-                 Title = metadata.Title,
-                 Type = metadata.Type,
-                 ParentId = metadata.ParentId,
-                 Index = int.MaxValue,
-                 Description = metadata.Description,
-                 Status = metadata.Status.ToString(),
-                 Progress = 0,
-             };
+    //         var node = new NodeResponse
+    //         {
+    //             Id = m.InnerItemId,
+    //             Title = metadata.Title,
+    //             Type = metadata.Type,
+    //             ParentId = metadata.ParentId,
+    //             Index = int.MaxValue,
+    //             Description = metadata.Description,
+    //             Status = metadata.Status.ToString(),
+    //             Progress = 0,
+    //         };
 
-             return node;
-         })
-        .Where(m => m != null)
-        .ToList();
-        createdNodes.FillChildren();
+    //         return node;
+    //     })
+    //    .Where(m => m != null)
+    //    .ToList();
+    //    createdNodes.FillChildren();
 
-        return createdNodes;
-    }
+    //    return createdNodes;
+    //}
 
     public static void ApplyModifications(this Dictionary<string, NodeResponse> nodesDict, Dictionary<ModificationAction, List<RoadmapModification>> modificationsByActions)
     {
@@ -174,49 +174,49 @@ public static class ModificationsHelper
     //    return (nodes, edges);
     //}
 
-    public static (List<NodeResponse>, List<(string Source, string Target)>) ApplyModifications(this (List<NodeResponse>, List<(string Source, string Target)>) sourceRoadmap, List<RoadmapModification> modifications)
-    {
-        var createdNodesModifications = modifications
-           .Where(m => m.Action == ModificationAction.Create)
-           .GetCreatedNodes();
+    //public static (List<NodeResponse>, List<(string Source, string Target)>) ApplyModifications(this (List<NodeResponse>, List<(string Source, string Target)>) sourceRoadmap, List<RoadmapModification> modifications)
+    //{
+    //    var createdNodesModifications = modifications
+    //       .Where(m => m.Action == ModificationAction.Create)
+    //       .GetCreatedNodes();
 
-        var (createdNodes, createdEdges) = (new List<NodeResponse>(), new Dictionary<string, List<string>>()).ToGraph(createdNodesModifications);
+    //    var (createdNodes, createdEdges) = (new List<NodeResponse>(), new Dictionary<string, List<string>>()).ToGraph(createdNodesModifications);
 
-        var (nodes, edges) = sourceRoadmap;
-        var rootNode = nodes.FirstOrDefault(n => n.Type.IsRoadmap());
-        nodes.AddRange(createdNodes);
+    //    var (nodes, edges) = sourceRoadmap;
+    //    var rootNode = nodes.FirstOrDefault(n => n.Type.IsRoadmap());
+    //    nodes.AddRange(createdNodes);
 
-        var plainEdges = createdEdges
-            .SelectMany(e => e.Value.Select(t => (Source: e.Key, Target: t)))
-            .ToList();
-        edges.AddRange(plainEdges);
+    //    var plainEdges = createdEdges
+    //        .SelectMany(e => e.Value.Select(t => (Source: e.Key, Target: t)))
+    //        .ToList();
+    //    edges.AddRange(plainEdges);
 
-        var nodesDictionary = nodes.ToDictionary(n => n.Id, n => n);
+    //    var nodesDictionary = nodes.ToDictionary(n => n.Id, n => n);
 
-        var modificationsByActions = modifications
-            .GroupBy(m => m.Action)
-            .ToDictionary(g => g.Key, g => g.ToList());
-        nodesDictionary.ApplyModifications(modificationsByActions);
+    //    var modificationsByActions = modifications
+    //        .GroupBy(m => m.Action)
+    //        .ToDictionary(g => g.Key, g => g.ToList());
+    //    nodesDictionary.ApplyModifications(modificationsByActions);
 
-        var itemsToDelete = (modificationsByActions.GetOrDefault(ModificationAction.Delete) ?? new List<RoadmapModification>())
-         .Select(m => m.ExternalItemId)
-         .ToList();
+    //    var itemsToDelete = (modificationsByActions.GetOrDefault(ModificationAction.Delete) ?? new List<RoadmapModification>())
+    //     .Select(m => m.ExternalItemId)
+    //     .ToList();
 
-        nodes.ForEach(n =>
-        {
-            if (itemsToDelete.Contains(n.Id))
-            {
-                n.IsDeleted = true;
-            }
-        });
+    //    nodes.ForEach(n =>
+    //    {
+    //        if (itemsToDelete.Contains(n.Id))
+    //        {
+    //            n.IsDeleted = true;
+    //        }
+    //    });
 
-        //edges = edges
-        //    .Where(e => !itemsToDelete.Contains(e.Source) && !itemsToDelete.Contains(e.Target))
-        //    .ToList();
+    //    //edges = edges
+    //    //    .Where(e => !itemsToDelete.Contains(e.Source) && !itemsToDelete.Contains(e.Target))
+    //    //    .ToList();
 
 
-        return (nodes, edges);
-    }
+    //    return (nodes, edges);
+    //}
 
     //public static void ApplySortingAndIndexing(this (List<NodeResponse>, List<(string Source, string Target)>) sourceRoadmap)
     //{

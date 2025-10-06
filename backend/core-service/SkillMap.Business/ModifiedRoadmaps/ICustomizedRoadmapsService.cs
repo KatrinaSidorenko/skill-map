@@ -7,7 +7,8 @@ namespace SkillMap.Business.Roadmaps;
 
 public interface ICustomizedRoadmapsService
 {
-    Task<Result<NodeResponse>> Create(long userId, string roadmapId, CreateLearningItemMetadata itemMetadata, CancellationToken ct);
+    Task<Result<bool>> CreateLearningItem(long userId, string roadmapId, LearningItem learningItem, CancellationToken ct);
+    Task<Result<bool>> CreateLearningItemsConnection(long userId, string roadmapId, LearningItemConnection connection, CancellationToken ct);
     Task<Result<bool>> DeleteRoadmap(long userId, string roadmapId, string itemId, CancellationToken ct);
     Task<Result<PaginationResult<List<PlainRoadmapWithDetailsDto>>>> GetPlainRoadmapsWithUserMetadata(long userId, SearchingParams @params, CancellationToken ct);
     Task<Result<SavedUerRoadmap>> GetRoadmap(long userId, string roadmapId, CancellationToken ct);

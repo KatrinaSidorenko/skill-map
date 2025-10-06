@@ -4,6 +4,8 @@ namespace SkillMap.Api.ModifiedRoadmap.Models;
 
 public class CreateNodeRequest
 {
+    [JsonProperty("id")]
+    public string Id { get; set; }
     [JsonProperty("title")]
     public string Title { get; set; }
     [JsonProperty("description")]
