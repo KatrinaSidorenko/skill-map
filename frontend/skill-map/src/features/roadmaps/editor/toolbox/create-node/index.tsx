@@ -12,6 +12,7 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import StatusSelect from '../../sidebar/status-select';
+import useLocalization from '@/i18n/useLocalization';
 
 const createNodeDialog = createOverlay<{
   onCreate: (data: {
@@ -24,6 +25,7 @@ const createNodeDialog = createOverlay<{
   const [label, setLabel] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<string[]>(['notstarted']);
+  const { getEditorTranslations } = useLocalization();
 
   return (
     <Dialog.Root {...rest}>
@@ -32,29 +34,31 @@ const createNodeDialog = createOverlay<{
         <Dialog.Positioner>
           <Dialog.Content borderRadius="2xl" p={4} maxW="lg">
             <Dialog.Header>
-              <Dialog.Title>Create New Node</Dialog.Title>
+              <Dialog.Title>
+                {getEditorTranslations('createNewNode')}
+              </Dialog.Title>
             </Dialog.Header>
             <Dialog.Body spaceY="4">
               <VStack align="stretch" gap={4}>
                 <Box>
                   <Text fontSize="sm" mb={1}>
-                    Label
+                    {getEditorTranslations('label')}
                   </Text>
                   <Input
                     value={label}
                     onChange={(e) => setLabel(e.target.value)}
-                    placeholder="Enter node title"
+                    placeholder={getEditorTranslations('enterNodeLabel')}
                   />
                 </Box>
 
                 <Box>
                   <Text fontSize="sm" mb={1}>
-                    Description
+                    {getEditorTranslations('description')}
                   </Text>
                   <Textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Describe this node..."
+                    placeholder={getEditorTranslations('enterNodeDescription')}
                   />
                 </Box>
 
@@ -68,7 +72,7 @@ const createNodeDialog = createOverlay<{
                   variant="ghost"
                   onClick={() => rest.onOpenChange?.({ open: false })}
                 >
-                  Cancel
+                  {getEditorTranslations('cancel')}
                 </Button>
                 <Button
                   colorScheme="teal"
@@ -77,7 +81,7 @@ const createNodeDialog = createOverlay<{
                     rest.onOpenChange?.({ open: false });
                   }}
                 >
-                  Create
+                  {getEditorTranslations('create')}
                 </Button>
               </HStack>
             </Dialog.Footer>

@@ -53,7 +53,9 @@
     "enterNodeLabel": "Введіть назву вузла",
     "enterNodeDescription": "Введіть опис вузла",
     "selectStatus": "Виберіть статус",
-    "failedToSaveChanges": "Не вдалося зберегти зміни. Спробуйте ще раз."
+    "failedToSaveChanges": "Не вдалося зберегти зміни. Спробуйте ще раз.",
+    "createNewNode": "Створити новий вузол",
+    "create": "Створити"
   },
   "erros": {
     "SE6": "Не знайдено"
