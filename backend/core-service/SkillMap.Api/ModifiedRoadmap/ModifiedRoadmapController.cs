@@ -45,4 +45,18 @@ public class ModifiedRoadmapsController(ICustomizedRoadmapsService customizedRoa
         var result = await customizedRoadmapsService.SaveDeleteItemChange(GetUserId(), roadmapId, deleteLearningItem.ToChange(),  ct);
         return Response(result, (r) => NoContent());
     }
+
+    [HttpPost("create-item/{roadmapId}")]
+    public async Task<IActionResult> CreateNode([FromRoute] string roadmapId, [FromBody]CreateNodeRequest itemMetadata, CancellationToken ct)
+    {
+        var result = await customizedRoadmapsService.CreateLearningItem(GetUserId(), roadmapId, itemMetadata.ToLearningItem(), ct);
+        return Response(result, (r) => NoContent());
+    }
+
+    [HttpPost("create-connection/{roadmapId}")]
+    public async Task<IActionResult> CreateConnection([FromRoute] string roadmapId, [FromBody]CreateEdgeRequest connectionMetadata, CancellationToken ct)
+    {
+        var result = await customizedRoadmapsService.CreateLearningItemsConnection(GetUserId(), roadmapId, connectionMetadata.ToLearningItemConnection(), ct);
+        return Response(result, (r) => NoContent());
+    }
 }

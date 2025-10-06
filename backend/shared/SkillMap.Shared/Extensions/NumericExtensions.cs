@@ -16,4 +16,6 @@ public static class NumericExtensions
 
         return null;
     }
+
+    public static string CreateGuidWithoutDashes() => Guid.NewGuid().ToString("N");
 }

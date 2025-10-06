@@ -1,10 +1,13 @@
 import { Edge, Node } from '@xyflow/react';
 import dagre from '@dagrejs/dagre';
+import { v4 as uuidv4 } from 'uuid';
 
 const getNodePosition = (index: number): { x: number; y: number } => ({
   x: 0,
   y: index * 150, // space nodes 150px apart vertically
 });
+
+export const generateId = () => uuidv4().replaceAll('-', '');
 
 const nodeWidth = 180;
 const nodeHeight = 100;

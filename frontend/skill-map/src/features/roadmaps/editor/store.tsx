@@ -81,7 +81,7 @@ const roadmapEditorSlice = createSlice({
     },
     setEdge: (state, action: PayloadAction<Connection>) => {
       const connection = action.payload;
-      addEdge({ ...connection, animated: false }, state.edges);
+      state.edges = addEdge({ ...connection, animated: false }, state.edges);
     },
   },
 });
