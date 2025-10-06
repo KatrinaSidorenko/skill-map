@@ -23,11 +23,13 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   selectPlainRoadmap,
   selectRoadmap,
+  selectRoadmapId,
   setEdge,
   setEdgeChnages,
   setNodeChanges,
   setSelectedElement,
 } from './store';
+import { useCreateEdgeMutation } from '../api';
 
 function RoadmapEditorContainer({ children }: { children: React.ReactNode }) {
   return (
@@ -62,8 +64,10 @@ function RoadmapEditorHeader() {
 
 function RoadmapEditor() {
   const dispatch = useAppDispatch();
+  const roadmapId = useAppSelector(selectRoadmapId);
   const { nodes, edges } = useAppSelector(selectRoadmap);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [createEdge] = useCreateEdgeMutation();
 
   const onNodesChange = useCallback(
     (changes: NodeChange<Node>[]) => dispatch(setNodeChanges(changes)),
@@ -85,7 +89,14 @@ function RoadmapEditor() {
   }, []);
 
   const onConnect = useCallback((connection: Connection) => {
-    dispatch(setEdge(connection)); // todo: add edge
+    dispatch(setEdge(connection));
+    createEdge({
+      roadmapId: roadmapId!,
+      edge: {
+        sourceId: connection.source!,
+        targetId: connection.target!,
+      },
+    }).unwrap();
   }, []);
 
   // Sidebar toggle

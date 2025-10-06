@@ -45,4 +45,11 @@ public class ModifiedRoadmapsController(ICustomizedRoadmapsService customizedRoa
         var result = await customizedRoadmapsService.SaveDeleteItemChange(GetUserId(), roadmapId, deleteLearningItem.ToChange(),  ct);
         return Response(result, (r) => NoContent());
     }
+
+    [HttpPost("create-node/{roadmapId}")]
+    public async Task<IActionResult> CreateNode([FromRoute] string roadmapId, [FromBody]CreateNodeRequest itemMetadata, CancellationToken ct)
+    {
+        var result = await customizedRoadmapsService.Create(GetUserId(), roadmapId, itemMetadata.ToMetadata(), ct);
+        return Response(result, (r) => CreatedAtAction(nameof(GetSavedRoadmap), new { roadmapId = roadmapId }, r.Data));
+    }
 }

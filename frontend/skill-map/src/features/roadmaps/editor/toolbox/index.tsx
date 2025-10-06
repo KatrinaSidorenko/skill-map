@@ -1,11 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect } from 'react';
-import {
-  Box,
-  HStack,
-  IconButton,
-} from '@chakra-ui/react';
+import { Box, HStack, IconButton } from '@chakra-ui/react';
 import {
   IoIosAddCircleOutline,
   IoIosRemoveCircleOutline,
@@ -21,7 +17,10 @@ import {
   selectSelectedElement,
   setSelectedElement,
 } from '../store';
-import { useDeleteLearningItemMutation } from '../../api';
+import {
+  useCreateNodeMutation,
+  useDeleteLearningItemMutation,
+} from '../../api';
 import { generateId } from '../../helpers';
 import createNodeDialog from './create-node';
 
@@ -37,6 +36,7 @@ export default function Toolbox({
   const isNode = selected ? !('source' in selected) : false;
   const [deleteItem] = useDeleteLearningItemMutation();
   const reactFlowInstance = useReactFlow();
+  const [createNode] = useCreateNodeMutation();
 
   const onRemoveSelected = async () => {
     if (!selected || !roadmapId) return;
@@ -91,6 +91,22 @@ export default function Toolbox({
       };
 
       dispatch(addNode(newNode));
+
+      if (roadmapId) {
+        createNode({
+          roadmapId,
+          node: {
+            id: newNode.id,
+            title: data.label || 'Untitled Node',
+            description: data.description,
+            status: (data.status[0] || 'notstarted') as LearningStatus,
+          },
+        })
+          .unwrap()
+          .catch((error) => {
+            console.error('Failed to create node:', error);
+          });
+      }
     },
     [dispatch],
   );

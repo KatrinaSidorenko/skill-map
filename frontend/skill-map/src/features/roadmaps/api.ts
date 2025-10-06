@@ -1,5 +1,6 @@
 import { baseQuery } from '@/store/baseQuery';
 import { createApi } from '@reduxjs/toolkit/query/react';
+import { create } from 'domain';
 
 export const roadmapApi = createApi({
   reducerPath: 'roadmapApi',
@@ -61,6 +62,26 @@ export const roadmapApi = createApi({
         body: item,
       }),
     }),
+    createNode: builder.mutation<
+      void,
+      { roadmapId: string; node: CreateNodeRequest }
+    >({
+      query: ({ roadmapId, node }) => ({
+        url: `modifiedroadmaps/create-item/${roadmapId}`,
+        method: 'POST',
+        body: node,
+      }),
+    }),
+    createEdge: builder.mutation<
+      void,
+      { roadmapId: string; edge: CreateEdgeRequest }
+    >({
+      query: ({ roadmapId, edge }) => ({
+        url: `modifiedroadmaps/create-connection/${roadmapId}`,
+        method: 'POST',
+        body: edge,
+      }),
+    }),
   }),
 });
 
@@ -73,4 +94,6 @@ export const {
   useGetSavedRoadmapQuery,
   useSaveLearningItemChangesMutation,
   useDeleteLearningItemMutation,
+  useCreateNodeMutation,
+  useCreateEdgeMutation,
 } = roadmapApi;

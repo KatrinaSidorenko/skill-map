@@ -1,11 +1,9 @@
 ﻿using Newtonsoft.Json;
 
-namespace SkillMap.Business.Roadmaps.Models;
+namespace SkillMap.Api.ModifiedRoadmap.Models;
 
-public class LearningItem
+public class CreateNodeRequest
 {
-    [JsonProperty("id")]
-    public string Id { get; set; }
     [JsonProperty("title")]
     public string Title { get; set; }
     [JsonProperty("description")]
@@ -14,7 +12,7 @@ public class LearningItem
     public string Status { get; set; }
 }
 
-public class LearningItemConnection
+public class CreateEdgeRequest
 {
     [JsonProperty("sourceId")]
     public string SourceId { get; set; }

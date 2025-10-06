@@ -10,4 +10,6 @@ public enum ModificationAction
     UpdatePriority = 5,
     UpdateOrder = 6,
     SnapshotUpdate = 7,
+    CreateConnection = 8,
+    CreateItem = 9,
 }

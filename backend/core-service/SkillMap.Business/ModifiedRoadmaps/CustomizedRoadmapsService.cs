@@ -116,56 +116,69 @@ public class CustomizedRoadmapsService(
         });
     }
 
-    public async Task<Result<bool>> SaveLearningItemChange(long userId, string roadmapId, LearningItemChange item, CancellationToken ct)
+    private async Task<Result<bool>> SaveModification(long userId, string roadmapId, RoadmapModification modification, CancellationToken ct)
     {
         var userRoadmapResult = await userRoadmapsService.GetUserRoadmap(userId, roadmapId, ct);
         if (!userRoadmapResult.IsSuccessful)
         {
             return ResultType.UserRoadmapNotFound<bool>(userId, roadmapId);
         }
-
-        var action = new RoadmapModification
-        {
-            UserRoadmapId = userRoadmapResult.Data.Id,
-            ExternalItemId = item.Id,
-            Metadata = item.SerializeOrDefault(),
-            Action = ModificationAction.SnapshotUpdate,
-        };
-
-        await modificationsRepository.AddAsync(action, ct);
+        var userRoadmap = userRoadmapResult.Data;
+        modification.UserRoadmapId = userRoadmap.Id;
+        await modificationsRepository.AddAsync(modification, ct);
         var saveResult = await modificationsRepository.SaveChangesAsync(ct);
         if (!saveResult.IsSuccessful)
         {
             return ResultType.FailedToApplyModifications<bool>(userId, roadmapId);
         }
-
         return Result.Success(true);
+    }
+
+    public async Task<Result<bool>> SaveLearningItemChange(long userId, string roadmapId, LearningItemChange item, CancellationToken ct)
+    {
+        var action = new RoadmapModification
+        {
+            ExternalItemId = item.Id,
+            Metadata = item.SerializeOrDefault(),
+            Action = ModificationAction.SnapshotUpdate,
+        };
+        
+        return await SaveModification(userId, roadmapId, action, ct);
     }
 
     public async Task<Result<bool>> SaveDeleteItemChange(long userId, string roadmapId, DeleteLearningItemChange itemChange, CancellationToken ct)
     {
-        var userRoadmapResult = await userRoadmapsService.GetUserRoadmap(userId, roadmapId, ct);
-        if (!userRoadmapResult.IsSuccessful)
-        {
-            return ResultType.UserRoadmapNotFound<bool>(userId, roadmapId);
-        }
-
         var action = new RoadmapModification
         {
-            UserRoadmapId = userRoadmapResult.Data.Id,
             ExternalItemId = itemChange.Id,
             Action = ModificationAction.Delete,
             Metadata = itemChange.SerializeOrDefault(),
         };
 
-        await modificationsRepository.AddAsync(action, ct);
-        var saveResult = await modificationsRepository.SaveChangesAsync(ct);
-        if (!saveResult.IsSuccessful)
-        {
-            return ResultType.FailedToApplyModifications<bool>(userId, roadmapId);
-        }
+        return await SaveModification(userId, roadmapId, action, ct);
+    }
 
-        return Result.Success(true);
+    public async Task<Result<bool>> CreateLearningItem(long userId, string roadmapId, LearningItem learningItem, CancellationToken ct)
+    {
+        var action = new RoadmapModification
+        {
+            ExternalItemId = learningItem.Id,
+            Metadata = learningItem.SerializeOrDefault(),
+            Action = ModificationAction.CreateItem,
+        };
+
+        return await SaveModification(userId, roadmapId, action, ct);
+    }
+
+    public async Task<Result<bool>> CreateLearningItemsConnection(long userId, string roadmapId, LearningItemConnection connection, CancellationToken ct)
+    {
+        var action = new RoadmapModification
+        {
+            ExternalItemId = connection.SourceId,
+            InnerItemId = connection.TargetId,
+            Action = ModificationAction.CreateConnection,
+        };
+        return await SaveModification(userId, roadmapId, action, ct);
     }
 
     public Task<Result<bool>> UpdateStatus(long userId, string roadmapId, string itemId, UpdateStatusMetadata metadata, CancellationToken ct)
