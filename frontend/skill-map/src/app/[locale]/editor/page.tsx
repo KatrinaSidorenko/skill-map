@@ -42,7 +42,7 @@ export default function EditorPage() {
         edges: roadmap.edges,
       }),
     );
-  }, [roadmap, dispatch]);
+  }, [roadmap]);
 
   if ((!roadmap && !isLoading && !isFetching) || !roadmapId) {
     return <ContentNotFoundScreen />;
