@@ -1,13 +1,9 @@
 ﻿using LearningPlatform.Roadmap.Business.Contracts;
 using LearningPlatform.Roadmap.Business.Contracts.Constants;
-using LearningPlatform.Roadmap.Business.Contracts.Models;
-using LearningPlatform.Roadmap.Business.Helpers;
-using Microsoft.Extensions.DependencyInjection;
 using SkillMap.Business.Abstractions;
 using SkillMap.Business.ModifiedRoadmaps.Mappers;
 using SkillMap.Business.ModifiedRoadmaps.Models;
 using SkillMap.Business.Roadmaps.Helpers;
-using SkillMap.Business.Roadmaps.Mappers;
 using SkillMap.Business.Roadmaps.Models;
 using SkillMap.Business.UserRoadmaps;
 using SkillMap.Core.Constants;
@@ -43,6 +39,7 @@ public class CustomizedRoadmapsService(
         }
 
         var userRoadmapIds = userRoadmapsResult.Data.Select(ur => ur.RoadmapId).ToHashSet();
+        var roadmapSaveAtDict = userRoadmapsResult.Data.Select(r => (r.RoadmapId, r.CreatedAt)).ToDictionary();
         var paginatedRoadmapsResult = await roadmapService.GetPlainRoadmapsByIds([.. userRoadmapIds], @params, ct);
         if (!paginatedRoadmapsResult.IsSuccessful)
         {
@@ -50,6 +47,7 @@ public class CustomizedRoadmapsService(
         }
 
         var allRoadmaps = paginatedRoadmapsResult.Data.Result;
+        allRoadmaps.ForEach(r => r.CreatedAt = roadmapSaveAtDict.GetOrDefault(r.Id));
 
         // add calculate logic for progress
         // status of roadmap
@@ -59,28 +57,6 @@ public class CustomizedRoadmapsService(
             Result = allRoadmaps.Select(r => r.ToPlainRoadmapWithDetailsDto()).ToList(),
             TotalCount = paginatedRoadmapsResult.Data.TotalCount,
         });
-    }
-
-    // todo: create optimized query to db for target node types in order to exclude resources
-    private async Task<Result<double>> GetRoadmapProgress(long userId, string roadmapId, CancellationToken ct)
-    {
-        // get full roadmap (set of nodes)
-        var roadmap = new List<NodeDto>();
-        roadmap = roadmap.Where(r => r.IsTopic() || r.IsSubTopic()).ToList(); // in order to exclude resources 
-
-        // what about the deleted items?
-        // get user modifications for the roadmap
-
-        // calculate the total count of items
-        // calculate the completed count of items
-
-        // progress = completed / total * 100
-        throw new NotImplementedException();
-    }
-
-    private async Task<string> GetRoadmapStatus(long userId, string roadmapId, CancellationToken ct)
-    {
-        throw new NotImplementedException();
     }
 
     public async Task<Result<SavedUerRoadmap>> GetUserModifiedRoadmap(long userId, string roadmapId, CancellationToken ct)
@@ -145,8 +121,9 @@ public class CustomizedRoadmapsService(
             Id = sourceRoadmap.Id,
             Title = sourceRoadmap.Title,
             Description = sourceRoadmap.Description,
-            Status = LearningStatus.NotStarted.ToString(),
-            Progress = 0,
+            Status = nodes.CalculateStatus(),
+            Progress = nodes.CalculateRoadmapProgress(),
+            //SavedAt = userRoadmapResult.Data.
             Nodes = nodes,
             Edges = edges,
         });

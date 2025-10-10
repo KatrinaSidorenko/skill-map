@@ -5,7 +5,7 @@ import { Box, Flex, Input, InputGroup, Spinner } from '@chakra-ui/react';
 import { LuSearch } from 'react-icons/lu';
 import ErrorScreen from '@/components/base/error';
 import SpinnerScreen from '@/components/base/spinner';
-import { RoadmapCard } from '@/components/roadmap/roadmapCard';
+import { RoadmapCard, SavedRoadmapCard } from '@/components/roadmap/roadmapCard';
 import { defaultPagination } from '../helpers';
 import { useLazyGetSavedRoadmapsQuery } from '../api';
 
@@ -14,7 +14,7 @@ export default function SavedRoadmaps() {
     defaultPagination;
 
   const [page, setPage] = useState(defaultPageNumber);
-  const [items, setItems] = useState<PlainRoadmap[]>([]);
+  const [items, setItems] = useState<SavedPlainRoadmap[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [search, setSearch] = useState<string | null>('');
 
@@ -111,7 +111,7 @@ export default function SavedRoadmaps() {
       <Box flex="1" w="full" px={4}>
         <Flex direction="column" gap={4} alignItems="stretch">
           {items.map((roadmap) => (
-            <RoadmapCard key={roadmap.id} roadmap={roadmap} />
+            <SavedRoadmapCard key={roadmap.id} roadmap={roadmap} />
           ))}
         </Flex>
 
