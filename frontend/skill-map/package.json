@@ -17,6 +17,7 @@
     "@reduxjs/toolkit": "^2.9.0",
     "@svgr/webpack": "^8.1.0",
     "@xyflow/react": "^12.8.4",
+    "date-fns": "^4.1.0",
     "framer-motion": "^12.23.12",
     "next": "15.5.2",
     "next-intl": "^4.3.9",

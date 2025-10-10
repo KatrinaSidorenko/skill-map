@@ -27,7 +27,7 @@ public class RoadmapsController : BaseController
         {
             return Ok(new PaginationResponse<PlainRoadmapResponse>()
             {
-                TotalCount = plainRoadmapsResult.Data.TotalCount,
+                Total = plainRoadmapsResult.Data.TotalCount,
                 Items = r.Data.Result.Select(r => r.ToRoadmapResponse()).ToList()
             });
         });

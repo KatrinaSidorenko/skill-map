@@ -1,9 +1,9 @@
 import { Flex } from '@chakra-ui/react';
 
-export default function NotFoundScreen() {
+export default function ContentNotFoundScreen() {
   return (
-    <Flex w="full" h="full" alignItems="center" justifyContent="center">
-      <div>404 - Page Not Found</div>
+    <Flex w="100%" h="100%" alignItems="center" justifyContent="center">
+      <div>Not Found :( </div>
     </Flex>
   );
 }

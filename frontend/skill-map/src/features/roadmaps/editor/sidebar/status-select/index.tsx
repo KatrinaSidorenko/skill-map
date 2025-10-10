@@ -21,7 +21,7 @@ export default function StatusSelect({
     items: [
       { label: getEditorTranslations('notStarted'), value: 'notstarted' },
       { label: getEditorTranslations('inProgress'), value: 'inprogress' },
-      { label: getEditorTranslations('completed'), value: 'done' },
+      { label: getEditorTranslations('completed'), value: 'completed' },
     ],
   });
 

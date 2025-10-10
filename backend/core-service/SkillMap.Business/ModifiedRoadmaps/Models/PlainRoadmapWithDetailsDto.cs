@@ -9,5 +9,5 @@ public class PlainRoadmapWithDetailsDto
     public string? ImageUrl { get; set; }
     public double Progress { get; set; }
     public DateTime SavedAt { get; set; }
-    public LearningStatus Status { get; set; }
+    public string Status { get; set; } = LearningStatus.NotStarted.ToStatusString();
 }

@@ -57,6 +57,18 @@
     "createNewNode": "Створити новий вузол",
     "create": "Створити"
   },
+  "roadmaps": {
+    "search": "Пошук ...",
+    "page": "Сторінка",
+    "of": "з"
+  },
+  "roadmap": {
+    "progress": "Прогрес",
+    "inprogress": "В процесі",
+    "completed": "Завершено",
+    "notstarted": "Не розпочато",
+    "saved": "Збережено"
+  },
   "erros": {
     "SE6": "Не знайдено"
   }

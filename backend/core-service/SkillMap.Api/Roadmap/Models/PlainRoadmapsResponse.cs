@@ -12,4 +12,6 @@ public class PlainRoadmapResponse
     public string Title { get; set; }
     [JsonProperty("imageUrl")]
     public string ImageUrl { get; set; }
+    [JsonProperty("savedAt")]
+    public DateTime CreatedAt { get; set; }
 }

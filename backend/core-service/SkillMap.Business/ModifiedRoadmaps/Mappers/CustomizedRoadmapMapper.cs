@@ -8,5 +8,6 @@ namespace SkillMap.Business.ModifiedRoadmaps.Mappers;
 [Mapper]
 public static partial class CustomizedRoadmapMapper
 {
+    [MapProperty(nameof(PlainRoadmapDto.CreatedAt), nameof(PlainRoadmapWithDetailsDto.SavedAt))]
     public static partial PlainRoadmapWithDetailsDto ToPlainRoadmapWithDetailsDto(this PlainRoadmapDto roadmap);
 }
