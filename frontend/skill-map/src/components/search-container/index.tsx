@@ -38,7 +38,6 @@ export default function SearchContainer<T>({
 }: SearchContainerProps<T>) {
   const [page, setPage] = useState(1);
   const [items, setItems] = useState<T[]>([]);
-  const [totalCount, setTotalCount] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState<string | null>('');
@@ -57,7 +56,6 @@ export default function SearchContainer<T>({
         query: search,
       });
       setItems(result.items);
-      setTotalCount(result.total);
       setTotalPages(Math.max(1, Math.ceil(result.total / pageSize)));
       setError(null);
     } catch (err) {
