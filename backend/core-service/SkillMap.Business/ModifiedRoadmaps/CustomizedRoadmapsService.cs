@@ -16,6 +16,7 @@ using SkillMap.Shared.Extensions;
 using SkillMap.Shared.Gzip;
 using SkillMap.Shared.Models;
 using SkillMap.Shared.Results;
+using System.Xml.Linq;
 
 namespace SkillMap.Business.Roadmaps;
 
@@ -82,8 +83,16 @@ public class CustomizedRoadmapsService(
         throw new NotImplementedException();
     }
 
-    public async Task<Result<SavedUerRoadmap>> GetRoadmap(long userId, string roadmapId, CancellationToken ct)
+    public async Task<Result<SavedUerRoadmap>> GetUserModifiedRoadmap(long userId, string roadmapId, CancellationToken ct)
     {
+        var userRoadmapResult = await userRoadmapsService.GetUserRoadmap(userId, roadmapId, ct);
+        if (!userRoadmapResult.IsSuccessful)
+        {
+            return ResultType.UserRoadmapNotFound<SavedUerRoadmap>(userId, roadmapId);
+        }
+
+
+        var userRoadmapId = userRoadmapResult.Data.Id;
         var sourceRoadmapResult = await roadmapService.GetRoadmapById(roadmapId, ct); // todo: this is already without resources 
         if (!sourceRoadmapResult.IsSuccessful)
         {
@@ -91,7 +100,46 @@ public class CustomizedRoadmapsService(
         }
 
         var sourceRoadmap = sourceRoadmapResult.Data;
-        
+
+        var modificationsResult = await modificationsRepository.GetAllAsync(m => m.UserRoadmapId == userRoadmapId, ct: ct);
+        if (!modificationsResult.IsSuccessful)
+        {
+            return ResultType.FailedToGet<SavedUerRoadmap>("Failed to get roadmap modifications");
+        }
+
+        var modifications = modificationsResult.Data.ToList();
+        var createNodeModifications = modifications.Where(m => m.Action == ModificationAction.CreateItem)
+            .Select(m => m.MapToModifiedNode()).ToList();
+        var createConnectionModifications = modifications.Where(m => m.Action == ModificationAction.CreateConnection)
+            .Select(m => m.MapToLearningItemConnection()).ToList();
+
+        var deletedNodes = modifications.Where(m => m.Action == ModificationAction.DeleteItem)
+            .Select(m => m.ExternalItemId).ToHashSet();
+        var deletedConnections = modifications.Where(m => m.Action == ModificationAction.DeleteConnection)
+            .Select(m => m.ExternalItemId.GetConnectionPoints()).ToList();
+
+        var updatedItems = modifications
+            .Where(m => m.Action == ModificationAction.SnapshotUpdate)
+            .Select(m => m.MapToChange()).ToList();
+
+        var nodes = sourceRoadmap.Nodes.Select(n => n.MapToModifiedNode()).ToList();
+        nodes.AddRange(createNodeModifications);
+        var nodesDict = nodes.ToDictionary(n => n.Id, n => n);
+        foreach (var updatedItem in updatedItems)
+        {
+            var id = updatedItem.Id;
+            var node = nodesDict.GetOrDefault(id);
+            if (node == null) { continue; }
+            node.Title = updatedItem.Title ?? node.Title;
+            node.Description = updatedItem.Description ?? node.Description;
+            node.Status = updatedItem.Status ?? node.Status;
+        }
+        nodes = nodes.Where(n => !deletedNodes.Contains(n.Id)).ToList();
+
+        var edges = sourceRoadmap.Edges;
+        edges.AddRange(createConnectionModifications);
+        edges = edges.Where(e => !deletedConnections.Contains((e.Source, e.Target))).ToList();
+
         return Result.Success(new SavedUerRoadmap
         {
             Id = sourceRoadmap.Id,
@@ -99,15 +147,8 @@ public class CustomizedRoadmapsService(
             Description = sourceRoadmap.Description,
             Status = LearningStatus.NotStarted.ToString(),
             Progress = 0,
-            Nodes = sourceRoadmap.Nodes
-                .Select(n => new ModifiedNode
-                {
-                    Id = n.Id,
-                    Title = n.Title,
-                    Description = n.Description,
-                    Status = LearningStatus.NotStarted.ToString(),
-                }).ToList(),
-            Edges = sourceRoadmap.Edges,
+            Nodes = nodes,
+            Edges = edges,
         });
     }
 
@@ -143,14 +184,15 @@ public class CustomizedRoadmapsService(
 
     public async Task<Result<bool>> SaveDeleteItemChange(long userId, string roadmapId, DeleteLearningItemChange itemChange, CancellationToken ct)
     {
-        var action = new RoadmapModification
+        var action = itemChange.Type.ToLower() == CommonConstants.Node ? ModificationAction.DeleteItem : ModificationAction.DeleteConnection;
+        var modification = new RoadmapModification
         {
             ExternalItemId = itemChange.Id,
-            Action = ModificationAction.Delete,
+            Action = action,
             Metadata = itemChange.SerializeOrDefault(),
         };
 
-        return await SaveModification(userId, roadmapId, action, ct);
+        return await SaveModification(userId, roadmapId, modification, ct);
     }
 
     public async Task<Result<bool>> CreateLearningItem(long userId, string roadmapId, LearningItem learningItem, CancellationToken ct)

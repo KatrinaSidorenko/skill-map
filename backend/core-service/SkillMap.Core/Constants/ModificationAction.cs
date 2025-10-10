@@ -12,4 +12,6 @@ public enum ModificationAction
     SnapshotUpdate = 7,
     CreateConnection = 8,
     CreateItem = 9,
+    DeleteConnection = 10,
+    DeleteItem = 11
 }
