@@ -50,8 +50,6 @@ interface ModifiedNode extends RoadmapNode {
 
 interface PaginationResponse<TItem> {
   total: number;
-  page: number;
-  pageSize: number;
   items: TItem[];
 }
 

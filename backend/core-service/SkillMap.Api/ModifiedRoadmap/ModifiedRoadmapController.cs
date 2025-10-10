@@ -19,7 +19,7 @@ public class ModifiedRoadmapsController(ICustomizedRoadmapsService customizedRoa
         {
             return Ok(new PaginationResponse<SavedPlainRoadmapResponse>()
             {
-                TotalCount = result.Data.TotalCount,
+                Total = result.Data.TotalCount,
                 Items = r.Data.Result.Select(r => r.ToResponse()).ToList()
             });
         });

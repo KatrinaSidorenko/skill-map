@@ -31,7 +31,7 @@ export function RoadmapCard({ roadmap }: RoadmapCardProps) {
             bg="brand.50"
             opacity={0.95}
             boxShadow="sm"
-            _hover={{ boxShadow: 'md' }}
+            _hover={{ boxShadow: 'md', transform: 'translateY(-2px)' }}
             align="center"
             direction="row"
             p={2}
@@ -76,7 +76,6 @@ interface SavedRoadmapCardProps {
 }
 
 export function SavedRoadmapCard({ roadmap }: SavedRoadmapCardProps) {
-  console.log(roadmap);
   const statusColor = getStatusColor(roadmap.status);
   const formattedDate = formatDistanceToNow(new Date(roadmap.savedAt), {
     addSuffix: true,

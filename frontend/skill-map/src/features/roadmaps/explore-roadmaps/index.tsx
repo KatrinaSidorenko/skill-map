@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -8,6 +8,7 @@ import {
   Input,
   InputGroup,
   Spinner,
+  Text,
 } from '@chakra-ui/react';
 import { LuSearch } from 'react-icons/lu';
 import ErrorScreen from '@/components/base/error';
@@ -15,6 +16,7 @@ import SpinnerScreen from '@/components/base/spinner';
 import RoadmapGrid from '@/components/roadmap/roadmapGrid';
 import { defaultPagination } from '../helpers';
 import { useLazyGetRoadmapsQuery } from '../api';
+import { AiOutlineArrowLeft, AiOutlineArrowRight } from 'react-icons/ai';
 
 export default function ExploreRoadmapsPage() {
   const { pageSize: defaultPageSize, pageNumber: defaultPageNumber } =
@@ -22,17 +24,16 @@ export default function ExploreRoadmapsPage() {
 
   const [page, setPage] = useState(defaultPageNumber);
   const [items, setItems] = useState<PlainRoadmap[]>([]);
-  const [hasMore, setHasMore] = useState(true);
+  const [totalCount, setTotalCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
-  // Separate input vs active search query
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState<string | null>('');
 
-  // Lazy query hook
   const [fetchRoadmaps, { data, error, isLoading, isFetching }] =
     useLazyGetRoadmapsQuery();
 
-  // Fetch data when page or search changes
+  // Fetch when page or search changes
   useEffect(() => {
     fetchRoadmaps({
       pageNumber: page,
@@ -41,54 +42,27 @@ export default function ExploreRoadmapsPage() {
     });
   }, [page, search]);
 
-  // Update items when data arrives
+  // Update data when response arrives
   useEffect(() => {
     if (data?.items) {
-      if (page === 1) {
-        // Reset on new search
-        setItems(data.items);
-      } else {
-        // Append new items without duplicates
-        const newItems = data.items.filter(
-          (newItem) => !items.some((item) => item.id === newItem.id),
-        );
-        setItems((prev) => [...prev, ...newItems]);
-      }
-
-      // If less than pageSize → no more data
-      if (data.items.length < defaultPageSize) {
-        setHasMore(false);
-      }
+      setItems(data.items);
+      setTotalCount(data.total ?? 0);
+      setTotalPages(Math.round((data.total ?? 0) / defaultPageSize));
+      console.log('Total items:', data.total ?? 0);
+      console.log(
+        'Total pages:',
+        Math.round((data.total ?? 0) / defaultPageSize),
+      );
     }
-  }, [data, page]);
+  }, [data]);
 
-  // Infinite scroll observer
-  const loaderRef = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    if (!hasMore || isFetching) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setPage((prev) => prev + 1);
-        }
-      },
-      { threshold: 1.0 },
-    );
-
-    if (loaderRef.current) observer.observe(loaderRef.current);
-    return () => {
-      if (loaderRef.current) observer.unobserve(loaderRef.current);
-    };
-  }, [hasMore, isFetching]);
-
-  // Handle pressing search button
   const handleSearch = () => {
-    setItems([]);
     setPage(1);
-    setHasMore(true);
     setSearch(searchInput.trim().length > 0 ? searchInput.trim() : '');
   };
+
+  const handlePrev = () => page > 1 && setPage((p) => p - 1);
+  const handleNext = () => page < totalPages && setPage((p) => p + 1);
 
   if (error) return <ErrorScreen />;
   if (isLoading && page === 1) return <SpinnerScreen />;
@@ -96,37 +70,64 @@ export default function ExploreRoadmapsPage() {
   return (
     <Flex
       direction="column"
-      gap={4}
+      minH="100vh"
       alignItems="center"
-      justifyContent="center"
+      justifyContent="flex-start"
     >
-      {/* Search bar with button */}
+      {/* Search bar */}
       <Box w="sm" p={4} mb={8}>
-        <InputGroup borderRadius="md" bg="bg.page" boxShadow="sm">
-          <>
-            <Input
-              placeholder="Search roadmaps..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-            />
-            <Button onClick={handleSearch} variant="ghost">
-              <LuSearch />
-            </Button>
-          </>
+        <InputGroup
+          borderRadius="md"
+          bg="bg.page"
+          boxShadow="sm"
+          endElement={
+            <LuSearch onClick={handleSearch} style={{ cursor: 'pointer' }} />
+          }
+        >
+          <Input
+            placeholder="Search roadmaps..."
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+          />
         </InputGroup>
       </Box>
 
       {/* Roadmap grid */}
       <Box flex="1" w="full" px={4}>
-        <RoadmapGrid roadmaps={items} />
-
-        {/* Loader for infinite scroll */}
-        {hasMore && (
-          <Box ref={loaderRef} display="flex" justifyContent="center" py={4}>
-            {isFetching && <Spinner />}
-          </Box>
+        {isFetching && items.length === 0 ? (
+          <Flex justifyContent="center" py={8}>
+            <Spinner />
+          </Flex>
+        ) : items.length > 0 ? (
+          <RoadmapGrid roadmaps={items} />
+        ) : (
+          <Text textAlign="center" color="gray.500" py={8}>
+            No roadmaps found.
+          </Text>
         )}
       </Box>
+
+      <Flex alignItems="center" justifyContent="center" gap={4} py={6}>
+        <Button
+          onClick={handlePrev}
+          disabled={page === 1 || isFetching}
+          size="sm"
+        >
+          <AiOutlineArrowLeft />
+        </Button>
+
+        <Text fontSize="sm" color="gray.600">
+          Page {page} of {totalPages || 1}
+        </Text>
+
+        <Button
+          onClick={handleNext}
+          disabled={page >= totalPages || isFetching}
+          size="sm"
+        >
+          <AiOutlineArrowRight />
+        </Button>
+      </Flex>
     </Flex>
   );
 }

@@ -90,6 +90,6 @@ export function mapRoadmapToReactFlowForSaved(roadmap: SavedRoadmap): {
 }
 
 export const defaultPagination = {
-  pageSize: 3,
+  pageSize: 12,
   pageNumber: 1,
 };
