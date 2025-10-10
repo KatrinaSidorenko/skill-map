@@ -1,15 +1,79 @@
-﻿using LearningPlatform.Roadmap.Business.Algo;
-using LearningPlatform.Roadmap.Business.Contracts.Constants;
+﻿using LearningPlatform.Roadmap.Business.Contracts.Models;
 using SkillMap.Business.Roadmaps.Models;
 using SkillMap.Core.Constants;
 using SkillMap.Core.Entities;
-using SkillMap.Shared;
 using SkillMap.Shared.Extensions;
 
 namespace SkillMap.Business.Roadmaps.Helpers;
 
 public static class ModificationsHelper
 {
+    public static (string TragetId, string SourceId) GetConnectionPoints(this string connection)
+    {
+        var parts = connection.Split("-");
+        if (parts.Length != 2)
+        {
+            return (null, null);
+        }
+
+        return (parts[0], parts[1]);
+    }
+    public static ModifiedNode MapToModifiedNode(this RoadmapModification modification)
+    {
+        var item = modification?.Metadata.DeserializeOrDefault<LearningItem>();
+        return new ModifiedNode
+        {
+            Id = item?.Id,
+            Title = item?.Title,
+            Description = item?.Description,
+            Status = item?.Status?.ToLower().ToLower(),
+        };
+    }
+
+
+    public static ModifiedNode MapToModifiedNode(this Node node)
+    {
+        return new ModifiedNode
+        {
+            Id = node?.Id,
+            Title = node?.Title,
+            Description = node?.Description,
+            Status = LearningStatus.NotStarted.ToString().ToLower(),
+        };
+    }
+    public static Edge MapToLearningItemConnection(this RoadmapModification modification)
+    {
+        var connection = modification.Metadata.DeserializeOrDefault<LearningItemConnection>();
+        return new Edge
+        {
+            Id = modification?.ExternalItemId ?? modification?.InnerItemId,
+            Source = connection?.SourceId,
+            Target = connection?.TargetId,
+        };
+    }
+
+    public static LearningItemChange MapToChange(this RoadmapModification modification)
+    {
+        var change = modification?.Metadata.DeserializeOrDefault<LearningItemChange>();
+        return new LearningItemChange
+        {
+            Id = change?.Id,
+            Title = change?.Title,
+            Description = change?.Description,
+            Status = change?.Status,
+        };
+    }
+
+    public static DeleteLearningItemChange MapToDeleteChange(this RoadmapModification modification)
+    {
+        var change = modification?.Metadata.DeserializeOrDefault<DeleteLearningItemChange>();
+        return new DeleteLearningItemChange
+        {
+            Id = change?.Id,
+            Type = change?.Type.ToLower().ToLower(),
+        };
+    }
+
     //public static List<NodeResponse> GetCreatedNodes(this IEnumerable<RoadmapModification> nodes)
     //{
     //    var createdNodes = nodes.Select(m =>

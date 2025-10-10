@@ -28,7 +28,7 @@ public class ModifiedRoadmapsController(ICustomizedRoadmapsService customizedRoa
     [HttpGet("{roadmapId}")]
     public async Task<IActionResult> GetSavedRoadmap([FromRoute]string roadmapId, CancellationToken ct)
     {
-        var result = await customizedRoadmapsService.GetRoadmap(GetUserId(), roadmapId, ct);
+        var result = await customizedRoadmapsService.GetUserModifiedRoadmap(GetUserId(), roadmapId, ct);
         return Response(result, (r) => Ok(result.Data));
     }
 
