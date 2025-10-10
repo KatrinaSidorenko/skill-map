@@ -73,9 +73,13 @@ const getStatusColor = (status: LearningStatus) => {
 
 interface SavedRoadmapCardProps {
   roadmap: SavedPlainRoadmap;
+  handleClick: (id: string) => void;
 }
 
-export function SavedRoadmapCard({ roadmap }: SavedRoadmapCardProps) {
+export function SavedRoadmapCard({
+  roadmap,
+  handleClick,
+}: SavedRoadmapCardProps) {
   const { getRoadmapTransaltions } = useLocalization();
   const statusColor = getStatusColor(roadmap.status);
   const formattedDate = formatDistanceToNow(new Date(roadmap.savedAt), {
@@ -88,83 +92,82 @@ export function SavedRoadmapCard({ roadmap }: SavedRoadmapCardProps) {
   return (
     <HoverCard.Root>
       <HoverCard.Trigger>
-        <NextLink href={`/roadmap/${roadmap.id}`} passHref>
-          <Flex
-            cursor="pointer"
-            borderRadius="lg"
-            overflow="hidden"
-            bg="brand.50"
-            opacity={0.95}
-            boxShadow="sm"
-            _hover={{ boxShadow: 'md', transform: 'translateY(-2px)' }}
-            align="center"
-            direction="row"
-            p={2}
-            transition="all 0.15s ease-in-out"
-          >
-            <Image
-              src={roadmap.imageUrl ?? MOCK_IMAGE_URL}
-              alt={roadmap.title}
-              w="150px"
-              h="130px"
-              objectFit="cover"
-              borderRadius="md"
-              flexShrink={0}
-            />
+        <Flex
+          onClick={() => handleClick(roadmap.id)}
+          cursor="pointer"
+          borderRadius="lg"
+          overflow="hidden"
+          bg="brand.50"
+          opacity={0.95}
+          boxShadow="sm"
+          _hover={{ boxShadow: 'md', transform: 'translateY(-2px)' }}
+          align="center"
+          direction="row"
+          p={2}
+          transition="all 0.15s ease-in-out"
+        >
+          <Image
+            src={roadmap.imageUrl ?? MOCK_IMAGE_URL}
+            alt={roadmap.title}
+            w="150px"
+            h="130px"
+            objectFit="cover"
+            borderRadius="md"
+            flexShrink={0}
+          />
 
-            <VStack gap={2} p={4} align="start" flex="1">
-              <HStack justify="space-between" width="100%">
-                <Text fontSize="lg" fontWeight="bold" color="text.heading">
-                  {roadmap.title}
-                </Text>
-                <Badge colorScheme={statusColor} fontSize="0.8em">
-                  {getRoadmapTransaltions(
-                    roadmap.status.toString() as keyof ILocalization['roadmap'],
-                  )}
-                </Badge>
-              </HStack>
-
-              <Box width="100%">
-                <Progress.Root value={roadmap.progress} maxW="full">
-                  <HStack gap="4">
-                    <Progress.Label color="gray.600" fontSize="sm">
-                      {getRoadmapTransaltions('progress')}
-                    </Progress.Label>
-                    <Progress.Track
-                      flex="1"
-                      h="6px"
-                      borderRadius="full"
-                      bg="gray.200"
-                    >
-                      <Progress.Range
-                        bg={`${statusColor}.400`}
-                        transition="width 0.3s ease"
-                      />
-                    </Progress.Track>
-                    <Progress.ValueText
-                      fontSize="sm"
-                      color="gray.600"
-                      minW="40px"
-                      textAlign="right"
-                    >
-                      {getProgressInPercentage(roadmap.progress)}%
-                    </Progress.ValueText>
-                  </HStack>
-                </Progress.Root>
-                <Text
-                  fontSize="xs"
-                  mt={1}
-                  color="gray.500"
-                  textAlign="right"
-                >{`${roadmap.progress}%`}</Text>
-              </Box>
-
-              <Text fontSize="xs" color="gray.500">
-                {getRoadmapTransaltions('saved')} {formattedDate}
+          <VStack gap={2} p={4} align="start" flex="1">
+            <HStack justify="space-between" width="100%">
+              <Text fontSize="lg" fontWeight="bold" color="text.heading">
+                {roadmap.title}
               </Text>
-            </VStack>
-          </Flex>
-        </NextLink>
+              <Badge colorScheme={statusColor} fontSize="0.8em">
+                {getRoadmapTransaltions(
+                  roadmap.status.toString() as keyof ILocalization['roadmap'],
+                )}
+              </Badge>
+            </HStack>
+
+            <Box width="100%">
+              <Progress.Root value={roadmap.progress} maxW="full">
+                <HStack gap="4">
+                  <Progress.Label color="gray.600" fontSize="sm">
+                    {getRoadmapTransaltions('progress')}
+                  </Progress.Label>
+                  <Progress.Track
+                    flex="1"
+                    h="6px"
+                    borderRadius="full"
+                    bg="gray.200"
+                  >
+                    <Progress.Range
+                      bg={`${statusColor}.400`}
+                      transition="width 0.3s ease"
+                    />
+                  </Progress.Track>
+                  <Progress.ValueText
+                    fontSize="sm"
+                    color="gray.600"
+                    minW="40px"
+                    textAlign="right"
+                  >
+                    {getProgressInPercentage(roadmap.progress)}%
+                  </Progress.ValueText>
+                </HStack>
+              </Progress.Root>
+              <Text
+                fontSize="xs"
+                mt={1}
+                color="gray.500"
+                textAlign="right"
+              >{`${roadmap.progress}%`}</Text>
+            </Box>
+
+            <Text fontSize="xs" color="gray.500">
+              {getRoadmapTransaltions('saved')} {formattedDate}
+            </Text>
+          </VStack>
+        </Flex>
       </HoverCard.Trigger>
     </HoverCard.Root>
   );

@@ -31,6 +31,9 @@ const roadmapEditorSlice = createSlice({
   name: 'roadmapEditor',
   initialState,
   reducers: {
+    setActiveRoadmapId: (state, action: PayloadAction<string>) => {
+      state.roadmapId = action.payload;
+    },
     setRoadmap: (
       state,
       action: PayloadAction<{
@@ -97,6 +100,7 @@ export const {
   updateNode,
   setEdge,
   setPlainRiadmap,
+  setActiveRoadmapId,
 } = roadmapEditorSlice.actions;
 
 export const selectRoadmap = (state: { roadmapEditor: InitialState }) => {

@@ -6,20 +6,25 @@ import { Flex } from '@chakra-ui/react';
 import { ReactFlowProvider } from '@xyflow/react';
 import Container from '@/components/container/container';
 import ErrorScreen from '@/components/base/error';
-import { useAppDispatch } from '@/store/hooks';
-import { setPlainRiadmap, setRoadmap } from '@/features/roadmaps/editor/store';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import {
+  selectRoadmapId,
+  setPlainRiadmap,
+  setRoadmap,
+} from '@/features/roadmaps/editor/store';
 import { useEffect } from 'react';
 import ContentNotFoundScreen from '@/components/base/notfound';
 
 export default function EditorPage() {
   const dispatch = useAppDispatch();
-  const roadmapId = 'fcad7a41-a483-4b84-b26a-ee4f6816c576';
-  const { data, error, isLoading, isFetching } =
-    useGetSavedRoadmapQuery(roadmapId);
+  const roadmapId = useAppSelector(selectRoadmapId);
+  const { data, error, isLoading, isFetching } = useGetSavedRoadmapQuery(
+    roadmapId ?? '',
+  );
   const roadmap = data;
 
   useEffect(() => {
-    if (!roadmap) return;
+    if (!roadmap || !roadmapId) return;
     dispatch(
       setPlainRiadmap({
         id: roadmap.id,
@@ -39,7 +44,7 @@ export default function EditorPage() {
     );
   }, [roadmap, dispatch]);
 
-  if (!roadmap && !isLoading && !isFetching) {
+  if ((!roadmap && !isLoading && !isFetching) || !roadmapId) {
     return <ContentNotFoundScreen />;
   }
 

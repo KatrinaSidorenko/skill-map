@@ -6,8 +6,13 @@ import { useLazyGetSavedRoadmapsQuery } from '../api';
 import { Flex } from '@chakra-ui/react';
 import { defaultPagination } from '../helpers';
 import useLocalization from '@/i18n/useLocalization';
+import { useAppDispatch } from '@/store/hooks';
+import { setActiveRoadmapId } from '../editor/store';
+import { useRouter } from 'next/navigation';
 
 export default function SavedRoadmapsPage() {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
   const { pageSize } = defaultPagination;
   const { getRoadmapsTranslations } = useLocalization();
   const [fetchSavedRoadmaps] = useLazyGetSavedRoadmapsQuery();
@@ -25,6 +30,11 @@ export default function SavedRoadmapsPage() {
     };
   };
 
+  const handleCardClick = (id: string) => {
+    dispatch(setActiveRoadmapId(id));
+    router.push('/editor');
+  };
+
   return (
     <SearchContainer
       placeholder={getRoadmapsTranslations('search')}
@@ -33,7 +43,11 @@ export default function SavedRoadmapsPage() {
       renderContent={(items) => (
         <Flex direction="column" gap={4}>
           {items.map((roadmap: SavedPlainRoadmap) => (
-            <SavedRoadmapCard key={roadmap.id} roadmap={roadmap} />
+            <SavedRoadmapCard
+              key={roadmap.id}
+              roadmap={roadmap}
+              handleClick={handleCardClick}
+            />
           ))}
         </Flex>
       )}
