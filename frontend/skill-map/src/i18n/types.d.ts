@@ -65,4 +65,11 @@ interface ILocalization {
     page: string;
     of: string;
   };
+  roadmap: {
+    progress: string;
+    inprogress: string;
+    completed: string;
+    notstarted: string;
+    saved: string;
+  }
 }

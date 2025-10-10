@@ -67,6 +67,13 @@
     "page": "Page",
     "of": "of"
   },
+  "roadmap": {
+    "progress": "Progress",
+    "inprogress": "In Progress",
+    "completed": "Completed",
+    "notstarted": "Not Started",
+    "saved": "Saved"
+  },
   "erros": {
     "SE6": "Not found"
   }

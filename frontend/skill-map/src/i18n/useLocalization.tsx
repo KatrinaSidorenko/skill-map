@@ -17,12 +17,17 @@ export default function useLocalization() {
 
   const getRoadmapsTranslations = (key: keyof ILocalization['roadmaps']) => {
     return translation(`roadmaps.${key}`);
-  }
+  };
+
+  const getRoadmapTransaltions = (key: keyof ILocalization['roadmap']) => {
+    return translation(`roadmap.${key}`);
+  };
 
   return {
     getHeaderTranslations,
     getAuthTranslations,
     getEditorTranslations,
     getRoadmapsTranslations,
+    getRoadmapTransaltions,
   };
 }

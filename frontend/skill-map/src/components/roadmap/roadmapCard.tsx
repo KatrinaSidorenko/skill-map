@@ -14,6 +14,7 @@ import {
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
+import useLocalization from '@/i18n/useLocalization';
 
 interface RoadmapCardProps {
   roadmap: PlainRoadmap;
@@ -50,7 +51,6 @@ export function RoadmapCard({ roadmap }: RoadmapCardProps) {
               <Text fontSize="lg" fontWeight="bold" color="text.heading">
                 {roadmap.title}
               </Text>
-              {/* <Badge colorScheme={statusColor}>{roadmap.status}</Badge> */}
             </VStack>
           </Flex>
         </NextLink>
@@ -76,6 +76,7 @@ interface SavedRoadmapCardProps {
 }
 
 export function SavedRoadmapCard({ roadmap }: SavedRoadmapCardProps) {
+  const { getRoadmapTransaltions } = useLocalization();
   const statusColor = getStatusColor(roadmap.status);
   const formattedDate = formatDistanceToNow(new Date(roadmap.savedAt), {
     addSuffix: true,
@@ -117,7 +118,9 @@ export function SavedRoadmapCard({ roadmap }: SavedRoadmapCardProps) {
                   {roadmap.title}
                 </Text>
                 <Badge colorScheme={statusColor} fontSize="0.8em">
-                  {roadmap.status}
+                  {getRoadmapTransaltions(
+                    roadmap.status.toString() as keyof ILocalization['roadmap'],
+                  )}
                 </Badge>
               </HStack>
 
@@ -125,7 +128,7 @@ export function SavedRoadmapCard({ roadmap }: SavedRoadmapCardProps) {
                 <Progress.Root value={roadmap.progress} maxW="full">
                   <HStack gap="4">
                     <Progress.Label color="gray.600" fontSize="sm">
-                      Progress
+                      {getRoadmapTransaltions('progress')}
                     </Progress.Label>
                     <Progress.Track
                       flex="1"
@@ -157,7 +160,7 @@ export function SavedRoadmapCard({ roadmap }: SavedRoadmapCardProps) {
               </Box>
 
               <Text fontSize="xs" color="gray.500">
-                Saved {formattedDate}
+                {getRoadmapTransaltions('saved')} {formattedDate}
               </Text>
             </VStack>
           </Flex>

@@ -97,7 +97,9 @@ export default function SearchContainer<T>({
           borderRadius="md"
           bg="bg.page"
           boxShadow="sm"
-          endElement={<LuSearch onClick={handleSearch} />}
+          endElement={
+            <LuSearch onClick={handleSearch} style={{ cursor: 'pointer' }} />
+          }
         >
           <Input
             placeholder={placeholder}
