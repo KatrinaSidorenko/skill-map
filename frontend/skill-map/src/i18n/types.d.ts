@@ -60,4 +60,9 @@ interface ILocalization {
     createNewNode: string;
     create: string;
   };
+  roadmaps: {
+    search: string;
+    page: string;
+    of: string;
+  };
 }

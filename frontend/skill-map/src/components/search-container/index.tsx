@@ -14,6 +14,8 @@ import { LuSearch } from 'react-icons/lu';
 import ErrorScreen from '@/components/base/error';
 import SpinnerScreen from '@/components/base/spinner';
 import { AiOutlineArrowLeft, AiOutlineArrowRight } from 'react-icons/ai';
+import ContentNotFoundScreen from '../base/notfound';
+import useLocalization from '@/i18n/useLocalization';
 
 interface SearchContainerProps<T> {
   placeholder?: string;
@@ -36,6 +38,7 @@ export default function SearchContainer<T>({
   fetchData,
   renderContent,
 }: SearchContainerProps<T>) {
+  const { getRoadmapsTranslations } = useLocalization();
   const [page, setPage] = useState(1);
   const [items, setItems] = useState<T[]>([]);
   const [totalPages, setTotalPages] = useState(0);
@@ -46,7 +49,6 @@ export default function SearchContainer<T>({
   const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState<unknown | null>(null);
 
-  // Fetch data from parent-supplied function
   const loadData = async () => {
     try {
       setIsFetching(true);
@@ -113,9 +115,7 @@ export default function SearchContainer<T>({
         ) : items.length > 0 ? (
           renderContent(items)
         ) : (
-          <Text textAlign="center" color="gray.500" py={8}>
-            No results found.
-          </Text>
+          <ContentNotFoundScreen />
         )}
       </Box>
 
@@ -129,7 +129,8 @@ export default function SearchContainer<T>({
         </Button>
 
         <Text fontSize="sm" color="gray.600">
-          Page {page} of {totalPages}
+          {getRoadmapsTranslations('page')} {page}{' '}
+          {getRoadmapsTranslations('of')} {totalPages}
         </Text>
 
         <Button

@@ -4,8 +4,12 @@ import { SavedRoadmapCard } from '@/components/roadmap/roadmapCard';
 import SearchContainer from '@/components/search-container';
 import { useLazyGetSavedRoadmapsQuery } from '../api';
 import { Flex } from '@chakra-ui/react';
+import { defaultPagination } from '../helpers';
+import useLocalization from '@/i18n/useLocalization';
 
 export default function SavedRoadmapsPage() {
+  const { pageSize } = defaultPagination;
+  const { getRoadmapsTranslations } = useLocalization();
   const [fetchSavedRoadmaps] = useLazyGetSavedRoadmapsQuery();
 
   const getSavedRoadmaps = async (params: {
@@ -23,8 +27,8 @@ export default function SavedRoadmapsPage() {
 
   return (
     <SearchContainer
-      placeholder="Search saved roadmaps..."
-      pageSize={10}
+      placeholder={getRoadmapsTranslations('search')}
+      pageSize={pageSize}
       fetchData={getSavedRoadmaps}
       renderContent={(items) => (
         <Flex direction="column" gap={4}>

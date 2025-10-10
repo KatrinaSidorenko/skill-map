@@ -62,6 +62,11 @@
     "createNewNode": "Create New Node",
     "create": "Create"
   },
+  "roadmaps": {
+    "search": "Search ...",
+    "page": "Page",
+    "of": "of"
+  },
   "erros": {
     "SE6": "Not found"
   }

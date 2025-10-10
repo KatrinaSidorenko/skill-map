@@ -15,9 +15,14 @@ export default function useLocalization() {
     return translation(`editor.${key}`);
   };
 
+  const getRoadmapsTranslations = (key: keyof ILocalization['roadmaps']) => {
+    return translation(`roadmaps.${key}`);
+  }
+
   return {
     getHeaderTranslations,
     getAuthTranslations,
     getEditorTranslations,
+    getRoadmapsTranslations,
   };
 }

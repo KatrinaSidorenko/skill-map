@@ -3,8 +3,12 @@
 import RoadmapGrid from '@/components/roadmap/roadmapGrid';
 import { useLazyGetRoadmapsQuery } from '../api';
 import SearchContainer from '@/components/search-container';
+import useLocalization from '@/i18n/useLocalization';
+import { defaultPagination } from '../helpers';
 
 export default function ExploreRoadmapsPage() {
+  const { pageSize } = defaultPagination;
+  const { getRoadmapsTranslations } = useLocalization();
   const [fetchRoadmaps] = useLazyGetRoadmapsQuery();
 
   const getRoadmaps = async (params: {
@@ -22,8 +26,8 @@ export default function ExploreRoadmapsPage() {
 
   return (
     <SearchContainer
-      placeholder="Search roadmaps..."
-      pageSize={12}
+      placeholder={getRoadmapsTranslations('search')}
+      pageSize={pageSize}
       fetchData={getRoadmaps}
       renderContent={(roadmaps) => <RoadmapGrid roadmaps={roadmaps} />}
     />
