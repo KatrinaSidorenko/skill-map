@@ -14,10 +14,23 @@ public class LearningItem
     public string Status { get; set; }
 }
 
-public class LearningItemConnection
+public class LearningItemConnection : IEquatable<LearningItemConnection>
 {
     [JsonProperty("sourceId")]
     public string SourceId { get; set; }
     [JsonProperty("targetId")]
     public string TargetId { get; set; }
+
+    public override bool Equals(object obj)
+        => Equals(obj as LearningItemConnection);
+
+    public bool Equals(LearningItemConnection other)
+    {
+        return other != null &&
+               SourceId == other.SourceId &&
+               TargetId == other.TargetId;
+    }
+
+    public override int GetHashCode()
+        => HashCode.Combine(SourceId, TargetId);
 }
