@@ -98,6 +98,16 @@ export const roadmapApi = createApi({
         params: { itemId },
       }),
     }),
+    createDraftRoadmap: builder.mutation<
+      { id: string },
+      CreateDraftRoadmapPayload
+    >({
+      query: (payload) => ({
+        url: 'roadmaps',
+        method: 'POST',
+        body: payload,
+      }),
+    }),
   }),
 });
 
@@ -114,4 +124,5 @@ export const {
   useCreateEdgeMutation,
   useDeleteRoadmapMutation,
   useLazyGetLearningItemMaterialsQuery,
+  useCreateDraftRoadmapMutation,
 } = roadmapApi;

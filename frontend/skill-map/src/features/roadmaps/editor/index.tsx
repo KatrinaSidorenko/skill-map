@@ -123,10 +123,6 @@ function RoadmapEditor({ children, createEdge, setSidebarOpen }: RoadmapEditorPr
     [roadmapId],
   );
 
-  // const handleToggleSidebar = useCallback(() => {
-  //   setSidebarOpen((prev) => !prev);
-  // }, []);
-
   return (
     <>
       <div

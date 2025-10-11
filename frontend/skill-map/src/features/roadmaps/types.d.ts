@@ -74,3 +74,12 @@ interface LearningItemMaterial {
   url: string;
   type: MaterialType;
 }
+
+type CreatedRoadmapsStartus = 'draft' | 'published';
+interface CreateDraftRoadmapPayload {
+  title: string;
+  description: string;
+  imageUrl?: string;
+  status: CreatedRoadmapsStartus;
+}
+

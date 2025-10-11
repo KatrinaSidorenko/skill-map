@@ -61,6 +61,13 @@ interface ILocalization {
     create: string;
     resources: string;
     noMaterialsFound: string;
+    createNewRoadmap: string;
+    imageUrl: string;
+    validationError: string;
+    fillRequiredFields: string;
+    roadmapCreated: string;
+    failedToCreateRoadmap: string;
+    yourRoadmaps: string;
   };
   roadmaps: {
     search: string;
