@@ -49,14 +49,57 @@ public class CustomizedRoadmapsService(
         var allRoadmaps = paginatedRoadmapsResult.Data.Result;
         allRoadmaps.ForEach(r => r.CreatedAt = roadmapSaveAtDict.GetOrDefault(r.Id));
 
-        // add calculate logic for progress
-        // status of roadmap
+        var roadmapsWithDetails = allRoadmaps.Select(r => r.ToPlainRoadmapWithDetailsDto()).ToList();
+        roadmapsWithDetails.ForEach(async r =>
+        {
+            var userRoadmap = userRoadmapsResult.Data.FirstOrDefault(ur => ur.RoadmapId == r.Id);
+            if (userRoadmap == null) { return; }
+            var (progress, status) = await CalculateRoadmapProgressAndStatus(userRoadmap.Id, r.TotalTopics, ct);
+            r.Progress = progress;
+            r.Status = status;
+        });
 
         return Result.Success(new PaginationResult<List<PlainRoadmapWithDetailsDto>>
         {
-            Result = allRoadmaps.Select(r => r.ToPlainRoadmapWithDetailsDto()).ToList(),
+            Result = roadmapsWithDetails,
             TotalCount = paginatedRoadmapsResult.Data.TotalCount,
         });
+    }
+
+    public async Task<(double Progress, string Status)> CalculateRoadmapProgressAndStatus(long userRoadmapId,int totalTopicsAndSubtopics,  CancellationToken ct)
+    {
+        var modificationsResult = await modificationsRepository.GetAllAsync(m => m.UserRoadmapId == userRoadmapId, ct: ct);
+        var modifications = modificationsResult.Data.ToList();
+        var createNodeModifications = modifications.Where(m => m.Action == ModificationAction.CreateItem)
+            .Select(m => m.MapToModifiedNode()).ToList();
+        var deletedNodeIds = modifications.Where(m => m.Action == ModificationAction.DeleteItem)
+            .Select(m => m.ExternalItemId).ToHashSet();
+        var createdNodesIds = createNodeModifications.Select(n => n.Id).ToHashSet();
+        var uniqueNewNodesCount = createdNodesIds.Except(deletedNodeIds).Count();
+        var oldDeletedNodesCount = deletedNodeIds.Count(id => !createdNodesIds.Contains(id));
+        var adjustedTotal = totalTopicsAndSubtopics + uniqueNewNodesCount - oldDeletedNodesCount;
+        if (adjustedTotal <= 0) 
+        {
+            return (0, LearningStatus.NotStarted.ToStatusString());
+        }
+
+        // todo: mereg with functionality in Helper
+        var updatedItems = modifications
+           .Where(m => m.Action == ModificationAction.SnapshotUpdate)
+           .Select(m => m.MapToChange()).ToList();
+        var uniqueUpdates = updatedItems.ToHashSet();
+        var completedNodesCount = uniqueUpdates.Count(n => n.Status == LearningStatus.Completed.ToString());
+        var progress = Math.Round((completedNodesCount / (double)adjustedTotal));
+
+        var status = uniqueUpdates.Any(n => n.Status == LearningStatus.InProgress.ToStatusString() || n.Status == LearningStatus.Completed.ToStatusString())
+            ? LearningStatus.InProgress.ToStatusString()
+            : LearningStatus.NotStarted.ToStatusString();
+        if (completedNodesCount == adjustedTotal)
+        {
+            status = LearningStatus.Completed.ToStatusString();
+        }
+
+        return (progress, status);
     }
 
     public async Task<Result<SavedUerRoadmap>> GetUserModifiedRoadmap(long userId, string roadmapId, CancellationToken ct)
@@ -66,7 +109,6 @@ public class CustomizedRoadmapsService(
         {
             return ResultType.UserRoadmapNotFound<SavedUerRoadmap>(userId, roadmapId);
         }
-
 
         var userRoadmapId = userRoadmapResult.Data.Id;
         var sourceRoadmapResult = await roadmapService.GetRoadmapById(roadmapId, ct); // todo: this is already without resources 
@@ -101,7 +143,7 @@ public class CustomizedRoadmapsService(
         var nodes = sourceRoadmap.Nodes.Select(n => n.MapToModifiedNode()).ToList();
         nodes.AddRange(createNodeModifications);
         var nodesDict = nodes.ToDictionary(n => n.Id, n => n);
-        foreach (var updatedItem in updatedItems)
+        foreach (var updatedItem in updatedItems.OrderBy(u => u.CreatedAt))
         {
             var id = updatedItem.Id;
             var node = nodesDict.GetOrDefault(id);

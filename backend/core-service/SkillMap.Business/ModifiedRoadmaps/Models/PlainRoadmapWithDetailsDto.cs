@@ -10,4 +10,5 @@ public class PlainRoadmapWithDetailsDto
     public double Progress { get; set; }
     public DateTime SavedAt { get; set; }
     public string Status { get; set; } = LearningStatus.NotStarted.ToStatusString();
+    public int TotalTopics { get; set; }
 }

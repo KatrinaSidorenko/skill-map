@@ -74,10 +74,8 @@ public static class ModificationsHelper
         };
     }
 
-    public static double CalculateRoadmapProgress(this List<ModifiedNode> nodes) // only topics and subtopics
+    public static double CalculateRoadmapProgress(this List<ModifiedNode> nodes, int totalNodes) // only topics and subtopics
     {
-        nodes = nodes.Where(n => n.Id != null).ToList();
-        var totalNodes = nodes.Count();
         if (totalNodes == 0)
         {
             return 0;
@@ -87,11 +85,18 @@ public static class ModificationsHelper
         return completedNodes / totalNodes;
     }
 
-    public static string CalculateStatus(this List<ModifiedNode> nodes)
+    public static string CalculateStatus(this List<ModifiedNode> nodes, int totalNodes)
     {
-        return nodes.Any(n => n.Status == LearningStatus.Completed.ToStatusString()) ? 
+        var completedNodes = nodes.Where(i => i.Status == LearningStatus.Completed.ToStatusString()).Count();
+        var status = nodes.Any(n => n.Status == LearningStatus.Completed.ToStatusString() || n.Status == LearningStatus.InProgress.ToStatusString()) ?
             LearningStatus.InProgress.ToStatusString() :
             LearningStatus.NotStarted.ToStatusString();
+        if (totalNodes > 0 && completedNodes == totalNodes)
+        {
+            return LearningStatus.Completed.ToStatusString();
+        }
+
+        return status;
     }
 
     //public static List<NodeResponse> GetCreatedNodes(this IEnumerable<RoadmapModification> nodes)
