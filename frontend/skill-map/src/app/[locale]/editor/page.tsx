@@ -1,6 +1,12 @@
 'use client';
 import SpinnerScreen from '@/components/base/spinner';
-import { useGetSavedRoadmapQuery } from '@/features/roadmaps/api';
+import {
+  useCreateEdgeMutation,
+  useCreateNodeMutation,
+  useDeleteLearningItemMutation,
+  useGetSavedRoadmapQuery,
+  useSaveLearningItemChangesMutation,
+} from '@/features/roadmaps/api';
 import RoadmapEditor from '@/features/roadmaps/editor';
 import { Flex } from '@chakra-ui/react';
 import { ReactFlowProvider } from '@xyflow/react';
@@ -12,8 +18,10 @@ import {
   setPlainRiadmap,
   setRoadmap,
 } from '@/features/roadmaps/editor/store';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import ContentNotFoundScreen from '@/components/base/notfound';
+import Toolbox from '@/features/roadmaps/editor/toolbox';
+import NodeSidebar from '@/features/roadmaps/editor/sidebar';
 
 export default function EditorPage() {
   const dispatch = useAppDispatch();
@@ -22,6 +30,15 @@ export default function EditorPage() {
     roadmapId ?? '',
   );
   const roadmap = data;
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [createEdge] = useCreateEdgeMutation();
+  const [deleteItem] = useDeleteLearningItemMutation();
+  const [createNode] = useCreateNodeMutation();
+  const [saveChange] = useSaveLearningItemChangesMutation();
+
+  const handleToggleSidebar = useCallback(() => {
+    setSidebarOpen((prev) => !prev);
+  }, []);
 
   useEffect(() => {
     if (!roadmap || !roadmapId) return;
@@ -61,7 +78,21 @@ export default function EditorPage() {
           <ReactFlowProvider>
             <RoadmapEditor.Container>
               <RoadmapEditor.Header />
-              <RoadmapEditor />
+              <RoadmapEditor
+                createEdge={createEdge}
+                setSidebarOpen={setSidebarOpen}
+              >
+                <Toolbox
+                  onToggleSidebar={handleToggleSidebar}
+                  createNode={createNode}
+                  deleteItem={deleteItem}
+                />
+                <NodeSidebar
+                  open={isSidebarOpen}
+                  onOpenChange={setSidebarOpen}
+                  saveChange={saveChange}
+                />
+              </RoadmapEditor>
             </RoadmapEditor.Container>
           </ReactFlowProvider>
         )}
