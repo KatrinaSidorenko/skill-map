@@ -121,7 +121,10 @@ export function SavedRoadmapCard({
             </HStack>
 
             <Box width="100%">
-              <Progress.Root value={roadmap.progress} maxW="full">
+              <Progress.Root
+                value={getProgressInPercentage(roadmap.progress)}
+                maxW="full"
+              >
                 <HStack gap="4">
                   <Progress.Label color="gray.600" fontSize="sm">
                     {getRoadmapTransaltions('progress')}

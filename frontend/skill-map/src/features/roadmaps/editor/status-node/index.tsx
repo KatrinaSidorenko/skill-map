@@ -2,13 +2,14 @@ import { Box, Text, HStack } from '@chakra-ui/react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
 import { getStatusColor } from '../../helpers';
 
-export function StatusNode({ data }: NodeProps) {
+export function StatusNode({ data, selected }: NodeProps) {
   const { label, status } = data;
 
   return (
     <Box
       borderRadius="md"
       borderWidth={1}
+      borderColor={selected ? 'brand.200' : 'gray.200'}
       bg="white"
       p={3}
       shadow="sm"
