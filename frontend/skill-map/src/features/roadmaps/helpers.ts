@@ -1,6 +1,11 @@
 import { Edge, Node } from '@xyflow/react';
 import dagre from '@dagrejs/dagre';
 import { v4 as uuidv4 } from 'uuid';
+import { IconType } from 'react-icons';
+import { FaBook, FaVideo } from 'react-icons/fa';
+import { SiCoursera, SiUdemy } from 'react-icons/si';
+import { AiOutlineFileText, AiOutlineLink } from 'react-icons/ai';
+import { ReactNode } from 'react';
 
 const getNodePosition = (index: number): { x: number; y: number } => ({
   x: 0,

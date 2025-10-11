@@ -1,12 +1,12 @@
 ﻿using LearningPlatform.Roadmap.Business.Contracts;
-using LearningPlatform.Roadmap.Business.Contracts.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SkillMap.Api.Base;
 using SkillMap.Api.Base.Searching;
+using SkillMap.Api.Roadmap.Models;
 using SkillMap.Api.Roadmaps.Models;
-using SkillMap.Business.Roadmaps;
 using SkillMap.Business.UserRoadmaps;
+using SkillMap.Shared.Results;
 
 namespace SkillMap.Api.Roadmaps;
 
@@ -53,82 +53,32 @@ public class RoadmapsController : BaseController
         }));
     }
 
-
-    //[HttpGet("saved")]
-    //public async Task<IActionResult> GetAll(CancellationToken ct)
-    //{
-    //    var result = await CustomizedRoadmapsService.GetPlainRoadmapsWithUserMetadata(GetUserId(), ct);
-
-    //    return Response(result, (r) =>
-    //    {
-    //        return Ok(new PlainRoadmapsResponse
-    //        {
-    //            Roadmaps = r.Data.Select(ur => ur.ToRoadmapResponse()).ToList()
-    //        });
-    //    });
-    //}
-
-    //[HttpGet("{roadmapId}")]
-    //public async Task<IActionResult> Get(string roadmapId, CancellationToken ct)
-    //{
-    //    var userId = GetUserId();
-    //    var result = await CustomizedRoadmapsService.GetRoadmap(userId, roadmapId, ct);
-
-    //    return Response(result, (r) => Ok(new ModifiedRoadmapResponse
-    //    {
-    //        Roadmap = r.Data.Roadmap,
-    //        Nodes = r.Data.LearningItems.Select(i => new ModifiedNodeResponse
-    //        {
-    //            Id = i.Id,
-    //            Title = i.Title,
-    //            Type = i.Type,
-    //            ParentId = i.ParentId,
-    //            Children = i.Children.ToList(),
-    //            Progress = i.Progress,
-    //            AdditinalProps = i.AdditinalProps,
-    //            Description = i.Description,
-    //            Status = i.Status,
-    //            Index = i.Index,
-    //        }).ToList()
-    //    }));
-    //}
-
-    //[HttpDelete("{roadmapId}")]
-    //public async Task<IActionResult> Delete(string roadmapId, [FromQuery]string itemId, CancellationToken ct)
-    //{
-    //    var userId = GetUserId();
-    //    var result = await CustomizedRoadmapsService.DeleteRoadmap(userId, roadmapId, itemId, ct);
-
-    //    return NoContent();
-    //}
-
-    //[HttpPost("{roadmapId}/status")]
-    //public async Task<IActionResult> UpdateStatus(string roadmapId, [FromQuery] string itemId, [FromQuery] string status, CancellationToken ct)
-    //{
-    //    var userId = GetUserId();
-    //    var metadata = new UpdateStatusMetadata
-    //    {
-    //        Status = Enum.Parse<LearningStatus>(status),
-    //    };
-    //    var result = await CustomizedRoadmapsService.UpdateStatus(userId, roadmapId, itemId, metadata, ct);
-
-    //    return NoContent();
-    //}
-
-    //[HttpPost("{roadmapId}/edit")]
-    //public async Task<IActionResult> Edit(string roadmapId, [FromBody] LearningItemSnapshot learningItem, CancellationToken ct)
-    //{
-    //    var userId = GetUserId();
-    //    var result = await CustomizedRoadmapsService.Update(userId, roadmapId, learningItem, ct);
-    //    return NoContent();
-    //}
-
-    //[HttpPost("{roadmapId}/create")]
-    //public async Task<IActionResult> Create(string roadmapId, [FromBody] CreateLearningItemMetadata learningItem, CancellationToken ct)
-    //{
-    //    var userId = GetUserId();
-    //    var result = await CustomizedRoadmapsService.Create(userId, roadmapId, learningItem, ct);
-    //    return Ok(result.Data);
-    //}
-
+    [HttpGet("materials/{roadmapId}")]
+    public async Task<IActionResult> GetLearningItemMaterials([FromRoute] string roadmapId, [FromQuery] string itemId, CancellationToken ct)
+    {
+        var mock = new List<LearningItemMaterialResponse> {
+            new LearningItemMaterialResponse
+            {
+                Id = "1",
+                Title = "Introduction to C#",
+                Type = "Video",
+                Url = "https://example.com/intro-to-csharp"
+            },
+            new LearningItemMaterialResponse
+            {
+                Id = "2",
+                Title = "C# Basics",
+                Type = "Article",
+                Url = "https://example.com/csharp-basics"
+            },
+            new LearningItemMaterialResponse
+            {
+                Id = "3",
+                Title = "C# Advanced Topics",
+                Type = "Course",
+                Url = "https://example.com/csharp-advanced"
+            }
+         };
+        return Ok(mock);
+    }
 }

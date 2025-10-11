@@ -12,6 +12,7 @@ import {
   NodeChange,
   Connection,
   NodeTypes,
+  NodeMouseHandler,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { Flex, VStack, Text, Button } from '@chakra-ui/react';
@@ -77,8 +78,8 @@ function RoadmapEditor() {
   const handleNodeDoubleClick: NodeMouseHandler = useCallback(
     (event, node) => {
       event.preventDefault();
-      dispatch(setSelectedElement(node)); // save selected node in store
-      setSidebarOpen(true); // open sidebar
+      dispatch(setSelectedElement(node));
+      setSidebarOpen(true);
     },
     [dispatch],
   );
