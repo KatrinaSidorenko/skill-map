@@ -24,19 +24,24 @@ import {
 import { generateId } from '../../helpers';
 import createNodeDialog from './create-node';
 
+interface ToolboxProps {
+  onToggleSidebar: () => void;
+  deleteItem: ReturnType<typeof useDeleteLearningItemMutation>[0];
+  createNode: ReturnType<typeof useCreateNodeMutation>[0];
+}
 export default function Toolbox({
   onToggleSidebar,
-}: {
-  onToggleSidebar: () => void;
-}) {
+  deleteItem,
+  createNode,
+}: ToolboxProps) {
   const dispatch = useAppDispatch();
   const selected = useAppSelector(selectSelectedElement);
   const roadmapId = useAppSelector(selectRoadmapId);
   const hasSelection = !!selected;
   const isNode = selected ? !('source' in selected) : false;
-  const [deleteItem] = useDeleteLearningItemMutation();
+
   const reactFlowInstance = useReactFlow();
-  const [createNode] = useCreateNodeMutation();
+ 
 
   const onRemoveSelected = async () => {
     if (!selected || !roadmapId) return;
@@ -113,7 +118,6 @@ export default function Toolbox({
 
   return (
     <>
-      {/* Floating Panel */}
       <Box
         position="fixed"
         bottom={6}

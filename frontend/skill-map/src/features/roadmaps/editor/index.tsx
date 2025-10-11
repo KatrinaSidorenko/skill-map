@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 
 import {
   Edge,
@@ -18,8 +18,6 @@ import '@xyflow/react/dist/style.css';
 import { Flex, VStack, Text, Button } from '@chakra-ui/react';
 import { IoChevronBackOutline } from 'react-icons/io5';
 
-import Toolbox from './toolbox';
-import NodeSidebar from './sidebar';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
@@ -69,12 +67,17 @@ function RoadmapEditorHeader() {
   );
 }
 
-function RoadmapEditor() {
+interface RoadmapEditorProps {
+  children: React.ReactNode;
+  createEdge: ReturnType<typeof useCreateEdgeMutation>[0];
+  setSidebarOpen: (open: boolean) => void;
+}
+
+function RoadmapEditor({ children, createEdge, setSidebarOpen }: RoadmapEditorProps) {
   const dispatch = useAppDispatch();
   const roadmapId = useAppSelector(selectRoadmapId);
   const { nodes, edges } = useAppSelector(selectRoadmap);
-  const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const [createEdge] = useCreateEdgeMutation();
+  
   const handleNodeDoubleClick: NodeMouseHandler = useCallback(
     (event, node) => {
       event.preventDefault();
@@ -113,15 +116,16 @@ function RoadmapEditor() {
           sourceId: connection.source!,
           targetId: connection.target!,
         },
-      }).unwrap();
+      }).catch((err) => {
+        console.error('Failed to create edge:', err);
+      });
     },
     [roadmapId],
   );
 
-  // Sidebar toggle
-  const handleToggleSidebar = useCallback(() => {
-    setSidebarOpen((prev) => !prev);
-  }, []);
+  // const handleToggleSidebar = useCallback(() => {
+  //   setSidebarOpen((prev) => !prev);
+  // }, []);
 
   return (
     <>
@@ -154,8 +158,9 @@ function RoadmapEditor() {
           <Controls />
         </ReactFlow>
       </div>
-      <Toolbox onToggleSidebar={handleToggleSidebar} />
-      <NodeSidebar open={isSidebarOpen} onOpenChange={setSidebarOpen} />
+      {children}
+      {/* <Toolbox onToggleSidebar={handleToggleSidebar} />
+      <NodeSidebar open={isSidebarOpen} onOpenChange={setSidebarOpen} /> */}
     </>
   );
 }

@@ -22,14 +22,14 @@ import MaterialsContainer from './materials';
 interface NodeSidebarProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  saveChange: ReturnType<typeof useSaveLearningItemChangesMutation>[0];
 }
 
-export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
+export default function NodeSidebar({ open, onOpenChange, saveChange }: NodeSidebarProps) {
   const dispatch = useAppDispatch();
   const roadmapId = useAppSelector(selectRoadmapId);
   const node = useAppSelector(selectSelectedElement);
   const { getEditorTranslations } = useLocalization();
-  const [saveChange] = useSaveLearningItemChangesMutation();
 
   const [label, setLabel] = useState('');
   const [description, setDescription] = useState('');
