@@ -15,46 +15,41 @@ import '@xyflow/react/dist/style.css';
 
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 
-import { addOrRemoveRoadmap, selectIsRoadmapSaved } from '../store';
-import { useGetRoadmapByIdQuery, useSaveRoadmapMutation } from '../api';
+import { addOrRemoveRoadmap } from '../store';
+import {
+  useDeleteRoadmapMutation,
+  useGetRoadmapByIdQuery,
+  useSaveRoadmapMutation,
+} from '../api';
 import SpinnerScreen from '@/components/base/spinner';
 import ErrorScreen from '@/components/base/error';
 import ContentNotFoundScreen from '@/components/base/notfound';
 import { retrieveErrorData } from '@/store/helpers';
 import { toaster } from '@/components/ui/toaster';
 import {
-  selectPlainRoadmap,
   selectRoadmap,
-  setActiveRoadmapId,
+  selectRoadmapInfo,
   setEdgeChnages,
   setNodeChanges,
   setPlainRoadmap,
-  setRoadmap,
+  updateSavedStatus,
 } from './store';
 
 export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
   const dispatch = useAppDispatch();
   const { nodes, edges } = useAppSelector(selectRoadmap);
-  const plainRoadmap = useAppSelector(selectPlainRoadmap);
-  const isRoadmapSaved = useAppSelector((s) =>
-    selectIsRoadmapSaved(s, roadmapId),
-  );
+  const plainRoadmap = useAppSelector(selectRoadmapInfo);
 
   const { data, error, isLoading, isFetching } =
     useGetRoadmapByIdQuery(roadmapId);
   const [saveRoadmapTrigger, { isLoading: isSavingRoadmap }] =
     useSaveRoadmapMutation();
+  const [deleteRoadmapTrigger, { isLoading: isDeleteingRoadmap }] =
+    useDeleteRoadmapMutation();
 
   useEffect(() => {
     if (data?.roadmap) {
-      dispatch(setActiveRoadmapId(roadmapId));
       dispatch(setPlainRoadmap(data.roadmap));
-      dispatch(
-        setRoadmap({
-          nodes: data.roadmap.nodes,
-          edges: data.roadmap.edges,
-        }),
-      );
     }
   }, [data, dispatch, roadmapId]);
 
@@ -72,8 +67,13 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
   // Save roadmap (toggle favorite)
   const saveRoadmap = async () => {
     try {
-      await saveRoadmapTrigger({ id: roadmapId }).unwrap();
-      dispatch(addOrRemoveRoadmap(roadmapId));
+      if (!plainRoadmap) return;
+      if (plainRoadmap.isSaved) {
+        await deleteRoadmapTrigger({ id: roadmapId }).unwrap();
+      } else {
+        await saveRoadmapTrigger({ id: roadmapId }).unwrap();
+      }
+      dispatch(updateSavedStatus());
     } catch (error) {
       const errorData = retrieveErrorData(error);
       toaster.create({
@@ -98,9 +98,9 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
           {plainRoadmap.title}
         </Text>
         <IconButton aria-label="Save Roadmap" size="sm" onClick={saveRoadmap}>
-          {isSavingRoadmap ? (
+          {isSavingRoadmap || isDeleteingRoadmap ? (
             <Spinner color="blue.500" size="sm" />
-          ) : isRoadmapSaved ? (
+          ) : plainRoadmap.isSaved ? (
             <FaStar />
           ) : (
             <FiStar />

@@ -6,6 +6,7 @@ using SkillMap.Api.Base;
 using SkillMap.Api.Base.Searching;
 using SkillMap.Api.Roadmaps.Models;
 using SkillMap.Business.Roadmaps;
+using SkillMap.Business.UserRoadmaps;
 
 namespace SkillMap.Api.Roadmaps;
 
@@ -14,9 +15,11 @@ namespace SkillMap.Api.Roadmaps;
 public class RoadmapsController : BaseController
 {
     private IRoadmapService RoadmapService { get; }
-    public RoadmapsController(IRoadmapService roadmapService)
+    private IUserRoadmapsService UserRoadmapsService { get; }
+    public RoadmapsController(IRoadmapService roadmapService, IUserRoadmapsService userRoadmapsService)
     {
         RoadmapService = roadmapService ?? throw new ArgumentNullException(nameof(roadmapService));
+        UserRoadmapsService = userRoadmapsService ?? throw new ArgumentNullException(nameof(userRoadmapsService));
     }
 
     [HttpGet]
@@ -37,6 +40,13 @@ public class RoadmapsController : BaseController
     public async Task<IActionResult> GetRoadmap([FromRoute] string roadmapId, CancellationToken ct)
     {
         var result = await RoadmapService.GetRoadmapById(roadmapId, ct);
+        var userRoadmapResult = await UserRoadmapsService.GetUserRoadmaps(GetUserId(), ct);
+        var roadmapIds = userRoadmapResult.IsSuccessful ? userRoadmapResult.Data.Select(ur => ur.RoadmapId).ToList() : new List<string>();
+        if (result.IsSuccessful && result.Data != null)
+        {
+            result.Data.IsSaved = roadmapIds.Contains(roadmapId);
+        }
+
         return Response(result, (r) => Ok(new RoadmapResponse
         {
             Roadmap = r.Data
