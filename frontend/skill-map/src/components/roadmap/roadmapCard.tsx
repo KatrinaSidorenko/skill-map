@@ -15,6 +15,7 @@ import {
 import NextLink from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import useLocalization from '@/i18n/useLocalization';
+import { getStatusColor } from '@/features/roadmaps/helpers';
 
 interface RoadmapCardProps {
   roadmap: PlainRoadmap;
@@ -58,18 +59,6 @@ export function RoadmapCard({ roadmap }: RoadmapCardProps) {
     </HoverCard.Root>
   );
 }
-
-const getStatusColor = (status: LearningStatus) => {
-  switch (status) {
-    case 'completed':
-      return 'green';
-    case 'inprogress':
-      return 'blue';
-    case 'notstarted':
-    default:
-      return 'gray';
-  }
-};
 
 interface SavedRoadmapCardProps {
   roadmap: SavedPlainRoadmap;
@@ -121,11 +110,14 @@ export function SavedRoadmapCard({
               <Text fontSize="lg" fontWeight="bold" color="text.heading">
                 {roadmap.title}
               </Text>
-              <Badge colorScheme={statusColor} fontSize="0.8em">
-                {getRoadmapTransaltions(
-                  roadmap.status.toString() as keyof ILocalization['roadmap'],
-                )}
-              </Badge>
+              <Flex align="center" gap={2} direction={'row'}>
+                <Box w="10px" h="10px" borderRadius="full" bg={statusColor} />
+                <Text fontSize="sm" color="gray.600" textTransform="capitalize">
+                  {getRoadmapTransaltions(
+                    roadmap.status as keyof ILocalization['roadmap'],
+                  )}
+                </Text>
+              </Flex>
             </HStack>
 
             <Box width="100%">

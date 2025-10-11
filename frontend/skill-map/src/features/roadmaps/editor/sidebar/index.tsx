@@ -63,7 +63,7 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
             ...node.data,
             label,
             description,
-            status,
+            status: status[0],
           },
         } as Node),
       );
