@@ -61,6 +61,7 @@ public static class ModificationsHelper
             Title = change?.Title,
             Description = change?.Description,
             Status = change?.Status,
+            CreatedAt = modification.CreatedAt,
         };
     }
 
@@ -74,25 +75,7 @@ public static class ModificationsHelper
         };
     }
 
-    public static double CalculateRoadmapProgress(this List<ModifiedNode> nodes) // only topics and subtopics
-    {
-        nodes = nodes.Where(n => n.Id != null).ToList();
-        var totalNodes = nodes.Count();
-        if (totalNodes == 0)
-        {
-            return 0;
-        }
-
-        var completedNodes = nodes.Where(i => i.Status == LearningStatus.Completed.ToStatusString()).Count();
-        return completedNodes / totalNodes;
-    }
-
-    public static string CalculateStatus(this List<ModifiedNode> nodes)
-    {
-        return nodes.Any(n => n.Status == LearningStatus.Completed.ToStatusString()) ? 
-            LearningStatus.InProgress.ToStatusString() :
-            LearningStatus.NotStarted.ToStatusString();
-    }
+ 
 
     //public static List<NodeResponse> GetCreatedNodes(this IEnumerable<RoadmapModification> nodes)
     //{

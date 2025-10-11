@@ -6,4 +6,5 @@ public class PlainRoadmapDto
     public string Title { get; set; }
     public string? ImageUrl { get; set; }
     public DateTime CreatedAt { get; set; }
+    public int TotalTopics { get; set; }
 }

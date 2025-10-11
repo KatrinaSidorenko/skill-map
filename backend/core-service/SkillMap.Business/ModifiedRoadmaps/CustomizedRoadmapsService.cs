@@ -1,6 +1,7 @@
 ﻿using LearningPlatform.Roadmap.Business.Contracts;
 using LearningPlatform.Roadmap.Business.Contracts.Constants;
 using SkillMap.Business.Abstractions;
+using SkillMap.Business.ModifiedRoadmaps.Helpers;
 using SkillMap.Business.ModifiedRoadmaps.Mappers;
 using SkillMap.Business.ModifiedRoadmaps.Models;
 using SkillMap.Business.Roadmaps.Helpers;
@@ -19,9 +20,7 @@ namespace SkillMap.Business.Roadmaps;
 public class CustomizedRoadmapsService(
     IRoadmapService roadmapService, 
     IUserRoadmapsService userRoadmapsService, 
-    IRepository<RoadmapModification> modificationsRepository,
-    IServiceProvider serviceProvider,
-    IRepository<RoadmapSnapshot> snapshotRepository) : ICustomizedRoadmapsService
+    IRepository<RoadmapModification> modificationsRepository) : ICustomizedRoadmapsService
 {
     private const int MaxModificationsCount = 5;
 
@@ -30,102 +29,92 @@ public class CustomizedRoadmapsService(
         throw new NotImplementedException();
     }
 
-    public async Task<Result<PaginationResult<List<PlainRoadmapWithDetailsDto>>>> GetPlainRoadmapsWithUserMetadata(long userId, SearchingParams @params, CancellationToken ct)
+    public async Task<Result<PaginationResult<List<PlainRoadmapWithDetailsDto>>>> GetPlainRoadmapsWithUserMetadata(
+        long userId,
+        SearchingParams @params,
+        CancellationToken ct)
     {
         var userRoadmapsResult = await userRoadmapsService.GetUserRoadmaps(userId, ct);
         if (!userRoadmapsResult.IsSuccessful)
-        {
             return ResultType.UserRoadmapNotFound<PaginationResult<List<PlainRoadmapWithDetailsDto>>>(userId);
-        }
 
-        var userRoadmapIds = userRoadmapsResult.Data.Select(ur => ur.RoadmapId).ToHashSet();
-        var roadmapSaveAtDict = userRoadmapsResult.Data.Select(r => (r.RoadmapId, r.CreatedAt)).ToDictionary();
-        var paginatedRoadmapsResult = await roadmapService.GetPlainRoadmapsByIds([.. userRoadmapIds], @params, ct);
+        var userRoadmaps = userRoadmapsResult.Data;
+        var userRoadmapIds = userRoadmaps.Select(ur => ur.RoadmapId).ToHashSet();
+        var roadmapCreatedAtDict = userRoadmaps
+            .GroupBy(r => r.RoadmapId)
+            .ToDictionary(g => g.Key, g => g.First().CreatedAt);
+
+        var paginatedRoadmapsResult = await roadmapService.GetPlainRoadmapsByIds([..userRoadmapIds], @params, ct);
         if (!paginatedRoadmapsResult.IsSuccessful)
-        {
             return ResultType.RoadmapNotFound<PaginationResult<List<PlainRoadmapWithDetailsDto>>>("");
+
+        var plainRoadmaps = paginatedRoadmapsResult.Data.Result;
+        var roadmapDtos = plainRoadmaps.Select(r =>
+        {
+            r.CreatedAt = roadmapCreatedAtDict.GetOrDefault(r.Id);
+            return r.ToPlainRoadmapWithDetailsDto();
+        }).ToList();
+
+        var allUserRoadmapIds = userRoadmaps.Select(ur => ur.Id).ToList();
+        var allModificationsResult = await modificationsRepository.GetAllAsync(
+            m => allUserRoadmapIds.Contains(m.UserRoadmapId), ct: ct);
+        if (!allModificationsResult.IsSuccessful)
+            return ResultType.FailedToGet<PaginationResult<List<PlainRoadmapWithDetailsDto>>>("Failed to load modifications");
+
+        var modificationsByUserRoadmap = allModificationsResult.Data
+            .GroupBy(m => m.UserRoadmapId)
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        foreach (var dto in roadmapDtos)
+        {
+            var userRoadmap = userRoadmaps.FirstOrDefault(ur => ur.RoadmapId == dto.Id);
+            if (userRoadmap == null) continue;
+            var modifications = modificationsByUserRoadmap.GetOrDefault(userRoadmap.Id) ?? [];
+            var (progress, status) = RoadmapProgressCalculator.Calculate(modifications, dto.TotalTopics);
+            dto.Progress = progress;
+            dto.Status = status;
         }
-
-        var allRoadmaps = paginatedRoadmapsResult.Data.Result;
-        allRoadmaps.ForEach(r => r.CreatedAt = roadmapSaveAtDict.GetOrDefault(r.Id));
-
-        // add calculate logic for progress
-        // status of roadmap
 
         return Result.Success(new PaginationResult<List<PlainRoadmapWithDetailsDto>>
         {
-            Result = allRoadmaps.Select(r => r.ToPlainRoadmapWithDetailsDto()).ToList(),
-            TotalCount = paginatedRoadmapsResult.Data.TotalCount,
+            Result = roadmapDtos,
+            TotalCount = paginatedRoadmapsResult.Data.TotalCount
         });
     }
 
-    public async Task<Result<SavedUerRoadmap>> GetUserModifiedRoadmap(long userId, string roadmapId, CancellationToken ct)
+    public async Task<Result<SavedUerRoadmap>> GetUserModifiedRoadmap(
+        long userId,
+        string roadmapId,
+        CancellationToken ct)
     {
         var userRoadmapResult = await userRoadmapsService.GetUserRoadmap(userId, roadmapId, ct);
         if (!userRoadmapResult.IsSuccessful)
-        {
             return ResultType.UserRoadmapNotFound<SavedUerRoadmap>(userId, roadmapId);
-        }
 
+        var userRoadmap = userRoadmapResult.Data;
 
-        var userRoadmapId = userRoadmapResult.Data.Id;
-        var sourceRoadmapResult = await roadmapService.GetRoadmapById(roadmapId, ct); // todo: this is already without resources 
+        var sourceRoadmapResult = await roadmapService.GetRoadmapById(roadmapId, ct);
         if (!sourceRoadmapResult.IsSuccessful)
-        {
             return ResultType.RoadmapNotFound<SavedUerRoadmap>(roadmapId);
-        }
 
-        var sourceRoadmap = sourceRoadmapResult.Data;
-
-        var modificationsResult = await modificationsRepository.GetAllAsync(m => m.UserRoadmapId == userRoadmapId, ct: ct);
+        var source = sourceRoadmapResult.Data;
+        var modificationsResult = await modificationsRepository.GetAllAsync(
+            m => m.UserRoadmapId == userRoadmap.Id, ct: ct);
         if (!modificationsResult.IsSuccessful)
-        {
             return ResultType.FailedToGet<SavedUerRoadmap>("Failed to get roadmap modifications");
-        }
 
         var modifications = modificationsResult.Data.ToList();
-        var createNodeModifications = modifications.Where(m => m.Action == ModificationAction.CreateItem)
-            .Select(m => m.MapToModifiedNode()).ToList();
-        var createConnectionModifications = modifications.Where(m => m.Action == ModificationAction.CreateConnection)
-            .Select(m => m.MapToLearningItemConnection()).ToList();
-
-        var deletedNodes = modifications.Where(m => m.Action == ModificationAction.DeleteItem)
-            .Select(m => m.ExternalItemId).ToHashSet();
-        var deletedConnections = modifications.Where(m => m.Action == ModificationAction.DeleteConnection)
-            .Select(m => m.ExternalItemId.GetConnectionPoints()).ToList();
-
-        var updatedItems = modifications
-            .Where(m => m.Action == ModificationAction.SnapshotUpdate)
-            .Select(m => m.MapToChange()).ToList();
-
-        var nodes = sourceRoadmap.Nodes.Select(n => n.MapToModifiedNode()).ToList();
-        nodes.AddRange(createNodeModifications);
-        var nodesDict = nodes.ToDictionary(n => n.Id, n => n);
-        foreach (var updatedItem in updatedItems)
-        {
-            var id = updatedItem.Id;
-            var node = nodesDict.GetOrDefault(id);
-            if (node == null) { continue; }
-            node.Title = updatedItem.Title ?? node.Title;
-            node.Description = updatedItem.Description ?? node.Description;
-            node.Status = updatedItem.Status ?? node.Status;
-        }
-        nodes = nodes.Where(n => !deletedNodes.Contains(n.Id)).ToList();
-
-        var edges = sourceRoadmap.Edges;
-        edges.AddRange(createConnectionModifications);
-        edges = edges.Where(e => !deletedConnections.Contains((e.Source, e.Target))).ToList();
+        var modifiedRoadmap = RoadmapModificationApplier.Apply(source, modifications);
 
         return Result.Success(new SavedUerRoadmap
         {
-            Id = sourceRoadmap.Id,
-            Title = sourceRoadmap.Title,
-            Description = sourceRoadmap.Description,
-            Status = nodes.CalculateStatus(),
-            Progress = nodes.CalculateRoadmapProgress(),
-            //SavedAt = userRoadmapResult.Data.
-            Nodes = nodes,
-            Edges = edges,
+            Id = source.Id,
+            Title = source.Title,
+            Description = source.Description,
+            Status = modifiedRoadmap.Nodes.CalculateStatus(),
+            Progress = modifiedRoadmap.Nodes.CalculateRoadmapProgress(),
+            Nodes = modifiedRoadmap.Nodes,
+            Edges = modifiedRoadmap.Edges
         });
     }
 

@@ -4,6 +4,7 @@ using LearningPlatform.Roadmap.Business.Contracts.Models;
 using LearningPlatform.Roadmap.Business.Mappers;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using SkillMap.Shared.Extensions;
 using SkillMap.Shared.Models;
 using SkillMap.Shared.Results;
 
@@ -73,9 +74,18 @@ public class RoadmapService(
             Log.Error("Failed to get plain roadmaps by IDs: {Error}", paginatedResult.Message);
             return ResultType.FailedToGetRoadmaps<PaginationResult<List<PlainRoadmapDto>>>();
         }
+
+        var plainRoadmaps = paginatedResult.Data.Result?.ToPlainRoadmaps() ?? [];
+        var topicsCountDict = await roadmapRepository.CalculateTotalTopicsAndSubtopics(plainRoadmaps.Select(r => r.Id).ToHashSet().ToList(), ct);
+        foreach (var roadmap in plainRoadmaps)
+        {
+            var count = topicsCountDict.Data.GetOrDefault(roadmap.Id);
+            roadmap.TotalTopics = count;
+        }
+
         return Result.Success(new PaginationResult<List<PlainRoadmapDto>>
         {
-            Result = paginatedResult.Data.Result?.ToPlainRoadmaps() ?? [],
+            Result = plainRoadmaps,
             TotalCount = paginatedResult.Data.TotalCount
         });
     }

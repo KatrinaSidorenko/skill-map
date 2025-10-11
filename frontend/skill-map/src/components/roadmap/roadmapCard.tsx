@@ -160,7 +160,7 @@ export function SavedRoadmapCard({
                 mt={1}
                 color="gray.500"
                 textAlign="right"
-              >{`${roadmap.progress}%`}</Text>
+              >{`${getProgressInPercentage(roadmap.progress)}%`}</Text>
             </Box>
 
             <Text fontSize="xs" color="gray.500">
