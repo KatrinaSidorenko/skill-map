@@ -36,6 +36,7 @@ export default function StatusSelect({
         width="100%"
         value={value}
         onValueChange={(e) => onChange(e.value)}
+        defaultValue={value}
       >
         <Select.HiddenSelect />
         <Select.Control>

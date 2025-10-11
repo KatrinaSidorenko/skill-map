@@ -78,6 +78,7 @@ export function mapRoadmapToReactFlowForSaved(roadmap: SavedRoadmap): {
       description: n.description,
       status: n.status,
     },
+    type: 'statusNode',
   }));
 
   const edges: Edge[] = roadmap.edges.map((e) => ({
@@ -92,4 +93,16 @@ export function mapRoadmapToReactFlowForSaved(roadmap: SavedRoadmap): {
 export const defaultPagination = {
   pageSize: 12,
   pageNumber: 1,
+};
+
+export const getStatusColor = (status: LearningStatus) => {
+  switch (status) {
+    case 'completed':
+      return 'green';
+    case 'inprogress':
+      return 'blue';
+    case 'notstarted':
+    default:
+      return 'gray';
+  }
 };

@@ -12,14 +12,17 @@ import {
 import { mapRoadmapToReactFlowForSaved } from '../helpers';
 
 type InitialState = {
-  plainRoadmap: Roadmap | null;
   roadmapId: string | null;
+  info: {
+    isSaved: boolean;
+    title: string;
+  } | null;
   nodes: Node[];
   edges: Edge[];
 };
 
 const initialState: InitialState = {
-  plainRoadmap: null,
+  info: null,
   roadmapId: null,
   nodes: [],
   edges: [],
@@ -29,26 +32,18 @@ const roadmapSlice = createSlice({
   name: 'roadmapSlice',
   initialState,
   reducers: {
-    setActiveRoadmapId: (state, action: PayloadAction<string>) => {
-      state.roadmapId = action.payload;
-    },
-    setRoadmap: (
-      state,
-      action: PayloadAction<{
-        nodes: RoadmapNode[];
-        edges: RoadmapEdge[];
-      }>,
-    ) => {
+    setPlainRoadmap: (state, action: PayloadAction<Roadmap>) => {
+      state.info = {
+        isSaved: !!action.payload.isSaved,
+        title: action.payload.title,
+      };
+      state.roadmapId = action.payload.id;
       const { nodes, edges } = mapRoadmapToReactFlowForSaved({
         nodes: action.payload.nodes,
         edges: action.payload.edges,
       } as SavedRoadmap);
       state.nodes = nodes;
       state.edges = edges;
-    },
-    setPlainRoadmap: (state, action: PayloadAction<Roadmap>) => {
-      state.plainRoadmap = action.payload;
-      state.roadmapId = action.payload.id;
     },
     setNodeChanges: (state, action: PayloadAction<NodeChange<Node>[]>) => {
       const changes = action.payload;
@@ -67,17 +62,21 @@ const roadmapSlice = createSlice({
       const connection = action.payload;
       state.edges = addEdge({ ...connection, animated: false }, state.edges);
     },
+    updateSavedStatus: (state, action: PayloadAction<void>) => {
+      if (state.info) {
+        state.info.isSaved = !state.info.isSaved;
+      }
+    },
   },
 });
 
 export const {
-  setRoadmap,
   setNodeChanges,
   setEdgeChnages,
   addNode,
   setEdge,
   setPlainRoadmap,
-  setActiveRoadmapId,
+  updateSavedStatus,
 } = roadmapSlice.actions;
 
 export const selectRoadmap = (state: { roadmapSlice: InitialState }) => {
@@ -87,9 +86,9 @@ export const selectRoadmap = (state: { roadmapSlice: InitialState }) => {
   };
 };
 
-export const selectPlainRoadmap = (state: { roadmapSlice: InitialState }) =>
-  state.roadmapSlice.plainRoadmap;
 export const selectRoadmapId = (state: { roadmapSlice: InitialState }) =>
   state.roadmapSlice.roadmapId;
+export const selectRoadmapInfo = (state: { roadmapSlice: InitialState }) =>
+  state.roadmapSlice.info;
 
 export default roadmapSlice;

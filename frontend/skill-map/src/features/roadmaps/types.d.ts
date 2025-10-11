@@ -28,6 +28,7 @@ interface Roadmap {
   id: string;
   title: string;
   description: string;
+  isSaved?: boolean;
   nodes: RoadmapNode[];
   edges: RoadmapEdge[];
 }

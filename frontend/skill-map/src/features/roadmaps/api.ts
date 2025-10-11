@@ -26,6 +26,12 @@ export const roadmapApi = createApi({
         params: { roadmapId: id },
       }),
     }),
+    deleteRoadmap: builder.mutation<void, { id: string }>({
+      query: ({ id }) => ({
+        url: `userroadmaps/${id}`,
+        method: 'DELETE',
+      }),
+    }),
     getSavedRoadmaps: builder.query<
       PaginationResponse<SavedPlainRoadmap>,
       SearchConfig
@@ -96,4 +102,5 @@ export const {
   useDeleteLearningItemMutation,
   useCreateNodeMutation,
   useCreateEdgeMutation,
+  useDeleteRoadmapMutation,
 } = roadmapApi;

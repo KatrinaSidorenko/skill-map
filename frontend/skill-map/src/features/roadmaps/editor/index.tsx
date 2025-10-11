@@ -11,6 +11,7 @@ import {
   EdgeChange,
   NodeChange,
   Connection,
+  NodeTypes,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { Flex, VStack, Text, Button } from '@chakra-ui/react';
@@ -30,6 +31,11 @@ import {
   setSelectedElement,
 } from './store';
 import { useCreateEdgeMutation } from '../api';
+import { StatusNode } from './status-node';
+
+const nodeTypes: NodeTypes = {
+  statusNode: StatusNode,
+};
 
 function RoadmapEditorContainer({ children }: { children: React.ReactNode }) {
   return (
@@ -115,6 +121,7 @@ function RoadmapEditor() {
       >
         <ReactFlow
           nodes={nodes}
+          nodeTypes={nodeTypes}
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
