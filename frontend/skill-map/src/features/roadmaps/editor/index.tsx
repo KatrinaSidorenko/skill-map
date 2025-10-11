@@ -51,7 +51,7 @@ function RoadmapEditorHeader() {
       p={2}
       borderRadius="lg"
     >
-      <Button size="sm" variant="ghost" onClick={() => router.replace('/home')}>
+      <Button size="sm" variant="ghost" onClick={() => router.back()}>
         <IoChevronBackOutline size="24" />
       </Button>
 
@@ -125,7 +125,6 @@ function RoadmapEditor() {
             instance.fitView();
             setTimeout(() => {
               const rootNode = nodes[0];
-              console.log('rootNode', rootNode);
               if (rootNode) {
                 instance.setCenter(rootNode.position.x, rootNode.position.y, {
                   zoom: 1,

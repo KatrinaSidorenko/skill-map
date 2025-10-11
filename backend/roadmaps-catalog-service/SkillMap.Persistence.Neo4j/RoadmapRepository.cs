@@ -382,9 +382,11 @@ internal class RoadmapRepository : IRoadmapRepository
             
             var query = @"
                 UNWIND $ids AS roadmapId
-                MATCH (r:ROADMAP {id: roadmapId})-[:HAS_TOPIC|HAS_SUBTOPIC*]->(t)
-                WHERE t:TOPIC OR t:SUBTOPIC
-                RETURN r.id AS roadmapId, count(DISTINCT t) AS totalTopics";
+OPTIONAL MATCH (r:ROADMAP {id: roadmapId})
+OPTIONAL MATCH (r)-[:CONTAINS|LEADS_TO|HAS_SUBTOPIC*1..]->(n)
+WHERE n:TOPIC OR n:SUBTOPIC
+RETURN roadmapId, count(DISTINCT n) AS totalTopicsAndSubtopics;
+";
             var totalTopics = await session.ExecuteReadAsync(async tx =>
             {
                 var result = await tx.RunAsync(query, new { ids = roadmapIds });
@@ -392,7 +394,7 @@ internal class RoadmapRepository : IRoadmapRepository
                 while (await result.FetchAsync())
                 {
                     var id = result.Current["roadmapId"].As<string>();
-                    var count = result.Current["totalTopics"].As<int>();
+                    var count = result.Current["totalTopicsAndSubtopics"].As<int>();
                     topicsCountDict[id] = count;
                 }
                 return topicsCountDict;
@@ -403,7 +405,7 @@ internal class RoadmapRepository : IRoadmapRepository
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Failed to calculate total topics and subtopics for roadmap {roadmapId}", roadmapId);
+            Logger.LogError(ex, "Failed to calculate total topics and subtopics for roadmaps");
             return ResultType.FailedToGetRoadmap<Dictionary<string, int>>(ex.Message);
         }
     }

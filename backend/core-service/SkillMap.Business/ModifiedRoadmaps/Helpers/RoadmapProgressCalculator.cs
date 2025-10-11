@@ -35,8 +35,8 @@ public static class RoadmapProgressCalculator
             .DistinctBy(u => u.Id)
             .ToList();
 
-        var completedCount = updatedItems.Count(n => n.Status == LearningStatus.Completed.ToString());
-        var progress = Math.Round((completedCount / (double)adjustedTotal) * 100, 2);
+        var completedCount = updatedItems.Count(n => n.Status == LearningStatus.Completed.ToStatusString());
+        var progress = Math.Round((completedCount / (double)adjustedTotal), 2);
 
         string status;
         if (completedCount == adjustedTotal)

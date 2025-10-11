@@ -20,9 +20,7 @@ namespace SkillMap.Business.Roadmaps;
 public class CustomizedRoadmapsService(
     IRoadmapService roadmapService, 
     IUserRoadmapsService userRoadmapsService, 
-    IRepository<RoadmapModification> modificationsRepository,
-    IServiceProvider serviceProvider,
-    IRepository<RoadmapSnapshot> snapshotRepository) : ICustomizedRoadmapsService
+    IRepository<RoadmapModification> modificationsRepository) : ICustomizedRoadmapsService
 {
     private const int MaxModificationsCount = 5;
 
@@ -67,18 +65,15 @@ public class CustomizedRoadmapsService(
             .GroupBy(m => m.UserRoadmapId)
             .ToDictionary(g => g.Key, g => g.ToList());
 
-        var progressTasks = roadmapDtos.Select(async dto =>
+        foreach (var dto in roadmapDtos)
         {
             var userRoadmap = userRoadmaps.FirstOrDefault(ur => ur.RoadmapId == dto.Id);
-            if (userRoadmap == null) return;
-
+            if (userRoadmap == null) continue;
             var modifications = modificationsByUserRoadmap.GetOrDefault(userRoadmap.Id) ?? [];
             var (progress, status) = RoadmapProgressCalculator.Calculate(modifications, dto.TotalTopics);
             dto.Progress = progress;
             dto.Status = status;
-        });
-
-        await Task.WhenAll(progressTasks);
+        }
 
         return Result.Success(new PaginationResult<List<PlainRoadmapWithDetailsDto>>
         {
