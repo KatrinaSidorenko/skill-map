@@ -73,11 +73,15 @@ interface RoadmapEditorProps {
   setSidebarOpen: (open: boolean) => void;
 }
 
-function RoadmapEditor({ children, createEdge, setSidebarOpen }: RoadmapEditorProps) {
+function RoadmapEditor({
+  children,
+  createEdge,
+  setSidebarOpen,
+}: RoadmapEditorProps) {
   const dispatch = useAppDispatch();
   const roadmapId = useAppSelector(selectRoadmapId);
   const { nodes, edges } = useAppSelector(selectRoadmap);
-  
+
   const handleNodeDoubleClick: NodeMouseHandler = useCallback(
     (event, node) => {
       event.preventDefault();
@@ -155,8 +159,6 @@ function RoadmapEditor({ children, createEdge, setSidebarOpen }: RoadmapEditorPr
         </ReactFlow>
       </div>
       {children}
-      {/* <Toolbox onToggleSidebar={handleToggleSidebar} />
-      <NodeSidebar open={isSidebarOpen} onOpenChange={setSidebarOpen} /> */}
     </>
   );
 }

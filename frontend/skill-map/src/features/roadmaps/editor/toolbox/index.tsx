@@ -28,11 +28,13 @@ interface ToolboxProps {
   onToggleSidebar: () => void;
   deleteItem: ReturnType<typeof useDeleteLearningItemMutation>[0];
   createNode: ReturnType<typeof useCreateNodeMutation>[0];
+  isStatusUsed: boolean;
 }
 export default function Toolbox({
   onToggleSidebar,
   deleteItem,
   createNode,
+  isStatusUsed,
 }: ToolboxProps) {
   const dispatch = useAppDispatch();
   const selected = useAppSelector(selectSelectedElement);
@@ -137,6 +139,7 @@ export default function Toolbox({
             onClick={() =>
               createNodeDialog.open('newNodeDialog', {
                 onCreate: handleCreateNode,
+                isStatusUsed,
               })
             }
           >

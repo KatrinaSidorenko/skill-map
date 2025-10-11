@@ -19,17 +19,19 @@ import {
   setRoadmap,
 } from '@/features/roadmaps/editor/store';
 import { useCallback, useEffect, useState } from 'react';
-import ContentNotFoundScreen from '@/components/base/notfound';
 import Toolbox from '@/features/roadmaps/editor/toolbox';
 import NodeSidebar from '@/features/roadmaps/editor/sidebar';
-import { SiTrustedshops } from 'react-icons/si';
 
+// todo: fix editor doen;t use status in creation process
 export default function EditorPage() {
   const dispatch = useAppDispatch();
   const roadmapId = useAppSelector(selectRoadmapId);
+
   const { data, error, isLoading, isFetching } = useGetSavedRoadmapQuery(
     roadmapId ?? '',
+    { skip: !roadmapId }, // avoid fetching when creating a new roadmap
   );
+
   const roadmap = data;
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [createEdge] = useCreateEdgeMutation();
@@ -42,38 +44,37 @@ export default function EditorPage() {
   }, []);
 
   useEffect(() => {
-    if (!roadmap || !roadmapId) return;
-    dispatch(
-      setPlainRiadmap({
-        id: roadmap.id,
-        title: roadmap.title,
-        description: roadmap.description,
-        progress: roadmap.progress,
-        status: roadmap.status,
-        savedAt: roadmap.savedAt,
-        imageUrl: roadmap.imageUrl,
-      } as SavedPlainRoadmap),
-    );
-    dispatch(
-      setRoadmap({
-        nodes: roadmap.nodes,
-        edges: roadmap.edges,
-      }),
-    );
-  }, [roadmap]);
+    // If roadmap data loaded successfully
+    if (roadmap) {
+      dispatch(
+        setPlainRiadmap({
+          id: roadmap.id,
+          title: roadmap.title,
+          description: roadmap.description,
+          progress: roadmap.progress,
+          status: roadmap.status,
+          savedAt: roadmap.savedAt,
+          imageUrl: roadmap.imageUrl,
+        } as SavedPlainRoadmap),
+      );
+      dispatch(
+        setRoadmap({
+          nodes: roadmap.nodes,
+          edges: roadmap.edges,
+        }),
+      );
+    }
+  }, [roadmap, roadmapId, isFetching, isLoading, dispatch]);
 
-  if ((!roadmap && !isLoading && !isFetching) || !roadmapId) {
-    return <ContentNotFoundScreen />;
-  }
-
-  if (error) {
+  if (error && roadmapId) {
+    // Show error screen only for existing roadmap load failure
     return <ErrorScreen />;
   }
 
   return (
     <Flex width="100vw" height="100vh" direction="column">
       <Container isSection={false}>
-        {isLoading || isFetching ? (
+        {(isLoading || isFetching) && roadmapId ? (
           <SpinnerScreen />
         ) : (
           <ReactFlowProvider>
@@ -87,13 +88,13 @@ export default function EditorPage() {
                   onToggleSidebar={handleToggleSidebar}
                   createNode={createNode}
                   deleteItem={deleteItem}
-                  isStatusUsed={true}
+                  isStatusUsed={false}
                 />
                 <NodeSidebar
                   open={isSidebarOpen}
                   onOpenChange={setSidebarOpen}
                   saveChange={saveChange}
-                  isStatusUsed={true}
+                  isStatusUsed={false}
                 />
               </RoadmapEditor>
             </RoadmapEditor.Container>

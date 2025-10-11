@@ -20,6 +20,7 @@ const createNodeDialog = createOverlay<{
     description: string;
     status: string[];
   }) => void;
+  isStatusUsed: boolean;
 }>((props) => {
   const { onCreate, ...rest } = props;
   const [label, setLabel] = useState('');
@@ -62,7 +63,9 @@ const createNodeDialog = createOverlay<{
                   />
                 </Box>
 
-                <StatusSelect value={status} onChange={setStatus} />
+                {rest.isStatusUsed && (
+                  <StatusSelect value={status} onChange={setStatus} />
+                )}
               </VStack>
             </Dialog.Body>
 

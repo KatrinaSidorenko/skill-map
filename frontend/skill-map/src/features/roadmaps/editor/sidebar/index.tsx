@@ -23,9 +23,15 @@ interface NodeSidebarProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   saveChange: ReturnType<typeof useSaveLearningItemChangesMutation>[0];
+  isStatusUsed: boolean;
 }
 
-export default function NodeSidebar({ open, onOpenChange, saveChange }: NodeSidebarProps) {
+export default function NodeSidebar({
+  open,
+  onOpenChange,
+  saveChange,
+  isStatusUsed,
+}: NodeSidebarProps) {
   const dispatch = useAppDispatch();
   const roadmapId = useAppSelector(selectRoadmapId);
   const node = useAppSelector(selectSelectedElement);
@@ -126,7 +132,9 @@ export default function NodeSidebar({ open, onOpenChange, saveChange }: NodeSide
               />
             </VStack>
 
-            <StatusSelect value={status} onChange={setStatus} />
+            {isStatusUsed && (
+              <StatusSelect value={status} onChange={setStatus} />
+            )}
             <Separator />
 
             {/* Actions */}
