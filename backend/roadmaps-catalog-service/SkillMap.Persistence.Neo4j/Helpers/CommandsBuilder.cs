@@ -1,5 +1,5 @@
 ﻿using LearningPlatform.Roadmap.Business.Contracts.Models;
-using SkillMap.Persistence.Neo4j.Helpers;
+using LearningPlatform.Roadmap.Business.Contracts.Constants;
 using SkillMap.Shared.Extensions;
 
 namespace SkillMap.Persistence.Neo4j.Helpers;

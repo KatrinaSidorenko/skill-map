@@ -17,6 +17,7 @@ import StatusSelect from './status-select';
 import useLocalization from '@/i18n/useLocalization';
 import { useSaveLearningItemChangesMutation } from '../../api';
 import { toaster } from '@/components/ui/toaster';
+import MaterialsContainer from './materials';
 
 interface NodeSidebarProps {
   open: boolean;
@@ -88,7 +89,7 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
       <Drawer.Backdrop />
       <Drawer.Positioner>
         <Drawer.Content borderRadius="2xl" bg="white" shadow="lg">
-          <VStack align="stretch" p={6} gap={8}>
+          <VStack align="stretch" p={6} gap={8} overflowY="auto" h="full">
             <Flex justify="space-between" align="center">
               <Text fontSize="lg" fontWeight="semibold">
                 {getEditorTranslations('nodeProperties')}
@@ -122,7 +123,6 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={getEditorTranslations('enterNodeDescription')}
                 resize="vertical"
-                height={"ma"}
               />
             </VStack>
 
@@ -142,6 +142,9 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
                 {getEditorTranslations('apply')}
               </Button>
             </HStack>
+
+            <Separator />
+            <MaterialsContainer />
           </VStack>
         </Drawer.Content>
       </Drawer.Positioner>

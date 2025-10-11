@@ -1,5 +1,20 @@
-﻿namespace LearningPlatform.Roadmap.Business.Contracts.Models;
+﻿using SkillMap.Shared.Extensions;
 
+namespace LearningPlatform.Roadmap.Business.Contracts.Models;
+
+public static class ResourceExtensions
+{
+    public static ResourceDto ToResourceDto(this Dictionary<string, object> props)
+    {
+        return new ResourceDto
+        {
+            Id = props.GetOrDefault("id") as string,
+            Title = props.GetOrDefault("title") as string,
+            Link = props.GetOrDefault("resource_link") as string,
+            Type = props.GetOrDefault("resource_type") as string,
+        };
+    }
+}
 public class ResourceDto : IEquatable<ResourceDto>
 {
     public string Id { get; set; }

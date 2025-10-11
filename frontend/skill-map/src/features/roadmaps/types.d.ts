@@ -54,14 +54,6 @@ interface PaginationResponse<TItem> {
   items: TItem[];
 }
 
-// interface PlainRoadmapsResponse extends IPaginationResponse {
-//   roadmaps: PlainRoadmap[];
-// }
-
-// interface SavedPlainRoadmapsResponse extends IPaginationResponse {
-//   roadmaps: SavedPlainRoadmap[];
-// }
-
 interface RoadmapResponse {
   roadmap: Roadmap;
 }
@@ -73,4 +65,12 @@ interface PaginationConfig {
 
 interface SearchConfig extends PaginationConfig {
   query: string | null;
+}
+
+type MaterialType = 'article' | 'video' | 'book' | 'course' | 'other';
+interface LearningItemMaterial {
+  id: string;
+  title: string;
+  url: string;
+  type: MaterialType;
 }

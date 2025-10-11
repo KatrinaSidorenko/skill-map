@@ -55,7 +55,9 @@
     "selectStatus": "Виберіть статус",
     "failedToSaveChanges": "Не вдалося зберегти зміни. Спробуйте ще раз.",
     "createNewNode": "Створити новий вузол",
-    "create": "Створити"
+    "create": "Створити",
+    "resources": "Ресурси",
+    "noMaterialsFound": "Для цієї теми не знайдено матеріалів."
   },
   "roadmaps": {
     "search": "Пошук ...",

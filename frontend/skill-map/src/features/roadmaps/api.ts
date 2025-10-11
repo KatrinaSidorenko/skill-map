@@ -88,6 +88,16 @@ export const roadmapApi = createApi({
         body: edge,
       }),
     }),
+    getLearningItemMaterials: builder.query<
+      LearningItemMaterial[],
+      { roadmapId: string; itemId: string }
+    >({
+      query: ({ roadmapId, itemId }) => ({
+        url: `roadmaps/materials/${roadmapId}`,
+        method: 'GET',
+        params: { itemId },
+      }),
+    }),
   }),
 });
 
@@ -103,4 +113,5 @@ export const {
   useCreateNodeMutation,
   useCreateEdgeMutation,
   useDeleteRoadmapMutation,
+  useLazyGetLearningItemMaterialsQuery,
 } = roadmapApi;
