@@ -14,4 +14,5 @@ public interface IRoadmapRepository
     Task<Result<PaginationResult<List<NodeDto>>>> GetAllPlainRoadmaps(SearchingParams @params, CancellationToken ct);
     Task<Result<PaginationResult<List<NodeDto>>>> GetPlainRoadmapsByIds(List<string> roadmapIds, SearchingParams @params, CancellationToken ct);
     Task<Result<Dictionary<string, int>>> CalculateTotalTopicsAndSubtopics(List<string> roadmapIds, CancellationToken ct);
+    Task<Result<List<ResourceDto>>> GetRoadmapItemMaterials(string roadmapId, string itemId, CancellationToken ct);
 }

@@ -123,7 +123,6 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={getEditorTranslations('enterNodeDescription')}
                 resize="vertical"
-                height={'max-content'}
               />
             </VStack>
 

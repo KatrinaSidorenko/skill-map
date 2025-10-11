@@ -89,4 +89,15 @@ public class RoadmapService(
             TotalCount = paginatedResult.Data.TotalCount
         });
     }
+
+    public async Task<Result<List<ResourceDto>>> GetLearningItemMaterials(string roadmapId, string itemId, CancellationToken ct)
+    {
+        var resourcesResult = await roadmapRepository.GetRoadmapItemMaterials(roadmapId, itemId, ct);
+        if (!resourcesResult.IsSuccessful)
+        {
+            Log.Error("Failed to get learning item resources for roadmap ID {RoadmapId} and item ID {ItemId}: {Error}", roadmapId, itemId, resourcesResult.Message);
+            return ResultType.FailedToGet<List<ResourceDto>>(resourcesResult.Message);
+        }
+        return Result.Success(resourcesResult.Data);
+    }
 }

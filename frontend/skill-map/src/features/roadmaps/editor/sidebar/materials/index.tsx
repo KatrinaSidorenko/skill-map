@@ -98,6 +98,7 @@ export default function MaterialsContainer() {
 
                     <VStack align="start" gap={0}>
                       <Link
+                        target="_blank"
                         href={material.url}
                         fontWeight="medium"
                         color="teal.600"

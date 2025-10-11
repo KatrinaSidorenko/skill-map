@@ -1,7 +1,6 @@
-﻿using LearningPlatform.Roadmap.Business.Contracts.Constants;
-using LearningPlatform.Roadmap.Business.Contracts.Models;
+﻿using LearningPlatform.Roadmap.Business.Contracts.Models;
 
-namespace SkillMap.Persistence.Neo4j.Helpers;
+namespace LearningPlatform.Roadmap.Business.Contracts.Constants;
 
 public static class RoadmapLabelConstants
 {

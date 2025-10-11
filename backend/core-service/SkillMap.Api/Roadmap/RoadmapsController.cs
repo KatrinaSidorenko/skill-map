@@ -56,29 +56,7 @@ public class RoadmapsController : BaseController
     [HttpGet("materials/{roadmapId}")]
     public async Task<IActionResult> GetLearningItemMaterials([FromRoute] string roadmapId, [FromQuery] string itemId, CancellationToken ct)
     {
-        var mock = new List<LearningItemMaterialResponse> {
-            new LearningItemMaterialResponse
-            {
-                Id = "1",
-                Title = "Introduction to C#",
-                Type = "Video",
-                Url = "https://example.com/intro-to-csharp"
-            },
-            new LearningItemMaterialResponse
-            {
-                Id = "2",
-                Title = "C# Basics",
-                Type = "Article",
-                Url = "https://example.com/csharp-basics"
-            },
-            new LearningItemMaterialResponse
-            {
-                Id = "3",
-                Title = "C# Advanced Topics",
-                Type = "Course",
-                Url = "https://example.com/csharp-advanced"
-            }
-         };
-        return Ok(mock);
+        var result = await RoadmapService.GetLearningItemMaterials(roadmapId, itemId, ct);
+        return Response(result, (r) => Ok(r.Data.Select(m => m.ToMaterialResponse()).ToList()));
     }
 }

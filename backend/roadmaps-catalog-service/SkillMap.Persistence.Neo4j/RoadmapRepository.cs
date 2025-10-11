@@ -1,4 +1,5 @@
 ﻿using LearningPlatform.Roadmap.Business.Contracts;
+using LearningPlatform.Roadmap.Business.Contracts.Constants;
 using LearningPlatform.Roadmap.Business.Contracts.Models;
 using Microsoft.Extensions.Logging;
 using Neo4j.Driver;
@@ -409,4 +410,55 @@ RETURN roadmapId, count(DISTINCT n) AS totalTopicsAndSubtopics;
             return ResultType.FailedToGetRoadmap<Dictionary<string, int>>(ex.Message);
         }
     }
+
+    public async Task<Result<List<ResourceDto>>> GetRoadmapItemMaterials(
+        string roadmapId,
+        string itemId,
+        CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+
+        try
+        {
+            using var session = Driver.AsyncSession(s => s.WithDatabase(DbSettings.Name));
+
+            var query = $@"
+    MATCH (item {{id: $itemId}})
+    OPTIONAL MATCH (item)-[:{RoadmapLabelConstants.HAS_RESOURCE}]->(material:{RoadmapLabelConstants.RESOURCE})
+    RETURN material";
+
+
+            var response = await session.ExecuteReadAsync(async tx =>
+            {
+                var result = await tx.RunAsync(query, new { itemId });
+                var materials = new List<ResourceDto>();
+
+                while (await result.FetchAsync())
+                {
+                    var node = result.Current["material"]?.As<INode>();
+                    if (node != null)
+                    {
+                        var material = node.Properties.ToDictionary().ToResourceDto();
+                        materials.Add(material);
+                    }
+                }
+
+                return materials;
+            });
+
+            await session.CloseAsync();
+            return Result.Success(response);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(
+                ex,
+                "Failed to get materials for item {itemId} in roadmap {roadmapId}",
+                itemId,
+                roadmapId
+            );
+            return ResultType.FailedToGetRoadmap<List<ResourceDto>>(ex.Message);
+        }
+    }
+
 }
