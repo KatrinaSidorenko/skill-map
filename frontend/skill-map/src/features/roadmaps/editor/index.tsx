@@ -74,6 +74,14 @@ function RoadmapEditor() {
   const { nodes, edges } = useAppSelector(selectRoadmap);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [createEdge] = useCreateEdgeMutation();
+  const handleNodeDoubleClick: NodeMouseHandler = useCallback(
+    (event, node) => {
+      event.preventDefault();
+      dispatch(setSelectedElement(node)); // save selected node in store
+      setSidebarOpen(true); // open sidebar
+    },
+    [dispatch],
+  );
 
   const onNodesChange = useCallback(
     (changes: NodeChange<Node>[]) => dispatch(setNodeChanges(changes)),
@@ -123,6 +131,7 @@ function RoadmapEditor() {
           nodes={nodes}
           nodeTypes={nodeTypes}
           edges={edges}
+          onNodeDoubleClick={handleNodeDoubleClick}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
