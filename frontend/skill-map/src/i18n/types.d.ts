@@ -59,6 +59,8 @@ interface ILocalization {
     failedToSaveChanges: string;
     createNewNode: string;
     create: string;
+    resources: string;
+    noMaterialsFound: string;
   };
   roadmaps: {
     search: string;

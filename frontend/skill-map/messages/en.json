@@ -60,7 +60,9 @@
     "selectStatus": "Select status",
     "failedToSaveChanges": "Failed to save changes. Please try again.",
     "createNewNode": "Create New Node",
-    "create": "Create"
+    "create": "Create",
+    "resources": "Resources",
+    "noMaterialsFound": "No materials found for this topic."
   },
   "roadmaps": {
     "search": "Search ...",

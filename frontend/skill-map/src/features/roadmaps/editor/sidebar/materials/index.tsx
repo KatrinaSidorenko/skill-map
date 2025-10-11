@@ -17,8 +17,10 @@ import {
 import { AiOutlineFileText, AiOutlineLink } from 'react-icons/ai';
 import { FaBook, FaVideo } from 'react-icons/fa';
 import { SiCoursera } from 'react-icons/si';
+import useLocalization from '@/i18n/useLocalization';
 
 export default function MaterialsContainer() {
+  const { getEditorTranslations } = useLocalization();
   const selectedElement = useAppSelector(selectSelectedElement);
   const roadmapId = useAppSelector(selectRoadmapId);
 
@@ -52,7 +54,7 @@ export default function MaterialsContainer() {
   return (
     <VStack align="stretch" gap={4} p={4} width="full">
       <Text fontSize="sm" fontWeight="medium" color="gray.600">
-        Resources
+        {getEditorTranslations('resources')}
       </Text>
 
       {isLoading || isFetching ? (
@@ -68,7 +70,7 @@ export default function MaterialsContainer() {
           color="gray.500"
           bg="gray.50"
         >
-          No materials found for this topic.
+          {getEditorTranslations('noMaterialsFound')}
         </Box>
       ) : (
         <VStack align="stretch" gap={3}>
