@@ -10,11 +10,12 @@ public static class CommandsBuilder
     {
         var nodeProps = new Dictionary<string, object>
         {
-           // {"id", node.Id},
+            {"id", node.Id},
             {"title", node.Title},
             {"externalId", node.ExternalId},
             {"type", node.Type},
-            {"migrationId", migrationId ?? string.Empty}
+            {"migrationId", migrationId ?? string.Empty},
+            {"description", node.Description ?? string.Empty},
         };
 
         if (node.AdditionalProps != null)
@@ -25,14 +26,11 @@ public static class CommandsBuilder
             }
         }
 
-        var label = node.GetLabel();
-
         var createNodeQuery = @$"
-    MERGE (n:{label} {{externalId: $externalId}})
-    SET n += $props,
-        n.id = coalesce(n.id, $id)
-";
-
+            MERGE (n:{node.GetLabel()} {{externalId: $externalId}})
+            SET n += $props,
+                n.id = coalesce(n.id, $id)
+        ";
 
         return new Command
         {

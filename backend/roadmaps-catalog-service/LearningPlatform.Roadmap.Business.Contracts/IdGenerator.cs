@@ -21,16 +21,17 @@ public static class IdGenerator
             return nodeDto;
 
         var copy = nodeDto.DeepCopy();
-        copy.Id = Guid.NewGuid().ToString();
+        copy.Id = GenerateNewId();
         return copy;
     }
 
+    public static string GenerateNewId() => Guid.NewGuid().ToString("N");
     public static EdgeDto GenerateInnerId(this EdgeDto edgeDto)
     {
         if (edgeDto == null)
             throw new ArgumentNullException(nameof(edgeDto));
 
-        edgeDto.Id = Guid.NewGuid().ToString();
+        edgeDto.Id = GenerateNewId();
         return edgeDto;
     }
 }

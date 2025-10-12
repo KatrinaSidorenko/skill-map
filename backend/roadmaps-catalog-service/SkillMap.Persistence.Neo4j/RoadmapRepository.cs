@@ -60,7 +60,7 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
         return true;
     }
 
-    public async Task<Result<bool>> AddNodes(List<NodeDto> nodes, CancellationToken ct = default)
+    public async Task<Result<bool>> CreateNodes(List<NodeDto> nodes, CancellationToken ct = default)
     {
         var newNodes = nodes.Select(n => n.GenerateInnerId()).ToList();
         var nodeCreateCommands = newNodes
@@ -70,7 +70,7 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
         return await ExecuteCommands(nodeCreateCommands, ct);
     }
 
-    public async Task<Result<bool>> AddEdges(List<EdgeDto> edges, CancellationToken ct = default)
+    public async Task<Result<bool>> CreateEdges(List<EdgeDto> edges, CancellationToken ct = default)
     {
         var newEdges = edges.Select(e => e.GenerateInnerId()).ToList();
         var edgeCreateCommands = newEdges
@@ -80,8 +80,6 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
         return await ExecuteCommands(edgeCreateCommands, ct);
     }
 
-    // todo: extract to some base repository
-   
     public async Task<Result<(List<Dictionary<string, object>> Nodes, List<Dictionary<string, object>> Edges)>> 
         GetSourceRoadmap(string roadmapId, CancellationToken ct = default)
     {

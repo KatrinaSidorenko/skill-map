@@ -21,4 +21,5 @@ public static class NodeType
 
     // ADITINAL PROPS KEYS
     public const string ImageUrl = "image_url";
+    public const string OwnerId = "owner_id";
 }

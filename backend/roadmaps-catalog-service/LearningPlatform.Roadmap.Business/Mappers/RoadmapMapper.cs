@@ -15,10 +15,28 @@ public static class RoadmapMapper
         {
             Id = nodeDto.Id,
             Title = nodeDto.Title,
+            Description = nodeDto.Description,
             ImageUrl = nodeDto.AdditionalProps?.GetOrDefault(NodeType.ImageUrl)
         };
     }
 
+    public static NodeDto ToNodeDto(this PlainRoadmapDto plainRoadmapDto)
+    {
+        if (plainRoadmapDto == null)
+            throw new ArgumentNullException(nameof(plainRoadmapDto));
+        return new NodeDto
+        {
+            Id = plainRoadmapDto.Id ?? IdGenerator.GenerateNewId(),
+            Title = plainRoadmapDto.Title,
+            Description = plainRoadmapDto.Description,
+            Type = NodeType.Roadmap,
+            AdditionalProps = new Dictionary<string, string>
+            {
+                { NodeType.ImageUrl, plainRoadmapDto.ImageUrl ?? string.Empty },
+                { NodeType.OwnerId, plainRoadmapDto.OwnerId ?? string.Empty }
+            }
+        };
+    }
     public static List<PlainRoadmapDto> ToPlainRoadmaps(this IEnumerable<NodeDto> nodes)
     {
         if (nodes == null)

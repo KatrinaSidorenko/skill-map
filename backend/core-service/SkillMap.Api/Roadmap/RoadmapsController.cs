@@ -3,10 +3,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SkillMap.Api.Base;
 using SkillMap.Api.Base.Searching;
+using SkillMap.Api.ModifiedRoadmap.Models;
 using SkillMap.Api.Roadmap.Models;
 using SkillMap.Api.Roadmaps.Models;
 using SkillMap.Business.UserRoadmaps;
 using SkillMap.Shared.Results;
+using CreateEdgeRequest = SkillMap.Api.Roadmap.Models.CreateEdgeRequest;
+using CreateNodeRequest = SkillMap.Api.Roadmap.Models.CreateNodeRequest;
 
 namespace SkillMap.Api.Roadmaps;
 
@@ -58,5 +61,26 @@ public class RoadmapsController : BaseController
     {
         var result = await RoadmapService.GetLearningItemMaterials(roadmapId, itemId, ct);
         return Response(result, (r) => Ok(r.Data.Select(m => m.ToMaterialResponse()).ToList()));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateRoadmap([FromBody] CreateRoadmapRequest request, CancellationToken ct)
+    {
+        var result = await RoadmapService.CreateRoadmap(request.ToPlainRoadmapDto(), ct);
+        return Response(result, (r) => CreatedAtAction(nameof(GetRoadmap), new { roadmapId = r.Data }, null));
+    }
+
+    [HttpPost("node")]
+    public async Task<IActionResult> CreateNode([FromBody] CreateNodeRequest request, CancellationToken ct)
+    {
+        await RoadmapService.CreateNode(request.NodeDto, ct);
+        return NoContent();
+    }
+
+    [HttpPost("edge")]
+    public async Task<IActionResult> CreateEdge([FromBody] CreateEdgeRequest request, CancellationToken ct)
+    {
+        await RoadmapService.CreateEdge(request.EdgeDto, ct);
+        return NoContent();
     }
 }

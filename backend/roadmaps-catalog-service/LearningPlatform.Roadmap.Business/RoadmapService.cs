@@ -100,4 +100,40 @@ public class RoadmapService(
         }
         return Result.Success(resourcesResult.Data);
     }
+
+    public async Task CreateNode(NodeDto node, CancellationToken ct = default)
+    {
+        if (node == null)
+        {
+            throw new ArgumentNullException(nameof(node));
+        }
+        var result = await roadmapRepository.CreateNodes(new List<NodeDto> { node }, ct);
+        if (!result.IsSuccessful)
+        {
+            var errorMessage = $"Failed to create node with ExternalId {node.ExternalId}: {result.Message}";
+            logger.LogError(errorMessage);
+            throw new Exception(errorMessage);
+        }
+    }
+
+    public async Task CreateEdge(EdgeDto edge, CancellationToken ct = default)
+    {
+        if (edge == null)
+        {
+            throw new ArgumentNullException(nameof(edge));
+        }
+        var result = await roadmapRepository.CreateEdges(new List<EdgeDto> { edge }, ct);
+        if (!result.IsSuccessful)
+        {
+            var errorMessage = $"Failed to create edge from {edge.Source?.ExternalId} to {edge.Target?.ExternalId}: {result.Message}";
+            logger.LogError(errorMessage);
+            throw new Exception(errorMessage);
+        }
+    }
+    public async Task<Result<string>> CreateRoadmap(PlainRoadmapDto roadmapDto, CancellationToken ct)
+    {
+        var node = roadmapDto.ToNodeDto();
+        await roadmapRepository.CreateNodes(new List<NodeDto> { node }, ct);
+        return Result.Success(node.Id);
+    }
 }
