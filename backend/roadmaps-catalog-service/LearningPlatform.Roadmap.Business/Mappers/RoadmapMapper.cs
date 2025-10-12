@@ -1,17 +1,12 @@
 ﻿using LearningPlatform.Roadmap.Business.Contracts.Constants;
 using LearningPlatform.Roadmap.Business.Contracts.Models;
 using SkillMap.Shared.Extensions;
+using LearningPlatform.Roadmap.Business.Contracts;
 
 namespace LearningPlatform.Roadmap.Business.Mappers;
 
 public static class RoadmapMapper
 {
-    public static string RemoveDashFromGuid(this string id)
-    {
-        if (string.IsNullOrWhiteSpace(id))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(id));
-        return id.Replace("-", string.Empty);
-    }
     public static PlainRoadmapDto ToPlainRoadmap(this NodeDto nodeDto)
     {
         if (nodeDto == null)

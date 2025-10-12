@@ -67,7 +67,6 @@ export default function EditorPage() {
   }, [roadmap, roadmapId, isFetching, isLoading, dispatch]);
 
   if (error && roadmapId) {
-    // Show error screen only for existing roadmap load failure
     return <ErrorScreen />;
   }
 

@@ -9,17 +9,13 @@ using SkillMap.Shared.Results;
 
 namespace SkillMap.Persistence.Neo4j;
 
-internal class RoadmapRepository : IRoadmapRepository
+internal class RoadmapRepository : BaseRepository, IRoadmapRepository
 {
-    private IDriver Driver { get; }
-    private DbSettings DbSettings { get; }
-    private ILogger<IRoadmapRepository> Logger { get; }
-    public RoadmapRepository(IDriver driver, DbSettings dbSettings, ILogger<IRoadmapRepository> logger)
-    {
-        Driver = driver ?? throw new ArgumentNullException(nameof(driver));
-        DbSettings = dbSettings ?? throw new ArgumentNullException(nameof(dbSettings));
-        Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
+    public RoadmapRepository(
+        IDriver driver, 
+        DbSettings dbSettings, 
+        ILogger<IRoadmapRepository> logger) : base(driver, dbSettings, logger) {}
+
     public async Task<bool> Save((List<NodeDto> Nodes, List<EdgeDto> Edges) graph, CancellationToken ct = default)
     {
         ct.ThrowIfCancellationRequested();
@@ -85,55 +81,7 @@ internal class RoadmapRepository : IRoadmapRepository
     }
 
     // todo: extract to some base repository
-    public async Task<Result<bool>> ExecuteCommands(List<Command> commands, CancellationToken ct)
-    {
-        ct.ThrowIfCancellationRequested();
-
-        using var session = Driver.AsyncSession(s => s.WithDatabase(DbSettings.Name));
-        using var transaction = await session.BeginTransactionAsync();
-
-        try
-        {
-            foreach (var command in commands)
-            {
-                await transaction.RunAsync(command.Text, command.Value);
-            }
-
-            await transaction.CommitAsync();
-
-            return Result.Success(true);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to execute commands");
-            return ResultType.FailedToSave<bool>(ex.Message);
-        }
-        finally
-        {
-            await session.CloseAsync();
-        }
-    }
-
-    public async Task<Result<bool>> ExecuteCommands(IAsyncTransaction transaction, List<Command> commands, CancellationToken ct)
-    {
-        ct.ThrowIfCancellationRequested();
-
-        try
-        {
-            foreach (var command in commands)
-            {
-                await transaction.RunAsync(command.Text, command.Value);
-            }
-
-            return Result.Success(true);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to execute commands");
-            return ResultType.FailedToSave<bool>(ex.Message);
-        }
-    }
-
+   
     public async Task<Result<(List<Dictionary<string, object>> Nodes, List<Dictionary<string, object>> Edges)>> 
         GetSourceRoadmap(string roadmapId, CancellationToken ct = default)
     {
@@ -282,27 +230,6 @@ internal class RoadmapRepository : IRoadmapRepository
             Logger.LogError(ex, "Failed to get all roadmaps");
             return ResultType.FailedToGetRoadmap<PaginationResult<List<NodeDto>>>(ex.Message);
         }
-    }
-
-    public async Task<Result<bool>> UpdateNodesDescription(Dictionary<string, string> nodesPropsToUpdate, CancellationToken ct)
-    {
-        var commands = new List<Command>();
-        foreach(var nP in nodesPropsToUpdate)
-        {
-            var command = new Command
-            {
-                Text = "MATCH (n) WHERE n.externalId = $externalId SET n.description = $description",
-                Value = new Dictionary<string, object>
-                {
-                    { "externalId", nP.Key },
-                    { "description", nP.Value }
-                }
-            };
-
-            commands.Add(command);
-        }
-
-        return await ExecuteCommands(commands, ct);
     }
 
     public async Task<Result<PaginationResult<List<NodeDto>>>> GetPlainRoadmapsByIds(List<string> roadmapIds, SearchingParams @params, CancellationToken ct)

@@ -2,10 +2,16 @@
 using SkillMap.Shared.Extensions;
 
 
-namespace SkillMap.Persistence.Neo4j.Helpers;
+namespace LearningPlatform.Roadmap.Business.Contracts;
 
 public static class IdGenerator
 {
+    public static string RemoveDashFromGuid(this string id)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(id));
+        return id.Replace("-", string.Empty);
+    }
     public static NodeDto GenerateInnerId(this NodeDto nodeDto)
     {
         if (nodeDto == null)
