@@ -140,7 +140,7 @@ export const roadmapApi = createApi({
       { roadmapId: string; item: DeleteLearningItemRequest }
     >({
       query: ({ roadmapId, item }) => ({
-        url: `userroadmaps/delete/${roadmapId}`,
+        url: `userroadmaps/delete-item/${roadmapId}`,
         method: 'POST',
         body: item,
       }),
@@ -150,7 +150,7 @@ export const roadmapApi = createApi({
       { roadmapId: string; change: LearningItemChangeRequest }
     >({
       query: ({ roadmapId, change }) => ({
-        url: `userroadmaps/update/${roadmapId}`,
+        url: `userroadmaps/update-item/${roadmapId}`,
         method: 'POST',
         body: change,
       }),
