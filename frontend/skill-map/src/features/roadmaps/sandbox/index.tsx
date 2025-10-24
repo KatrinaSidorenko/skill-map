@@ -13,12 +13,22 @@ import {
   createOverlay,
   Spinner,
   IconButton,
+  Flex,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { useCreateDraftRoadmapMutation } from '../api'; // adjust import path
+import {
+  useCreateRoadmapMutation,
+  useLazyGetUserCreatedRoadmapsQuery,
+} from '../api';
 import { toaster } from '@/components/ui/toaster';
 import { IoIosAddCircle } from 'react-icons/io';
 import useLocalization from '@/i18n/useLocalization';
+import SearchContainer from '@/components/search-container';
+import { defaultPagination } from '../helpers';
+import RoadmapGrid from '@/components/roadmap/roadmapGrid';
+import { setActiveRoadmapId } from '../editor/store';
+import { useRouter } from 'next/navigation';
+import { useAppDispatch } from '@/store/hooks';
 
 const createRoadmapDialog = createOverlay((props) => {
   const { ...rest } = props;
@@ -26,7 +36,7 @@ const createRoadmapDialog = createOverlay((props) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
-  const [createRoadmap, { isLoading }] = useCreateDraftRoadmapMutation();
+  const [createRoadmap, { isLoading }] = useCreateRoadmapMutation();
 
   const handleCreate = async () => {
     if (!title.trim() || !description.trim()) {
@@ -55,10 +65,8 @@ const createRoadmapDialog = createOverlay((props) => {
         closable: true,
       });
 
-      // Close dialog
       rest.onOpenChange?.({ open: false });
 
-      // Reset inputs
       setTitle('');
       setDescription('');
       setImageUrl('');
@@ -143,21 +151,42 @@ const createRoadmapDialog = createOverlay((props) => {
   );
 });
 
-export default function CreatedRoadmapsContainer() {
-  const { getEditorTranslations } = useLocalization();
+export default function RoadmapsSandboxContainer() {
+  const { getEditorTranslations, getRoadmapsTranslations } = useLocalization();
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { pageSize } = defaultPagination;
+  const [fetchRoadmaps] = useLazyGetUserCreatedRoadmapsQuery();
+
   const handleOpenDialog = () => {
     createRoadmapDialog.open('createRoadmapDialog', {});
   };
 
+  const getRoadmaps = async (params: {
+    pageNumber: number;
+    pageSize: number;
+    query: string | null;
+  }) => {
+    const { pageNumber, pageSize, query } = params;
+    const { data } = await fetchRoadmaps({ pageNumber, pageSize, query });
+    return {
+      items: data?.items ?? [],
+      total: data?.total ?? 0,
+    };
+  };
+
+  const handleCardClick = (id: string) => {
+    dispatch(setActiveRoadmapId(id));
+    router.push('/editor/creator');
+  };
+
   return (
     <Box>
-      {/* Page header */}
       <HStack justify="space-between" mb={6}>
         <Text fontSize="xl" fontWeight="bold">
           {getEditorTranslations('yourRoadmaps')}
         </Text>
 
-        {/* Add roadmap button */}
         <IconButton
           aria-label="Add Roadmap"
           colorScheme="teal"
@@ -169,21 +198,14 @@ export default function CreatedRoadmapsContainer() {
         </IconButton>
       </HStack>
 
-      {/* Placeholder: list of created roadmaps */}
-      <VStack
-        gap={4}
-        align="stretch"
-        borderWidth="1px"
-        borderRadius="xl"
-        p={6}
-        borderColor="gray.200"
-        bg="white"
-        shadow="sm"
-      >
-        <Box textAlign="center" color="gray.500" fontSize="sm">
-          You haven’t created any roadmaps yet.
-        </Box>
-      </VStack>
+      <SearchContainer
+        placeholder={getRoadmapsTranslations('search')}
+        pageSize={pageSize}
+        fetchData={getRoadmaps}
+        renderContent={(roadmaps) => (
+          <RoadmapGrid roadmaps={roadmaps} handleClick={handleCardClick} />
+        )}
+      />
 
       {<createRoadmapDialog.Viewport />}
     </Box>

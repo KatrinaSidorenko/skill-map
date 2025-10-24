@@ -12,5 +12,5 @@ public static partial class RoadmapsMapper
 
     [MapProperty(nameof(ResourceDto.Link), nameof(LearningItemMaterialResponse.Url))]
     public static partial LearningItemMaterialResponse ToMaterialResponse(this ResourceDto materialDto);
-    public static partial PlainRoadmapDto ToPlainRoadmapDto(this CreateRoadmapRequest roadmapRequest);
+    public static partial PlainRoadmapDto ToPlainRoadmapDto(this CreatePlainRoadmapRequest roadmapRequest);
 }

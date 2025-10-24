@@ -13,6 +13,7 @@ import {
   Link,
 } from '@chakra-ui/react';
 import { FiHome, FiCompass, FiStar, FiSettings } from 'react-icons/fi';
+import { MdOutlineCreateNewFolder } from 'react-icons/md';
 import { IconType } from 'react-icons';
 import { useSidebar } from './sidebar-context';
 import { usePathname, useRouter } from 'next/navigation';
@@ -29,6 +30,7 @@ const LinkItems: Array<LinkItemProps> = [
   // { name: 'Trending', icon: FiTrendingUp },
   { name: 'Explore', icon: FiCompass, link: '/explore' },
   { name: 'Favourites', icon: FiStar, link: '/saved' },
+  { name: 'Creare', icon: MdOutlineCreateNewFolder, link: '/sandbox' },
   { name: 'Settings', icon: FiSettings, link: '/settings' },
 ];
 

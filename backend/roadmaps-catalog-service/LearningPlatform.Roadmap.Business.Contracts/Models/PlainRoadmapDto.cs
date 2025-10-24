@@ -7,6 +7,7 @@ public class PlainRoadmapDto
     public string? Description { get; set; }
     public string? ImageUrl { get; set; }
     public string? OwnerId { get; set; }
+    public bool IsPublic { get; set; }
     public DateTime CreatedAt { get; set; }
     public int TotalTopics { get; set; }
 }

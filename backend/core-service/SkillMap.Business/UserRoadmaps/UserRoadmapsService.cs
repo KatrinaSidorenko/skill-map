@@ -1,13 +1,16 @@
-﻿using SkillMap.Business.Abstractions;
+﻿using LearningPlatform.Roadmap.Business.Contracts;
+using LearningPlatform.Roadmap.Business.Contracts.Models;
+using SkillMap.Business.Abstractions;
 using SkillMap.Business.UserRoadmaps.Models;
 using SkillMap.Core.Entities;
+using SkillMap.Shared.Models;
 using SkillMap.Shared.Results;
 
 namespace SkillMap.Business.UserRoadmaps;
 
-public class UserRoadmapsService(IRepository<UserRoadmap> userRoadmapsRepository) : IUserRoadmapsService
+public class UserRoadmapsService(IRepository<UserRoadmap> userRoadmapsRepository, IRoadmapService roadmapService) : IUserRoadmapsService
 {
-    public async Task<Result<bool>> LinkRoadmap(long userId, string roadmapId, CancellationToken ct)
+    public async Task<Result<bool>> LinkRoadmap(long userId, string roadmapId, CancellationToken ct, bool isOwner = false)
     {
         var dbUserRoadmapResult = await userRoadmapsRepository.GetFirstOrDefaultAsync(ur => ur.UserId == userId && ur.RoadmapId == roadmapId, ct: ct);
         if (dbUserRoadmapResult.HasData)
@@ -22,7 +25,8 @@ public class UserRoadmapsService(IRepository<UserRoadmap> userRoadmapsRepository
         {
             UserId = userId,
             RoadmapId = roadmapId,
-            IsActive = true
+            IsActive = true,
+            IsOwner = isOwner
         };
 
         await userRoadmapsRepository.AddAsync(userRoadmap, ct);
@@ -46,7 +50,7 @@ public class UserRoadmapsService(IRepository<UserRoadmap> userRoadmapsRepository
         return Result.Success(dbUserRoadmapResult.Data.ToUserRoadmapDto());
     }
 
-    public async Task<Result<List<UserRoadmapDto>>> GetUserRoadmaps(long userId, CancellationToken ct)
+    public async Task<Result<List<UserRoadmapDto>>> GetUserSavedRoadmaps(long userId, CancellationToken ct)
     {
         var dbUserRoadmapsResult = await userRoadmapsRepository.GetAllAsync(ur => ur.UserId == userId && ur.IsActive, ct: ct);
         if (!dbUserRoadmapsResult.IsSuccessful)
@@ -55,6 +59,37 @@ public class UserRoadmapsService(IRepository<UserRoadmap> userRoadmapsRepository
         }
 
         return Result.Success(dbUserRoadmapsResult.Data.Select(ur => ur.ToUserRoadmapDto()).ToList());
+    }
+
+    public async Task<Result<string>> CreateUserRoadmap(long userId, PlainRoadmapDto roadmapDto, CancellationToken ct)
+    {
+        var createRoadmapResult = await roadmapService.CreateRoadmap(roadmapDto, ct);
+        if (!createRoadmapResult.IsSuccessful)
+        {
+            return ResultType.FailedToCreateUserRoadmap<string>(userId, createRoadmapResult.Message);
+        }
+        var linkRoadmapResult = await LinkRoadmap(userId, createRoadmapResult.Data, ct, true);
+        if (!linkRoadmapResult.IsSuccessful)
+        {
+            return ResultType.FailedToCreateUserRoadmap<string>(userId, linkRoadmapResult.Message);
+        }
+        return Result.Success(createRoadmapResult.Data);
+    }
+
+    public async Task<Result<PaginationResult<List<PlainRoadmapDto>>>> GetUserCreatedRoadmaps(long userId, SearchingParams @params, CancellationToken ct)
+    {
+        var dbUserRoadmapsResult = await userRoadmapsRepository.GetAllAsync(ur => ur.UserId == userId && ur.IsOwner && ur.IsActive, ct: ct);
+        if (!dbUserRoadmapsResult.IsSuccessful)
+        {
+            return ResultType.UserRoadmapNotFound<PaginationResult<List<PlainRoadmapDto>>>(userId);
+        }
+        var roadmapIds = dbUserRoadmapsResult.Data.Select(ur => ur.RoadmapId).ToList();
+        var plainRoadmapsResult = await roadmapService.GetPlainRoadmapsByIds(roadmapIds, @params, ct, excludePrivate: false);
+        if (!plainRoadmapsResult.IsSuccessful)
+        {
+            return ResultType.FailedToGetUserRoadmaps<PaginationResult<List<PlainRoadmapDto>>>(userId);
+        }
+        return plainRoadmapsResult;
     }
 
     public async Task<Result<bool>> RemoveRoadmap(long userId, string roadmapId, CancellationToken ct)

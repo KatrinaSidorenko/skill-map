@@ -16,7 +16,9 @@ public static class RoadmapMapper
             Id = nodeDto.Id,
             Title = nodeDto.Title,
             Description = nodeDto.Description,
-            ImageUrl = nodeDto.AdditionalProps?.GetOrDefault(NodeType.ImageUrl)
+            ImageUrl = nodeDto.AdditionalProps?.GetOrDefault(NodeProps.ImageUrl),
+            OwnerId = nodeDto.AdditionalProps?.GetOrDefault(NodeProps.OwnerId),
+            IsPublic = nodeDto.AdditionalProps?.GetOrDefault(NodeProps.IsPublic) == NodeProps.True,
         };
     }
 
@@ -32,8 +34,9 @@ public static class RoadmapMapper
             Type = NodeType.Roadmap,
             AdditionalProps = new Dictionary<string, string>
             {
-                { NodeType.ImageUrl, plainRoadmapDto.ImageUrl ?? string.Empty },
-                { NodeType.OwnerId, plainRoadmapDto.OwnerId ?? string.Empty }
+                { NodeProps.ImageUrl, plainRoadmapDto.ImageUrl ?? string.Empty },
+                { NodeProps.OwnerId, plainRoadmapDto.OwnerId ?? string.Empty },
+                { NodeProps.IsPublic, plainRoadmapDto.IsPublic ? NodeProps.True : NodeProps.False },
             }
         };
     }

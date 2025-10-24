@@ -22,7 +22,6 @@ import { useCallback, useEffect, useState } from 'react';
 import ContentNotFoundScreen from '@/components/base/notfound';
 import Toolbox from '@/features/roadmaps/editor/toolbox';
 import NodeSidebar from '@/features/roadmaps/editor/sidebar';
-import { SiTrustedshops } from 'react-icons/si';
 
 export default function EditorPage() {
   const dispatch = useAppDispatch();

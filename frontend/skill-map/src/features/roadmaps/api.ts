@@ -1,6 +1,5 @@
 import { baseQuery } from '@/store/baseQuery';
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { create } from 'domain';
 
 export const roadmapApi = createApi({
   reducerPath: 'roadmapApi',
@@ -93,19 +92,26 @@ export const roadmapApi = createApi({
       { roadmapId: string; itemId: string }
     >({
       query: ({ roadmapId, itemId }) => ({
-        url: `roadmaps/materials/${roadmapId}`,
+        url: `roadmaps/${roadmapId}/materials`,
         method: 'GET',
         params: { itemId },
       }),
     }),
-    createDraftRoadmap: builder.mutation<
-      { id: string },
-      CreateDraftRoadmapPayload
-    >({
+    createRoadmap: builder.mutation<{ id: string }, CreateDraftRoadmapPayload>({
       query: (payload) => ({
-        url: 'roadmaps',
+        url: 'userroadmaps',
         method: 'POST',
         body: payload,
+      }),
+    }),
+    getUserCreatedRoadmaps: builder.query<
+      PaginationResponse<PlainRoadmap>,
+      SearchConfig
+    >({
+      query: ({ pageSize, pageNumber, query }) => ({
+        url: 'userroadmaps',
+        method: 'GET',
+        params: { pageSize, pageNumber, query },
       }),
     }),
   }),
@@ -124,5 +130,6 @@ export const {
   useCreateEdgeMutation,
   useDeleteRoadmapMutation,
   useLazyGetLearningItemMaterialsQuery,
-  useCreateDraftRoadmapMutation,
+  useCreateRoadmapMutation,
+  useLazyGetUserCreatedRoadmapsQuery,
 } = roadmapApi;

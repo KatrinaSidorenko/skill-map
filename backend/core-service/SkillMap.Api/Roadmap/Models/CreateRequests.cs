@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace SkillMap.Api.Roadmap.Models;
 
-public class CreateRoadmapRequest
+public class CreatePlainRoadmapRequest
 {
     [JsonProperty("title")]
     public string Title { get; set; }
@@ -13,6 +13,8 @@ public class CreateRoadmapRequest
 
     [JsonProperty("imageUrl")]
     public string ImageUrl { get; set; }
+    [JsonProperty("isPublic")]
+    public bool IsPublic { get; set; }
 }
 
 public class CreateNodeRequest
@@ -29,7 +31,7 @@ public class CreateNodeRequest
         Id = Id,
         Title = Title,
         Description = Description,
-        Type = NodeType.Topic,
+        Type = NodeType.Topic, // todo: how to differentiate this?
         AdditionalProps = new Dictionary<string, string>()
     };
 }

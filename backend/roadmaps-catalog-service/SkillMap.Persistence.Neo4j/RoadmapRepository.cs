@@ -160,29 +160,47 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
         var nodesList = nodesDict.Values.ToList();
 
         return Result.Success((nodesList, edgesList));
-    }
+    } 
 
-    public async Task<Result<PaginationResult<List<NodeDto>>>> GetAllPlainRoadmaps(SearchingParams @params, CancellationToken ct)
+    public async Task<Result<PaginationResult<List<NodeDto>>>> GetPublicPlainRoadmapsByIds(
+        List<string> roadmapIds,
+        SearchingParams @params,
+        CancellationToken ct,
+        bool excludePrivate = true)
     {
         ct.ThrowIfCancellationRequested();
 
         try
         {
             using var session = Driver.AsyncSession(s => s.WithDatabase(DbSettings.Name));
-            var query = @"
-                MATCH (r:ROADMAP)
-                WHERE 
-                  CASE
-                    WHEN $searchTerm IS NULL OR trim($searchTerm) = '' THEN true
-                    ELSE toLower(r.title) CONTAINS toLower($searchTerm)
-                  END
+
+            var conditions = new List<string>() { };
+            if (roadmapIds != null && roadmapIds.Count > 0)
+            {
+                conditions.Add("r.id IN $ids");
+            }
+            conditions.Add(CommandsBuilder.GetSearchCase());
+
+            if (excludePrivate)
+            {
+                conditions.Add(CommandsBuilder.GetExcludePrivateRoadmapCondition());
+            }
+
+            var whereClause = string.Join(" AND ", conditions);
+
+            // --- Query for page of data ---
+            var query = $@"
+                MATCH (r:{RoadmapLabelConstants.ROADMAP})
+                WHERE {whereClause}
                 RETURN r
                 SKIP $skip
                 LIMIT $limit";
+
             var response = await session.ExecuteReadAsync(async tx =>
             {
                 var result = await tx.RunAsync(query, new
                 {
+                    ids = roadmapIds,
                     skip = @params.PaginationParams.Skip,
                     limit = @params.PaginationParams.PageSize,
                     searchTerm = @params.SearchTermByName
@@ -194,21 +212,21 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
                     var node = result.Current["r"].As<INode>().Properties.ToDictionary().ToNodeDto();
                     nodes.Add(node);
                 }
+
                 return nodes;
             });
 
-            var countQuery = 
-                @"MATCH (r:ROADMAP) 
-                    WHERE 
-                        CASE
-                        WHEN $searchTerm IS NULL OR trim($searchTerm) = '' THEN true
-                        ELSE toLower(r.title) CONTAINS toLower($searchTerm)
-                        END
-                RETURN count(r) as total";
+            // --- Count query ---
+            var countQuery = $@"
+                MATCH (r:{RoadmapLabelConstants.ROADMAP})
+                WHERE {whereClause}
+                RETURN count(r) AS total";
+
             var totalCount = await session.ExecuteReadAsync(async tx =>
             {
                 var result = await tx.RunAsync(countQuery, new
                 {
+                    ids = roadmapIds,
                     searchTerm = @params.SearchTermByName
                 });
                 await result.FetchAsync();
@@ -216,80 +234,11 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
             });
 
             await session.CloseAsync();
-            
-            return Result.Success(new PaginationResult<List<NodeDto>>
-            {
-                Result = response,
-                TotalCount = totalCount,
-            });
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to get all roadmaps");
-            return ResultType.FailedToGetRoadmap<PaginationResult<List<NodeDto>>>(ex.Message);
-        }
-    }
 
-    public async Task<Result<PaginationResult<List<NodeDto>>>> GetPlainRoadmapsByIds(List<string> roadmapIds, SearchingParams @params, CancellationToken ct)
-    {
-        ct.ThrowIfCancellationRequested();
-        try
-        {
-            using var session = Driver.AsyncSession(s => s.WithDatabase(DbSettings.Name));
-            var query = @"
-                MATCH (r:ROADMAP)
-                WHERE r.id IN $ids
-                AND (
-                  CASE
-                    WHEN $searchTerm IS NULL OR trim($searchTerm) = '' THEN true
-                    ELSE toLower(r.title) CONTAINS toLower($searchTerm)
-                  END
-                )
-                RETURN r
-                SKIP $skip
-                LIMIT $limit";
-            var response = await session.ExecuteReadAsync(async tx =>
-            {
-                var result = await tx.RunAsync(query, new
-                {
-                    ids = roadmapIds,
-                    skip = @params.PaginationParams.Skip,
-                    limit = @params.PaginationParams.PageSize,
-                    searchTerm = @params.SearchTermByName
-                });
-                var nodes = new List<NodeDto>();
-                while (await result.FetchAsync())
-                {
-                    var node = result.Current["r"].As<INode>().Properties.ToDictionary().ToNodeDto();
-                    nodes.Add(node);
-                }
-                return nodes;
-            });
-            var countQuery = @"
-                MATCH (r:ROADMAP) 
-                WHERE r.id IN $ids 
-                AND (
-                  CASE
-                    WHEN $searchTerm IS NULL OR trim($searchTerm) = '' THEN true
-                    ELSE toLower(r.title) CONTAINS toLower($searchTerm)
-                  END
-                )
-                RETURN count(r) as total";
-            var totalCount = await session.ExecuteReadAsync(async tx =>
-            {
-                var result = await tx.RunAsync(countQuery, new 
-                { 
-                    ids = roadmapIds,
-                    searchTerm = @params.SearchTermByName
-                });
-                await result.FetchAsync();
-                return result.Current["total"].As<int>();
-            });
-            await session.CloseAsync();
             return Result.Success(new PaginationResult<List<NodeDto>>
             {
                 Result = response,
-                TotalCount = totalCount,
+                TotalCount = totalCount
             });
         }
         catch (Exception ex)
@@ -351,7 +300,6 @@ RETURN roadmapId, count(DISTINCT n) AS totalTopicsAndSubtopics;
     MATCH (item {{id: $itemId}})
     OPTIONAL MATCH (item)-[:{RoadmapLabelConstants.HAS_RESOURCE}]->(material:{RoadmapLabelConstants.RESOURCE})
     RETURN material";
-
 
             var response = await session.ExecuteReadAsync(async tx =>
             {

@@ -19,42 +19,42 @@ import { getStatusColor } from '@/features/roadmaps/helpers';
 
 interface RoadmapCardProps {
   roadmap: PlainRoadmap;
+  handleClick: (id: string) => void;
 }
 
-export function RoadmapCard({ roadmap }: RoadmapCardProps) {
+export function RoadmapCard({ roadmap, handleClick }: RoadmapCardProps) {
   return (
     <HoverCard.Root>
       <HoverCard.Trigger>
-        <NextLink href={`/roadmap/${roadmap.id}`} passHref>
-          <Flex
-            cursor="pointer"
-            borderRadius="lg"
-            overflow="hidden"
-            bg="brand.50"
-            opacity={0.95}
-            boxShadow="sm"
-            _hover={{ boxShadow: 'md', transform: 'translateY(-2px)' }}
-            align="center"
-            direction="row"
-            p={2}
-          >
-            <Image
-              src={roadmap.imageUrl ?? MOCK_IMAGE_URL}
-              alt={roadmap.title}
-              w="150px"
-              h="130px"
-              objectFit="cover"
-              borderRadius="md"
-              flexShrink={0}
-            />
+        <Flex
+          onClick={() => handleClick(roadmap.id)}
+          cursor="pointer"
+          borderRadius="lg"
+          overflow="hidden"
+          bg="brand.50"
+          opacity={0.95}
+          boxShadow="sm"
+          _hover={{ boxShadow: 'md', transform: 'translateY(-2px)' }}
+          align="center"
+          direction="row"
+          p={2}
+        >
+          <Image
+            src={roadmap.imageUrl ?? MOCK_IMAGE_URL}
+            alt={roadmap.title}
+            w="150px"
+            h="130px"
+            objectFit="cover"
+            borderRadius="md"
+            flexShrink={0}
+          />
 
-            <VStack gap={2} p={4} align="start">
-              <Text fontSize="lg" fontWeight="bold" color="text.heading">
-                {roadmap.title}
-              </Text>
-            </VStack>
-          </Flex>
-        </NextLink>
+          <VStack gap={2} p={4} align="start">
+            <Text fontSize="lg" fontWeight="bold" color="text.heading">
+              {roadmap.title}
+            </Text>
+          </VStack>
+        </Flex>
       </HoverCard.Trigger>
     </HoverCard.Root>
   );

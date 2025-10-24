@@ -16,7 +16,7 @@ public class RoadmapService(
 {
     public async Task<Result<PaginationResult<List<PlainRoadmapDto>>>> GetPlainRoadmaps(SearchingParams @params, CancellationToken ct)
     {
-        var paginatedResult = await roadmapRepository.GetAllPlainRoadmaps(@params, ct);
+        var paginatedResult = await roadmapRepository.GetPublicPlainRoadmapsByIds([], @params, ct);
         if (!paginatedResult.IsSuccessful)
         {
             Log.Error("Failed to get plain roadmaps: {Error}", paginatedResult.Message);
@@ -66,9 +66,9 @@ public class RoadmapService(
         });
     }
 
-    public async Task<Result<PaginationResult<List<PlainRoadmapDto>>>> GetPlainRoadmapsByIds(List<string> roadmapIds, SearchingParams @params, CancellationToken ct)
+    public async Task<Result<PaginationResult<List<PlainRoadmapDto>>>> GetPlainRoadmapsByIds(List<string> roadmapIds, SearchingParams @params, CancellationToken ct, bool excludePrivate = true)
     {
-        var paginatedResult = await roadmapRepository.GetPlainRoadmapsByIds(roadmapIds, @params, ct);
+        var paginatedResult = await roadmapRepository.GetPublicPlainRoadmapsByIds(roadmapIds, @params, ct, excludePrivate);
         if (!paginatedResult.IsSuccessful)
         {
             Log.Error("Failed to get plain roadmaps by IDs: {Error}", paginatedResult.Message);
@@ -132,6 +132,7 @@ public class RoadmapService(
     }
     public async Task<Result<string>> CreateRoadmap(PlainRoadmapDto roadmapDto, CancellationToken ct)
     {
+        // todo: add validations
         var node = roadmapDto.ToNodeDto();
         await roadmapRepository.CreateNodes(new List<NodeDto> { node }, ct);
         return Result.Success(node.Id);

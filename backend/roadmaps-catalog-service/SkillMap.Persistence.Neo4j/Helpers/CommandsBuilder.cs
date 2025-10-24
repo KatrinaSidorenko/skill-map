@@ -6,6 +6,29 @@ namespace SkillMap.Persistence.Neo4j.Helpers;
 
 public static class CommandsBuilder
 {
+    private const string roadmapVar = "r";
+
+    public static string GetExcludePrivateRoadmapCondition(string roadmapVar = roadmapVar)
+    {
+        var isPublicProp = $"{roadmapVar}.{NodeProps.IsPublic}";
+        var ownerIdProp = $"{roadmapVar}.{NodeProps.OwnerId}";
+        var trueValue = NodeProps.True;
+
+        return $@"CASE
+                    WHEN {isPublicProp} = {trueValue} OR {isPublicProp} IS NULL THEN true
+                    ELSE false
+                  END
+";
+    }
+    public static string GetSearchCase(string roadmapVar = roadmapVar)
+    {
+        return @"CASE
+                    WHEN $searchTerm IS NULL OR trim($searchTerm) = '' THEN true
+                    ELSE toLower(r.title) CONTAINS toLower($searchTerm)
+                  END";
+    }
+
+    // todo: extract props to constants
     public static Command CreateNodeCommand(this NodeDto node, string migrationId = null)
     {
         var nodeProps = new Dictionary<string, object>
