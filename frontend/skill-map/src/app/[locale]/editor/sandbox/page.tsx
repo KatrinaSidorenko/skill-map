@@ -1,11 +1,11 @@
 'use client';
 import SpinnerScreen from '@/components/base/spinner';
 import {
-  useCreateEdgeMutation,
-  useCreateNodeMutation,
+  useCreateConnectionInUserRoadmapMutation,
+  useCreateItemInUserRoadmapMutation,
   useDeleteLearningItemMutation,
-  useGetSavedRoadmapQuery,
-  useSaveLearningItemChangesMutation,
+  useGetUserCreatedRoadmapQuery,
+  useUpdateLearningItemInUserRoadmapMutation,
 } from '@/features/roadmaps/api';
 import RoadmapEditor from '@/features/roadmaps/editor';
 import { Flex } from '@chakra-ui/react';
@@ -15,6 +15,7 @@ import ErrorScreen from '@/components/base/error';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   selectRoadmapId,
+  setEditorConfig,
   setPlainRiadmap,
   setRoadmap,
 } from '@/features/roadmaps/editor/store';
@@ -22,30 +23,29 @@ import { useCallback, useEffect, useState } from 'react';
 import Toolbox from '@/features/roadmaps/editor/toolbox';
 import NodeSidebar from '@/features/roadmaps/editor/sidebar';
 
-// todo: fix editor doen;t use status in creation process
 export default function EditorPage() {
   const dispatch = useAppDispatch();
   const roadmapId = useAppSelector(selectRoadmapId);
 
-  const { data, error, isLoading, isFetching } = useGetSavedRoadmapQuery(
+  const { data, error, isLoading, isFetching } = useGetUserCreatedRoadmapQuery(
     roadmapId ?? '',
-    { skip: !roadmapId }, // avoid fetching when creating a new roadmap
+    { skip: !roadmapId },
   );
 
   const roadmap = data;
   const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const [createEdge] = useCreateEdgeMutation();
+  const [createEdge] = useCreateConnectionInUserRoadmapMutation();
   const [deleteItem] = useDeleteLearningItemMutation();
-  const [createNode] = useCreateNodeMutation();
-  const [saveChange] = useSaveLearningItemChangesMutation();
+  const [createNode] = useCreateItemInUserRoadmapMutation();
+  const [saveChange] = useUpdateLearningItemInUserRoadmapMutation();
 
   const handleToggleSidebar = useCallback(() => {
     setSidebarOpen((prev) => !prev);
   }, []);
 
   useEffect(() => {
-    // If roadmap data loaded successfully
     if (roadmap) {
+      dispatch(setEditorConfig({ useStatus: false }));
       dispatch(
         setPlainRiadmap({
           id: roadmap.id,
@@ -70,6 +70,7 @@ export default function EditorPage() {
     return <ErrorScreen />;
   }
 
+  // todo: extract to separate component
   return (
     <Flex width="100vw" height="100vh" direction="column">
       <Container isSection={false}>
@@ -87,13 +88,11 @@ export default function EditorPage() {
                   onToggleSidebar={handleToggleSidebar}
                   createNode={createNode}
                   deleteItem={deleteItem}
-                  isStatusUsed={false}
                 />
                 <NodeSidebar
                   open={isSidebarOpen}
                   onOpenChange={setSidebarOpen}
                   saveChange={saveChange}
-                  isStatusUsed={false}
                 />
               </RoadmapEditor>
             </RoadmapEditor.Container>

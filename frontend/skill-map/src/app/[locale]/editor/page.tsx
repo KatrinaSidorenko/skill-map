@@ -86,13 +86,11 @@ export default function EditorPage() {
                   onToggleSidebar={handleToggleSidebar}
                   createNode={createNode}
                   deleteItem={deleteItem}
-                  isStatusUsed={true}
                 />
                 <NodeSidebar
                   open={isSidebarOpen}
                   onOpenChange={setSidebarOpen}
                   saveChange={saveChange}
-                  isStatusUsed={true}
                 />
               </RoadmapEditor>
             </RoadmapEditor.Container>

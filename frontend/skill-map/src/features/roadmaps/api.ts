@@ -1,5 +1,6 @@
 import { baseQuery } from '@/store/baseQuery';
 import { createApi } from '@reduxjs/toolkit/query/react';
+import { create } from 'domain';
 
 export const roadmapApi = createApi({
   reducerPath: 'roadmapApi',
@@ -114,6 +115,52 @@ export const roadmapApi = createApi({
         params: { pageSize, pageNumber, query },
       }),
     }),
+    createItemInUserRoadmap: builder.mutation<
+      void,
+      { roadmapId: string; node: CreateNodeRequest }
+    >({
+      query: ({ roadmapId, node }) => ({
+        url: `userroadmaps/create-item/${roadmapId}`,
+        method: 'POST',
+        body: node,
+      }),
+    }),
+    createConnectionInUserRoadmap: builder.mutation<
+      void,
+      { roadmapId: string; edge: CreateEdgeRequest }
+    >({
+      query: ({ roadmapId, edge }) => ({
+        url: `userroadmaps/create-connection/${roadmapId}`,
+        method: 'POST',
+        body: edge,
+      }),
+    }),
+    deleteLearningItemFromUserRoadmap: builder.mutation<
+      void,
+      { roadmapId: string; item: DeleteLearningItemRequest }
+    >({
+      query: ({ roadmapId, item }) => ({
+        url: `userroadmaps/delete/${roadmapId}`,
+        method: 'POST',
+        body: item,
+      }),
+    }),
+    updateLearningItemInUserRoadmap: builder.mutation<
+      void,
+      { roadmapId: string; change: LearningItemChangeRequest }
+    >({
+      query: ({ roadmapId, change }) => ({
+        url: `userroadmaps/update/${roadmapId}`,
+        method: 'POST',
+        body: change,
+      }),
+    }),
+    getUserCreatedRoadmap: builder.query<SavedRoadmap, string>({
+      query: (id) => ({
+        url: `userroadmaps/${id}`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -132,4 +179,9 @@ export const {
   useLazyGetLearningItemMaterialsQuery,
   useCreateRoadmapMutation,
   useLazyGetUserCreatedRoadmapsQuery,
+  useCreateItemInUserRoadmapMutation,
+  useCreateConnectionInUserRoadmapMutation,
+  useDeleteLearningItemFromUserRoadmapMutation,
+  useUpdateLearningItemInUserRoadmapMutation,
+  useGetUserCreatedRoadmapQuery,
 } = roadmapApi;

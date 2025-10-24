@@ -13,6 +13,7 @@ import {
   addNode,
   deleteEdge,
   deleteNode,
+  selectEditorConfig,
   selectRoadmapId,
   selectSelectedElement,
   setSelectedElement,
@@ -28,15 +29,14 @@ interface ToolboxProps {
   onToggleSidebar: () => void;
   deleteItem: ReturnType<typeof useDeleteLearningItemMutation>[0];
   createNode: ReturnType<typeof useCreateNodeMutation>[0];
-  isStatusUsed: boolean;
 }
 export default function Toolbox({
   onToggleSidebar,
   deleteItem,
   createNode,
-  isStatusUsed,
 }: ToolboxProps) {
   const dispatch = useAppDispatch();
+  const editorConfig = useAppSelector(selectEditorConfig);
   const selected = useAppSelector(selectSelectedElement);
   const roadmapId = useAppSelector(selectRoadmapId);
   const hasSelection = !!selected;
@@ -93,7 +93,7 @@ export default function Toolbox({
           description: data.description,
           status: data.status,
         },
-        type: isStatusUsed ? 'statusNode' : 'default',
+        type: editorConfig.useStatus ? 'statusNode' : 'default',
       };
 
       dispatch(addNode(newNode));
@@ -138,7 +138,7 @@ export default function Toolbox({
             onClick={() =>
               createNodeDialog.open('newNodeDialog', {
                 onCreate: handleCreateNode,
-                isStatusUsed,
+                isStatusUsed: editorConfig.useStatus,
               })
             }
           >

@@ -177,7 +177,7 @@ export default function RoadmapsSandboxContainer() {
 
   const handleCardClick = (id: string) => {
     dispatch(setActiveRoadmapId(id));
-    router.push('/editor/creator');
+    router.push('/editor/sandbox');
   };
 
   return (

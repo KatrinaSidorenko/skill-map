@@ -12,7 +12,12 @@ import {
 import { useState, useEffect } from 'react';
 import type { Node } from '@xyflow/react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { selectRoadmapId, selectSelectedElement, updateNode } from '../store';
+import {
+  selectEditorConfig,
+  selectRoadmapId,
+  selectSelectedElement,
+  updateNode,
+} from '../store';
 import StatusSelect from './status-select';
 import useLocalization from '@/i18n/useLocalization';
 import { useSaveLearningItemChangesMutation } from '../../api';
@@ -23,18 +28,17 @@ interface NodeSidebarProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   saveChange: ReturnType<typeof useSaveLearningItemChangesMutation>[0];
-  isStatusUsed: boolean;
 }
 
 export default function NodeSidebar({
   open,
   onOpenChange,
   saveChange,
-  isStatusUsed,
 }: NodeSidebarProps) {
   const dispatch = useAppDispatch();
   const roadmapId = useAppSelector(selectRoadmapId);
   const node = useAppSelector(selectSelectedElement);
+  const editorConfig = useAppSelector(selectEditorConfig);
   const { getEditorTranslations } = useLocalization();
 
   const [label, setLabel] = useState('');
@@ -132,7 +136,7 @@ export default function NodeSidebar({
               />
             </VStack>
 
-            {isStatusUsed && (
+            {editorConfig.useStatus && (
               <StatusSelect value={status} onChange={setStatus} />
             )}
             <Separator />
