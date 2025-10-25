@@ -5,9 +5,11 @@ import {
   Box,
   Button,
   Flex,
+  HStack,
   Input,
   InputGroup,
   Spinner,
+  Stack,
   Text,
 } from '@chakra-ui/react';
 import { LuSearch } from 'react-icons/lu';
@@ -26,6 +28,8 @@ interface SearchContainerProps<T> {
     query: string | null;
   }) => Promise<{ items: T[]; total: number }>;
   renderContent: (items: T[]) => ReactNode;
+  rightHederElement?: ReactNode;
+  leftHeaderElement?: ReactNode;
 }
 
 /**
@@ -37,6 +41,8 @@ export default function SearchContainer<T>({
   pageSize = 10,
   fetchData,
   renderContent,
+  rightHederElement,
+  leftHeaderElement,
 }: SearchContainerProps<T>) {
   const { getRoadmapsTranslations } = useLocalization();
   const [page, setPage] = useState(1);
@@ -92,11 +98,13 @@ export default function SearchContainer<T>({
       alignItems="center"
       justifyContent="flex-start"
     >
-      <Box w="sm" p={4} mb={8}>
+      <HStack justify="space-between" mb={8} width={'full'} px={4} pt={4}>
+        {leftHeaderElement}
         <InputGroup
           borderRadius="md"
           bg="bg.page"
           boxShadow="sm"
+          width={{ base: 'full', md: '400px' }}
           endElement={
             <LuSearch onClick={handleSearch} style={{ cursor: 'pointer' }} />
           }
@@ -107,7 +115,8 @@ export default function SearchContainer<T>({
             onChange={(e) => setSearchInput(e.target.value)}
           />
         </InputGroup>
-      </Box>
+        {rightHederElement}
+      </HStack>
 
       <Box flex="1" w="full" px={4}>
         {isFetching && items.length === 0 ? (

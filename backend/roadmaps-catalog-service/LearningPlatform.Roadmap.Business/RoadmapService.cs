@@ -29,7 +29,6 @@ public class RoadmapService(
             TotalCount = paginatedResult.Data.TotalCount
         });
     }
-
     public async Task<Result<RoadmapDto>> GetRoadmapById(string roadmapId, CancellationToken ct, bool includeStartNode = false)
     {
         var roadmapResult = await roadmapRepository.GetRoadmapById(roadmapId, ct);
@@ -69,7 +68,6 @@ public class RoadmapService(
             Edges = targetEdges.ToEdges()
         });
     }
-
     public async Task<Result<PaginationResult<List<PlainRoadmapDto>>>> GetPlainRoadmapsByIds(List<string> roadmapIds, SearchingParams @params, CancellationToken ct, bool excludePrivate = true)
     {
         var paginatedResult = await roadmapRepository.GetPublicPlainRoadmapsByIds(roadmapIds, @params, ct, excludePrivate);
@@ -93,7 +91,6 @@ public class RoadmapService(
             TotalCount = paginatedResult.Data.TotalCount
         });
     }
-
     public async Task<Result<List<ResourceDto>>> GetLearningItemMaterials(string roadmapId, string itemId, CancellationToken ct)
     {
         var resourcesResult = await roadmapRepository.GetRoadmapItemMaterials(roadmapId, itemId, ct);
@@ -104,7 +101,6 @@ public class RoadmapService(
         }
         return Result.Success(resourcesResult.Data);
     }
-
     public async Task CreateNode(string roadmapId, NodeDto node, CancellationToken ct = default)
     {
         if (node == null)
@@ -128,7 +124,6 @@ public class RoadmapService(
             throw new Exception(errorMessage);
         }
     }
-
     public async Task CreateEdge(EdgeDto edge, CancellationToken ct = default)
     {
         if (edge == null)
@@ -182,5 +177,35 @@ public class RoadmapService(
         var node = roadmapDto.ToNodeDto();
         await roadmapRepository.CreateNodes(new List<NodeDto> { node }, ct);
         return Result.Success(node.Id);
+    }
+    public async Task UpdateNode(NodeDto node, CancellationToken ct)
+    {
+        var id = node.Id;
+        if (string.IsNullOrEmpty(id))
+        {
+            throw new ArgumentNullException(nameof(id));
+        }
+
+        var result = await roadmapRepository.UpdateNodes([node], ct);
+        if (!result.IsSuccessful)
+        {
+            var errorMessage = $"Failed to update node with ID {id}: {result.Message}";
+            logger.LogError(errorMessage);
+            throw new Exception(errorMessage);
+        }
+    }
+    public async Task DeleteRoadmap(string roadmapId, CancellationToken ct)
+    {
+        if (roadmapId == null)
+        {
+            throw new ArgumentNullException(nameof(roadmapId));
+        }
+        var result = await roadmapRepository.DeleteRoadmap(roadmapId, ct);
+        if (!result.IsSuccessful)
+        {
+            var errorMessage = $"Failed to delete roadmap with ID {roadmapId}: {result.Message}";
+            logger.LogError(errorMessage);
+            throw new Exception(errorMessage);
+        }
     }
 }

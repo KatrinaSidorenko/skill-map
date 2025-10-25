@@ -36,7 +36,7 @@ public class UserRoadmapsController : BaseController
         return Response(result);
     }
 
-    [HttpDelete("{roadmapId}")]
+    [HttpDelete("archive/{roadmapId}")]
     public async Task<IActionResult> RemoveRoadmap(string roadmapId, CancellationToken ct)
     {
         var result = await UserRoadmapsService.RemoveRoadmap(GetUserId(), roadmapId, ct);
@@ -98,8 +98,8 @@ public class UserRoadmapsController : BaseController
     [HttpPost("update-item/{roadmapId}")]
     public async Task<IActionResult> UpdateLearningItem([FromRoute] string roadmapId, [FromBody] LearningItemChangeRequest request, CancellationToken ct)
     {
-        // we need to update the learning item node
-        // for now we will assume it exists and just update it
+        var nodeDto = request.ToNodeDto();
+        await RoadmapService.UpdateNode(nodeDto, ct);
         return Ok();
     }
 
@@ -111,5 +111,26 @@ public class UserRoadmapsController : BaseController
         {
             Roadmap = r.Data
         }));
+    }
+
+    [HttpPut("{roadmapId}")]
+    public async Task<IActionResult> UpdateRoadmap([FromRoute] string roadmapId, [FromBody] UpdatePlainRoadmapRequest request, CancellationToken ct)
+    {
+        var dto = request.ToRoadmapNodeDto(roadmapId, GetUserId().ToString());
+        await RoadmapService.UpdateNode(dto, ct);
+        return NoContent();
+    }
+
+    [HttpDelete("{roadmapId}")]
+    public async Task<IActionResult> DeleteRoadmap([FromRoute] string roadmapId, CancellationToken ct)
+    {
+        var result = await UserRoadmapsService.RemoveRoadmap(GetUserId(), roadmapId, ct);
+        if (!result.IsSuccessful)
+        {
+            return Response(result);
+        }
+        
+        await RoadmapService.DeleteRoadmap(roadmapId, ct);
+        return NoContent();
     }
 }

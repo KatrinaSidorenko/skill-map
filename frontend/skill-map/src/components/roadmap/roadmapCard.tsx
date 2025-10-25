@@ -5,14 +5,12 @@ import {
   HoverCard,
   Image,
   Text,
-  Badge,
   VStack,
   Flex,
   HStack,
   Box,
   Progress,
 } from '@chakra-ui/react';
-import NextLink from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import useLocalization from '@/i18n/useLocalization';
 import { getStatusColor } from '@/features/roadmaps/helpers';
@@ -38,6 +36,7 @@ export function RoadmapCard({ roadmap, handleClick }: RoadmapCardProps) {
           align="center"
           direction="row"
           p={2}
+          // height={'130px'}
         >
           <Image
             src={roadmap.imageUrl ?? MOCK_IMAGE_URL}
@@ -52,6 +51,14 @@ export function RoadmapCard({ roadmap, handleClick }: RoadmapCardProps) {
           <VStack gap={2} p={4} align="start">
             <Text fontSize="lg" fontWeight="bold" color="text.heading">
               {roadmap.title}
+            </Text>
+            <Text
+              fontSize="sm"
+              color="gray.600"
+              lineClamp="2"
+              textAlign={'left'}
+            >
+              {roadmap.description}
             </Text>
           </VStack>
         </Flex>

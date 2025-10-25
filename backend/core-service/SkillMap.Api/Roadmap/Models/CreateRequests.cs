@@ -17,6 +17,35 @@ public class CreatePlainRoadmapRequest
     public bool IsPublic { get; set; }
 }
 
+public class UpdatePlainRoadmapRequest
+{
+    [JsonProperty("title")]
+    public string? Title { get; set; }
+    [JsonProperty("description")]
+    public string? Description { get; set; }
+    [JsonProperty("imageUrl")]
+    public string? ImageUrl { get; set; }
+    [JsonProperty("isPublic")]
+    public bool? IsPublic { get; set; }
+
+    public NodeDto ToRoadmapNodeDto(string roadmapId, string ownerId)
+    {
+        return new NodeDto
+        {
+            Id = roadmapId,
+            Title = Title,
+            Description = Description,
+            Type = NodeType.Roadmap,
+            AdditionalProps = new Dictionary<string, string>
+            {
+                { NodeProps.ImageUrl, ImageUrl },
+                { NodeProps.IsPublic, IsPublic?.ToString().ToLower() },
+                { NodeProps.OwnerId, ownerId }
+            }
+        };
+    }
+}
+
 public class CreateNodeRequest
 {
     [JsonProperty("id")]

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using LearningPlatform.Roadmap.Business.Contracts.Models;
+using Newtonsoft.Json;
 
 namespace SkillMap.Api.ModifiedRoadmap.Models;
 
@@ -12,4 +13,14 @@ public class LearningItemChangeRequest
     public string? Description { get; set; }
     [JsonProperty("status")]
     public string Status { get; set; }
+
+    public NodeDto ToNodeDto()
+    {
+        return new NodeDto
+        {
+            Id = Id,
+            Title = Title,
+            Description = Description ?? string.Empty,
+        };
+    }
 }

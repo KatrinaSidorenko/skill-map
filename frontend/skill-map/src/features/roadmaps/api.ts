@@ -27,7 +27,7 @@ export const roadmapApi = createApi({
     }),
     deleteRoadmap: builder.mutation<void, { id: string }>({
       query: ({ id }) => ({
-        url: `userroadmaps/${id}`,
+        url: `userroadmaps/archive/${id}`,
         method: 'DELETE',
       }),
     }),

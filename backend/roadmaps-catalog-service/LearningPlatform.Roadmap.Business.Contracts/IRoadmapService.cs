@@ -12,4 +12,6 @@ public interface IRoadmapService
     Task<Result<RoadmapDto>> GetRoadmapById(string roadmapId, CancellationToken ct, bool includeStartNode = false);
     Task CreateNode(string roadmapId, NodeDto node, CancellationToken ct = default);
     Task DeleteRoadmapElement(string roadmapId, string itemId, CancellationToken ct);
+    Task UpdateNode(NodeDto node, CancellationToken ct);
+    Task DeleteRoadmap(string roadmapId, CancellationToken ct);
 }

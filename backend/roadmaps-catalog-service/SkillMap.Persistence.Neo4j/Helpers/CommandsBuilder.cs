@@ -60,7 +60,6 @@ public static class CommandsBuilder
             Text = createNodeQuery,
             Value = new { externalId = node.ExternalId, props = nodeProps, id = node.Id }
         };
-
     }
 
     public static Command CreateEdgeCommand(this EdgeDto edge, Dictionary<string, NodeDto> nodesByExId, string migrationId = null)
@@ -95,6 +94,48 @@ public static class CommandsBuilder
             Value = new { sourceInnerId = sourceNode.ExternalId, targetInnerId = targetNode.ExternalId, props = edgeProps }
         };
     }
+
+    public static Command UpdateNodeCommand(this NodeDto node)
+    {
+        var nodeProps = new Dictionary<string, object>
+        {
+            { "title", node.Title },
+            { "description", node.Description }
+        };
+
+        if (node.AdditionalProps != null)
+        {
+            foreach (var prop in node.AdditionalProps)
+            {
+                nodeProps[prop.Key] = prop.Value;
+            }
+        }
+
+        var filteredProps = nodeProps
+            .Where(kvp =>
+            {
+                if (kvp.Value is string)
+                {
+                    var v = kvp.Value as string;
+                    return !string.IsNullOrEmpty(v);
+                }
+                return kvp.Value != null;
+            })
+            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+        var updateNodeQuery = @$"
+        MATCH (n {{id: $id}})
+        SET n += $props
+        RETURN n
+    ";
+
+        return new Command
+        {
+            Text = updateNodeQuery,
+            Value = new { id = node.Id, props = filteredProps }
+        };
+    }
+
 
     public static Command CreateEdgeCommand(this EdgeDto edge, string migrationId = null)
     {

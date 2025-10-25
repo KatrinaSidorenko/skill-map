@@ -181,23 +181,7 @@ export default function RoadmapsSandboxContainer() {
   };
 
   return (
-    <Box>
-      <HStack justify="space-between" mb={6}>
-        <Text fontSize="xl" fontWeight="bold">
-          {getEditorTranslations('yourRoadmaps')}
-        </Text>
-
-        <IconButton
-          aria-label="Add Roadmap"
-          colorScheme="teal"
-          onClick={handleOpenDialog}
-          borderRadius="full"
-          size="lg"
-        >
-          <IoIosAddCircle size={24} />
-        </IconButton>
-      </HStack>
-
+    <>
       <SearchContainer
         placeholder={getRoadmapsTranslations('search')}
         pageSize={pageSize}
@@ -205,9 +189,25 @@ export default function RoadmapsSandboxContainer() {
         renderContent={(roadmaps) => (
           <RoadmapGrid roadmaps={roadmaps} handleClick={handleCardClick} />
         )}
+        leftHeaderElement={
+          <Text fontSize="xl" fontWeight="bold">
+            {getEditorTranslations('yourRoadmaps')}
+          </Text>
+        }
+        rightHederElement={
+          <IconButton
+            aria-label="Add Roadmap"
+            colorScheme="teal"
+            onClick={handleOpenDialog}
+            borderRadius="full"
+            size="lg"
+          >
+            <IoIosAddCircle size={24} />
+          </IconButton>
+        }
       />
 
       {<createRoadmapDialog.Viewport />}
-    </Box>
+    </>
   );
 }

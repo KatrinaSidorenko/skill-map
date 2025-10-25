@@ -15,4 +15,6 @@ public interface IRoadmapRepository
     Task<Result<bool>> RoadmapExists(string roadmapId, CancellationToken ct);
     Task<Result<List<NodeDto>>> GetNodesByIds(List<string> ids, CancellationToken ct);
     Task<Result<bool>> DeleteRoadmapElement(string roadmapId, string elementId, CancellationToken ct);
+    Task<Result<bool>> UpdateNodes(List<NodeDto> nodes, CancellationToken ct = default);
+    Task<Result<bool>> DeleteRoadmap(string roadmapId, CancellationToken ct);
 }

@@ -25,7 +25,6 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
 
         return await ExecuteCommands(nodeCreateCommands, ct);
     }
-
     public async Task<Result<bool>> CreateEdges(List<EdgeDto> edges, CancellationToken ct = default)
     {
         var newEdges = edges.Select(e => e.GenerateInnerId()).ToList();
@@ -34,6 +33,13 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
             .ToList();
 
         return await ExecuteCommands(edgeCreateCommands, ct);
+    }
+    public async Task<Result<bool>> UpdateNodes(List<NodeDto> nodes, CancellationToken ct = default)
+    {
+        var nodeUpdateCommands = nodes
+            .Select(n => n.UpdateNodeCommand())
+            .ToList();
+        return await ExecuteCommands(nodeUpdateCommands, ct);
     }
 
     public async Task<Result<(List<Dictionary<string, object>> Nodes, List<Dictionary<string, object>> Edges)>>
@@ -250,6 +256,7 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
         }
     }
 
+    // todo: get tota count by the ids of nodes
     public async Task<Result<Dictionary<string, int>>> CalculateTotalTopicsAndSubtopics(List<string> roadmapIds, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
@@ -276,6 +283,37 @@ RETURN roadmapId, count(DISTINCT n) AS totalTopicsAndSubtopics;
                 }
                 return topicsCountDict;
             });
+
+            // topic that are floating and has the roadmap_id property // mostly for roadmaps created by users 
+            var floatingQuery = @"
+                UNWIND $ids AS roadmapId
+                MATCH (n)
+                WHERE n.roadmap_id = roadmapId AND (n:TOPIC OR n:SUBTOPIC)
+                RETURN roadmapId, count(DISTINCT n) AS totalFloatingTopicsAndSubtopics;";
+            var floatingTopics = await session.ExecuteReadAsync(async tx =>
+            {
+                var result = await tx.RunAsync(floatingQuery, new { ids = roadmapIds });
+                var topicsCountDict = new Dictionary<string, int>();
+                while (await result.FetchAsync())
+                {
+                    var id = result.Current["roadmapId"].As<string>();
+                    var count = result.Current["totalFloatingTopicsAndSubtopics"].As<int>();
+                    topicsCountDict[id] = count;
+                }
+                return topicsCountDict;
+            });
+
+            foreach (var kvp in floatingTopics ?? [])
+            {
+                if (totalTopics.ContainsKey(kvp.Key))
+                {
+                    totalTopics[kvp.Key] += kvp.Value;
+                }
+                else
+                {
+                    totalTopics[kvp.Key] = kvp.Value;
+                }
+            }
 
             await session.CloseAsync();
             return Result.Success(totalTopics);
@@ -420,6 +458,30 @@ RETURN roadmapId, count(DISTINCT n) AS totalTopicsAndSubtopics;
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to delete roadmap element {elementId} from roadmap {roadmapId}", elementId, roadmapId);
+            return ResultType.FailedToGetRoadmap<bool>(ex.Message);
+        }
+    }
+
+    public async Task<Result<bool>> DeleteRoadmap(string roadmapId, CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+        try
+        {
+            using var session = Driver.AsyncSession(s => s.WithDatabase(DbSettings.Name));
+            var query = @"
+                MATCH (n)
+                WHERE n.roadmap_id = $roadmapId OR (n:ROADMAP AND n.id = $roadmapId)
+                DETACH DELETE n";
+            await session.ExecuteWriteAsync(async tx =>
+            {
+                await tx.RunAsync(query, new { roadmapId });
+            });
+            await session.CloseAsync();
+            return Result.Success(true);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to delete roadmap {roadmapId}", roadmapId);
             return ResultType.FailedToGetRoadmap<bool>(ex.Message);
         }
     }
