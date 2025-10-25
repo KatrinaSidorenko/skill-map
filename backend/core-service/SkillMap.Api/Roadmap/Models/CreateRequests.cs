@@ -26,29 +26,33 @@ public class CreateNodeRequest
     [JsonProperty("description")]
     public string Description { get; set; }
 
-    public NodeDto NodeDto => new NodeDto
+    public NodeDto ToNodeDto(string roadmapId)
     {
-        Id = Id,
-        Title = Title,
-        Description = Description,
-        Type = NodeType.Topic, // todo: how to differentiate this?
-        AdditionalProps = new Dictionary<string, string>()
-    };
+        return new NodeDto
+        {
+            Id = Id,
+            Title = Title,
+            Description = Description,
+            Type = NodeType.Topic, // todo: how to differentiate this?
+            AdditionalProps = new Dictionary<string, string>
+            {
+                { NodeProps.RoadmapId, roadmapId }
+            }
+        };
+    }
 }
 
 public class CreateEdgeRequest
 {
-    [JsonProperty("id")]
-    public string Id { get; set; }
-    [JsonProperty("source")]
-    public string Source { get; set; }
-    [JsonProperty("target")]
-    public string Target { get; set; }
+    [JsonProperty("sourceId")]
+    public string SourceId { get; set; }
+    [JsonProperty("targetId")]
+    public string TargetId { get; set; }
 
+    [JsonIgnore]
     public EdgeDto EdgeDto => new EdgeDto
     {
-        Id = Id,
-        Source = new NodeDto { ExternalId = Source },
-        Target = new NodeDto { ExternalId = Target },
+        Source = new NodeDto { ExternalId = SourceId },
+        Target = new NodeDto { ExternalId = TargetId },
     };
 }

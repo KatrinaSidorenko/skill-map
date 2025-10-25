@@ -1,5 +1,6 @@
 ﻿using LearningPlatform.Roadmap.Business;
 using LearningPlatform.Roadmap.Business.Contracts;
+using LearningPlatform.Roadmap.Business.Contracts.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SkillMap.Api.Base;
@@ -11,7 +12,7 @@ using SkillMap.Api.Roadmaps.Models;
 using SkillMap.Api.UserRoadmaps.Models;
 using SkillMap.Business.UserRoadmaps;
 using SkillMap.Core.Constants;
-using CreateEdgeRequest = SkillMap.Api.Roadmap.Models.CreateEdgeRequest;
+using CreateEdgeRequest = SkillMap.Api.ModifiedRoadmap.Models.CreateEdgeRequest;
 using CreateNodeRequest = SkillMap.Api.Roadmap.Models.CreateNodeRequest;
 
 namespace SkillMap.Api.UserRoadmaps;
@@ -70,24 +71,27 @@ public class UserRoadmapsController : BaseController
     [HttpPost("create-item/{roadmapId}")]
     public async Task<IActionResult> CreateLearningItem([FromRoute]string roadmapId, [FromBody] CreateNodeRequest request, CancellationToken ct)
     {
-        // so we need to create connection between roadmap node and learning item node
-        await RoadmapService.CreateNode(request.NodeDto, ct);
+        var nodeDto = request.ToNodeDto(roadmapId);
+        await RoadmapService.CreateNode(roadmapId, nodeDto, ct);
         return NoContent();
     }
 
     [HttpPost("create-connection/{roadmapId}")]
     public async Task<IActionResult> CreateLearningItemConnection([FromRoute]string roadmapId, [FromBody] CreateEdgeRequest request, CancellationToken ct)
     {
-        await RoadmapService.CreateEdge(request.EdgeDto, ct);
+        var edgeDto = new EdgeDto
+        {
+            Source = new NodeDto { Id = request.SourceId },
+            Target = new NodeDto { Id = request.TargetId }
+        };
+        await RoadmapService.CreateEdge(edgeDto, ct);
         return NoContent();
     }
 
     [HttpPost("delete-item/{roadmapId}")]
     public async Task<IActionResult> DeleteLearningItem([FromRoute] string roadmapId, [FromBody] DeleteLearningItemRequest request, CancellationToken ct)
     {
-        // so we need to delete connection between roadmap node and learning item node
-        // but first we need to check if the node exists in the roadmap
-        // for now we will assume it exists and just delete it
+        await RoadmapService.DeleteRoadmapElement(roadmapId, request.Id, ct);
         return Ok();
     }
 
@@ -99,18 +103,13 @@ public class UserRoadmapsController : BaseController
         return Ok();
     }
 
-    // implement CRUD fro learning itmes
-    // get for created roadmap
     [HttpGet("{roadmapId}")]
     public async Task<IActionResult> GetUserRoadmap([FromRoute] string roadmapId, CancellationToken ct)
     {
-        // SavedUserRoadmap
-
-        //var result = await UserRoadmapsService.GetUserRoadmap(GetUserId(), roadmapId, ct);
-        //return Response(result, (r) => Ok(new UserRoadmapResponse
-        //{
-        //    UserRoadmap = r.Data
-        //}));
-        return Ok();
+        var result = await RoadmapService.GetRoadmapById(roadmapId, ct, includeStartNode: false);
+        return Response(result, (r) => Ok(new RoadmapResponse
+        {
+            Roadmap = r.Data
+        }));
     }
 }

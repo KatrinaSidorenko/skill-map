@@ -30,7 +30,7 @@ public class RoadmapService(
         });
     }
 
-    public async Task<Result<RoadmapDto>> GetRoadmapById(string roadmapId, CancellationToken ct)
+    public async Task<Result<RoadmapDto>> GetRoadmapById(string roadmapId, CancellationToken ct, bool includeStartNode = false)
     {
         var roadmapResult = await roadmapRepository.GetRoadmapById(roadmapId, ct);
         if (!roadmapResult.IsSuccessful)
@@ -54,6 +54,10 @@ public class RoadmapService(
         }
 
         var topicsAndSubTopics = nodes.Where(n => n.Type == NodeType.Topic || n.Type == NodeType.SubTopic).ToList();
+        if (includeStartNode)
+        {
+            topicsAndSubTopics.Add(startNode);
+        }
         var targetEdges = edges.Where(e => topicsAndSubTopics.Any(n => n.Id == e.Target?.Id)).ToList();
 
         return Result.Success(new RoadmapDto
@@ -101,12 +105,21 @@ public class RoadmapService(
         return Result.Success(resourcesResult.Data);
     }
 
-    public async Task CreateNode(NodeDto node, CancellationToken ct = default)
+    public async Task CreateNode(string roadmapId, NodeDto node, CancellationToken ct = default)
     {
         if (node == null)
         {
             throw new ArgumentNullException(nameof(node));
         }
+
+        var roadmapExistsResult = await roadmapRepository.RoadmapExists(roadmapId, ct);
+        if (!roadmapExistsResult.IsSuccessful)
+        {
+            var errorMessage = $"Failed to verify existence of roadmap with ID {roadmapId}: {roadmapExistsResult.Message}";
+            logger.LogError(errorMessage);
+            throw new Exception(errorMessage);
+        }
+
         var result = await roadmapRepository.CreateNodes(new List<NodeDto> { node }, ct);
         if (!result.IsSuccessful)
         {
@@ -122,10 +135,43 @@ public class RoadmapService(
         {
             throw new ArgumentNullException(nameof(edge));
         }
+
+        var targetEdgeNodeIds = new List<string> { edge.Source?.Id, edge.Target?.Id };
+        var targetNodesResult = await roadmapRepository.GetNodesByIds(targetEdgeNodeIds, ct);
+        if (!targetNodesResult.IsSuccessful)
+        {
+            var errorMessage = $"Failed to verify existence of nodes for edge from {edge.Source?.ExternalId} to {edge.Target?.ExternalId}: {targetNodesResult.Message}";
+            logger.LogError(errorMessage);
+            throw new Exception(errorMessage);
+        }
+
+        var nodesDict = targetNodesResult.Data.ToDictionary(n => n.Id, n => n);
+        edge.Source = nodesDict.GetOrDefault(edge.Source?.Id) ?? edge.Source;
+        edge.Target = nodesDict.GetOrDefault(edge.Target?.Id) ?? edge.Target;
+
         var result = await roadmapRepository.CreateEdges(new List<EdgeDto> { edge }, ct);
         if (!result.IsSuccessful)
         {
             var errorMessage = $"Failed to create edge from {edge.Source?.ExternalId} to {edge.Target?.ExternalId}: {result.Message}";
+            logger.LogError(errorMessage);
+            throw new Exception(errorMessage);
+        }
+    }
+    public async Task DeleteRoadmapElement(string roadmapId, string itemId, CancellationToken ct)
+    {
+        if (roadmapId == null)
+        {
+            throw new ArgumentNullException(nameof(roadmapId));
+        }
+        if (itemId == null)
+        {
+            throw new ArgumentNullException(nameof(itemId));
+        }
+
+        var result = await roadmapRepository.DeleteRoadmapElement(roadmapId, itemId, ct);
+        if (!result.IsSuccessful)
+        {
+            var errorMessage = $"Failed to delete roadmap element with ID {itemId} from roadmap with ID {roadmapId}: {result.Message}";
             logger.LogError(errorMessage);
             throw new Exception(errorMessage);
         }

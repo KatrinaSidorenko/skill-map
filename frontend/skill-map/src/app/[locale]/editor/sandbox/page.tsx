@@ -3,7 +3,7 @@ import SpinnerScreen from '@/components/base/spinner';
 import {
   useCreateConnectionInUserRoadmapMutation,
   useCreateItemInUserRoadmapMutation,
-  useDeleteLearningItemMutation,
+  useDeleteLearningItemFromUserRoadmapMutation,
   useGetUserCreatedRoadmapQuery,
   useUpdateLearningItemInUserRoadmapMutation,
 } from '@/features/roadmaps/api';
@@ -14,6 +14,7 @@ import Container from '@/components/container/container';
 import ErrorScreen from '@/components/base/error';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
+  clearEditor,
   selectRoadmapId,
   setEditorConfig,
   setPlainRiadmap,
@@ -27,15 +28,15 @@ export default function EditorPage() {
   const dispatch = useAppDispatch();
   const roadmapId = useAppSelector(selectRoadmapId);
 
+  // todo: don't use cache for sandbox editor
   const { data, error, isLoading, isFetching } = useGetUserCreatedRoadmapQuery(
     roadmapId ?? '',
-    { skip: !roadmapId },
   );
 
-  const roadmap = data;
+  const roadmap = data?.roadmap;
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [createEdge] = useCreateConnectionInUserRoadmapMutation();
-  const [deleteItem] = useDeleteLearningItemMutation();
+  const [deleteItem] = useDeleteLearningItemFromUserRoadmapMutation();
   const [createNode] = useCreateItemInUserRoadmapMutation();
   const [saveChange] = useUpdateLearningItemInUserRoadmapMutation();
 
@@ -45,21 +46,22 @@ export default function EditorPage() {
 
   useEffect(() => {
     if (roadmap) {
+      dispatch(clearEditor());
       dispatch(setEditorConfig({ useStatus: false }));
       dispatch(
         setPlainRiadmap({
           id: roadmap.id,
           title: roadmap.title,
           description: roadmap.description,
-          progress: roadmap.progress,
-          status: roadmap.status,
-          savedAt: roadmap.savedAt,
-          imageUrl: roadmap.imageUrl,
+          progress: 0,
+          status: 'notstarted',
+          savedAt: new Date().toISOString(),
+          imageUrl: '',
         } as SavedPlainRoadmap),
       );
       dispatch(
         setRoadmap({
-          nodes: roadmap.nodes,
+          nodes: roadmap.nodes.map((n) => n as ModifiedNode),
           edges: roadmap.edges,
         }),
       );

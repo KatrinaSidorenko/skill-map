@@ -14,6 +14,7 @@ import Container from '@/components/container/container';
 import ErrorScreen from '@/components/base/error';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
+  clearEditor,
   selectRoadmapId,
   setPlainRiadmap,
   setRoadmap,
@@ -42,6 +43,7 @@ export default function EditorPage() {
 
   useEffect(() => {
     if (!roadmap || !roadmapId) return;
+    dispatch(clearEditor());
     dispatch(
       setPlainRiadmap({
         id: roadmap.id,

@@ -8,8 +8,6 @@ using SkillMap.Api.Roadmap.Models;
 using SkillMap.Api.Roadmaps.Models;
 using SkillMap.Business.UserRoadmaps;
 using SkillMap.Shared.Results;
-using CreateEdgeRequest = SkillMap.Api.Roadmap.Models.CreateEdgeRequest;
-using CreateNodeRequest = SkillMap.Api.Roadmap.Models.CreateNodeRequest;
 
 namespace SkillMap.Api.Roadmaps;
 

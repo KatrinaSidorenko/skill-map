@@ -27,7 +27,7 @@ export default function ExploreRoadmapsPage() {
   };
 
   const handleCardClick = (id: string) => {
-    router.push(`/roadmaps/${id}`);
+    router.push(`/roadmap/${id}`);
   };
 
   return (

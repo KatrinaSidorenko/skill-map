@@ -12,53 +12,9 @@ namespace SkillMap.Persistence.Neo4j;
 internal class RoadmapRepository : BaseRepository, IRoadmapRepository
 {
     public RoadmapRepository(
-        IDriver driver, 
-        DbSettings dbSettings, 
-        ILogger<IRoadmapRepository> logger) : base(driver, dbSettings, logger) {}
-
-    public async Task<bool> Save((List<NodeDto> Nodes, List<EdgeDto> Edges) graph, CancellationToken ct = default)
-    {
-        ct.ThrowIfCancellationRequested();
-
-        if (graph.Nodes == null || graph.Edges == null)
-            throw new ArgumentNullException(nameof(graph));
-        var migrationId = Guid.NewGuid().ToString("N");
-
-        var nodes = graph.Nodes.Select(n => n.GenerateInnerId()).ToList();
-        var nodesByExId = nodes
-            .GroupBy(n => n.ExternalId ?? n.Id)
-            .ToDictionary(n => n.Key, n => n.FirstOrDefault());
-        var edges = graph.Edges.Select(e => e.GenerateInnerId()).ToList();
-
-        var nodeCreateCommands = nodes
-            .Select(n => n.CreateNodeCommand(migrationId))
-            .ToList();
-
-        var edgeCreateCommands = edges
-            .Select(e => e.CreateEdgeCommand(nodesByExId, migrationId))
-            .ToList();
-
-        using var session = Driver.AsyncSession(s => s.WithDatabase(DbSettings.Name));
-        using var transaction = await session.BeginTransactionAsync();
-
-        try
-        {
-            await ExecuteCommands(transaction, nodeCreateCommands, ct);
-            await ExecuteCommands(transaction, edgeCreateCommands, ct);
-            await transaction.CommitAsync();
-        }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync();
-            throw ex;
-        }
-        finally
-        {
-            await session.CloseAsync();
-        }
-
-        return true;
-    }
+        IDriver driver,
+        DbSettings dbSettings,
+        ILogger<IRoadmapRepository> logger) : base(driver, dbSettings, logger) { }
 
     public async Task<Result<bool>> CreateNodes(List<NodeDto> nodes, CancellationToken ct = default)
     {
@@ -80,7 +36,7 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
         return await ExecuteCommands(edgeCreateCommands, ct);
     }
 
-    public async Task<Result<(List<Dictionary<string, object>> Nodes, List<Dictionary<string, object>> Edges)>> 
+    public async Task<Result<(List<Dictionary<string, object>> Nodes, List<Dictionary<string, object>> Edges)>>
         GetSourceRoadmap(string roadmapId, CancellationToken ct = default)
     {
         ct.ThrowIfCancellationRequested();
@@ -97,44 +53,48 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
                 .WithParameters(new { id = roadmapId })
                 .ExecuteAsync();
 
-            var nodesSet = new Dictionary<long, Dictionary<string, object>>();
-            var edgesSet = new Dictionary<long, Dictionary<string, object>>();
+            var nodesSet = new Dictionary<string, Dictionary<string, object>>();
+            var edgesSet = new Dictionary<string, Dictionary<string, object>>();
 
             foreach (var record in response)
             {
                 var rNode = record["r"]?.As<INode>();
-                if (rNode != null && !nodesSet.ContainsKey(rNode.Id))
+                if (rNode != null && !nodesSet.ContainsKey(rNode.ElementId))
                 {
-                    nodesSet[rNode.Id] = rNode.ToDict();
+                    nodesSet[rNode.ElementId] = rNode.ToDict();
                 }
 
                 var connected = record["connected"]?.As<INode>();
-                if (connected != null && !nodesSet.ContainsKey(connected.Id))
+                if (connected != null && !nodesSet.ContainsKey(connected.ElementId))
                 {
-                    nodesSet[connected.Id] = connected.ToDict();
+                    nodesSet[connected.ElementId] = connected.ToDict();
                 }
 
                 if (record["path"] is IPath path)
                 {
                     foreach (var node in path.Nodes)
                     {
-                        if (!nodesSet.ContainsKey(node.Id))
+                        if (!nodesSet.ContainsKey(node.ElementId))
                         {
-                            nodesSet[node.Id] = node.ToDict();
+                            nodesSet[node.ElementId] = node.ToDict();
                         }
                     }
 
                     foreach (var rel in path.Relationships)
                     {
-                        if (!edgesSet.ContainsKey(rel.Id))
+                        if (!edgesSet.ContainsKey(rel.ElementId))
                         {
-                            edgesSet[rel.Id] = rel.ToDict(nodesSet);
+                            edgesSet[rel.ElementId] = rel.ToDict(nodesSet);
                         }
                     }
                 }
             }
 
-            return Result.Success((nodesSet.Values.ToList(), edgesSet.Values.ToList()));
+            var separateNodesAndEdgesResult = await GetRoadmapSeparateNodesAndEdges(roadmapId, ct);
+            var targetNodes = separateNodesAndEdgesResult.Nodes.Concat(nodesSet.Values).ToList();
+            var targetEdges = separateNodesAndEdgesResult.Edges.Concat(edgesSet.Values).ToList();
+
+            return Result.Success((targetNodes, targetEdges));
         }
         catch (Exception ex)
         {
@@ -143,6 +103,44 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
         }
     }
 
+    private async Task<(List<Dictionary<string, object>> Nodes, List<Dictionary<string, object>> Edges)> GetRoadmapSeparateNodesAndEdges(string roadmapId, CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+        var query = @"
+            MATCH (n)
+            WHERE n.roadmap_id = $id
+            OPTIONAL MATCH (n)-[r]->(m)
+            WHERE m.roadmap_id = $id
+            RETURN n, r, m";
+        using var session = Driver.AsyncSession(s => s.WithDatabase(DbSettings.Name));
+        var nodesSet = new Dictionary<string, Dictionary<string, object>>();
+        var edgesSet = new Dictionary<string, Dictionary<string, object>>();
+
+        await session.ExecuteReadAsync(async tx =>
+        {
+            var result = await tx.RunAsync(query, new { id = roadmapId });
+            while (await result.FetchAsync())
+            {
+                var nNode = result.Current["n"]?.As<INode>();
+                if (nNode != null && !nodesSet.ContainsKey(nNode.ElementId))
+                {
+                    nodesSet[nNode.ElementId] = nNode.ToDict();
+                }
+                var mNode = result.Current["m"]?.As<INode>();
+                if (mNode != null && !nodesSet.ContainsKey(mNode.ElementId))
+                {
+                    nodesSet[mNode.ElementId] = mNode.ToDict();
+                }
+                var rRel = result.Current["r"]?.As<IRelationship>();
+                if (rRel != null && !edgesSet.ContainsKey(rRel.ElementId))
+                {
+                    edgesSet[rRel.ElementId] = rRel.ToDict(nodesSet);
+                }
+            }
+        });
+        await session.CloseAsync();
+        return (nodesSet.Values.ToList(), edgesSet.Values.ToList());
+    }
     public async Task<Result<(List<NodeDto> Nodes, List<EdgeDto> Edges)>> GetRoadmapById(string roadmapId, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
@@ -155,12 +153,16 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
 
         var (nodes, edges) = sourceRoadmapResult.Data;
         var nodesDict = nodes.Select(n => n.ToNodeDto())
+            .DistinctBy(n => n.Id)
             .ToDictionary(n => n.Id, n => n);
-        var edgesList = edges.Select(e => e.ToEdgeDto(nodesDict)).ToList();
+        var edgesList = edges.Select(e => e.ToEdgeDto(nodesDict))
+            .GroupBy(e => (e.Source.Id, e.Target.Id))
+            .Select(e => e.FirstOrDefault())
+            .ToList();
         var nodesList = nodesDict.Values.ToList();
 
         return Result.Success((nodesList, edgesList));
-    } 
+    }
 
     public async Task<Result<PaginationResult<List<NodeDto>>>> GetPublicPlainRoadmapsByIds(
         List<string> roadmapIds,
@@ -254,7 +256,7 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
         try
         {
             using var session = Driver.AsyncSession(s => s.WithDatabase(DbSettings.Name));
-            
+
             var query = @"
                 UNWIND $ids AS roadmapId
 OPTIONAL MATCH (r:ROADMAP {id: roadmapId})
@@ -334,4 +336,91 @@ RETURN roadmapId, count(DISTINCT n) AS totalTopicsAndSubtopics;
         }
     }
 
+    public async Task<Result<bool>> RoadmapExists(string roadmapId, CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+        try
+        {
+            using var session = Driver.AsyncSession(s => s.WithDatabase(DbSettings.Name));
+            var query = $@"
+                MATCH (r:{RoadmapLabelConstants.ROADMAP} {{id: $id}})
+                RETURN count(r) AS roadmapCount";
+            var exists = await session.ExecuteReadAsync(async tx =>
+            {
+                var result = await tx.RunAsync(query, new { id = roadmapId });
+                await result.FetchAsync();
+                var count = result.Current["roadmapCount"].As<int>();
+                return count > 0;
+            });
+            await session.CloseAsync();
+            return Result.Success(exists);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to check if roadmap {roadmapId} exists", roadmapId);
+            return ResultType.FailedToGetRoadmap<bool>(ex.Message);
+        }
+    }
+    public async Task<Result<List<NodeDto>>> GetNodesByIds(List<string> ids, CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+        try
+        {
+            using var session = Driver.AsyncSession(s => s.WithDatabase(DbSettings.Name));
+            var query = $@"
+                MATCH (n)
+                WHERE n.id IN $ids
+                RETURN n";
+            var response = await session.ExecuteReadAsync(async tx =>
+            {
+                var result = await tx.RunAsync(query, new { ids });
+                var nodes = new List<NodeDto>();
+                while (await result.FetchAsync())
+                {
+                    var node = result.Current["n"]?.As<INode>();
+                    if (node != null)
+                    {
+                        var dto = node.Properties.ToDictionary().ToNodeDto();
+                        nodes.Add(dto);
+                    }
+                }
+                return nodes;
+            });
+            await session.CloseAsync();
+            return Result.Success(response);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(
+                ex,
+                "Failed to get nodes for ids: {ids}",
+                string.Join(", ", ids)
+            );
+            return ResultType.FailedToGetRoadmap<List<NodeDto>>(ex.Message);
+        }
+    }
+
+    public async Task<Result<bool>> DeleteRoadmapElement(string roadmapId, string elementId, CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+        try
+        {
+            using var session = Driver.AsyncSession(s => s.WithDatabase(DbSettings.Name));
+            var query = @"
+                MATCH (n)
+                WHERE n.roadmap_id = $roadmapId AND n.id = $elementId
+                DETACH DELETE n";
+            await session.ExecuteWriteAsync(async tx =>
+            {
+                await tx.RunAsync(query, new { roadmapId, elementId });
+            });
+            await session.CloseAsync();
+            return Result.Success(true);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to delete roadmap element {elementId} from roadmap {roadmapId}", elementId, roadmapId);
+            return ResultType.FailedToGetRoadmap<bool>(ex.Message);
+        }
+    }
 }

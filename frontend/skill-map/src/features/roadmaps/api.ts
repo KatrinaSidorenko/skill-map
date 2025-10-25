@@ -1,6 +1,5 @@
 import { baseQuery } from '@/store/baseQuery';
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { create } from 'domain';
 
 export const roadmapApi = createApi({
   reducerPath: 'roadmapApi',
@@ -155,7 +154,7 @@ export const roadmapApi = createApi({
         body: change,
       }),
     }),
-    getUserCreatedRoadmap: builder.query<SavedRoadmap, string>({
+    getUserCreatedRoadmap: builder.query<RoadmapResponse, string>({
       query: (id) => ({
         url: `userroadmaps/${id}`,
         method: 'GET',

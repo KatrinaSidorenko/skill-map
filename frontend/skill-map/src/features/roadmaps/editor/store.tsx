@@ -13,7 +13,7 @@ import {
   mapRoadmapToReactFlowForSaved,
   mapRoadmapToReactFlow,
 } from '../helpers';
-import { set } from 'zod';
+import { clear } from 'console';
 
 type InitialState = {
   plainRoadmap: SavedPlainRoadmap | null;
@@ -83,7 +83,11 @@ const roadmapEditorSlice = createSlice({
       state.edges = applyEdgeChanges(changes, eds);
     },
     addNode: (state, action: PayloadAction<Node>) => {
-      state.nodes.push(action.payload);
+      const node = {
+        ...action.payload,
+        type: state.editorConfig.useStatus ? 'statusNode' : 'default',
+      };
+      state.nodes.push(node);
     },
     deleteEdge: (state, action: PayloadAction<string>) => {
       state.edges = state.edges.filter((ed) => ed.id !== action.payload);
@@ -106,6 +110,16 @@ const roadmapEditorSlice = createSlice({
     setEditorConfig: (state, action: PayloadAction<EditorConfig>) => {
       state.editorConfig = action.payload;
     },
+    clearEditor: (state) => {
+      state.plainRoadmap = null;
+      state.roadmapId = null;
+      state.nodes = [];
+      state.edges = [];
+      state.selectedElement = null;
+      state.editorConfig = {
+        useStatus: true,
+      };
+    },
   },
 });
 
@@ -122,6 +136,7 @@ export const {
   setPlainRiadmap,
   setActiveRoadmapId,
   setEditorConfig,
+  clearEditor,
 } = roadmapEditorSlice.actions;
 
 export const selectRoadmap = (state: { roadmapEditor: InitialState }) => {

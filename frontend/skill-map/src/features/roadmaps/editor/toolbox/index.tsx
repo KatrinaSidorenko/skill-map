@@ -13,7 +13,6 @@ import {
   addNode,
   deleteEdge,
   deleteNode,
-  selectEditorConfig,
   selectRoadmapId,
   selectSelectedElement,
   setSelectedElement,
@@ -36,7 +35,6 @@ export default function Toolbox({
   createNode,
 }: ToolboxProps) {
   const dispatch = useAppDispatch();
-  const editorConfig = useAppSelector(selectEditorConfig);
   const selected = useAppSelector(selectSelectedElement);
   const roadmapId = useAppSelector(selectRoadmapId);
   const hasSelection = !!selected;
@@ -93,7 +91,6 @@ export default function Toolbox({
           description: data.description,
           status: data.status,
         },
-        type: editorConfig.useStatus ? 'statusNode' : 'default',
       };
 
       dispatch(addNode(newNode));
@@ -138,7 +135,6 @@ export default function Toolbox({
             onClick={() =>
               createNodeDialog.open('newNodeDialog', {
                 onCreate: handleCreateNode,
-                isStatusUsed: editorConfig.useStatus,
               })
             }
           >

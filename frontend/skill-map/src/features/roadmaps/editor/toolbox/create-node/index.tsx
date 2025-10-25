@@ -13,6 +13,8 @@ import {
 import { useState } from 'react';
 import StatusSelect from '../../sidebar/status-select';
 import useLocalization from '@/i18n/useLocalization';
+import { useAppSelector } from '@/store/hooks';
+import { selectEditorConfig } from '../../store';
 
 const createNodeDialog = createOverlay<{
   onCreate: (data: {
@@ -20,9 +22,9 @@ const createNodeDialog = createOverlay<{
     description: string;
     status: string[];
   }) => void;
-  isStatusUsed: boolean;
 }>((props) => {
   const { onCreate, ...rest } = props;
+  const editorConfig = useAppSelector(selectEditorConfig);
   const [label, setLabel] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<string[]>(['notstarted']);
@@ -63,7 +65,7 @@ const createNodeDialog = createOverlay<{
                   />
                 </Box>
 
-                {rest.isStatusUsed && (
+                {editorConfig.useStatus && (
                   <StatusSelect value={status} onChange={setStatus} />
                 )}
               </VStack>
