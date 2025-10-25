@@ -84,14 +84,6 @@ public class UserRoadmapsService(IRepository<UserRoadmap> userRoadmapsRepository
             return ResultType.UserRoadmapNotFound<PaginationResult<List<PlainRoadmapDto>>>(userId);
         }
         var roadmapIds = dbUserRoadmapsResult.Data.Select(ur => ur.RoadmapId).ToList();
-        if (roadmapIds.Count <= 0)
-        {
-            return Result.Success(new PaginationResult<List<PlainRoadmapDto>>
-            {
-                TotalCount = 0,
-                Result = [],
-            });
-        }
         var plainRoadmapsResult = await roadmapService.GetPlainRoadmapsByIds(roadmapIds, @params, ct, excludePrivate: false);
         if (!plainRoadmapsResult.IsSuccessful)
         {

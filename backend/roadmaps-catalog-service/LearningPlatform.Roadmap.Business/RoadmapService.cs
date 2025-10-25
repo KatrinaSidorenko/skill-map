@@ -70,6 +70,14 @@ public class RoadmapService(
     }
     public async Task<Result<PaginationResult<List<PlainRoadmapDto>>>> GetPlainRoadmapsByIds(List<string> roadmapIds, SearchingParams @params, CancellationToken ct, bool excludePrivate = true)
     {
+        if ((roadmapIds ?? []).Count <= 0)
+        {
+            return Result.Success(new PaginationResult<List<PlainRoadmapDto>>
+            {
+                TotalCount = 0,
+                Result = [],
+            });
+        }
         var paginatedResult = await roadmapRepository.GetPublicPlainRoadmapsByIds(roadmapIds, @params, ct, excludePrivate);
         if (!paginatedResult.IsSuccessful)
         {
