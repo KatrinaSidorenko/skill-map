@@ -64,7 +64,12 @@
     "fillRequiredFields": "Будь ласка, заповніть всі обов'язкові поля.",
     "roadmapCreated": "Дорожня карта створена",
     "failedToCreateRoadmap": "Не вдалося створити дорожню карту",
-    "yourRoadmaps": "Ваші дорожні карти"
+    "yourRoadmaps": "Ваші дорожні карти",
+
+    "roadmapUpdated": "Дорожня карта оновлена",
+    "failedToUpdateRoadmap": "Не вдалося оновити дорожню карту",
+    "editRoadmap": "Редагувати дорожню карту",
+    "update": "Оновити"
   },
   "roadmaps": {
     "search": "Пошук ...",

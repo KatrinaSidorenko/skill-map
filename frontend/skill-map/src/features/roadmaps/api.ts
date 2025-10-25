@@ -160,6 +160,22 @@ export const roadmapApi = createApi({
         method: 'GET',
       }),
     }),
+    deleteUserRoadmap: builder.mutation<void, { id: string }>({
+      query: ({ id }) => ({
+        url: `userroadmaps/${id}`,
+        method: 'DELETE',
+      }),
+    }),
+    updateUserRoadmap: builder.mutation<
+      void,
+      { id: string; payload: UpdateUserRoadmapRequest }
+    >({
+      query: ({ id, payload }) => ({
+        url: `userroadmaps/${id}`,
+        method: 'PUT',
+        body: payload,
+      }),
+    }),
   }),
 });
 
@@ -183,4 +199,6 @@ export const {
   useDeleteLearningItemFromUserRoadmapMutation,
   useUpdateLearningItemInUserRoadmapMutation,
   useGetUserCreatedRoadmapQuery,
+  useDeleteUserRoadmapMutation,
+  useUpdateUserRoadmapMutation,
 } = roadmapApi;

@@ -70,7 +70,12 @@
     "fillRequiredFields": "Please fill in all required fields.",
     "roadmapCreated": "Roadmap Created",
     "failedToCreateRoadmap": "Failed to Create Roadmap",
-    "yourRoadmaps": "Your Roadmaps"
+    "yourRoadmaps": "Your Roadmaps",
+
+    "roadmapUpdated": "Roadmap Updated",
+    "failedToUpdateRoadmap": "Failed to Update Roadmap",
+    "editRoadmap": "Edit Roadmap",
+    "update": "Update"
   },
   "roadmaps": {
     "search": "Search ...",

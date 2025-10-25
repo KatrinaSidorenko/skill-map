@@ -76,10 +76,16 @@ interface LearningItemMaterial {
   type: MaterialType;
 }
 
-type CreatedRoadmapsStartus = 'draft' | 'published';
 interface CreateDraftRoadmapPayload {
   title: string;
   description: string;
   imageUrl?: string;
-  status: CreatedRoadmapsStartus;
+  isPublic: boolean;
+}
+
+interface UpdateUserRoadmapRequest {
+  title?: string;
+  description?: string;
+  imageUrl?: string;
+  isPublic?: boolean;
 }

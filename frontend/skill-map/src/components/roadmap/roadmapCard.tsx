@@ -10,10 +10,12 @@ import {
   HStack,
   Box,
   Progress,
+  IconButton,
 } from '@chakra-ui/react';
 import { formatDistanceToNow } from 'date-fns';
 import useLocalization from '@/i18n/useLocalization';
 import { getStatusColor } from '@/features/roadmaps/helpers';
+import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 
 interface RoadmapCardProps {
   roadmap: PlainRoadmap;
@@ -169,6 +171,107 @@ export function SavedRoadmapCard({
               {getRoadmapTransaltions('saved')} {formattedDate}
             </Text>
           </VStack>
+        </Flex>
+      </HoverCard.Trigger>
+    </HoverCard.Root>
+  );
+}
+
+interface RoadmapCardWithActionsProps {
+  roadmap: PlainRoadmap;
+  handleClick: (id: string) => void;
+  onEdit: (roadmap: PlainRoadmap) => void;
+  onDelete: (roadmap: PlainRoadmap) => void;
+}
+
+export function RoadmapCardWithActions({
+  roadmap,
+  handleClick,
+  onEdit,
+  onDelete,
+}: RoadmapCardWithActionsProps) {
+  return (
+    <HoverCard.Root>
+      <HoverCard.Trigger>
+        <Flex
+          cursor="pointer"
+          borderRadius="lg"
+          overflow="hidden"
+          bg="brand.50"
+          opacity={0.95}
+          boxShadow="sm"
+          _hover={{ boxShadow: 'md', transform: 'translateY(-2px)' }}
+          align="center"
+          direction="row"
+          p={2}
+          position="relative"
+        >
+          {/* Image Section */}
+          <Image
+            src={roadmap.imageUrl ?? MOCK_IMAGE_URL}
+            alt={roadmap.title}
+            w="150px"
+            h="130px"
+            objectFit="cover"
+            borderRadius="md"
+            flexShrink={0}
+            onClick={() => handleClick(roadmap.id)}
+          />
+
+          {/* Content Section */}
+          <VStack
+            gap={2}
+            p={4}
+            align="start"
+            flex="1"
+            onClick={() => handleClick(roadmap.id)}
+          >
+            <Text fontSize="lg" fontWeight="bold" color="text.heading">
+              {roadmap.title}
+            </Text>
+            <Text
+              fontSize="sm"
+              color="gray.600"
+              lineClamp={2}
+              textAlign="left"
+            >
+              {roadmap.description}
+            </Text>
+          </VStack>
+
+          {/* Action Buttons */}
+          <HStack
+            gap={2}
+            position="absolute"
+            top="8px"
+            right="8px"
+            zIndex={2}
+          >
+            <IconButton
+              aria-label="Edit Roadmap"
+              size="sm"
+              variant="ghost"
+              colorScheme="blue"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(roadmap);
+              }}
+            >
+              <FiEdit2 />
+            </IconButton>
+            <IconButton
+              aria-label="Delete Roadmap"
+              size="sm"
+              variant="ghost"
+              colorScheme="red"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(roadmap);
+              }}
+            >
+              <FiTrash2 />
+            </IconButton>
+          </HStack>
         </Flex>
       </HoverCard.Trigger>
     </HoverCard.Root>
