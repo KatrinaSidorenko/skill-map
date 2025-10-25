@@ -69,7 +69,18 @@
     "roadmapUpdated": "Дорожня карта оновлена",
     "failedToUpdateRoadmap": "Не вдалося оновити дорожню карту",
     "editRoadmap": "Редагувати дорожню карту",
-    "update": "Оновити"
+    "update": "Оновити",
+
+    "public": "Публічна",
+    "private": "Приватна",
+    "totalNodes": "Всього вузлів",
+    "edit": "Редагувати",
+    "openInEditor": "Відкрити в редакторі",
+    "deleteError": "Не вдалося видалити. Спробуйте ще раз.",
+
+    "isPublic": "Публічна",
+    "roadmapIsPublicHelp": "Ця дорожня карта буде видима всім.",
+    "roadmapIsPrivateHelp": "Ця дорожня карта буде видима лише вам."
   },
   "roadmaps": {
     "search": "Пошук ...",
@@ -85,5 +96,8 @@
   },
   "erros": {
     "SE6": "Не знайдено"
+  },
+  "general": {
+    "notFound": "Не знайдено"
   }
 }

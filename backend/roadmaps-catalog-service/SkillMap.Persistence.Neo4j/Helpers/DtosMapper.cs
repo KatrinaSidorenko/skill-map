@@ -1,4 +1,5 @@
-﻿using LearningPlatform.Roadmap.Business.Contracts.Models;
+﻿using LearningPlatform.Roadmap.Business.Contracts.Constants;
+using LearningPlatform.Roadmap.Business.Contracts.Models;
 using Neo4j.Driver;
 using SkillMap.Shared.Extensions;
 
@@ -39,6 +40,9 @@ public static class DtosMapper
             {
                 { "resource_link", dict.GetOrDefault("resource_link") as string },
                 { "resource_type", dict.GetOrDefault("resource_type") as string },
+                { NodeProps.OwnerId, dict.GetOrDefault(NodeProps.OwnerId) as string },
+                { NodeProps.IsPublic, dict.GetOrDefault(NodeProps.IsPublic) as string },
+                { NodeProps.RoadmapId, dict.GetOrDefault(NodeProps.RoadmapId) as string },
             }
         };
         return node;

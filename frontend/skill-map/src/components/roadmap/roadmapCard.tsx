@@ -51,7 +51,12 @@ export function RoadmapCard({ roadmap, handleClick }: RoadmapCardProps) {
           />
 
           <VStack gap={2} p={4} align="start">
-            <Text fontSize="lg" fontWeight="bold" color="text.heading">
+            <Text
+              fontSize="lg"
+              fontWeight="bold"
+              color="text.heading"
+              textAlign={'left'}
+            >
               {roadmap.title}
             </Text>
             <Text
@@ -229,24 +234,13 @@ export function RoadmapCardWithActions({
             <Text fontSize="lg" fontWeight="bold" color="text.heading">
               {roadmap.title}
             </Text>
-            <Text
-              fontSize="sm"
-              color="gray.600"
-              lineClamp={2}
-              textAlign="left"
-            >
+            <Text fontSize="sm" color="gray.600" lineClamp={2} textAlign="left">
               {roadmap.description}
             </Text>
           </VStack>
 
           {/* Action Buttons */}
-          <HStack
-            gap={2}
-            position="absolute"
-            top="8px"
-            right="8px"
-            zIndex={2}
-          >
+          <HStack gap={2} position="absolute" top="8px" right="8px" zIndex={2}>
             <IconButton
               aria-label="Edit Roadmap"
               size="sm"

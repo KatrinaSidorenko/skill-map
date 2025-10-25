@@ -133,4 +133,11 @@ public class UserRoadmapsController : BaseController
         await RoadmapService.DeleteRoadmap(roadmapId, ct);
         return NoContent();
     }
+
+    [HttpGet("plain/{roadmapId}")]
+    public async Task<IActionResult> GetPlainRoadmap([FromRoute] string roadmapId, CancellationToken ct)
+    {
+        var result = await UserRoadmapsService.GetCreatedUserRoadmap(GetUserId(), roadmapId, ct);
+        return Response(result, (r) => Ok(r.Data));
+    }
 }

@@ -23,11 +23,16 @@ export default function useLocalization() {
     return translation(`roadmap.${key}`);
   };
 
+  const getGeneralTranslations = (key: keyof ILocalization['general']) => {
+    return translation(`general.${key}`);
+  };
+
   return {
     getHeaderTranslations,
     getAuthTranslations,
     getEditorTranslations,
     getRoadmapsTranslations,
     getRoadmapTransaltions,
+    getGeneralTranslations,
   };
 }

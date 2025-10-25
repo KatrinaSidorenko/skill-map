@@ -176,6 +176,12 @@ export const roadmapApi = createApi({
         body: payload,
       }),
     }),
+    getPlainUserCreatedRoadmap: builder.query<PlainRoadmap, string>({
+      query: (id) => ({
+        url: `userroadmaps/plain/${id}`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -201,4 +207,5 @@ export const {
   useGetUserCreatedRoadmapQuery,
   useDeleteUserRoadmapMutation,
   useUpdateUserRoadmapMutation,
+  useLazyGetPlainUserCreatedRoadmapQuery,
 } = roadmapApi;

@@ -11,6 +11,7 @@ import {
   Portal,
   Dialog,
   Spinner,
+  Checkbox,
   createOverlay,
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
@@ -21,13 +22,15 @@ import {
   useUpdateUserRoadmapMutation,
 } from '../../api';
 
-export const RoadmapDialog = (props: any) => {
+// @ts-expect-error (chakra-ui-dialog-overlay): No types available
+export const RoadmapDialog = (props) => {
   const { mode = 'create', roadmap, onSuccess, ...rest } = props;
   const { getEditorTranslations } = useLocalization();
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [isPublic, setIsPublic] = useState(false);
 
   const [createRoadmap, { isLoading: isCreating }] = useCreateRoadmapMutation();
   const [updateRoadmap, { isLoading: isUpdating }] =
@@ -38,6 +41,7 @@ export const RoadmapDialog = (props: any) => {
       setTitle(roadmap.title ?? '');
       setDescription(roadmap.description ?? '');
       setImageUrl(roadmap.imageUrl ?? '');
+      setIsPublic(roadmap.isPublic ?? false);
     }
   }, [mode, roadmap]);
 
@@ -56,7 +60,7 @@ export const RoadmapDialog = (props: any) => {
       title,
       description,
       imageUrl: imageUrl || undefined,
-      isPublic: roadmap?.isPublic ?? false,
+      isPublic, // ✅ properly passed
     };
 
     try {
@@ -65,22 +69,12 @@ export const RoadmapDialog = (props: any) => {
           id: roadmap.id,
           payload,
         }).unwrap();
-        toaster.create({
-          title: getEditorTranslations('roadmapUpdated'),
-          type: 'success',
-          closable: true,
-        });
       } else {
         await createRoadmap(payload).unwrap();
-        toaster.create({
-          title: getEditorTranslations('roadmapCreated'),
-          type: 'success',
-          closable: true,
-        });
       }
 
       rest.onOpenChange?.({ open: false });
-      onSuccess?.();
+      onSuccess?.(payload);
     } catch (error) {
       toaster.create({
         title:
@@ -143,6 +137,22 @@ export const RoadmapDialog = (props: any) => {
                     placeholder="https://example.com/image.jpg"
                   />
                 </Box>
+
+                <Checkbox.Root
+                  checked={isPublic}
+                  onCheckedChange={(e) => setIsPublic(!!e.checked)}
+                >
+                  <Checkbox.HiddenInput />
+                  <Checkbox.Control />
+                  <Checkbox.Label>
+                    {getEditorTranslations('isPublic')}
+                  </Checkbox.Label>
+                </Checkbox.Root>
+                <Text fontSize="xs" color="gray.500" ml="6">
+                  {isPublic
+                    ? getEditorTranslations('roadmapIsPublicHelp')
+                    : getEditorTranslations('roadmapIsPrivateHelp')}
+                </Text>
               </VStack>
             </Dialog.Body>
 

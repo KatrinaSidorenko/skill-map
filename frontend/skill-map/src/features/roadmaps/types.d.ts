@@ -6,6 +6,9 @@ interface PlainRoadmap {
   description: string;
   imageUrl: string;
   isSaved?: boolean;
+  isPublic?: boolean;
+  totalNodes?: number;
+  createdAt?: string;
 }
 
 interface SavedPlainRoadmap extends PlainRoadmap {
@@ -88,4 +91,13 @@ interface UpdateUserRoadmapRequest {
   description?: string;
   imageUrl?: string;
   isPublic?: boolean;
+}
+
+interface CreatedUserRoadmap {
+  id: string;
+  title: string;
+  description: string;
+  imageUrl?: string;
+  isPublic: boolean;
+  createdAt: string;
 }

@@ -35,6 +35,8 @@ public class ResultType
         FailedToCreate<T>($"Failed to create user roadmap for user {userId}. Details: {message}");
     public static Result<T> FailedToGetUserRoadmaps<T>(long userId) =>
         FailedToGet<T>($"Failed to get roadmaps for user {userId}");
+    public static Result<T> FailedToUpdateUserRoadmap<T>(long userId, string roadmapId) =>
+        FailedToUpdate<T>($"Failed to update progress for roadmap {roadmapId} for user {userId}");
 
     // ROADMAP
     public static Result<T> RoadmapNotFound<T>(string roadmapId) =>

@@ -1,24 +1,17 @@
 'use client';
 
 import { Text, IconButton } from '@chakra-ui/react';
-import {
-  useDeleteUserRoadmapMutation,
-  useLazyGetUserCreatedRoadmapsQuery,
-} from '../api';
-import { toaster } from '@/components/ui/toaster';
+import { useLazyGetUserCreatedRoadmapsQuery } from '../api';
 import { IoIosAddCircle } from 'react-icons/io';
 import useLocalization from '@/i18n/useLocalization';
 import SearchContainer from '@/components/search-container';
 import { defaultPagination } from '../helpers';
 import RoadmapGrid from '@/components/roadmap/roadmapGrid';
-import { setActiveRoadmapId } from '../editor/store';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch } from '@/store/hooks';
 import { createRoadmapDialog, updateRoadmapDialog } from './edit-dialog';
-import {
-  RoadmapCard,
-  RoadmapCardWithActions,
-} from '@/components/roadmap/roadmapCard';
+import { RoadmapCard } from '@/components/roadmap/roadmapCard';
+import { setActiveRoadmapViewId } from '../roadmap-view/store';
 
 export default function RoadmapsSandboxContainer() {
   const { getEditorTranslations, getRoadmapsTranslations } = useLocalization();
@@ -26,8 +19,6 @@ export default function RoadmapsSandboxContainer() {
   const dispatch = useAppDispatch();
   const { pageSize } = defaultPagination;
   const [fetchRoadmaps] = useLazyGetUserCreatedRoadmapsQuery();
-  const [deleteRoadmap, { isLoading: isCreating }] =
-    useDeleteUserRoadmapMutation();
   const getRoadmaps = async (params: {
     pageNumber: number;
     pageSize: number;
@@ -49,27 +40,9 @@ export default function RoadmapsSandboxContainer() {
     });
   };
 
-  const handleOpenEdit = (roadmap: UpdateUserRoadmapRequest) => {
-    updateRoadmapDialog.open('updateRoadmapDialog', {
-      roadmap,
-      onSuccess: () => {
-        // reload data or invalidate cache
-      },
-    });
-  };
-
-  const handleDelete = async (roadmap: PlainRoadmap) => {
-    try {
-      await deleteRoadmap({ id: roadmap.id }).unwrap();
-      //toaster.success(getRoadmapsTranslations('deleteSuccess'));
-    } catch (error) {
-      //toaster.error(getRoadmapsTranslations('deleteError'));
-    }
-  };
-
   const handleCardClick = (id: string) => {
-    dispatch(setActiveRoadmapId(id));
-    router.push('/editor/sandbox');
+    dispatch(setActiveRoadmapViewId(id));
+    router.push('/roadmap-view');
   };
 
   const renderRoadmapCard = (roadmap: PlainRoadmap) => (
@@ -111,7 +84,6 @@ export default function RoadmapsSandboxContainer() {
       />
 
       {<createRoadmapDialog.Viewport />}
-      {<updateRoadmapDialog.Viewport />}
     </>
   );
 }
