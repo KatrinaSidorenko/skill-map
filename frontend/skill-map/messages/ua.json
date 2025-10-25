@@ -57,7 +57,14 @@
     "createNewNode": "Створити новий вузол",
     "create": "Створити",
     "resources": "Ресурси",
-    "noMaterialsFound": "Для цієї теми не знайдено матеріалів."
+    "noMaterialsFound": "Для цієї теми не знайдено матеріалів.",
+    "createNewRoadmap": "Створити нову дорожню карту",
+    "imageUrl": "URL зображення",
+    "validationError": "Помилка перевірки",
+    "fillRequiredFields": "Будь ласка, заповніть всі обов'язкові поля.",
+    "roadmapCreated": "Дорожня карта створена",
+    "failedToCreateRoadmap": "Не вдалося створити дорожню карту",
+    "yourRoadmaps": "Ваші дорожні карти"
   },
   "roadmaps": {
     "search": "Пошук ...",

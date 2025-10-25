@@ -11,7 +11,7 @@ builder.Services.AddRouting(options =>
 });
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGeneration();

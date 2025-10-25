@@ -1,11 +1,11 @@
 'use client';
 import SpinnerScreen from '@/components/base/spinner';
 import {
-  useCreateEdgeMutation,
-  useCreateNodeMutation,
-  useDeleteLearningItemMutation,
-  useGetSavedRoadmapQuery,
-  useSaveLearningItemChangesMutation,
+  useCreateConnectionInUserRoadmapMutation,
+  useCreateItemInUserRoadmapMutation,
+  useDeleteLearningItemFromUserRoadmapMutation,
+  useGetUserCreatedRoadmapQuery,
+  useUpdateLearningItemInUserRoadmapMutation,
 } from '@/features/roadmaps/api';
 import RoadmapEditor from '@/features/roadmaps/editor';
 import { Flex } from '@chakra-ui/react';
@@ -16,65 +16,67 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   clearEditor,
   selectRoadmapId,
+  setEditorConfig,
   setPlainRiadmap,
   setRoadmap,
 } from '@/features/roadmaps/editor/store';
 import { useCallback, useEffect, useState } from 'react';
-import ContentNotFoundScreen from '@/components/base/notfound';
 import Toolbox from '@/features/roadmaps/editor/toolbox';
 import NodeSidebar from '@/features/roadmaps/editor/sidebar';
 
 export default function EditorPage() {
   const dispatch = useAppDispatch();
   const roadmapId = useAppSelector(selectRoadmapId);
-  const { data, error, isLoading, isFetching } = useGetSavedRoadmapQuery(
+
+  // todo: don't use cache for sandbox editor
+  const { data, error, isLoading, isFetching } = useGetUserCreatedRoadmapQuery(
     roadmapId ?? '',
   );
-  const roadmap = data;
+
+  const roadmap = data?.roadmap;
   const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const [createEdge] = useCreateEdgeMutation();
-  const [deleteItem] = useDeleteLearningItemMutation();
-  const [createNode] = useCreateNodeMutation();
-  const [saveChange] = useSaveLearningItemChangesMutation();
+  const [createEdge] = useCreateConnectionInUserRoadmapMutation();
+  const [deleteItem] = useDeleteLearningItemFromUserRoadmapMutation();
+  const [createNode] = useCreateItemInUserRoadmapMutation();
+  const [saveChange] = useUpdateLearningItemInUserRoadmapMutation();
 
   const handleToggleSidebar = useCallback(() => {
     setSidebarOpen((prev) => !prev);
   }, []);
 
   useEffect(() => {
-    if (!roadmap || !roadmapId) return;
-    dispatch(clearEditor());
-    dispatch(
-      setPlainRiadmap({
-        id: roadmap.id,
-        title: roadmap.title,
-        description: roadmap.description,
-        progress: roadmap.progress,
-        status: roadmap.status,
-        savedAt: roadmap.savedAt,
-        imageUrl: roadmap.imageUrl,
-      } as SavedPlainRoadmap),
-    );
-    dispatch(
-      setRoadmap({
-        nodes: roadmap.nodes,
-        edges: roadmap.edges,
-      }),
-    );
-  }, [roadmap]);
+    if (roadmap) {
+      dispatch(clearEditor());
+      dispatch(setEditorConfig({ useStatus: false }));
+      dispatch(
+        setPlainRiadmap({
+          id: roadmap.id,
+          title: roadmap.title,
+          description: roadmap.description,
+          progress: 0,
+          status: 'notstarted',
+          savedAt: new Date().toISOString(),
+          imageUrl: '',
+        } as SavedPlainRoadmap),
+      );
+      dispatch(
+        setRoadmap({
+          nodes: roadmap.nodes.map((n) => n as ModifiedNode),
+          edges: roadmap.edges,
+        }),
+      );
+    }
+  }, [roadmap, roadmapId, isFetching, isLoading, dispatch]);
 
-  if ((!roadmap && !isLoading && !isFetching) || !roadmapId) {
-    return <ContentNotFoundScreen />;
-  }
-
-  if (error) {
+  if (error && roadmapId) {
     return <ErrorScreen />;
   }
 
+  // todo: extract to separate component
   return (
     <Flex width="100vw" height="100vh" direction="column">
       <Container isSection={false}>
-        {isLoading || isFetching ? (
+        {(isLoading || isFetching) && roadmapId ? (
           <SpinnerScreen />
         ) : (
           <ReactFlowProvider>

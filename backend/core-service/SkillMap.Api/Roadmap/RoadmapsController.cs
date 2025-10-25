@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SkillMap.Api.Base;
 using SkillMap.Api.Base.Searching;
+using SkillMap.Api.ModifiedRoadmap.Models;
 using SkillMap.Api.Roadmap.Models;
 using SkillMap.Api.Roadmaps.Models;
 using SkillMap.Business.UserRoadmaps;
@@ -40,7 +41,7 @@ public class RoadmapsController : BaseController
     public async Task<IActionResult> GetRoadmap([FromRoute] string roadmapId, CancellationToken ct)
     {
         var result = await RoadmapService.GetRoadmapById(roadmapId, ct);
-        var userRoadmapResult = await UserRoadmapsService.GetUserRoadmaps(GetUserId(), ct);
+        var userRoadmapResult = await UserRoadmapsService.GetUserSavedRoadmaps(GetUserId(), ct);
         var roadmapIds = userRoadmapResult.IsSuccessful ? userRoadmapResult.Data.Select(ur => ur.RoadmapId).ToList() : new List<string>();
         if (result.IsSuccessful && result.Data != null)
         {
@@ -53,7 +54,7 @@ public class RoadmapsController : BaseController
         }));
     }
 
-    [HttpGet("materials/{roadmapId}")]
+    [HttpGet("{roadmapId}/materials")]
     public async Task<IActionResult> GetLearningItemMaterials([FromRoute] string roadmapId, [FromQuery] string itemId, CancellationToken ct)
     {
         var result = await RoadmapService.GetLearningItemMaterials(roadmapId, itemId, ct);

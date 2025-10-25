@@ -12,7 +12,12 @@ import {
 import { useState, useEffect } from 'react';
 import type { Node } from '@xyflow/react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { selectRoadmapId, selectSelectedElement, updateNode } from '../store';
+import {
+  selectEditorConfig,
+  selectRoadmapId,
+  selectSelectedElement,
+  updateNode,
+} from '../store';
 import StatusSelect from './status-select';
 import useLocalization from '@/i18n/useLocalization';
 import { useSaveLearningItemChangesMutation } from '../../api';
@@ -25,10 +30,15 @@ interface NodeSidebarProps {
   saveChange: ReturnType<typeof useSaveLearningItemChangesMutation>[0];
 }
 
-export default function NodeSidebar({ open, onOpenChange, saveChange }: NodeSidebarProps) {
+export default function NodeSidebar({
+  open,
+  onOpenChange,
+  saveChange,
+}: NodeSidebarProps) {
   const dispatch = useAppDispatch();
   const roadmapId = useAppSelector(selectRoadmapId);
   const node = useAppSelector(selectSelectedElement);
+  const editorConfig = useAppSelector(selectEditorConfig);
   const { getEditorTranslations } = useLocalization();
 
   const [label, setLabel] = useState('');
@@ -126,7 +136,9 @@ export default function NodeSidebar({ open, onOpenChange, saveChange }: NodeSide
               />
             </VStack>
 
-            <StatusSelect value={status} onChange={setStatus} />
+            {editorConfig.useStatus && (
+              <StatusSelect value={status} onChange={setStatus} />
+            )}
             <Separator />
 
             {/* Actions */}

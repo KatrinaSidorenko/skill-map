@@ -14,12 +14,12 @@ public static class DtosMapper
         return dict;
     }
 
-    public static Dictionary<string, object> ToDict(this IRelationship rel,  Dictionary<long, Dictionary<string, object>> nodes)
+    public static Dictionary<string, object> ToDict(this IRelationship rel,  Dictionary<string, Dictionary<string, object>> nodes)
     {
-        var startId = rel.StartNodeId;
-        var endId = rel.EndNodeId;
+        var startId = rel.StartNodeElementId;
+        var endId = rel.EndNodeElementId;
         var dict = rel.Properties.ToDictionary();
-        dict["id"] = rel.Id;
+        dict["id"] = rel.ElementId;
         //dict["type"] = rel.Type;
         dict["source_id"] = nodes.GetOrDefault(startId).GetOrDefault("id");
         dict["target_id"] = nodes.GetOrDefault(endId).GetOrDefault("id");

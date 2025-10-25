@@ -59,7 +59,8 @@ export function mapRoadmapToReactFlow(roadmap: Roadmap): {
     data: {
       label: n.title,
       description: n.description,
-    }, // show title in node
+    },
+    type: 'default',
   }));
 
   const edges: Edge[] = roadmap.edges.map((e) => ({

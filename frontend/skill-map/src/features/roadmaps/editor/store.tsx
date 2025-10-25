@@ -9,7 +9,11 @@ import {
   Node,
   NodeChange,
 } from '@xyflow/react';
-import { mapRoadmapToReactFlowForSaved } from '../helpers';
+import {
+  mapRoadmapToReactFlowForSaved,
+  mapRoadmapToReactFlow,
+} from '../helpers';
+import { clear } from 'console';
 
 type InitialState = {
   plainRoadmap: SavedPlainRoadmap | null;
@@ -17,6 +21,7 @@ type InitialState = {
   nodes: Node[];
   edges: Edge[];
   selectedElement: Node | Edge | null;
+  editorConfig: EditorConfig;
 };
 
 const initialState: InitialState = {
@@ -25,6 +30,9 @@ const initialState: InitialState = {
   nodes: [],
   edges: [],
   selectedElement: null,
+  editorConfig: {
+    useStatus: true,
+  },
 };
 
 const roadmapEditorSlice = createSlice({
@@ -41,6 +49,15 @@ const roadmapEditorSlice = createSlice({
         edges: RoadmapEdge[];
       }>,
     ) => {
+      if (state.editorConfig.useStatus === false) {
+        const { nodes, edges } = mapRoadmapToReactFlow({
+          nodes: action.payload.nodes.map((n) => n as RoadmapNode),
+          edges: action.payload.edges,
+        } as Roadmap);
+        state.nodes = nodes;
+        state.edges = edges;
+        return;
+      }
       const { nodes, edges } = mapRoadmapToReactFlowForSaved({
         nodes: action.payload.nodes,
         edges: action.payload.edges,
@@ -66,7 +83,11 @@ const roadmapEditorSlice = createSlice({
       state.edges = applyEdgeChanges(changes, eds);
     },
     addNode: (state, action: PayloadAction<Node>) => {
-      state.nodes.push(action.payload);
+      const node = {
+        ...action.payload,
+        type: state.editorConfig.useStatus ? 'statusNode' : 'default',
+      };
+      state.nodes.push(node);
     },
     deleteEdge: (state, action: PayloadAction<string>) => {
       state.edges = state.edges.filter((ed) => ed.id !== action.payload);
@@ -86,6 +107,19 @@ const roadmapEditorSlice = createSlice({
       const connection = action.payload;
       state.edges = addEdge({ ...connection, animated: false }, state.edges);
     },
+    setEditorConfig: (state, action: PayloadAction<EditorConfig>) => {
+      state.editorConfig = action.payload;
+    },
+    clearEditor: (state) => {
+      state.plainRoadmap = null;
+      state.roadmapId = null;
+      state.nodes = [];
+      state.edges = [];
+      state.selectedElement = null;
+      state.editorConfig = {
+        useStatus: true,
+      };
+    },
   },
 });
 
@@ -101,6 +135,8 @@ export const {
   setEdge,
   setPlainRiadmap,
   setActiveRoadmapId,
+  setEditorConfig,
+  clearEditor,
 } = roadmapEditorSlice.actions;
 
 export const selectRoadmap = (state: { roadmapEditor: InitialState }) => {
@@ -115,5 +151,7 @@ export const selectPlainRoadmap = (state: { roadmapEditor: InitialState }) =>
   state.roadmapEditor.plainRoadmap;
 export const selectRoadmapId = (state: { roadmapEditor: InitialState }) =>
   state.roadmapEditor.roadmapId;
+export const selectEditorConfig = (state: { roadmapEditor: InitialState }) =>
+  state.roadmapEditor.editorConfig;
 
 export default roadmapEditorSlice;

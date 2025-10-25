@@ -1,17 +1,12 @@
 ﻿using LearningPlatform.Roadmap.Business.Contracts.Constants;
 using LearningPlatform.Roadmap.Business.Contracts.Models;
 using SkillMap.Shared.Extensions;
+using LearningPlatform.Roadmap.Business.Contracts;
 
 namespace LearningPlatform.Roadmap.Business.Mappers;
 
 public static class RoadmapMapper
 {
-    public static string RemoveDashFromGuid(this string id)
-    {
-        if (string.IsNullOrWhiteSpace(id))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(id));
-        return id.Replace("-", string.Empty);
-    }
     public static PlainRoadmapDto ToPlainRoadmap(this NodeDto nodeDto)
     {
         if (nodeDto == null)
@@ -20,10 +15,31 @@ public static class RoadmapMapper
         {
             Id = nodeDto.Id,
             Title = nodeDto.Title,
-            ImageUrl = nodeDto.AdditionalProps?.GetOrDefault(NodeType.ImageUrl)
+            Description = nodeDto.Description,
+            ImageUrl = nodeDto.AdditionalProps?.GetOrDefault(NodeProps.ImageUrl),
+            OwnerId = nodeDto.AdditionalProps?.GetOrDefault(NodeProps.OwnerId),
+            IsPublic = nodeDto.AdditionalProps?.GetOrDefault(NodeProps.IsPublic) == NodeProps.True,
         };
     }
 
+    public static NodeDto ToNodeDto(this PlainRoadmapDto plainRoadmapDto)
+    {
+        if (plainRoadmapDto == null)
+            throw new ArgumentNullException(nameof(plainRoadmapDto));
+        return new NodeDto
+        {
+            Id = plainRoadmapDto.Id ?? IdGenerator.GenerateNewId(),
+            Title = plainRoadmapDto.Title,
+            Description = plainRoadmapDto.Description,
+            Type = NodeType.Roadmap,
+            AdditionalProps = new Dictionary<string, string>
+            {
+                { NodeProps.ImageUrl, plainRoadmapDto.ImageUrl ?? string.Empty },
+                { NodeProps.OwnerId, plainRoadmapDto.OwnerId ?? string.Empty },
+                { NodeProps.IsPublic, plainRoadmapDto.IsPublic ? NodeProps.True : NodeProps.False },
+            }
+        };
+    }
     public static List<PlainRoadmapDto> ToPlainRoadmaps(this IEnumerable<NodeDto> nodes)
     {
         if (nodes == null)

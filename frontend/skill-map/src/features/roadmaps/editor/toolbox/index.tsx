@@ -41,7 +41,6 @@ export default function Toolbox({
   const isNode = selected ? !('source' in selected) : false;
 
   const reactFlowInstance = useReactFlow();
- 
 
   const onRemoveSelected = async () => {
     if (!selected || !roadmapId) return;
@@ -92,7 +91,6 @@ export default function Toolbox({
           description: data.description,
           status: data.status,
         },
-        type: 'default',
       };
 
       dispatch(addNode(newNode));

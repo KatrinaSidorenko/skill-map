@@ -6,15 +6,39 @@ namespace SkillMap.Persistence.Neo4j.Helpers;
 
 public static class CommandsBuilder
 {
+    private const string roadmapVar = "r";
+
+    public static string GetExcludePrivateRoadmapCondition(string roadmapVar = roadmapVar)
+    {
+        var isPublicProp = $"{roadmapVar}.{NodeProps.IsPublic}";
+        var ownerIdProp = $"{roadmapVar}.{NodeProps.OwnerId}";
+        var trueValue = NodeProps.True;
+
+        return $@"CASE
+                    WHEN {isPublicProp} = {trueValue} OR {isPublicProp} IS NULL THEN true
+                    ELSE false
+                  END
+";
+    }
+    public static string GetSearchCase(string roadmapVar = roadmapVar)
+    {
+        return @"CASE
+                    WHEN $searchTerm IS NULL OR trim($searchTerm) = '' THEN true
+                    ELSE toLower(r.title) CONTAINS toLower($searchTerm)
+                  END";
+    }
+
+    // todo: extract props to constants
     public static Command CreateNodeCommand(this NodeDto node, string migrationId = null)
     {
         var nodeProps = new Dictionary<string, object>
         {
-           // {"id", node.Id},
+            {"id", node.Id},
             {"title", node.Title},
             {"externalId", node.ExternalId},
             {"type", node.Type},
-            {"migrationId", migrationId ?? string.Empty}
+            {"migrationId", migrationId ?? string.Empty},
+            {"description", node.Description ?? string.Empty},
         };
 
         if (node.AdditionalProps != null)
@@ -25,21 +49,17 @@ public static class CommandsBuilder
             }
         }
 
-        var label = node.GetLabel();
-
         var createNodeQuery = @$"
-    MERGE (n:{label} {{externalId: $externalId}})
-    SET n += $props,
-        n.id = coalesce(n.id, $id)
-";
-
+            MERGE (n:{node.GetLabel()} {{externalId: $externalId}})
+            SET n += $props,
+                n.id = coalesce(n.id, $id)
+        ";
 
         return new Command
         {
             Text = createNodeQuery,
             Value = new { externalId = node.ExternalId, props = nodeProps, id = node.Id }
         };
-
     }
 
     public static Command CreateEdgeCommand(this EdgeDto edge, Dictionary<string, NodeDto> nodesByExId, string migrationId = null)
@@ -74,6 +94,48 @@ public static class CommandsBuilder
             Value = new { sourceInnerId = sourceNode.ExternalId, targetInnerId = targetNode.ExternalId, props = edgeProps }
         };
     }
+
+    public static Command UpdateNodeCommand(this NodeDto node)
+    {
+        var nodeProps = new Dictionary<string, object>
+        {
+            { "title", node.Title },
+            { "description", node.Description }
+        };
+
+        if (node.AdditionalProps != null)
+        {
+            foreach (var prop in node.AdditionalProps)
+            {
+                nodeProps[prop.Key] = prop.Value;
+            }
+        }
+
+        var filteredProps = nodeProps
+            .Where(kvp =>
+            {
+                if (kvp.Value is string)
+                {
+                    var v = kvp.Value as string;
+                    return !string.IsNullOrEmpty(v);
+                }
+                return kvp.Value != null;
+            })
+            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+        var updateNodeQuery = @$"
+        MATCH (n {{id: $id}})
+        SET n += $props
+        RETURN n
+    ";
+
+        return new Command
+        {
+            Text = updateNodeQuery,
+            Value = new { id = node.Id, props = filteredProps }
+        };
+    }
+
 
     public static Command CreateEdgeCommand(this EdgeDto edge, string migrationId = null)
     {

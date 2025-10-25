@@ -6,13 +6,15 @@ namespace LearningPlatform.Roadmap.Business.Contracts;
 
 public interface IRoadmapRepository
 {
-    Task<bool> Save((List<NodeDto> Nodes, List<EdgeDto> Edges) graph, CancellationToken cancellationToken = default);
     Task<Result<(List<NodeDto> Nodes, List<EdgeDto> Edges)>> GetRoadmapById(string roadmapId, CancellationToken cancellationToken = default);
-    Task<Result<bool>> UpdateNodesDescription(Dictionary<string, string> nodesPropsToUpdate, CancellationToken ct);
-    Task<Result<bool>> AddNodes(List<NodeDto> nodes, CancellationToken ct = default);
-    Task<Result<bool>> AddEdges(List<EdgeDto> edges, CancellationToken ct = default);
-    Task<Result<PaginationResult<List<NodeDto>>>> GetAllPlainRoadmaps(SearchingParams @params, CancellationToken ct);
-    Task<Result<PaginationResult<List<NodeDto>>>> GetPlainRoadmapsByIds(List<string> roadmapIds, SearchingParams @params, CancellationToken ct);
+    Task<Result<bool>> CreateNodes(List<NodeDto> nodes, CancellationToken ct = default);
+    Task<Result<bool>> CreateEdges(List<EdgeDto> edges, CancellationToken ct = default);
     Task<Result<Dictionary<string, int>>> CalculateTotalTopicsAndSubtopics(List<string> roadmapIds, CancellationToken ct);
     Task<Result<List<ResourceDto>>> GetRoadmapItemMaterials(string roadmapId, string itemId, CancellationToken ct);
+    Task<Result<PaginationResult<List<NodeDto>>>> GetPublicPlainRoadmapsByIds(List<string> roadmapIds, SearchingParams @params, CancellationToken ct, bool excludePrivate = true);
+    Task<Result<bool>> RoadmapExists(string roadmapId, CancellationToken ct);
+    Task<Result<List<NodeDto>>> GetNodesByIds(List<string> ids, CancellationToken ct);
+    Task<Result<bool>> DeleteRoadmapElement(string roadmapId, string elementId, CancellationToken ct);
+    Task<Result<bool>> UpdateNodes(List<NodeDto> nodes, CancellationToken ct = default);
+    Task<Result<bool>> DeleteRoadmap(string roadmapId, CancellationToken ct);
 }

@@ -20,3 +20,7 @@ interface CreateEdgeRequest {
   sourceId: string;
   targetId: string;
 }
+
+interface EditorConfig {
+  useStatus: boolean;
+}

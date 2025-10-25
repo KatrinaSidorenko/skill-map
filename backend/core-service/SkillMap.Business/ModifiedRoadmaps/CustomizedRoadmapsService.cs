@@ -34,7 +34,7 @@ public class CustomizedRoadmapsService(
         SearchingParams @params,
         CancellationToken ct)
     {
-        var userRoadmapsResult = await userRoadmapsService.GetUserRoadmaps(userId, ct);
+        var userRoadmapsResult = await userRoadmapsService.GetUserSavedRoadmaps(userId, ct);
         if (!userRoadmapsResult.IsSuccessful)
             return ResultType.UserRoadmapNotFound<PaginationResult<List<PlainRoadmapWithDetailsDto>>>(userId);
 
@@ -44,7 +44,7 @@ public class CustomizedRoadmapsService(
             .GroupBy(r => r.RoadmapId)
             .ToDictionary(g => g.Key, g => g.First().CreatedAt);
 
-        var paginatedRoadmapsResult = await roadmapService.GetPlainRoadmapsByIds([..userRoadmapIds], @params, ct);
+        var paginatedRoadmapsResult = await roadmapService.GetPlainRoadmapsByIds([..userRoadmapIds], @params, ct, excludePrivate: false);
         if (!paginatedRoadmapsResult.IsSuccessful)
             return ResultType.RoadmapNotFound<PaginationResult<List<PlainRoadmapWithDetailsDto>>>("");
 

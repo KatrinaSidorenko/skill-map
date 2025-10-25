@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using SkillMap.Api.Base.Searching;
 
 namespace SkillMap.Api.Roadmaps.Models;
 
@@ -10,6 +9,9 @@ public class PlainRoadmapResponse
 
     [JsonProperty("title")]
     public string Title { get; set; }
+    [JsonProperty("description")]
+    public string Description { get; set; }
+
     [JsonProperty("imageUrl")]
     public string ImageUrl { get; set; }
     [JsonProperty("savedAt")]

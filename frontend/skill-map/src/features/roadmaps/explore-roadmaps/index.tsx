@@ -5,9 +5,11 @@ import { useLazyGetRoadmapsQuery } from '../api';
 import SearchContainer from '@/components/search-container';
 import useLocalization from '@/i18n/useLocalization';
 import { defaultPagination } from '../helpers';
+import { useRouter } from 'next/navigation';
 
 export default function ExploreRoadmapsPage() {
   const { pageSize } = defaultPagination;
+  const router = useRouter();
   const { getRoadmapsTranslations } = useLocalization();
   const [fetchRoadmaps] = useLazyGetRoadmapsQuery();
 
@@ -24,12 +26,18 @@ export default function ExploreRoadmapsPage() {
     };
   };
 
+  const handleCardClick = (id: string) => {
+    router.push(`/roadmap/${id}`);
+  };
+
   return (
     <SearchContainer
       placeholder={getRoadmapsTranslations('search')}
       pageSize={pageSize}
       fetchData={getRoadmaps}
-      renderContent={(roadmaps) => <RoadmapGrid roadmaps={roadmaps} />}
+      renderContent={(roadmaps) => (
+        <RoadmapGrid roadmaps={roadmaps} handleClick={handleCardClick} />
+      )}
     />
   );
 }

@@ -3,6 +3,7 @@ type LearningStatus = 'notstarted' | 'inprogress' | 'completed';
 interface PlainRoadmap {
   id: string;
   title: string;
+  description: string;
   imageUrl: string;
   isSaved?: boolean;
 }
@@ -73,4 +74,12 @@ interface LearningItemMaterial {
   title: string;
   url: string;
   type: MaterialType;
+}
+
+type CreatedRoadmapsStartus = 'draft' | 'published';
+interface CreateDraftRoadmapPayload {
+  title: string;
+  description: string;
+  imageUrl?: string;
+  status: CreatedRoadmapsStartus;
 }
