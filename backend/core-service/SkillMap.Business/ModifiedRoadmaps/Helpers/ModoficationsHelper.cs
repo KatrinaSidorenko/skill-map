@@ -8,16 +8,6 @@ namespace SkillMap.Business.Roadmaps.Helpers;
 
 public static class ModificationsHelper
 {
-    public static (string TragetId, string SourceId) GetConnectionPoints(this string connection)
-    {
-        var parts = connection.Split("-");
-        if (parts.Length != 2)
-        {
-            return (null, null);
-        }
-
-        return (parts[0], parts[1]);
-    }
     public static ModifiedNode MapToModifiedNode(this RoadmapModification modification)
     {
         var item = modification?.Metadata.DeserializeOrDefault<LearningItem>();

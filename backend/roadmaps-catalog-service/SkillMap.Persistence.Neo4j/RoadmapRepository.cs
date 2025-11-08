@@ -462,6 +462,30 @@ RETURN roadmapId, count(DISTINCT n) AS totalTopicsAndSubtopics;
         }
     }
 
+    public async Task<Result<bool>> DeleteEdge(string sourceId, string targetId, CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+        try
+        {
+            using var session = Driver.AsyncSession(s => s.WithDatabase(DbSettings.Name));
+            var query = @"
+                MATCH (source)-[r]->(target)
+                WHERE source.id = $sourceId AND target.id = $targetId
+                DELETE r";
+            await session.ExecuteWriteAsync(async tx =>
+            {
+                await tx.RunAsync(query, new { sourceId, targetId });
+            });
+            await session.CloseAsync();
+            return Result.Success(true);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to delete edge from {sourceId} to {targetId}", sourceId, targetId);
+            return ResultType.FailedToGetRoadmap<bool>(ex.Message);
+        }
+    }
+
     public async Task<Result<bool>> DeleteRoadmap(string roadmapId, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();

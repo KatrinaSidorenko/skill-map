@@ -150,7 +150,7 @@ public class CustomizedRoadmapsService(
 
     public async Task<Result<bool>> SaveDeleteItemChange(long userId, string roadmapId, DeleteLearningItemChange itemChange, CancellationToken ct)
     {
-        var action = itemChange.Type.ToLower() == CommonConstants.Node ? ModificationAction.DeleteItem : ModificationAction.DeleteConnection;
+        var action = itemChange.Type.ToLower() == CommonHelpers.Node ? ModificationAction.DeleteItem : ModificationAction.DeleteConnection;
         var modification = new RoadmapModification
         {
             ExternalItemId = itemChange.Id,

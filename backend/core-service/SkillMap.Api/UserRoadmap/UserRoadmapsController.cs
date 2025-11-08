@@ -91,7 +91,7 @@ public class UserRoadmapsController : BaseController
     [HttpPost("delete-item/{roadmapId}")]
     public async Task<IActionResult> DeleteLearningItem([FromRoute] string roadmapId, [FromBody] DeleteLearningItemRequest request, CancellationToken ct)
     {
-        await RoadmapService.DeleteRoadmapElement(roadmapId, request.Id, ct);
+        await RoadmapService.DeleteRoadmapElement(roadmapId, request.Id, request.Type, ct);
         return Ok();
     }
 
