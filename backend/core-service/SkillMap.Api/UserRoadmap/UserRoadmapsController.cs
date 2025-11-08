@@ -13,7 +13,7 @@ using SkillMap.Api.UserRoadmaps.Models;
 using SkillMap.Business.UserRoadmaps;
 using SkillMap.Core.Constants;
 using CreateEdgeRequest = SkillMap.Api.ModifiedRoadmap.Models.CreateEdgeRequest;
-using CreateNodeRequest = SkillMap.Api.Roadmap.Models.CreateNodeRequest;
+//using CreateNodeRequest = SkillMap.Api.Roadmap.Models.CreateNodeRequest;
 
 namespace SkillMap.Api.UserRoadmaps;
 
@@ -68,13 +68,13 @@ public class UserRoadmapsController : BaseController
         });
     }
 
-    [HttpPost("create-item/{roadmapId}")]
-    public async Task<IActionResult> CreateLearningItem([FromRoute]string roadmapId, [FromBody] CreateNodeRequest request, CancellationToken ct)
-    {
-        var nodeDto = request.ToNodeDto(roadmapId);
-        await RoadmapService.CreateNode(roadmapId, nodeDto, ct);
-        return NoContent();
-    }
+    //[HttpPost("create-item/{roadmapId}")]
+    //public async Task<IActionResult> CreateLearningItem([FromRoute]string roadmapId, [FromBody]CreateNodeRequest request, CancellationToken ct)
+    //{
+    //    var nodeDto = request.ToNodeDto(roadmapId);
+    //    await RoadmapService.CreateNode(roadmapId, nodeDto, ct);
+    //    return NoContent();
+    //}
 
     [HttpPost("create-connection/{roadmapId}")]
     public async Task<IActionResult> CreateLearningItemConnection([FromRoute]string roadmapId, [FromBody] CreateEdgeRequest request, CancellationToken ct)
