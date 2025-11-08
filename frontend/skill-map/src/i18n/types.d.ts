@@ -68,6 +68,21 @@ interface ILocalization {
     roadmapCreated: string;
     failedToCreateRoadmap: string;
     yourRoadmaps: string;
+    roadmapUpdated: string;
+    failedToUpdateRoadmap: string;
+    editRoadmap: string;
+    update: string;
+
+    public: string;
+    private: string;
+    totalNodes: string;
+    edit: string;
+    openInEditor: string;
+    deleteError: string;
+
+    roadmapIsPublicHelp: string;
+    roadmapIsPrivateHelp: string;
+    isPublic: string;
   };
   roadmaps: {
     search: string;
@@ -80,5 +95,8 @@ interface ILocalization {
     completed: string;
     notstarted: string;
     saved: string;
-  }
+  };
+  general: {
+    notFound: string;
+  };
 }

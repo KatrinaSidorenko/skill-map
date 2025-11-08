@@ -70,7 +70,23 @@
     "fillRequiredFields": "Please fill in all required fields.",
     "roadmapCreated": "Roadmap Created",
     "failedToCreateRoadmap": "Failed to Create Roadmap",
-    "yourRoadmaps": "Your Roadmaps"
+    "yourRoadmaps": "Your Roadmaps",
+
+    "roadmapUpdated": "Roadmap Updated",
+    "failedToUpdateRoadmap": "Failed to Update Roadmap",
+    "editRoadmap": "Edit Roadmap",
+    "update": "Update",
+
+    "public": "Public",
+    "private": "Private",
+    "totalNodes": "Total Nodes",
+    "edit": "Edit",
+    "openInEditor": "Open in Editor",
+    "deleteError": "Failed to delete. Please try again.",
+
+    "isPublic": "Is Public",
+    "roadmapIsPublicHelp": "This roadmap will be visible to everyone.",
+    "roadmapIsPrivateHelp": "This roadmap will be visible only to you."
   },
   "roadmaps": {
     "search": "Search ...",
@@ -86,5 +102,8 @@
   },
   "erros": {
     "SE6": "Not found"
+  },
+  "general": {
+    "notFound": "Not Found"
   }
 }

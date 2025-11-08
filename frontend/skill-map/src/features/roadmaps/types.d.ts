@@ -6,6 +6,9 @@ interface PlainRoadmap {
   description: string;
   imageUrl: string;
   isSaved?: boolean;
+  isPublic?: boolean;
+  totalNodes?: number;
+  createdAt?: string;
 }
 
 interface SavedPlainRoadmap extends PlainRoadmap {
@@ -76,10 +79,25 @@ interface LearningItemMaterial {
   type: MaterialType;
 }
 
-type CreatedRoadmapsStartus = 'draft' | 'published';
 interface CreateDraftRoadmapPayload {
   title: string;
   description: string;
   imageUrl?: string;
-  status: CreatedRoadmapsStartus;
+  isPublic: boolean;
+}
+
+interface UpdateUserRoadmapRequest {
+  title?: string;
+  description?: string;
+  imageUrl?: string;
+  isPublic?: boolean;
+}
+
+interface CreatedUserRoadmap {
+  id: string;
+  title: string;
+  description: string;
+  imageUrl?: string;
+  isPublic: boolean;
+  createdAt: string;
 }

@@ -13,4 +13,5 @@ public interface IUserRoadmapsService
     Task<Result<PaginationResult<List<PlainRoadmapDto>>>> GetUserCreatedRoadmaps(long userId, SearchingParams @params, CancellationToken ct);
     Task<Result<string>> CreateUserRoadmap(long userId, PlainRoadmapDto roadmapDto, CancellationToken ct);
     Task<Result<bool>> LinkRoadmap(long userId, string roadmapId, CancellationToken ct, bool isOwner = false);
+    Task<Result<PlainRoadmapDto>> GetCreatedUserRoadmap(long userId, string roadmapId, CancellationToken ct);
 }

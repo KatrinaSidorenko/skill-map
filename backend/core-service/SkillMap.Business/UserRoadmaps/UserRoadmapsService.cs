@@ -110,4 +110,18 @@ public class UserRoadmapsService(IRepository<UserRoadmap> userRoadmapsRepository
 
         return Result.Success(true);
     }
+    public async Task<Result<PlainRoadmapDto>> GetCreatedUserRoadmap(long userId, string roadmapId, CancellationToken ct)
+    {
+        var dbUserRoadmapResult = await userRoadmapsRepository.GetFirstOrDefaultAsync(ur => ur.UserId == userId && ur.RoadmapId == roadmapId && ur.IsOwner && ur.IsActive, ct: ct);
+        if (!dbUserRoadmapResult.HasData)
+        {
+            return ResultType.UserRoadmapNotFound<PlainRoadmapDto>(userId, roadmapId);
+        }
+        var plainRoadmapsResult = await roadmapService.GetPlainRoadmapsByIds(new List<string> { roadmapId }, new SearchingParams("", new PaginationParams(1, 1)), ct, excludePrivate: false);
+        if (!plainRoadmapsResult.IsSuccessful || plainRoadmapsResult.Data.Result.Count == 0)
+        {
+            return ResultType.FailedToUpdateUserRoadmap<PlainRoadmapDto>(userId, roadmapId);
+        }
+        return Result.Success(plainRoadmapsResult.Data.Result.FirstOrDefault());
+    }
 }

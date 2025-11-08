@@ -91,7 +91,7 @@ public class UserRoadmapsController : BaseController
     [HttpPost("delete-item/{roadmapId}")]
     public async Task<IActionResult> DeleteLearningItem([FromRoute] string roadmapId, [FromBody] DeleteLearningItemRequest request, CancellationToken ct)
     {
-        await RoadmapService.DeleteRoadmapElement(roadmapId, request.Id, ct);
+        await RoadmapService.DeleteRoadmapElement(roadmapId, request.Id, request.Type, ct);
         return Ok();
     }
 
@@ -132,5 +132,12 @@ public class UserRoadmapsController : BaseController
         
         await RoadmapService.DeleteRoadmap(roadmapId, ct);
         return NoContent();
+    }
+
+    [HttpGet("plain/{roadmapId}")]
+    public async Task<IActionResult> GetPlainRoadmap([FromRoute] string roadmapId, CancellationToken ct)
+    {
+        var result = await UserRoadmapsService.GetCreatedUserRoadmap(GetUserId(), roadmapId, ct);
+        return Response(result, (r) => Ok(r.Data));
     }
 }

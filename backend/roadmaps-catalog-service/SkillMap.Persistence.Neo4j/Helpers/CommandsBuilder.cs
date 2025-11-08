@@ -15,7 +15,7 @@ public static class CommandsBuilder
         var trueValue = NodeProps.True;
 
         return $@"CASE
-                    WHEN {isPublicProp} = {trueValue} OR {isPublicProp} IS NULL THEN true
+                    WHEN {isPublicProp} = '{trueValue}' OR {isPublicProp} IS NULL THEN true
                     ELSE false
                   END
 ";

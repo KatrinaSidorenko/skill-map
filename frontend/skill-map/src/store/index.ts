@@ -6,6 +6,7 @@ import accountSlice from '@/features/account/store';
 import { accountApi } from '@/features/account/api';
 import roadmapEditorSlice from '@/features/roadmaps/editor/store';
 import roadmapSlice from '@/features/roadmaps/roadmap/store';
+import roadmapViewSlice from '@/features/roadmaps/roadmap-view/store';
 
 export const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ export const store = configureStore({
     [accountApi.reducerPath]: accountApi.reducer,
     [roadmapEditorSlice.name]: roadmapEditorSlice.reducer,
     [roadmapSlice.name]: roadmapSlice.reducer,
+    [roadmapViewSlice.name]: roadmapViewSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()

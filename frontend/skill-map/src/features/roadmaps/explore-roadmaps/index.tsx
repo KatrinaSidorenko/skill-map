@@ -6,6 +6,7 @@ import SearchContainer from '@/components/search-container';
 import useLocalization from '@/i18n/useLocalization';
 import { defaultPagination } from '../helpers';
 import { useRouter } from 'next/navigation';
+import { RoadmapCard } from '@/components/roadmap/roadmapCard';
 
 export default function ExploreRoadmapsPage() {
   const { pageSize } = defaultPagination;
@@ -30,13 +31,24 @@ export default function ExploreRoadmapsPage() {
     router.push(`/roadmap/${id}`);
   };
 
+  const renderRoadmapCard = (roadmap: PlainRoadmap) => (
+    <RoadmapCard
+      key={roadmap.id}
+      roadmap={roadmap}
+      handleClick={handleCardClick}
+    />
+  );
+
   return (
     <SearchContainer
       placeholder={getRoadmapsTranslations('search')}
       pageSize={pageSize}
       fetchData={getRoadmaps}
       renderContent={(roadmaps) => (
-        <RoadmapGrid roadmaps={roadmaps} handleClick={handleCardClick} />
+        <RoadmapGrid
+          roadmaps={roadmaps}
+          renderRoadmapCard={renderRoadmapCard}
+        />
       )}
     />
   );

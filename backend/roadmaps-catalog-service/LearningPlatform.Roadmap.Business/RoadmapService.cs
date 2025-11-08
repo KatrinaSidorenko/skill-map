@@ -70,6 +70,14 @@ public class RoadmapService(
     }
     public async Task<Result<PaginationResult<List<PlainRoadmapDto>>>> GetPlainRoadmapsByIds(List<string> roadmapIds, SearchingParams @params, CancellationToken ct, bool excludePrivate = true)
     {
+        if ((roadmapIds ?? []).Count <= 0)
+        {
+            return Result.Success(new PaginationResult<List<PlainRoadmapDto>>
+            {
+                TotalCount = 0,
+                Result = [],
+            });
+        }
         var paginatedResult = await roadmapRepository.GetPublicPlainRoadmapsByIds(roadmapIds, @params, ct, excludePrivate);
         if (!paginatedResult.IsSuccessful)
         {
@@ -152,7 +160,7 @@ public class RoadmapService(
             throw new Exception(errorMessage);
         }
     }
-    public async Task DeleteRoadmapElement(string roadmapId, string itemId, CancellationToken ct)
+    public async Task DeleteRoadmapElement(string roadmapId, string itemId, string deleteItemType, CancellationToken ct)
     {
         if (roadmapId == null)
         {
@@ -161,6 +169,24 @@ public class RoadmapService(
         if (itemId == null)
         {
             throw new ArgumentNullException(nameof(itemId));
+        }
+
+        if (deleteItemType.ToLower().ToLower() == CommonHelpers.Edge)
+        {
+            var (sourceId, targetId) = itemId.GetConnectionPoints();
+            if (string.IsNullOrEmpty(targetId) || string.IsNullOrEmpty(sourceId))
+            {
+                throw new ArgumentException("Invalid edge itemId format. Expected format: 'sourceId-targetId'");
+            }
+
+            var deleteEdgeResult = await roadmapRepository.DeleteEdge(sourceId, targetId, ct);
+            if (!deleteEdgeResult.IsSuccessful)
+            {
+                var errorMessage = $"Failed to delete edge from {sourceId} to {targetId}: {deleteEdgeResult.Message}";
+                logger.LogError(errorMessage);
+                throw new Exception(errorMessage);
+            }
+            return;
         }
 
         var result = await roadmapRepository.DeleteRoadmapElement(roadmapId, itemId, ct);

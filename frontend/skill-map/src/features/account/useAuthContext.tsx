@@ -39,9 +39,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     login(token);
   }
 
+  const fetchUserData = async () => {
+    try {
+      await getMeTrigger().unwrap();
+    } catch (error) {
+      console.error('Failed to fetch user data:', error);
+      localStorage.removeItem(TOKEN_KEY);
+      setIsAuthenticated(false);
+    }
+  };
+
   useEffect(() => {
     if (SKIP_AUTH_PAGES.some((p) => path.includes(p))) {
       console.log('Skipping auth check for path:', path);
+      return;
+    }
+
+    const storageToken = localStorage.getItem(TOKEN_KEY);
+    if (storageToken && !isAuthenticated) {
+      console.log('Token found in localStorage, setting authenticated state.');
+      login(storageToken);
+      setIsAuthenticated(true);
+      fetchUserData().finally(() => setIsLoading(false));
       return;
     }
 
