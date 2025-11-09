@@ -9,6 +9,6 @@ public class TopicQuestionSetting
     [JsonProperty("questionsCount")]
     public int QuestionsCount { get; set; }
 
-    [JsonProperty("type")]
-    public TestQuestionType Type { get; set; }
+    [JsonProperty("types")]
+    public List<TestQuestionType> Types { get; set; }
 }

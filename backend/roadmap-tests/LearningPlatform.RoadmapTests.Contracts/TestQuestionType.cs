@@ -23,7 +23,7 @@ public static class TestQuestionTypeExtensions
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
     }
-    public static TestQuestionType FromQuestionTypeString(string type)
+    public static TestQuestionType FromQuestionTypeString(this string type)
     {
         return type.ToLower() switch
         {

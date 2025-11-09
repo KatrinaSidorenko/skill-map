@@ -16,6 +16,9 @@ public class QuestionDto
     public string Id { get; set; }
     [JsonProperty("text")]
     public string Text { get; set; }
+    [JsonProperty("type")]
+    public TestQuestionType Type { get; set; }
+
     [JsonProperty("answers")]
     public List<AnswerDto> Answers { get; set; }
 }

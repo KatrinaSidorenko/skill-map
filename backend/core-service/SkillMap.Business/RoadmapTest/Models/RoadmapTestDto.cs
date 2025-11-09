@@ -5,13 +5,17 @@ namespace SkillMap.Business.RoadmapTest.Models;
 
 public class RoadmapTestDao
 {
+    public string Id { get; set; }
     public string RoadmapId { get; set; }
-    public List<TopicQuestionsDto> Questions { get; set; }
+    public List<TopicQuestionsDto> TopicQuestions { get; set; }
     public Dictionary<string, TopicQuestionSetting> TopicSettings { get; set; }
 }
 
 public class RoadmapTestResult
 {
+    [JsonProperty("testId")]
+    public string TestId { get; set; }
+    [JsonProperty("questions")]
     public List<QuestionResult> Questions { get; set; }
 }
 
@@ -23,6 +27,8 @@ public class QuestionResult
     public string TopicId { get; set; }
     [JsonProperty("text")]
     public string Text { get; set; }
+    [JsonProperty("type")]
+    public string Type { get; set; }
     [JsonProperty("answers")]
     public List<AnswerResult> Answers { get; set; }
 }

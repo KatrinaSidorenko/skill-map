@@ -4,7 +4,9 @@ using LearningPlatform.RoadmapTests.Contracts.Models;
 using Microsoft.Extensions.Caching.Memory;
 using SkillMap.Business.RoadmapTest.Models;
 using SkillMap.Business.UserRoadmaps;
+using SkillMap.Shared.Extensions;
 using SkillMap.Shared.Results;
+using System.Security.Cryptography.X509Certificates;
 
 namespace SkillMap.Business.RoadmapTest;
 
@@ -22,6 +24,7 @@ public class RoadmapTestService(
     IMemoryCache memoryCache) : IRoadmapTestService
 {
     private const string RoadmapTestCacheKeyPrefix = "RoadmapTest_";
+
     public async Task<RoadmapTestResult> GenerateRoadmapTest(long userId, string roadmapId, RoadmapTestConfig config, CancellationToken ct)
     {
         var userRoadmapResult = await userRoadmapsService.GetUserRoadmap(userId, roadmapId, ct);
@@ -48,21 +51,24 @@ public class RoadmapTestService(
 
         var roadmapTest = new RoadmapTestDao
         {
+            Id = $"{userId}_{roadmapId}",
             RoadmapId = roadmapId,
-            Questions = generateTestQuestions,
+            TopicQuestions = generateTestQuestions,
             TopicSettings = topicSettings.ToDictionary(ts => ts.Topic.Id, ts => ts.Setting)
         }; // todo: save to db 
 
         // for test purposes save to memory cache
-        memoryCache.Set(RoadmapTestCacheKeyPrefix + $"{userId}_{roadmapId}", roadmapTest, TimeSpan.FromHours(1));
+        memoryCache.Set(RoadmapTestCacheKeyPrefix + roadmapTest.Id, roadmapTest, TimeSpan.FromHours(1));
 
         return new RoadmapTestResult
         {
-            Questions = roadmapTest.Questions.SelectMany(t => t.Questions.Select(q => new QuestionResult
+            TestId = roadmapTest.Id,
+            Questions = roadmapTest.TopicQuestions.SelectMany(t => t.Questions.Select(q => new QuestionResult
             {
                 Id = q.Id,
                 TopicId = t.Id,
                 Text = q.Text,
+                Type = q.Type.ToQuestionTypeString(),
                 Answers = q.Answers.Select(a => new AnswerResult
                 {
                     Id = a.Id,
@@ -90,8 +96,74 @@ public class RoadmapTestService(
        {
            DifficultyLevel = config.DifficultyLevel.FromDifficultyString(),
            QuestionsCount = analysis.QuestionsCount,
-           Type = TestQuestionType.SingleChoice,
+           Types = [TestQuestionType.SingleChoice],
        });
     }
 
+    public async Task<AnswersCheckResult> CheckRoadmapTest(long userId, string testId, RoadmapTestAnswers userAnswers, CancellationToken ct)
+    {
+        //todo: get test from db or cache
+        if (!memoryCache.TryGetValue<RoadmapTestDao>(RoadmapTestCacheKeyPrefix + testId, out var roadmapTest))
+        {
+            throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"Roadmap test with id {testId} not found");
+        }
+
+        var targetTopicQuestions = roadmapTest.TopicQuestions.ToDictionary(t => t.Id, 
+            t => t.Questions.ToDictionary(q => q.Id, q => q.Answers.ToDictionary(a => a.Id, a => a.IsCorrect)));
+        var userAnswersDict = userAnswers.QuestionAnswers.ToDictionary(qa => qa.QuestionId, qa => qa);
+        var analysisByTopic = roadmapTest.TopicQuestions.ToDictionary(t => t.Id, t =>
+        {
+            var questionsAnalysis = t.Questions.ToDictionary(q => q.Id, q => AnalyzeQuestionAnswer(q, userAnswersDict.GetOrDefault(q.Id)));
+            return new TopicAnswersAnalysis
+            {
+                QuestionsAnalysis = questionsAnalysis
+            };
+        });
+        var questionsAnalysis = analysisByTopic.SelectMany(t => t.Value.QuestionsAnalysis).ToDictionary(qa => qa.Key, qa => qa.Value);
+
+        //todo: save analysis result to db
+
+        return new AnswersCheckResult
+        {
+            QuestionResults = questionsAnalysis.ToDictionary(qa => qa.Key, qa =>
+            {
+                return qa.Value switch
+                {
+                    SingleAnswerQuestionAnalysisResult single => new CheckedSingleAnswerQuestion
+                    {
+                        QuestionId = qa.Key,
+                        AchievedPoints = single.AchievedPoints,
+                        TotalPossiblePoints = single.TotalPossiblePoints,
+                        IsCorrect = single.IsCorrect,
+                        CorrectAnswerId = single.CorrectAnswerId,
+                    } as CheckedQuestion,
+                    _ => throw new LearningPlatformException(ErrorCode.INTERNAL_ERROR, $"Unsupported question type {qa.Value.QuestionType}"),
+                };
+            })
+        };
+    }
+
+    // analysis for each question
+    private QuestionAnalysisResult AnalyzeQuestionAnswer(QuestionDto questionDto, QuestionAnswer? userAnswer)
+    {
+        switch(questionDto.Type)
+        {
+            case TestQuestionType.SingleChoice:
+                {
+                    var singleChoiceAnswer = userAnswer as SingleChoiceAnswer;
+                    var correctAnswer = questionDto.Answers.FirstOrDefault(a => a.IsCorrect);
+                    var isCorrect = correctAnswer != null && singleChoiceAnswer != null && singleChoiceAnswer.SelectedAnswerId == correctAnswer.Id;
+                    return new SingleAnswerQuestionAnalysisResult
+                    {
+                        QuestionType = questionDto.Type,
+                        TotalPossiblePoints = 1,
+                        AchievedPoints = isCorrect ? 1 : 0,
+                        SelectedAnswerId = singleChoiceAnswer?.SelectedAnswerId,
+                        CorrectAnswerId = correctAnswer?.Id
+                    };
+                }
+            default:
+                throw new LearningPlatformException(ErrorCode.INTERNAL_ERROR, $"Unsupported question type {questionDto.Type}");
+        }
+    }
 }
