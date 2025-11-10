@@ -12,15 +12,15 @@ public class RoadmapTestDao
     public RoadmapTestConfigDto TestConfig { get; set; }
 }
 
-public class RoadmapTestResult
+public class RoadmapTestResultDto
 {
     [JsonProperty("testId")]
     public string TestId { get; set; }
     [JsonProperty("questions")]
-    public List<QuestionResult> Questions { get; set; }
+    public List<QuestionResultDto> Questions { get; set; }
 }
 
-public class QuestionResult
+public class QuestionResultDto
 {
     [JsonProperty("id")]
     public string Id { get; set; }

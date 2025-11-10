@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace SkillMap.Persistence;
 
+// potential problem with transactions if multiple repositories are used in a single service
 internal class Repository<TEntity> : IRepository<TEntity>
     where TEntity : class
 {
