@@ -6,11 +6,11 @@ namespace SkillMap.Business.RoadmapTest;
 
 public static class RoadmapTestMapper
 {
-    public static RoadmapTestResult ToTestResult(this RoadmapTestDao dao)
+    public static RoadmapTestResult ToTestResult(this RoadmapTestDao dao, string testId)
     {
         return new RoadmapTestResult
         {
-            TestId = dao.Id,
+            TestId = testId,
             Questions = dao.TopicQuestions.SelectMany(t => t.Questions.Select(q => new QuestionResult
             {
                 Id = q.Id,
@@ -26,7 +26,7 @@ public static class RoadmapTestMapper
         };
     }
 
-    public static AnswersCheckResult ToCheckedResults(this TestAnswersAnalysis analysis)
+    public static AnswersCheckResult ToCheckedResults(this RoadmapTestResultsDto analysis)
     {
         return new AnswersCheckResult
         {
@@ -34,7 +34,7 @@ public static class RoadmapTestMapper
             {
                 return qa.Value switch
                 {
-                    SingleAnswerQuestionAnalysisResult single => new CheckedSingleAnswerQuestion
+                    SingleAnswerQuestionAnalysisResultDto single => new CheckedSingleAnswerQuestion
                     {
                         QuestionId = qa.Key,
                         AchievedPoints = single.AchievedPoints,

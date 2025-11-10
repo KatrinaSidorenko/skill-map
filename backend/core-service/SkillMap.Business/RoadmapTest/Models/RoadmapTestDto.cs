@@ -8,7 +8,8 @@ public class RoadmapTestDao
     public string Id { get; set; }
     public string RoadmapId { get; set; }
     public List<TopicQuestionsDto> TopicQuestions { get; set; }
-    public Dictionary<string, TopicQuestionSetting> TopicSettings { get; set; }
+    public Dictionary<string, TopicQuestionsSettingDto> TopicSettings { get; set; }
+    public RoadmapTestConfigDto TestConfig { get; set; }
 }
 
 public class RoadmapTestResult

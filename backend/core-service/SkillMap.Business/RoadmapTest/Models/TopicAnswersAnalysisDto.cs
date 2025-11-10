@@ -2,31 +2,31 @@
 
 namespace SkillMap.Business.RoadmapTest.Models;
 
-public class TestAnswersAnalysis
+public class RoadmapTestResultsDto
 {
-    public Dictionary<string, TopicAnswersAnalysis> TopicsAnalysis { get; set; }
+    public Dictionary<string, TopicAnswersAnalysisDto> TopicsAnalysis { get; set; }
     public int TotalPossiblePoints => TopicsAnalysis.Values.Sum(t => t.TotalPossiblePoints);
     public int AchievedPoints => TopicsAnalysis.Values.Sum(t => t.AchievedPoints);
-    public TestAnswersAnalysis(Dictionary<string, TopicAnswersAnalysis> topicsAnalysis)
+    public RoadmapTestResultsDto(Dictionary<string, TopicAnswersAnalysisDto> topicsAnalysis)
     {
         TopicsAnalysis = topicsAnalysis;
     }
 }
-public class TopicAnswersAnalysis
+public class TopicAnswersAnalysisDto
 {
-    public Dictionary<string, QuestionAnalysisResult> QuestionsAnalysis { get; set; }
+    public Dictionary<string, QuestionAnalysisResultDto> QuestionsAnalysis { get; set; }
     public int TotalPossiblePoints => QuestionsAnalysis.Values.Sum(q => q.TotalPossiblePoints);
     public int AchievedPoints => QuestionsAnalysis.Values.Sum(q => q.AchievedPoints);
 }
 
-public class QuestionAnalysisResult
+public class QuestionAnalysisResultDto
 {
     public int TotalPossiblePoints { get; set; }
     public int AchievedPoints { get; set; }
     public TestQuestionType QuestionType { get; set; }
 }
 
-public class SingleAnswerQuestionAnalysisResult : QuestionAnalysisResult
+public class SingleAnswerQuestionAnalysisResultDto : QuestionAnalysisResultDto
 {
     public string SelectedAnswerId { get; set; }
     public string CorrectAnswerId { get; set; }

@@ -15,8 +15,7 @@ public class RoadmapTestService(
     IRoadmapService roadmapService,
     IUserTestService userTestsService) : IRoadmapTestService
 {
-
-    public async Task<RoadmapTestResult> GenerateRoadmapTest(long userId, string roadmapId, RoadmapTestConfig config, CancellationToken ct)
+    public async Task<RoadmapTestResult> GenerateRoadmapTest(long userId, string roadmapId, RoadmapTestConfigDto config, CancellationToken ct)
     {
         var userRoadmapResult = await userRoadmapsService.GetUserRoadmap(userId, roadmapId, ct);
         if (!userRoadmapResult.IsSuccessful)
@@ -43,29 +42,29 @@ public class RoadmapTestService(
         var roadmapTest = new RoadmapTestDao
         {
             TopicQuestions = generateTestQuestions,
-            TopicSettings = topicSettings.ToDictionary(ts => ts.Topic.Id, ts => ts.Setting)
+            TopicSettings = topicSettings.ToDictionary(ts => ts.Topic.Id, ts => ts.Setting),
+            TestConfig = config
         }; 
 
-        await userTestsService.SaveUserTest(userId, roadmapId, RoadmapTestType.Initial, roadmapTest, ct);
-
-        return roadmapTest.ToTestResult();
+        var testId = await userTestsService.SaveUserTest(userId, roadmapId, RoadmapTestType.Initial, roadmapTest, ct);
+        return roadmapTest.ToTestResult(testId);
     }
 
-    private async Task<Dictionary<string, TopicAnalysis>> CalculateTopicsAnalysis(List<Topic> topics, RoadmapTestConfig config, CancellationToken ct)
+    private async Task<Dictionary<string, TopicAnalysis>> CalculateTopicsAnalysis(List<Topic> topics, RoadmapTestConfigDto config, CancellationToken ct)
     {
         // calculate priorities and coefficients for topics based on config
         return await Task.FromResult(topics.ToDictionary(t => t.Id, t => new TopicAnalysis { Id = t.Id, Priority = "high", Coefficient = 1.0, QuestionsCount = 1 }));
     }
-    private async Task<List<Topic>> FilterTopicByTestConfig(Dictionary<string, TopicAnalysis> topicsAnalysis,  List<Topic> topics, RoadmapTestConfig config, CancellationToken ct)
+    private async Task<List<Topic>> FilterTopicByTestConfig(Dictionary<string, TopicAnalysis> topicsAnalysis,  List<Topic> topics, RoadmapTestConfigDto config, CancellationToken ct)
     {
         // get priorities or coefficeint snad filter
         // filter topics based on config
         return await Task.FromResult(topics.Take(3).ToList());
     }
-    private (Topic Topic, TopicQuestionSetting Setting) GetTopicSettings(Topic topic, TopicAnalysis analysis, RoadmapTestConfig config, CancellationToken ct)
+    private (Topic Topic, TopicQuestionsSettingDto Setting) GetTopicSettings(Topic topic, TopicAnalysis analysis, RoadmapTestConfigDto config, CancellationToken ct)
     {
         // map config to topic settings
-       return (topic, new TopicQuestionSetting
+       return (topic, new TopicQuestionsSettingDto
        {
            DifficultyLevel = config.DifficultyLevel.FromDifficultyString(),
            QuestionsCount = analysis.QuestionsCount,
@@ -80,19 +79,19 @@ public class RoadmapTestService(
         var analysisByTopic = roadmapTest.TopicQuestions.ToDictionary(t => t.Id, t =>
         {
             var questionsAnalysis = t.Questions.ToDictionary(q => q.Id, q => AnalyzeQuestionAnswer(q, userAnswersDict.GetOrDefault(q.Id)));
-            return new TopicAnswersAnalysis
+            return new TopicAnswersAnalysisDto
             {
                 QuestionsAnalysis = questionsAnalysis
             };
         });
 
-        var testAnalysisResult = new TestAnswersAnalysis(analysisByTopic);
+        var testAnalysisResult = new RoadmapTestResultsDto(analysisByTopic);
         await userTestsService.SaveTestAnalysisResult(userId, testId, testAnalysisResult, ct);
         return testAnalysisResult.ToCheckedResults();
     }
 
     // analysis for each question
-    private QuestionAnalysisResult AnalyzeQuestionAnswer(QuestionDto questionDto, QuestionAnswer? userAnswer)
+    private QuestionAnalysisResultDto AnalyzeQuestionAnswer(QuestionDto questionDto, QuestionAnswer? userAnswer)
     {
         switch(questionDto.Type)
         {
@@ -101,7 +100,7 @@ public class RoadmapTestService(
                     var singleChoiceAnswer = userAnswer as SingleChoiceAnswer;
                     var correctAnswer = questionDto.Answers.FirstOrDefault(a => a.IsCorrect);
                     var isCorrect = correctAnswer != null && singleChoiceAnswer != null && singleChoiceAnswer.SelectedAnswerId == correctAnswer.Id;
-                    return new SingleAnswerQuestionAnalysisResult
+                    return new SingleAnswerQuestionAnalysisResultDto
                     {
                         QuestionType = questionDto.Type,
                         TotalPossiblePoints = 1,

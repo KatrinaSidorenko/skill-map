@@ -5,5 +5,5 @@ namespace SkillMap.Business.RoadmapTest;
 public interface IRoadmapTestService
 {
     Task<AnswersCheckResult> CheckRoadmapTest(long userId, string testId, RoadmapTestAnswers userAnswers, CancellationToken ct);
-    Task<RoadmapTestResult> GenerateRoadmapTest(long userId, string roadmapId, RoadmapTestConfig config, CancellationToken ct);
+    Task<RoadmapTestResult> GenerateRoadmapTest(long userId, string roadmapId, RoadmapTestConfigDto config, CancellationToken ct);
 }

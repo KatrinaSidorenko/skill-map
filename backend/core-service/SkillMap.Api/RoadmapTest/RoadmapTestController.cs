@@ -17,7 +17,7 @@ public class RoadmapTestController : BaseController
     }
     // get test for roadmap
     [HttpPost("{roadmapId}")]
-    public async Task<IActionResult> GenerateRoadmapTest(string roadmapId, [FromBody]RoadmapTestConfig config, CancellationToken ct)
+    public async Task<IActionResult> GenerateRoadmapTest(string roadmapId, [FromBody]RoadmapTestConfigDto config, CancellationToken ct)
     {
         var response = await _roadmapTestService.GenerateRoadmapTest(GetUserId(), roadmapId, config, ct);
         return Ok(response);

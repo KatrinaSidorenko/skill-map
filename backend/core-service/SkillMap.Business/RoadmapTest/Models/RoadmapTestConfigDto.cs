@@ -2,7 +2,7 @@
 
 namespace SkillMap.Business.RoadmapTest.Models;
 
-public class RoadmapTestConfig
+public class RoadmapTestConfigDto
 {
 
     [JsonProperty("numberOfQuestions")]

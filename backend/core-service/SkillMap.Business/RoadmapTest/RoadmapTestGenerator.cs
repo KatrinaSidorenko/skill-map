@@ -7,7 +7,7 @@ namespace SkillMap.Business.RoadmapTest;
 public class RoadmapTestGenerator : IRoadmapTestGenerator
 {
     public async Task<List<TopicQuestionsDto>> GenerateRoadmapTest(
-            List<(Topic topic, TopicQuestionSetting settings)> topicsSettings,
+            List<(Topic topic, TopicQuestionsSettingDto settings)> topicsSettings,
             CancellationToken ct)
     {
         // Simulate async I/O operation (e.g., external question source)
@@ -29,7 +29,7 @@ public class RoadmapTestGenerator : IRoadmapTestGenerator
         return deserialized ?? new List<TopicQuestionsDto>();
     }
 
-    private TopicQuestionsDto GenerateTopicQuestions(Topic topic, TopicQuestionSetting settings)
+    private TopicQuestionsDto GenerateTopicQuestions(Topic topic, TopicQuestionsSettingDto settings)
     {
         var random = new Random();
         var questions = new List<QuestionDto>();
@@ -63,7 +63,7 @@ public class RoadmapTestGenerator : IRoadmapTestGenerator
         };
     }
 
-    public Task<TopicQuestionsDto> GenerateTopicQuestions(Topic topic, TopicQuestionSetting settings, CancellationToken ct)
+    public Task<TopicQuestionsDto> GenerateTopicQuestions(Topic topic, TopicQuestionsSettingDto settings, CancellationToken ct)
     {
         throw new NotImplementedException();
     }

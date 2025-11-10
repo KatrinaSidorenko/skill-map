@@ -2,7 +2,7 @@
 
 namespace LearningPlatform.RoadmapTests.Contracts.Models;
 
-public class TopicQuestionSetting
+public class TopicQuestionsSettingDto
 {
     [JsonProperty("difficultyLevel")]
     public RoadmapTestDifficultyLevel DifficultyLevel { get; set; }

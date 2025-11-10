@@ -10,13 +10,14 @@ public class UserTestService(IMemoryCache memoryCache) : IUserTestService
     private const string RoadmapTestCacheKeyPrefix = "RoadmapTest_";
 
     // todo: test type
-    public async Task SaveUserTest(long userId, string roadmapId, RoadmapTestType testType, RoadmapTestDao roadmapTest, CancellationToken ct)
+    public async Task<string> SaveUserTest(long userId, string roadmapId, RoadmapTestType testType, RoadmapTestDao roadmapTest, CancellationToken ct)
     {
         // create time save
         // save test type
         roadmapTest.RoadmapId = roadmapId;
         roadmapTest.Id = $"{userId}_{roadmapId}";
         memoryCache.Set(RoadmapTestCacheKeyPrefix + roadmapTest.Id, roadmapTest, TimeSpan.FromHours(1));
+        return await Task.FromResult(roadmapTest.Id);
     }
 
     public async Task<RoadmapTestDao> GetUserTest(long userId, string testId, CancellationToken ct)
@@ -29,7 +30,7 @@ public class UserTestService(IMemoryCache memoryCache) : IUserTestService
         return await Task.FromResult(roadmapTest);
     }
 
-    public async Task SaveTestAnalysisResult(long userId, string testId, TestAnswersAnalysis analysisResult, CancellationToken ct)
+    public async Task SaveTestAnalysisResult(long userId, string testId, RoadmapTestResultsDto analysisResult, CancellationToken ct)
     {
 
     }
