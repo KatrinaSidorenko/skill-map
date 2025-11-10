@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SkillMap.Core.Entities.UserRoadmapTest;
@@ -12,9 +13,11 @@ using SkillMap.Persistence;
 namespace SkillMap.Persistence.Migrations
 {
     [DbContext(typeof(SkillMapDbContext))]
-    partial class SkillMapDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251110195745_add-user-roadmap-tests")]
+    partial class adduserroadmaptests
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

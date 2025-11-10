@@ -10,4 +10,5 @@ public class UserRoadmap : TrackedEntity
     public virtual AppUser User { get; set; }
     public virtual ICollection<RoadmapModification> RoadmapModifications { get; set; }
     public virtual ICollection<RoadmapSnapshot> RoadmapSnapshots { get; set; }
+    public virtual ICollection<UserRoadmapTest.UserRoadmapTest> UserRoadmapTests { get; set; }
 }
