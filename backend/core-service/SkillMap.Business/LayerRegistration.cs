@@ -7,6 +7,7 @@ using SkillMap.Business.Account;
 using SkillMap.Business.Roadmaps;
 using SkillMap.Business.RoadmapTest;
 using SkillMap.Business.UserRoadmaps;
+using SkillMap.Business.UserTest;
 
 namespace SkillMap.Business;
 
@@ -20,6 +21,7 @@ public static class LayerRegistration
         //services.AddScoped<IRoadmapService, RoadmapService>();
         services.AddScoped<IRoadmapTestService, RoadmapTestService>();
         services.AddScoped<IRoadmapTestGenerator, RoadmapTestGenerator>();
+        services.AddScoped<IUserTestService, UserTestService>();
         services.AddRoadmapModule();
 
         services.AddValidatorsFromAssemblies([typeof(IAccountService).Assembly]);

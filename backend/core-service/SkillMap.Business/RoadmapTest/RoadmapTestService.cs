@@ -1,29 +1,20 @@
 ﻿using LearningPlatform.Roadmap.Business.Contracts;
 using LearningPlatform.RoadmapTests.Contracts;
 using LearningPlatform.RoadmapTests.Contracts.Models;
-using Microsoft.Extensions.Caching.Memory;
 using SkillMap.Business.RoadmapTest.Models;
 using SkillMap.Business.UserRoadmaps;
+using SkillMap.Business.UserTest;
 using SkillMap.Shared.Extensions;
 using SkillMap.Shared.Results;
-using System.Security.Cryptography.X509Certificates;
 
 namespace SkillMap.Business.RoadmapTest;
 
-public class TopicAnalysis
-{
-    public string Priority { get; set; }
-    public double Coefficient { get; set; }
-    public string Id { get; set; }
-    public int QuestionsCount { get; set; }
-}
 public class RoadmapTestService(
     IUserRoadmapsService userRoadmapsService, 
     IRoadmapTestGenerator roadmapTestGenerator, 
-    IRoadmapService roadmapService, 
-    IMemoryCache memoryCache) : IRoadmapTestService
+    IRoadmapService roadmapService,
+    IUserTestService userTestsService) : IRoadmapTestService
 {
-    private const string RoadmapTestCacheKeyPrefix = "RoadmapTest_";
 
     public async Task<RoadmapTestResult> GenerateRoadmapTest(long userId, string roadmapId, RoadmapTestConfig config, CancellationToken ct)
     {
@@ -51,31 +42,13 @@ public class RoadmapTestService(
 
         var roadmapTest = new RoadmapTestDao
         {
-            Id = $"{userId}_{roadmapId}",
-            RoadmapId = roadmapId,
             TopicQuestions = generateTestQuestions,
             TopicSettings = topicSettings.ToDictionary(ts => ts.Topic.Id, ts => ts.Setting)
-        }; // todo: save to db 
+        }; 
 
-        // for test purposes save to memory cache
-        memoryCache.Set(RoadmapTestCacheKeyPrefix + roadmapTest.Id, roadmapTest, TimeSpan.FromHours(1));
+        await userTestsService.SaveUserTest(userId, roadmapId, RoadmapTestType.Initial, roadmapTest, ct);
 
-        return new RoadmapTestResult
-        {
-            TestId = roadmapTest.Id,
-            Questions = roadmapTest.TopicQuestions.SelectMany(t => t.Questions.Select(q => new QuestionResult
-            {
-                Id = q.Id,
-                TopicId = t.Id,
-                Text = q.Text,
-                Type = q.Type.ToQuestionTypeString(),
-                Answers = q.Answers.Select(a => new AnswerResult
-                {
-                    Id = a.Id,
-                    Text = a.Text
-                }).ToList()
-            })).ToList()
-        };
+        return roadmapTest.ToTestResult();
     }
 
     private async Task<Dictionary<string, TopicAnalysis>> CalculateTopicsAnalysis(List<Topic> topics, RoadmapTestConfig config, CancellationToken ct)
@@ -102,14 +75,7 @@ public class RoadmapTestService(
 
     public async Task<AnswersCheckResult> CheckRoadmapTest(long userId, string testId, RoadmapTestAnswers userAnswers, CancellationToken ct)
     {
-        //todo: get test from db or cache
-        if (!memoryCache.TryGetValue<RoadmapTestDao>(RoadmapTestCacheKeyPrefix + testId, out var roadmapTest))
-        {
-            throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"Roadmap test with id {testId} not found");
-        }
-
-        var targetTopicQuestions = roadmapTest.TopicQuestions.ToDictionary(t => t.Id, 
-            t => t.Questions.ToDictionary(q => q.Id, q => q.Answers.ToDictionary(a => a.Id, a => a.IsCorrect)));
+        var roadmapTest = await userTestsService.GetUserTest(userId, testId, ct);
         var userAnswersDict = userAnswers.QuestionAnswers.ToDictionary(qa => qa.QuestionId, qa => qa);
         var analysisByTopic = roadmapTest.TopicQuestions.ToDictionary(t => t.Id, t =>
         {
@@ -119,28 +85,10 @@ public class RoadmapTestService(
                 QuestionsAnalysis = questionsAnalysis
             };
         });
-        var questionsAnalysis = analysisByTopic.SelectMany(t => t.Value.QuestionsAnalysis).ToDictionary(qa => qa.Key, qa => qa.Value);
 
-        //todo: save analysis result to db
-
-        return new AnswersCheckResult
-        {
-            QuestionResults = questionsAnalysis.ToDictionary(qa => qa.Key, qa =>
-            {
-                return qa.Value switch
-                {
-                    SingleAnswerQuestionAnalysisResult single => new CheckedSingleAnswerQuestion
-                    {
-                        QuestionId = qa.Key,
-                        AchievedPoints = single.AchievedPoints,
-                        TotalPossiblePoints = single.TotalPossiblePoints,
-                        IsCorrect = single.IsCorrect,
-                        CorrectAnswerId = single.CorrectAnswerId,
-                    } as CheckedQuestion,
-                    _ => throw new LearningPlatformException(ErrorCode.INTERNAL_ERROR, $"Unsupported question type {qa.Value.QuestionType}"),
-                };
-            })
-        };
+        var testAnalysisResult = new TestAnswersAnalysis(analysisByTopic);
+        await userTestsService.SaveTestAnalysisResult(userId, testId, testAnalysisResult, ct);
+        return testAnalysisResult.ToCheckedResults();
     }
 
     // analysis for each question
