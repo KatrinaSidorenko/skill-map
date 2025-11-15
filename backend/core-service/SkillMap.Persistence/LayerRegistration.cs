@@ -17,6 +17,7 @@ public static class LayerRegistration
 
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddNeo4jPersistence(configuration);
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;
     }

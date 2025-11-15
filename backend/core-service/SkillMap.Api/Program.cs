@@ -31,6 +31,10 @@ builder.Services
     .AddBusinessLayer()
     .AddPersistenceLayer(builder.Configuration);
 
+//builder.Services.AddScoped<IQuestionsGenerator, QuestionsGenerator>();
+// add memory cache for testing prototype
+builder.Services.AddMemoryCache();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

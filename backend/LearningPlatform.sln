@@ -29,6 +29,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningPlatform.Roadmap.Bu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkillMap.Persistence.Neo4j", "roadmaps-catalog-service\SkillMap.Persistence.Neo4j\SkillMap.Persistence.Neo4j.csproj", "{71FF8AE8-B466-B23D-837B-485A3AF7833D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "roadmap-tests", "roadmap-tests", "{E2B67E48-14FB-4166-BCF0-E78B1E7A5B9E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningPlatform.RoadmapTests.Contracts", "roadmap-tests\LearningPlatform.RoadmapTests.Contracts\LearningPlatform.RoadmapTests.Contracts.csproj", "{9423D07B-DAFA-4F36-9C99-0E9FE8DEF411}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +75,10 @@ Global
 		{71FF8AE8-B466-B23D-837B-485A3AF7833D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71FF8AE8-B466-B23D-837B-485A3AF7833D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71FF8AE8-B466-B23D-837B-485A3AF7833D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9423D07B-DAFA-4F36-9C99-0E9FE8DEF411}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9423D07B-DAFA-4F36-9C99-0E9FE8DEF411}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9423D07B-DAFA-4F36-9C99-0E9FE8DEF411}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9423D07B-DAFA-4F36-9C99-0E9FE8DEF411}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -88,6 +96,8 @@ Global
 		{7DB42102-2358-4C63-9840-B40888F689BA} = {52C224CE-DDC8-484F-B8EC-F5B947A9612F}
 		{1640D72E-E5C9-494B-B508-A72ED5E6484B} = {52C224CE-DDC8-484F-B8EC-F5B947A9612F}
 		{71FF8AE8-B466-B23D-837B-485A3AF7833D} = {52C224CE-DDC8-484F-B8EC-F5B947A9612F}
+		{E2B67E48-14FB-4166-BCF0-E78B1E7A5B9E} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{9423D07B-DAFA-4F36-9C99-0E9FE8DEF411} = {E2B67E48-14FB-4166-BCF0-E78B1E7A5B9E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3044A960-D773-46CB-9347-147499DCD200}

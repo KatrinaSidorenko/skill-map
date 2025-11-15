@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SkillMap.Business.Abstractions;
 using SkillMap.Core;
 using SkillMap.Core.Entities;
+using SkillMap.Core.Entities.UserRoadmapTest;
 
 namespace SkillMap.Persistence;
 
@@ -14,6 +16,8 @@ public class SkillMapDbContext : DbContext
     public DbSet<UserRoadmap> UserRoadmaps { get; set; }
     public DbSet<RoadmapModification> RoadmapModifications { get; set; }
     public DbSet<RoadmapSnapshot> RoadmapSnapshots { get; set; }
+    public DbSet<UserRoadmapTest> UserRoadmapTests { get; set; }
+    public DbSet<UserTestResult> UserRoadmapTestResults { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
