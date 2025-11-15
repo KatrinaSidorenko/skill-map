@@ -20,11 +20,7 @@ internal class UserRoadmapTestConfiguration : IEntityTypeConfiguration<UserRoadm
         builder.Property(urt => urt.TestType)
             .IsRequired()
             .HasMaxLength(50);
-
-        builder.Property(urt => urt.TestData)
-            .HasColumnType("jsonb")
-            .IsRequired(false);
-
+        builder.Property(urt => urt.TestData).IsRequired();
         builder.HasOne(urt => urt.UserRoadmap)
             .WithMany(ur => ur.UserRoadmapTests)
             .HasForeignKey(urt => urt.UserRoadmapId)

@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using SkillMap.Core.Entities.UserRoadmapTest;
 using SkillMap.Persistence;
 
 #nullable disable
@@ -180,8 +179,9 @@ namespace SkillMap.Persistence.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<RoadmapTest>("TestData")
-                        .HasColumnType("jsonb");
+                    b.Property<byte[]>("TestData")
+                        .IsRequired()
+                        .HasColumnType("bytea");
 
                     b.Property<string>("TestType")
                         .IsRequired()
@@ -218,8 +218,8 @@ namespace SkillMap.Persistence.Migrations
                     b.Property<int>("MaxPoints")
                         .HasColumnType("integer");
 
-                    b.Property<RoadmapTestResult>("ResultData")
-                        .HasColumnType("jsonb");
+                    b.Property<byte[]>("ResultData")
+                        .HasColumnType("bytea");
 
                     b.Property<int>("ScoredPoints")
                         .HasColumnType("integer");

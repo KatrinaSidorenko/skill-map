@@ -14,6 +14,7 @@ public class UserTestService(IUnitOfWork unitOfWork) : IUserTestService
     // todo: when add the test create the test result too
     public async Task<string> SaveUserTest(
         long userId,
+        long userRoadmapId,
         string roadmapId,
         RoadmapTestType testType,
         RoadmapTestDao roadmapTest,
@@ -25,11 +26,10 @@ public class UserTestService(IUnitOfWork unitOfWork) : IUserTestService
 
         var entity = new UserRoadmapTest
         {
-            UserRoadmapId = long.Parse(roadmapId),
+            UserRoadmapId = userRoadmapId,
             TestType = testType.ToFriendlyString(),
-            TestData = roadmapTest.ToEntityModel(),
         };
-
+        await entity.SetRoadmapTest(roadmapTest.ToEntityModel(), ct);
         var userRoadmapTestsRepository = unitOfWork.CreateRepository<UserRoadmapTest>();
         var addResult = await userRoadmapTestsRepository.AddAsync(entity, ct);
         if (!addResult.IsSuccessful)
@@ -51,7 +51,8 @@ public class UserTestService(IUnitOfWork unitOfWork) : IUserTestService
         if (!testResult.IsSuccessful || !testResult.HasData)
             throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"Roadmap test with id {testId} not found");
         var testEntity = testResult.Data;
-        return testEntity.TestData.ToDaoModel(testEntity.TestType, testEntity.UserRoadmapId.ToString());
+        var testData = await testEntity.GetRoadmapTest(ct);
+        return testData.ToDaoModel(testEntity.TestType, testEntity.UserRoadmapId.ToString());
     }
 
     public async Task SaveTestAnalysisResult(

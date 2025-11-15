@@ -25,10 +25,7 @@ internal class UserTestResultConfiguration : IEntityTypeConfiguration<UserTestRe
         builder.Property(utr => utr.CompletedAt)
             .IsRequired();
 
-        builder.Property(utr => utr.ResultData)
-            .HasColumnType("jsonb")
-            .IsRequired(false);
-
+        builder.Property(utr => utr.ResultData).IsRequired(false);
         builder.HasOne(utr => utr.UserRoadmapTest)
             .WithMany()
             .HasForeignKey(utr => utr.UserRoadmapTestId)

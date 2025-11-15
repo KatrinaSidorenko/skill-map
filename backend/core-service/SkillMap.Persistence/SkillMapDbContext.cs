@@ -17,7 +17,7 @@ public class SkillMapDbContext : DbContext
     public DbSet<RoadmapModification> RoadmapModifications { get; set; }
     public DbSet<RoadmapSnapshot> RoadmapSnapshots { get; set; }
     public DbSet<UserRoadmapTest> UserRoadmapTests { get; set; }
-    public DbSet<RoadmapTestResult> RoadmapTestResults { get; set; }
+    public DbSet<UserTestResult> UserRoadmapTestResults { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

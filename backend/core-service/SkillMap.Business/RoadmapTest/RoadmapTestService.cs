@@ -41,12 +41,13 @@ public class RoadmapTestService(
 
         var roadmapTest = new RoadmapTestDao
         {
+            RoadmapId = roadmapId,
             TopicQuestions = generateTestQuestions,
             TopicSettings = topicSettings.ToDictionary(ts => ts.Topic.Id, ts => ts.Setting),
             TestConfig = config
         }; 
 
-        var testId = await userTestsService.SaveUserTest(userId, roadmapId, RoadmapTestType.Initial, roadmapTest, ct);
+        var testId = await userTestsService.SaveUserTest(userId, userRoadmapResult.Data.Id, roadmapId, RoadmapTestType.Initial, roadmapTest, ct);
         return roadmapTest.ToTestResult(testId);
     }
 
