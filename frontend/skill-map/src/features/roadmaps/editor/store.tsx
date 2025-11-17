@@ -13,7 +13,6 @@ import {
   mapRoadmapToReactFlowForSaved,
   mapRoadmapToReactFlow,
 } from '../helpers';
-import { clear } from 'console';
 
 type InitialState = {
   plainRoadmap: SavedPlainRoadmap | null;

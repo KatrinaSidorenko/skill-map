@@ -27,6 +27,12 @@ public class RoadmapTestService(
             throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"User roadmap with id {roadmapId} is null for user {userId}");
         }
 
+        var (exists, savedTest) = await userTestsService.ExistsUnfinishedTest(userRoadmapResult.Data.Id, RoadmapTestType.Initial, ct);
+        if (exists && savedTest != null)
+        {
+            return savedTest.ToTestResult(savedTest.Id);
+        }
+
         var roadmapResult  = await roadmapService.GetRoadmapById(roadmapId, ct);
         if (!roadmapResult.IsSuccessful || roadmapResult.Data == null)
         {
@@ -47,7 +53,7 @@ public class RoadmapTestService(
             TestConfig = config
         }; 
 
-        var testId = await userTestsService.SaveUserTest(userId, userRoadmapResult.Data.Id, roadmapId, RoadmapTestType.Initial, roadmapTest, ct);
+        var testId = await userTestsService.SaveUserTestWithResult(userId, userRoadmapResult.Data.Id, roadmapId, RoadmapTestType.Initial, roadmapTest, ct);
         return roadmapTest.ToTestResult(testId);
     }
 

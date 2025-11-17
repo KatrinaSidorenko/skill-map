@@ -6,7 +6,8 @@ namespace SkillMap.Business.UserTest;
 
 public interface IUserTestService
 {
+    Task<(bool IsFound, RoadmapTestDao Test)> ExistsUnfinishedTest(long userRoadmapId, RoadmapTestType roadmapTestType, CancellationToken ct);
     Task<RoadmapTestDao> GetUserTest(long userId, string testId, CancellationToken ct);
     Task SaveTestAnalysisResult(long userId, string testId, RoadmapTestResultsDto analysisResult, CancellationToken ct);
-    Task<string> SaveUserTest(long userId, long userRoadmapId, string roadmapId, RoadmapTestType testType, RoadmapTestDao roadmapTest, CancellationToken ct);
+    Task<string> SaveUserTestWithResult(long userId, long userRoadmapId, string roadmapId, RoadmapTestType testType, RoadmapTestDao roadmapTest, CancellationToken ct);
 }

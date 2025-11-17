@@ -16,6 +16,12 @@ public static class RoadmapTestExtensions
         return await userRoadmapTest.TestData.InGzipJsonObjectUtf8<RoadmapTestDao>(ct);
     }
 
+    // todo: implement real calculation logic
+    public static double CalculateMaxPoints(this RoadmapTestDao roadmapTest)
+    {
+        return 10;
+    }
+
     public static async Task SetRoadmapTest(this UserRoadmapTest userRoadmapTest, RoadmapTestDao roadmapTest, CancellationToken ct)
     {
         if (roadmapTest == null)

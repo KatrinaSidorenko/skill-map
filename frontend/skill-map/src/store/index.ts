@@ -7,6 +7,8 @@ import { accountApi } from '@/features/account/api';
 import roadmapEditorSlice from '@/features/roadmaps/editor/store';
 import roadmapSlice from '@/features/roadmaps/roadmap/store';
 import roadmapViewSlice from '@/features/roadmaps/roadmap-view/store';
+import { assessmentApi } from '@/features/assessment/api';
+import assesmentSlice from '@/features/assessment/store';
 
 export const store = configureStore({
   reducer: {
@@ -17,11 +19,14 @@ export const store = configureStore({
     [roadmapEditorSlice.name]: roadmapEditorSlice.reducer,
     [roadmapSlice.name]: roadmapSlice.reducer,
     [roadmapViewSlice.name]: roadmapViewSlice.reducer,
+    [assessmentApi.reducerPath]: assessmentApi.reducer,
+    [assesmentSlice.name]: assesmentSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
       .concat(roadmapApi.middleware)
-      .concat(accountApi.middleware),
+      .concat(accountApi.middleware)
+      .concat(assessmentApi.middleware),
 });
 
 setupListeners(store.dispatch);

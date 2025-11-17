@@ -15,7 +15,6 @@ public class RoadmapTestController : BaseController
     {
         _roadmapTestService = roadmapTestService;
     }
-    // get test for roadmap
     [HttpPost("{roadmapId}")]
     public async Task<IActionResult> GenerateRoadmapTest(string roadmapId, [FromBody]RoadmapTestConfigDto config, CancellationToken ct)
     {
@@ -23,7 +22,6 @@ public class RoadmapTestController : BaseController
         return Ok(response);
     }
 
-    // get test with answers
     [HttpPost("check/{testId}")]
     public async Task<IActionResult> CheckRoadmapTest(string testId, [FromBody] RoadmapTestAnswersRequest userAnswers, CancellationToken ct)
     {
