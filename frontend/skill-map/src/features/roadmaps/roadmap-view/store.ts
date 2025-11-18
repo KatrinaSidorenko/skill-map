@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { set } from 'zod';
 
 type InitialState = {
   roadmapId: string | null;
@@ -18,10 +17,7 @@ const roadmapViewSlice = createSlice({
     setActiveRoadmapViewId: (state, action: { payload: string }) => {
       state.roadmapId = action.payload;
     },
-    setRoadmapView: (
-      state,
-      action: { payload: PlainRoadmapView | null },
-    ) => {
+    setRoadmapView: (state, action: { payload: PlainRoadmapView | null }) => {
       state.roadmapView = action.payload;
     },
     updateRoadmapView: (
@@ -35,15 +31,16 @@ const roadmapViewSlice = createSlice({
         };
       }
     },
-    
   },
 });
 
-export const { setRoadmapView, setActiveRoadmapViewId, updateRoadmapView } = roadmapViewSlice.actions;
+export const { setRoadmapView, setActiveRoadmapViewId, updateRoadmapView } =
+  roadmapViewSlice.actions;
 
 export const selectRoadmapView = (state: { roadmapViewSlice: InitialState }) =>
   state.roadmapViewSlice.roadmapView;
-export const selectRoadmapViewId = (state: { roadmapViewSlice: InitialState }) =>
-  state.roadmapViewSlice.roadmapId;
+export const selectRoadmapViewId = (state: {
+  roadmapViewSlice: InitialState;
+}) => state.roadmapViewSlice.roadmapId;
 
 export default roadmapViewSlice;

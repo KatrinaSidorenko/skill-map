@@ -88,6 +88,8 @@ export function SavedRoadmapCard({
   const formattedDate = formatDistanceToNow(new Date(roadmap.savedAt), {
     addSuffix: true,
   });
+
+  // todo: move to helper
   const getProgressInPercentage = (progress: number) => {
     return Math.round(progress * 100);
   };

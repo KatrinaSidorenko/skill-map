@@ -9,6 +9,7 @@ import { QuestionResultFactory } from '../common/questions/factory';
 export default function TestResults() {
   const router = useRouter();
   const checkedQuestionResults = useAppSelector(selectCheckedQuestionResults);
+  // todo: if any checked results missing, redirect to home page
   const onBackHome = () => {
     router.replace('/home');
   };
@@ -37,7 +38,7 @@ export default function TestResults() {
       </VStack>
 
       <Box mt={6} display="flex" justifyContent="flex-end">
-        <Button size="md" variant="solid" onClick={onBackHome}>
+        <Button size="sm" variant="solid" onClick={onBackHome}>
           Back to Home
         </Button>
       </Box>

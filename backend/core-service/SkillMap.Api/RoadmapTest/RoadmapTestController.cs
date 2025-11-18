@@ -25,13 +25,7 @@ public class RoadmapTestController : BaseController
     [HttpPost("check/{testId}")]
     public async Task<IActionResult> CheckRoadmapTest(string testId, [FromBody] RoadmapTestAnswersRequest userAnswers, CancellationToken ct)
     {
-        var response = await _roadmapTestService.CheckRoadmapTest(GetUserId(), testId, userAnswers.ToDto(), ct);
-        return Ok(response);
-    }
-
-    [HttpGet("complex-check/{testId}")]
-    public async Task<IActionResult> ComplexCheckRoadmapTest(string testId, CancellationToken ct)
-    {
+        //var response = await _roadmapTestService.CheckRoadmapTest(GetUserId(), testId, userAnswers.ToDto(), ct);
         var test = new ComplexTestCheckResult
         {
             TotalAchievedPoints = 7.0,

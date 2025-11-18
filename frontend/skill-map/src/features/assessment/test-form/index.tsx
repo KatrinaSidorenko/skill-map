@@ -2,20 +2,50 @@
 
 import { VStack, Button, Heading, Box } from '@chakra-ui/react';
 import { useAppSelector } from '@/store/hooks';
-import { selectTestQuestions } from '../store';
+import {
+  selectCurrentTestId,
+  selectQuestionAnswers,
+  selectTestQuestions,
+} from '../store';
 import { QuestionsFactory } from '../common/questions/factory';
 import { useCheckRoadmapTestAnswersMutation } from '../api';
 import { useRouter } from 'next/navigation';
+import { toaster } from '@/components/ui/toaster';
 
 export default function TestForm() {
   const router = useRouter();
+  const testId = useAppSelector(selectCurrentTestId);
   const testQuestions = useAppSelector(selectTestQuestions);
+  const testAnswers = useAppSelector(selectQuestionAnswers);
   const [checkAnswers, { isLoading }] = useCheckRoadmapTestAnswersMutation();
 
+  // todo: add localization for texts
+  // todo: add check on all questions answered if not ass hightlight
   const onSubmit = async () => {
-    // Handle submission
+    if (!testId) {
+      toaster.warning({
+        title: 'Cannot submit the test.',
+      });
+      return;
+    }
+    await checkAnswers({
+      testId: testId,
+      answers: {
+        questionAnswers: Object.values(testAnswers),
+      },
+    })
+      .then(() => {
+        router.replace('/assessment-panel/result');
+      })
+      .catch(() => {
+        toaster.error({
+          title: 'Failed to submit the test. Please try again later.',
+        });
+        // todo: redirect to the  roadmap page view
+      });
   };
 
+  // todo: on cancel return to roadmap page view
   const onCancel = () => {
     router.replace('/home');
   };
@@ -34,7 +64,7 @@ export default function TestForm() {
 
       <Box mt={6} display="flex" justifyContent="flex-end">
         <Button
-          size="md"
+          size="sm"
           mr={4}
           variant="ghost"
           onClick={onCancel}

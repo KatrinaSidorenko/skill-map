@@ -25,22 +25,13 @@ export const assessmentApi = createApi({
       },
     }),
     checkRoadmapTestAnswers: builder.mutation<
-      AnswersCheckResult,
+      ComplexTestCheckResult,
       { testId: string; answers: RoadmapTestAnswersRequest }
     >({
       query: ({ testId, answers }) => ({
         url: `check/${testId}`,
         method: 'POST',
         body: answers,
-      }),
-    }),
-    getComplexRoadmapTestCheckResult: builder.query<
-      ComplexTestCheckResult,
-      { testId: string }
-    >({
-      query: ({ testId }) => ({
-        url: `complex-check/${testId}`,
-        method: 'GET',
       }),
       onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
         try {
@@ -57,5 +48,4 @@ export const assessmentApi = createApi({
 export const {
   useGenerateRoadmapTestMutation,
   useCheckRoadmapTestAnswersMutation,
-  useLazyGetComplexRoadmapTestCheckResultQuery,
 } = assessmentApi;

@@ -1,10 +1,10 @@
 'use client';
+import SpinnerScreen from '@/components/base/spinner';
 import { useGenerateRoadmapTestMutation } from '@/features/assessment/api';
 import TestForm from '@/features/assessment/test-form';
 import { useEffect } from 'react';
 
 export default function AssessmentPanelPage() {
-  //   const [checkAnswers, { isLoading }] = useCheckRoadmapTestAnswersMutation();
   const [generateTest, { isLoading }] = useGenerateRoadmapTestMutation();
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export default function AssessmentPanelPage() {
   }, []);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <SpinnerScreen />;
   }
 
   return <TestForm />;

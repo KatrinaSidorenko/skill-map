@@ -9,11 +9,13 @@ export function SingleChoiceOption({
   text,
   isDisabled,
   isCorrect,
+  isDefault,
 }: {
   id: string;
   text: string;
   isDisabled?: boolean;
   isCorrect?: boolean;
+  isDefault?: boolean;
 }) {
   const baseProps = {
     value: id,
@@ -26,24 +28,37 @@ export function SingleChoiceOption({
   const cursor = isDisabled ? 'default' : 'pointer';
   const opacity = isDisabled ? 0.5 : 1;
 
-  const hoverStyle = isDisabled
-    ? {}
-    : {
-        bg: isCorrect ? 'green.50' : 'gray.50',
-      };
+  // default styling (highest priority when isDefault === true)
+  const defaultStyle = {
+    bg: 'blue.50',
+    color: 'blue.700',
+  };
 
+  // hover behaviour: if default -> blue hover, otherwise keep previous logic
+  const hoverStyle = isDefault
+    ? { bg: 'blue.50' }
+    : isDisabled
+      ? {}
+      : { bg: isCorrect ? 'green.50' : 'gray.50' };
+
+  // checked (selected) style: selected should be blue.
+  // If disabled, use slightly muted variants.
   const checkedStyle = isDisabled
-    ? {
-        bg: isCorrect ? 'green.50' : 'gray.100',
-        color: isCorrect ? 'green.700' : 'red.500',
-      }
-    : isCorrect
-      ? { bg: 'green.50', color: 'green.700' }
-      : { bg: 'red.50', color: 'red.700' };
+    ? isDefault
+      ? { bg: 'blue.50', color: 'blue.700' }
+      : isCorrect
+        ? { bg: 'green.50', color: 'green.700' }
+        : { bg: 'gray.100', color: 'gray.700' }
+    : isDefault
+      ? defaultStyle
+      : { bg: 'blue.50', color: 'blue.700' };
 
-  const borderStyle = isCorrect
-    ? { borderWidth: '1px', borderColor: 'green.100' }
-    : {};
+  // border: keep green border for correctness unless it's a default (then use blue)
+  const borderStyle = isDefault
+    ? { borderWidth: '1px', borderColor: 'blue.100' }
+    : isCorrect
+      ? { borderWidth: '1px', borderColor: 'green.100' }
+      : {};
 
   return (
     <RadioGroup.Item
@@ -117,7 +132,12 @@ export function SingleChoiceQuestion(props: SingleChoiceQuestionProps) {
 
       <SingleChoiceGroup onChange={onAnswerSelect}>
         {answers.map((a) => (
-          <SingleChoiceOption key={a.id} id={a.id} text={a.text} />
+          <SingleChoiceOption
+            key={a.id}
+            id={a.id}
+            text={a.text}
+            isDefault={true}
+          />
         ))}
       </SingleChoiceGroup>
     </VStack>
