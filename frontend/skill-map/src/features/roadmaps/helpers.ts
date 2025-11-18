@@ -112,3 +112,7 @@ export const getStatusColor = (status: LearningStatus) => {
       return 'gray';
   }
 };
+
+export const getProgressInPercentage = (progress: number) => {
+  return Math.round(progress * 100);
+};

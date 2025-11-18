@@ -14,7 +14,10 @@ import {
 } from '@chakra-ui/react';
 import { formatDistanceToNow } from 'date-fns';
 import useLocalization from '@/i18n/useLocalization';
-import { getStatusColor } from '@/features/roadmaps/helpers';
+import {
+  getProgressInPercentage,
+  getStatusColor,
+} from '@/features/roadmaps/helpers';
 import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 
 interface RoadmapCardProps {
@@ -88,11 +91,6 @@ export function SavedRoadmapCard({
   const formattedDate = formatDistanceToNow(new Date(roadmap.savedAt), {
     addSuffix: true,
   });
-
-  // todo: move to helper
-  const getProgressInPercentage = (progress: number) => {
-    return Math.round(progress * 100);
-  };
 
   return (
     <HoverCard.Root>

@@ -19,6 +19,7 @@ import useLocalization from '@/i18n/useLocalization';
 import { setActiveRoadmapId } from '../editor/store';
 import { MOCK_IMAGE_URL } from '@/store/mock';
 import { formatDistanceToNow } from 'date-fns';
+import { getProgressInPercentage, getStatusColor } from '../helpers';
 
 export default function SavedRoadmapView({
   roadmap,
@@ -28,7 +29,6 @@ export default function SavedRoadmapView({
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { getRoadmapTransaltions } = useLocalization();
-
   const statusColor = getStatusColor(roadmap.status);
 
   const handleOpenEditor = () => {
@@ -38,11 +38,6 @@ export default function SavedRoadmapView({
 
   const takeTest = () => {
     router.push('/assessment-panel');
-  };
-
-  // todo: use helper method
-  const getProgressInPercentage = (progress: number) => {
-    return Math.round(progress * 100);
   };
 
   const formattedDate = formatDistanceToNow(new Date(roadmap.savedAt), {
@@ -118,7 +113,7 @@ export default function SavedRoadmapView({
             </Progress.Root>
           </Box>
 
-          <HStack gap={3} pt={2}>
+          <HStack gap={3} pt={2} alignSelf="flex-end">
             <Button colorScheme="teal" onClick={takeTest} size="sm">
               Take Test
             </Button>
@@ -137,17 +132,4 @@ export default function SavedRoadmapView({
       <Separator my={8} />
     </Box>
   );
-}
-
-function getStatusColor(status: LearningStatus) {
-  switch (status) {
-    case 'notstarted':
-      return 'gray';
-    case 'inprogress':
-      return 'yellow';
-    case 'completed':
-      return 'green';
-    default:
-      return 'gray';
-  }
 }

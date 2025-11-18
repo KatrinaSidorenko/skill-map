@@ -29,6 +29,7 @@ public class CustomizedRoadmapsService(
         throw new NotImplementedException();
     }
 
+    // todo: refactor logic in this and next method to avoid duplication
     public async Task<Result<PaginationResult<List<PlainRoadmapWithDetailsDto>>>> GetPlainRoadmapsWithUserMetadata(
         long userId,
         SearchingParams @params,
@@ -80,6 +81,31 @@ public class CustomizedRoadmapsService(
             Result = roadmapDtos,
             TotalCount = paginatedRoadmapsResult.Data.TotalCount
         });
+    }
+
+    public async Task<Result<PlainRoadmapWithDetailsDto>> GetPlainRoadmapWithUserMetadata(long userId, string roadmapId, CancellationToken ct)
+    {
+        var userRoadmapResult = await userRoadmapsService.GetUserRoadmap(userId, roadmapId, ct);
+        if (!userRoadmapResult.IsSuccessful)
+            return ResultType.UserRoadmapNotFound<PlainRoadmapWithDetailsDto>(userId, roadmapId);
+        var userRoadmap = userRoadmapResult.Data;
+        var roadmapResult = await roadmapService.GetPlainRoadmapsByIds([roadmapId], DefaultParams.SearchingParams, ct: ct, false);
+        if (!roadmapResult.IsSuccessful || !roadmapResult.Data.Result.Any())
+            return ResultType.RoadmapNotFound<PlainRoadmapWithDetailsDto>(roadmapId);
+
+        var roadmap = roadmapResult.Data.Result.First();
+        var modificationsResult = await modificationsRepository.GetAllAsync(
+            m => m.UserRoadmapId == userRoadmap.Id, ct: ct);
+        if (!modificationsResult.IsSuccessful)
+            return ResultType.FailedToGet<PlainRoadmapWithDetailsDto>("Failed to load modifications");
+        var modifications = modificationsResult.Data.ToList();
+
+        var (progress, status) = RoadmapProgressCalculator.Calculate(modifications, roadmap.TotalTopics);
+        var dto = roadmap.ToPlainRoadmapWithDetailsDto();
+        dto.Progress = progress;
+        dto.Status = status;
+        dto.SavedAt = userRoadmap.CreatedAt;
+        return Result.Success(dto);
     }
 
     // todo: fix this logic 
