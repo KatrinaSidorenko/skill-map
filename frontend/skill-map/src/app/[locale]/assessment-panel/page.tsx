@@ -1,7 +1,6 @@
 'use client';
 import { useGenerateRoadmapTestMutation } from '@/features/assessment/api';
 import TestForm from '@/features/assessment/test-form';
-import { Box, Flex } from '@chakra-ui/react';
 import { useEffect } from 'react';
 
 export default function AssessmentPanelPage() {
@@ -32,15 +31,5 @@ export default function AssessmentPanelPage() {
     return <div>Loading...</div>;
   }
 
-  return (
-    <Box
-      display="flex"
-      justifyContent="center"
-      bg="bg.section"
-      alignItems="center"
-      padding={10}
-    >
-      <TestForm />
-    </Box>
-  );
+  return <TestForm />;
 }

@@ -10,8 +10,6 @@ namespace SkillMap.Application.Services;
 
 public class UserTestService(IUnitOfWork unitOfWork) : IUserTestService
 {
-
-    // todo: when add the test create the test result too
     public async Task<string> SaveUserTestWithResult(
         long userId,
         long userRoadmapId,
@@ -20,7 +18,6 @@ public class UserTestService(IUnitOfWork unitOfWork) : IUserTestService
         RoadmapTestDao roadmapTest,
         CancellationToken ct)
     {
-        // todo: get user roadmap by user and roadmap id to set the foreign key
         roadmapTest.RoadmapId = roadmapId;
         roadmapTest.Id = $"{userId}_{roadmapId}"; // todo: Guid id
 

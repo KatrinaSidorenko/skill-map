@@ -3,7 +3,7 @@
 import { VStack, Button, Heading, Box } from '@chakra-ui/react';
 import { useAppSelector } from '@/store/hooks';
 import { selectTestQuestions } from '../store';
-import QuestionsFactory from './questions/factory';
+import { QuestionsFactory } from '../common/questions/factory';
 import { useCheckRoadmapTestAnswersMutation } from '../api';
 import { useRouter } from 'next/navigation';
 
@@ -42,7 +42,7 @@ export default function TestForm() {
         >
           Cancel
         </Button>
-        <Button size="md" onClick={onSubmit} loading={isLoading}>
+        <Button size="sm" onClick={onSubmit} loading={isLoading}>
           Submit Test
         </Button>
       </Box>

@@ -43,6 +43,7 @@ public static class RoadmapTestMapper
                         TotalPossiblePoints = single.TotalPossiblePoints,
                         IsCorrect = single.IsCorrect,
                         CorrectAnswerId = single.CorrectAnswerId,
+                        QuestionType = single.QuestionType.ToQuestionTypeString()
                     } as CheckedQuestion,
                     _ => throw new LearningPlatformException(ErrorCode.INTERNAL_ERROR, $"Unsupported question type {qa.Value.QuestionType}"),
                 };

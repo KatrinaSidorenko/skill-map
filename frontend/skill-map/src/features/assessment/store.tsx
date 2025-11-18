@@ -4,12 +4,14 @@ interface InitialState {
   testId: string | null;
   questions: QuestionResultDto[];
   questionAnswers: Record<string, QuestionAnswer>;
+  questionCheckedResults: ComplexTestCheckResult | null;
 }
 
 const initialState: InitialState = {
   testId: null,
   questions: [],
   questionAnswers: {},
+  questionCheckedResults: null,
 };
 
 const assesmentSlice = createSlice({
@@ -34,15 +36,30 @@ const assesmentSlice = createSlice({
       const { answer } = action.payload;
       state.questionAnswers[answer.questionId] = answer;
     },
+    setCheckedAnswerForQuestions: (
+      state,
+      action: { payload: { checkResult: ComplexTestCheckResult } },
+    ) => {
+      state.questionCheckedResults = action.payload.checkResult;
+    },
   },
 });
 
-export const { setCurrentTest, clearCurrentTest, setAnswerForQuestion } =
-  assesmentSlice.actions;
+export const {
+  setCurrentTest,
+  clearCurrentTest,
+  setAnswerForQuestion,
+  setCheckedAnswerForQuestions,
+} = assesmentSlice.actions;
 
 export const selectTestQuestions = (state: { assessment: InitialState }) =>
   state.assessment.questions;
 export const selectCurrentTestId = (state: { assessment: InitialState }) =>
   state.assessment.testId;
+export const selectQuestionAnswers = (state: { assessment: InitialState }) =>
+  state.assessment.questionAnswers;
+export const selectCheckedQuestionResults = (state: {
+  assessment: InitialState;
+}) => state.assessment.questionCheckedResults;
 
 export default assesmentSlice;

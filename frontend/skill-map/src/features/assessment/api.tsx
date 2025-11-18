@@ -1,6 +1,6 @@
 import { baseQuery } from '@/store/baseQuery';
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { setCurrentTest } from './store';
+import { setCheckedAnswerForQuestions, setCurrentTest } from './store';
 
 export const assessmentApi = createApi({
   reducerPath: 'assessmentApi',
@@ -21,7 +21,6 @@ export const assessmentApi = createApi({
           dispatch(setCurrentTest({ test: data }));
         } catch (error) {
           // todo: add toast notification
-          // Handle error if needed
         }
       },
     }),
@@ -35,10 +34,28 @@ export const assessmentApi = createApi({
         body: answers,
       }),
     }),
+    getComplexRoadmapTestCheckResult: builder.query<
+      ComplexTestCheckResult,
+      { testId: string }
+    >({
+      query: ({ testId }) => ({
+        url: `complex-check/${testId}`,
+        method: 'GET',
+      }),
+      onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(setCheckedAnswerForQuestions({ checkResult: data }));
+        } catch (error) {
+          // todo: add toast notification
+        }
+      },
+    }),
   }),
 });
 
 export const {
   useGenerateRoadmapTestMutation,
   useCheckRoadmapTestAnswersMutation,
+  useLazyGetComplexRoadmapTestCheckResultQuery,
 } = assessmentApi;

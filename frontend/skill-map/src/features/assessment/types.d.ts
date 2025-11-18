@@ -55,8 +55,36 @@ interface CheckedQuestion {
   isCorrect: boolean;
   achievedPoints: number;
   totalPossiblePoints: number;
+  questionType: TestQuestionType;
 }
 
 interface CheckedSingleAnswerQuestion extends CheckedQuestion {
   correctAnswerId: string;
+}
+
+// CUSTOM TYPES FOR TEST RESULTS PAGE
+interface ComplexTestCheckResult {
+  questionResults: Record<string, TestQuestionResult>;
+  totalAchievedPoints: number;
+  totalPossiblePoints: number;
+}
+
+interface TestQuestionResult {
+  questionId: string;
+  text: string;
+  isCorrect: boolean;
+  achievedPoints: number;
+  totalPossiblePoints: number;
+  type: TestQuestionType | string;
+  answerDetails: Record<string, AnswerDetail>;
+}
+
+interface AnswerDetail {
+  answerId: string;
+  text: string;
+  isCorrect: boolean;
+}
+
+interface SingleChoiceAnswerDetail extends AnswerDetail {
+  isSelected: boolean;
 }
