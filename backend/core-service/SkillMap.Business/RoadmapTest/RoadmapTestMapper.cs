@@ -99,12 +99,14 @@ public static class RoadmapTestMapper
     };
 
     // --- To DAO Model ---
-    public static RoadmapTestDao ToDaoModel(this Core.Entities.UserRoadmapTest.RoadmapTest entity, string testType, string roadmapId)
+    public static RoadmapTestDao ToDaoModel(this Core.Entities.UserRoadmapTest.RoadmapTest entity, string testType, string userRoadmapId, long userTestId)
     {
         return new RoadmapTestDao
         {
-            Id = $"{roadmapId}_{testType}",
-            RoadmapId = roadmapId,
+            Id = userTestId.ToString(),
+           // RoadmapId = entity,
+           UserRoadmapId = userRoadmapId,
+            Type = testType,
             TestConfig = entity.Config?.ToDaoConfig(),
             TopicSettings = entity.TopicSettings?.ToDictionary(
                 kvp => kvp.Key,

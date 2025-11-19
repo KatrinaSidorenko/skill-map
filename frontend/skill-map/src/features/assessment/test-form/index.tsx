@@ -17,10 +17,13 @@ export default function TestForm() {
   const testId = useAppSelector(selectCurrentTestId);
   const testQuestions = useAppSelector(selectTestQuestions);
   const testAnswers = useAppSelector(selectQuestionAnswers);
-  const [checkAnswers, { isLoading }] = useCheckRoadmapTestAnswersMutation();
+  const [checkAnswers, { isLoading, isError }] =
+    useCheckRoadmapTestAnswersMutation();
+  const isSubmitDisabled = Object.keys(testAnswers).length <= 0;
 
   // todo: add localization for texts
   // todo: add check on all questions answered if not ass hightlight
+  // todo: add warning that not all questions are answered
   const onSubmit = async () => {
     if (!testId) {
       toaster.warning({
@@ -28,21 +31,19 @@ export default function TestForm() {
       });
       return;
     }
-    await checkAnswers({
-      testId: testId,
-      answers: {
-        questionAnswers: Object.values(testAnswers),
-      },
-    })
-      .then(() => {
-        router.replace('/assessment-panel/result');
-      })
-      .catch(() => {
-        toaster.error({
-          title: 'Failed to submit the test. Please try again later.',
-        });
-        // todo: redirect to the  roadmap page view
+    try {
+      await checkAnswers({
+        testId: testId,
+        answers: {
+          questionAnswers: Object.values(testAnswers),
+        },
+      }).unwrap();
+      router.replace('/assessment-panel/result');
+    } catch (error) {
+      toaster.error({
+        title: 'Failed to submit the test. Please try again later.',
       });
+    }
   };
 
   // todo: on cancel return to roadmap page view
@@ -72,7 +73,12 @@ export default function TestForm() {
         >
           Cancel
         </Button>
-        <Button size="sm" onClick={onSubmit} loading={isLoading}>
+        <Button
+          size="sm"
+          onClick={onSubmit}
+          loading={isLoading}
+          disabled={isSubmitDisabled}
+        >
           Submit Test
         </Button>
       </Box>

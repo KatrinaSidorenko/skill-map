@@ -79,22 +79,64 @@ public class RoadmapTestService(
        });
     }
 
-    public async Task<AnswersCheckResult> CheckRoadmapTest(long userId, string testId, RoadmapTestAnswers userAnswers, CancellationToken ct)
+    // todo: what is result already exists?
+    public async Task<ComplexTestCheckResult> CheckRoadmapTest(long userId, string testId, RoadmapTestAnswers userAnswers, CancellationToken ct)
     {
         var roadmapTest = await userTestsService.GetUserTest(userId, testId, ct);
         var userAnswersDict = userAnswers.QuestionAnswers.ToDictionary(qa => qa.QuestionId, qa => qa);
-        var analysisByTopic = roadmapTest.TopicQuestions.ToDictionary(t => t.Id, t =>
-        {
-            var questionsAnalysis = t.Questions.ToDictionary(q => q.Id, q => AnalyzeQuestionAnswer(q, userAnswersDict.GetOrDefault(q.Id)));
-            return new TopicAnswersAnalysisDto
+        var roadmapQuestionsDict = roadmapTest.TopicQuestions.SelectMany(t => t.Questions).ToDictionary(q => q.Id, q => q);
+        var answersByQuestion = roadmapTest.TopicQuestions.SelectMany(t => t.Questions).ToDictionary(q => q.Id, q => q.Answers);
+        var analysisByTopic = roadmapTest.TopicQuestions.ToDictionary(
+            t => t.Id,
+            t => new TopicAnswersAnalysisDto
             {
-                QuestionsAnalysis = questionsAnalysis
-            };
-        });
-
+                QuestionsAnalysis = t.Questions.ToDictionary(
+                    q => q.Id,
+                    q => AnalyzeQuestionAnswer(q, userAnswersDict.GetOrDefault(q.Id))
+                )
+            }
+        );
+        var analysisByQuestion = analysisByTopic.SelectMany(t => t.Value.QuestionsAnalysis).ToDictionary(q => q.Key, q => q.Value);
         var testAnalysisResult = new RoadmapTestResultsDto(analysisByTopic);
-        await userTestsService.SaveTestAnalysisResult(userId, testId, testAnalysisResult, ct);
-        return testAnalysisResult.ToCheckedResults();
+        await userTestsService.SaveTestAnalysisResult(long.Parse(roadmapTest.UserRoadmapId), testId, testAnalysisResult, ct); // todo: check parse
+
+        return new ComplexTestCheckResult
+        {
+            QuestionResults = roadmapTest.TopicQuestions
+                .SelectMany(t => t.Questions)
+                .ToDictionary(q => q.Id, q =>
+                {
+                    var analysis = analysisByQuestion[q.Id];
+                    return new TestQuestionResult
+                    {
+                        Type = analysis.QuestionType.ToQuestionTypeString(),
+                        TotalPossiblePoints = analysis.TotalPossiblePoints,
+                        AchievedPoints = analysis.AchievedPoints,
+                        IsCorrect = analysis.AchievedPoints >= analysis.TotalPossiblePoints,
+                        QuestionId = q.Id,
+                        Text = q.Text,
+                        AnswerDetails = q.Answers.Select(a =>
+                        {
+                            switch (q.Type)
+                            {
+                                case TestQuestionType.SingleChoice:
+                                {
+                                    var singleChoiceAnalysis = analysis as SingleAnswerQuestionAnalysisResultDto;
+                                    return (AnswerDetail)new SingleChoiceAnswerDetail
+                                    {
+                                        Text = a.Text,
+                                        AnswerId = a.Id,
+                                        IsCorrect = a.IsCorrect,
+                                        IsSelected = singleChoiceAnalysis != null && singleChoiceAnalysis.SelectedAnswerId == a.Id
+                                    };
+                                }
+                                default:
+                                    throw new LearningPlatformException(ErrorCode.INTERNAL_ERROR, $"Unsupported question type {q.Type}");
+                            }
+                        }).ToDictionary(ad => ad.AnswerId, ad => ad)
+                    };
+                })
+        };
     }
 
    // public async Task
