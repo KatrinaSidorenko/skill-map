@@ -1,6 +1,7 @@
 import { baseQuery } from '@/store/baseQuery';
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { setCheckedAnswerForQuestions, setCurrentTest } from './store';
+import { get } from 'http';
 
 export const assessmentApi = createApi({
   reducerPath: 'assessmentApi',
@@ -8,12 +9,28 @@ export const assessmentApi = createApi({
   endpoints: (builder) => ({
     generateRoadmapTest: builder.mutation<
       RoadmapTestResultDto,
-      { testId: string; config: RoadmapTestConfigDto }
+      { roadmapId: string; config: RoadmapTestConfigDto }
     >({
-      query: ({ testId, config }) => ({
-        url: `${testId}`,
+      query: ({ roadmapId, config }) => ({
+        url: `${roadmapId}`,
         method: 'POST',
         body: config,
+      }),
+    }),
+    checkRoadmapTestAnswers: builder.mutation<
+      ComplexTestCheckResult,
+      { testId: string; answers: RoadmapTestAnswersRequest }
+    >({
+      query: ({ testId, answers }) => ({
+        url: `check/${testId}`,
+        method: 'POST',
+        body: answers,
+      }),
+    }),
+    getRoadmapTest: builder.query<RoadmapTestResultDto, { testId: string }>({
+      query: ({ testId }) => ({
+        url: `${testId}`,
+        method: 'GET',
       }),
       onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
         try {
@@ -24,14 +41,13 @@ export const assessmentApi = createApi({
         }
       },
     }),
-    checkRoadmapTestAnswers: builder.mutation<
+    getRoadmapTestResults: builder.query<
       ComplexTestCheckResult,
-      { testId: string; answers: RoadmapTestAnswersRequest }
+      { testId: string }
     >({
-      query: ({ testId, answers }) => ({
-        url: `check/${testId}`,
-        method: 'POST',
-        body: answers,
+      query: ({ testId }) => ({
+        url: `results/${testId}`,
+        method: 'GET',
       }),
       onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
         try {
@@ -48,4 +64,6 @@ export const assessmentApi = createApi({
 export const {
   useGenerateRoadmapTestMutation,
   useCheckRoadmapTestAnswersMutation,
+  useLazyGetRoadmapTestQuery,
+  useLazyGetRoadmapTestResultsQuery,
 } = assessmentApi;

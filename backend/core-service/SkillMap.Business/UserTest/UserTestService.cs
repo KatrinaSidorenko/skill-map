@@ -88,6 +88,7 @@ public class UserTestService(IUnitOfWork unitOfWork) : IUserTestService
             ct);
         if (existingResult.IsSuccessful && existingResult.HasData)
         {
+            existingResult.Data.CompletedAt = DateTime.UtcNow;
             await existingResult.Data.SetTestResults(roadmapTestResult, ct);
             var updateResult = await userTestResultRepository.UpdateAsync(existingResult.Data, ct);
             if (!updateResult.IsSuccessful)
@@ -113,6 +114,27 @@ public class UserTestService(IUnitOfWork unitOfWork) : IUserTestService
         await userTestResultRepository.SaveChangesAsync(ct);
     }
 
+    public async Task<RoadmapTestResultsDto> GetTestAnalysisResult(
+        long userId,
+        string testId,
+        CancellationToken ct)
+    {
+        var testIdL = long.Parse(testId); // todo: add check
+        var userRoadmapTestsRepository = unitOfWork.CreateRepository<UserRoadmapTest>();
+        var userTestResultsRepository = unitOfWork.CreateRepository<UserTestResult>();
+        var testResult = await userRoadmapTestsRepository.GetFirstOrDefaultAsync(x => x.Id == testIdL, ct);
+        if (!testResult.IsSuccessful || !testResult.HasData)
+            throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"Roadmap test with id {testId} not found");
+        var savedTestResult = await userTestResultsRepository.GetFirstOrDefaultAsync(
+            x => x.UserRoadmapTestId == testResult.Data.Id,
+            ct);
+        if (!savedTestResult.IsSuccessful || !savedTestResult.HasData || savedTestResult.Data?.ResultData == null)
+            throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"No results found for test with id {testId}");
+        
+        var testData = await savedTestResult.Data.GetTestResults(ct);
+        return testData.ToDaoResult();
+    }
+
     public async Task<(bool IsFound, RoadmapTestDao? Test)> ExistsUnfinishedTest(long userRoadmapId, RoadmapTestType roadmapTestType, CancellationToken ct)
     {
         var userRoadmapTestsRepository = unitOfWork.CreateRepository<UserRoadmapTest>();
@@ -134,6 +156,6 @@ public class UserTestService(IUnitOfWork unitOfWork) : IUserTestService
         }
 
         var testData = await testResult.Data.GetRoadmapTest(ct);
-        return (savedTestResult.Data?.ResultData == null, testData.ToDaoModel(testResult.Data.TestType, testResult.Data.UserRoadmapId.ToString(), testResult.Data.Id));
+        return (savedTestResult.Data?.ResultData.Length > 0, testData.ToDaoModel(testResult.Data.TestType, testResult.Data.UserRoadmapId.ToString(), testResult.Data.Id));
     }
 }

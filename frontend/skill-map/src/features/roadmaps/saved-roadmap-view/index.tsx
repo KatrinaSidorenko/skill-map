@@ -8,7 +8,6 @@ import {
   Text,
   Image,
   Button,
-  Badge,
   Separator,
   Progress,
 } from '@chakra-ui/react';
@@ -20,6 +19,13 @@ import { setActiveRoadmapId } from '../editor/store';
 import { MOCK_IMAGE_URL } from '@/store/mock';
 import { formatDistanceToNow } from 'date-fns';
 import { getProgressInPercentage, getStatusColor } from '../helpers';
+import ContentNotFoundScreen from '@/components/base/notfound';
+import { useLazyGetPlainUserSavedRoadmapQuery } from '../api';
+import { useEffect } from 'react';
+import { toaster } from '@/components/ui/toaster';
+import SpinnerScreen from '@/components/base/spinner';
+import { useGenerateRoadmapTestMutation } from '@/features/assessment/api';
+import { DEFAULT_GENERATE_TEST_CONFIG } from '@/features/assessment/helper';
 
 export default function SavedRoadmapView({
   roadmap,
@@ -30,14 +36,24 @@ export default function SavedRoadmapView({
   const dispatch = useAppDispatch();
   const { getRoadmapTransaltions } = useLocalization();
   const statusColor = getStatusColor(roadmap.status);
+  const [generateTest, { isLoading }] = useGenerateRoadmapTestMutation();
 
   const handleOpenEditor = () => {
     dispatch(setActiveRoadmapId(roadmap.id));
     router.push('/editor/sandbox');
   };
 
-  const takeTest = () => {
-    router.push('/assessment-panel');
+  const takeTest = async () => {
+    try {
+      const result = await generateTest({
+        roadmapId: roadmap.id,
+        config: DEFAULT_GENERATE_TEST_CONFIG,
+      }).unwrap();
+      console.log('Generated Test:', result);
+      router.push(`/assessment-panel/${result.testId}`);
+    } catch (error) {
+      console.error('Error generating test:', error);
+    }
   };
 
   const formattedDate = formatDistanceToNow(new Date(roadmap.savedAt), {
@@ -114,7 +130,12 @@ export default function SavedRoadmapView({
           </Box>
 
           <HStack gap={3} pt={2} alignSelf="flex-end">
-            <Button colorScheme="teal" onClick={takeTest} size="sm">
+            <Button
+              colorScheme="teal"
+              onClick={takeTest}
+              size="sm"
+              loading={isLoading}
+            >
               Take Test
             </Button>
 
@@ -132,4 +153,30 @@ export default function SavedRoadmapView({
       <Separator my={8} />
     </Box>
   );
+}
+
+export function SavedRoadmapViewWrapper({ roadmapId }: { roadmapId: string }) {
+  const [triggerGetRoadmap, { isLoading, data: savedRoadmap }] =
+    useLazyGetPlainUserSavedRoadmapQuery();
+  useEffect(() => {
+    if (roadmapId) {
+      triggerGetRoadmap(roadmapId)
+        .unwrap()
+        .catch(() => {
+          toaster.error({
+            title: 'Failed to load the saved roadmap. Please try again later.',
+          });
+        });
+    }
+  }, [roadmapId, triggerGetRoadmap]);
+
+  if (!roadmapId) {
+    return <ContentNotFoundScreen />;
+  }
+
+  if (isLoading || !savedRoadmap) {
+    return <SpinnerScreen />;
+  }
+
+  return <SavedRoadmapView roadmap={savedRoadmap} />;
 }

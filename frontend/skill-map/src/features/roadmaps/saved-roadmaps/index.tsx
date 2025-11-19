@@ -32,8 +32,7 @@ export default function SavedRoadmapsPage() {
   };
 
   const handleCardClick = (id: string) => {
-    dispatch(setActiveSavedRoadmapViewId(id));
-    router.push(`/saved-roadmap`);
+    router.push(`/saved-roadmap/${id}`);
   };
 
   return (

@@ -171,4 +171,21 @@ public static class RoadmapTestMapper
                 })
         };
     }
+
+    public static RoadmapTestResultsDto ToDaoResult(this SkillMap.Core.Entities.UserRoadmapTest.RoadmapTestResult entity)
+    {
+        return new RoadmapTestResultsDto(entity.TopicsAnalysis?.ToDictionary(
+                kvp => kvp.Key,
+                kvp => new Models.TopicAnswersAnalysisDto
+                {
+                    QuestionsAnalysis = kvp.Value.QuestionsAnalysis?.ToDictionary(
+                        q => q.Key,
+                        q => new Models.QuestionAnalysisResultDto
+                        {
+                            AchievedPoints = q.Value.AchievedPoints,
+                            TotalPossiblePoints = q.Value.TotalPossiblePoints,
+                            QuestionType = q.Value.QuestionType.FromQuestionTypeString(),
+                        })
+                }));
+    }
 }

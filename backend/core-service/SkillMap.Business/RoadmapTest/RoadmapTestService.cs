@@ -164,4 +164,58 @@ public class RoadmapTestService(
                 throw new LearningPlatformException(ErrorCode.INTERNAL_ERROR, $"Unsupported question type {questionDto.Type}");
         }
     }
+    public async Task<RoadmapTestResultDto> GetUserTest(long userId, string testId, CancellationToken ct)
+    {
+        var roadmapTest = await userTestsService.GetUserTest(userId, testId, ct);
+        return roadmapTest.ToTestResult(testId);
+    }
+
+    // todo: remove duplication with CheckRoadmapTest
+    public async Task<ComplexTestCheckResult> GetComplexTestCheck(long userId, string testId, CancellationToken ct)
+    {
+        var roadmapTest = await userTestsService.GetUserTest(userId, testId, ct);
+        var testAnalysisResult = await userTestsService.GetTestAnalysisResult(userId, testId, ct);
+        var analysisByQuestion = testAnalysisResult.TopicsAnalysis
+            .SelectMany(t => t.Value.QuestionsAnalysis)
+            .ToDictionary(q => q.Key, q => q.Value);
+        return new ComplexTestCheckResult
+        {
+            QuestionResults = roadmapTest.TopicQuestions
+                .SelectMany(t => t.Questions)
+                .ToDictionary(q => q.Id, q =>
+                {
+                    var analysis = analysisByQuestion[q.Id];
+                    return new TestQuestionResult
+                    {
+                        Type = analysis.QuestionType.ToQuestionTypeString(),
+                        TotalPossiblePoints = analysis.TotalPossiblePoints,
+                        AchievedPoints = analysis.AchievedPoints,
+                        IsCorrect = analysis.AchievedPoints >= analysis.TotalPossiblePoints,
+                        QuestionId = q.Id,
+                        Text = q.Text,
+                        AnswerDetails = q.Answers.Select(a =>
+                        {
+                            switch (q.Type)
+                            {
+                                case TestQuestionType.SingleChoice:
+                                    {
+                                        var singleChoiceAnalysis = analysis as SingleAnswerQuestionAnalysisResultDto;
+                                        return (AnswerDetail)new SingleChoiceAnswerDetail
+                                        {
+                                            Text = a.Text,
+                                            AnswerId = a.Id,
+                                            IsCorrect = a.IsCorrect,
+                                            IsSelected = singleChoiceAnalysis != null && singleChoiceAnalysis.SelectedAnswerId == a.Id
+                                        };
+                                    }
+                                default:
+                                    throw new LearningPlatformException(ErrorCode.INTERNAL_ERROR, $"Unsupported question type {q.Type}");
+                            }
+                        }).ToDictionary(ad => ad.AnswerId, ad => ad)
+                    };
+                })
+        };
+
+    }
 }
+

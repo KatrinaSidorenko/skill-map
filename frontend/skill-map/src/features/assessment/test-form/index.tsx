@@ -3,18 +3,21 @@
 import { VStack, Button, Heading, Box } from '@chakra-ui/react';
 import { useAppSelector } from '@/store/hooks';
 import {
-  selectCurrentTestId,
   selectQuestionAnswers,
   selectTestQuestions,
 } from '../store';
 import { QuestionsFactory } from '../common/questions/factory';
-import { useCheckRoadmapTestAnswersMutation } from '../api';
+import {
+  useCheckRoadmapTestAnswersMutation,
+  useLazyGetRoadmapTestQuery,
+} from '../api';
 import { useRouter } from 'next/navigation';
 import { toaster } from '@/components/ui/toaster';
+import { useEffect } from 'react';
+import SpinnerScreen from '@/components/base/spinner';
 
-export default function TestForm() {
+export default function TestForm({ testId }: { testId?: string }) {
   const router = useRouter();
-  const testId = useAppSelector(selectCurrentTestId);
   const testQuestions = useAppSelector(selectTestQuestions);
   const testAnswers = useAppSelector(selectQuestionAnswers);
   const [checkAnswers, { isLoading, isError }] =
@@ -38,7 +41,7 @@ export default function TestForm() {
           questionAnswers: Object.values(testAnswers),
         },
       }).unwrap();
-      router.replace('/assessment-panel/result');
+      router.replace(`/assessment-panel/${testId}/result`);
     } catch (error) {
       toaster.error({
         title: 'Failed to submit the test. Please try again later.',
@@ -48,7 +51,7 @@ export default function TestForm() {
 
   // todo: on cancel return to roadmap page view
   const onCancel = () => {
-    router.replace('/home');
+    router.back();
   };
 
   return (
@@ -84,4 +87,19 @@ export default function TestForm() {
       </Box>
     </Box>
   );
+}
+
+export function TestFormWrapper({ testId }: { testId: string }) {
+  const [getRoadmapTest, { data, isLoading, isError }] =
+    useLazyGetRoadmapTestQuery();
+  useEffect(() => {
+    if (testId) {
+      getRoadmapTest({ testId }).unwrap();
+    }
+  }, [testId, getRoadmapTest]);
+
+  if (isLoading) {
+    return <SpinnerScreen />;
+  }
+  return <TestForm testId={testId} />;
 }

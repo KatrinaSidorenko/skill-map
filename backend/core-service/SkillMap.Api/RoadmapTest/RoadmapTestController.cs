@@ -28,4 +28,18 @@ public class RoadmapTestController : BaseController
         var response = await _roadmapTestService.CheckRoadmapTest(GetUserId(), testId, userAnswers.ToDto(), ct);
         return Ok(response);
     }
+
+    [HttpGet("{testId}")]
+    public async Task<IActionResult> GetUserTest(string testId, CancellationToken ct)
+    {
+        var response = await _roadmapTestService.GetUserTest(GetUserId(), testId, ct);
+        return Ok(response);
+    }
+
+    [HttpGet("results/{testId}")]
+    public async Task<IActionResult> GetComplexTestCheck(string testId, CancellationToken ct)
+    {
+        var response = await _roadmapTestService.GetComplexTestCheck(GetUserId(), testId, ct);
+        return Ok(response);
+    }
 }
