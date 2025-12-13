@@ -2,22 +2,56 @@
 
 import { VStack, Button, Heading, Box } from '@chakra-ui/react';
 import { useAppSelector } from '@/store/hooks';
-import { selectTestQuestions } from '../store';
+import {
+  selectQuestionAnswers,
+  selectTestQuestions,
+} from '../store';
 import { QuestionsFactory } from '../common/questions/factory';
-import { useCheckRoadmapTestAnswersMutation } from '../api';
+import {
+  useCheckRoadmapTestAnswersMutation,
+  useLazyGetRoadmapTestQuery,
+} from '../api';
 import { useRouter } from 'next/navigation';
+import { toaster } from '@/components/ui/toaster';
+import { useEffect } from 'react';
+import SpinnerScreen from '@/components/base/spinner';
 
-export default function TestForm() {
+export default function TestForm({ testId }: { testId?: string }) {
   const router = useRouter();
   const testQuestions = useAppSelector(selectTestQuestions);
-  const [checkAnswers, { isLoading }] = useCheckRoadmapTestAnswersMutation();
+  const testAnswers = useAppSelector(selectQuestionAnswers);
+  const [checkAnswers, { isLoading, isError }] =
+    useCheckRoadmapTestAnswersMutation();
+  const isSubmitDisabled = Object.keys(testAnswers).length <= 0;
 
+  // todo: add localization for texts
+  // todo: add check on all questions answered if not ass hightlight
+  // todo: add warning that not all questions are answered
   const onSubmit = async () => {
-    // Handle submission
+    if (!testId) {
+      toaster.warning({
+        title: 'Cannot submit the test.',
+      });
+      return;
+    }
+    try {
+      await checkAnswers({
+        testId: testId,
+        answers: {
+          questionAnswers: Object.values(testAnswers),
+        },
+      }).unwrap();
+      router.replace(`/assessment-panel/${testId}/result`);
+    } catch (error) {
+      toaster.error({
+        title: 'Failed to submit the test. Please try again later.',
+      });
+    }
   };
 
+  // todo: on cancel return to roadmap page view
   const onCancel = () => {
-    router.replace('/home');
+    router.back();
   };
 
   return (
@@ -34,7 +68,7 @@ export default function TestForm() {
 
       <Box mt={6} display="flex" justifyContent="flex-end">
         <Button
-          size="md"
+          size="sm"
           mr={4}
           variant="ghost"
           onClick={onCancel}
@@ -42,10 +76,30 @@ export default function TestForm() {
         >
           Cancel
         </Button>
-        <Button size="sm" onClick={onSubmit} loading={isLoading}>
+        <Button
+          size="sm"
+          onClick={onSubmit}
+          loading={isLoading}
+          disabled={isSubmitDisabled}
+        >
           Submit Test
         </Button>
       </Box>
     </Box>
   );
+}
+
+export function TestFormWrapper({ testId }: { testId: string }) {
+  const [getRoadmapTest, { data, isLoading, isError }] =
+    useLazyGetRoadmapTestQuery();
+  useEffect(() => {
+    if (testId) {
+      getRoadmapTest({ testId }).unwrap();
+    }
+  }, [testId, getRoadmapTest]);
+
+  if (isLoading) {
+    return <SpinnerScreen />;
+  }
+  return <TestForm testId={testId} />;
 }

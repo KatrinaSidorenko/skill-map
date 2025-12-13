@@ -9,6 +9,7 @@ import useLocalization from '@/i18n/useLocalization';
 import { useAppDispatch } from '@/store/hooks';
 import { setActiveRoadmapId } from '../editor/store';
 import { useRouter } from 'next/navigation';
+import { setActiveSavedRoadmapViewId } from '../saved-roadmap-view/store';
 
 export default function SavedRoadmapsPage() {
   const router = useRouter();
@@ -31,8 +32,7 @@ export default function SavedRoadmapsPage() {
   };
 
   const handleCardClick = (id: string) => {
-    dispatch(setActiveRoadmapId(id));
-    router.push('/editor');
+    router.push(`/saved-roadmap/${id}`);
   };
 
   return (

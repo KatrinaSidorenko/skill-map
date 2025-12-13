@@ -7,9 +7,9 @@ public class ComplexTestCheckResult
     [JsonProperty("questionResults")]
     public Dictionary<string, TestQuestionResult> QuestionResults { get; set; }
     [JsonProperty("totalAchievedPoints")]
-    public double TotalAchievedPoints { get; set; }
+    public double TotalAchievedPoints => QuestionResults.Values.Sum(q => q.AchievedPoints);
     [JsonProperty("totalPossiblePoints")]
-    public double TotalPossiblePoints { get; set; }
+    public double TotalPossiblePoints => QuestionResults.Values.Sum(q => q.TotalPossiblePoints);
 }
 
 public class TestQuestionResult

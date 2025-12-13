@@ -182,6 +182,12 @@ export const roadmapApi = createApi({
         method: 'GET',
       }),
     }),
+    getPlainUserSavedRoadmap: builder.query<SavedPlainRoadmap, string>({
+      query: (id) => ({
+        url: `modifiedroadmaps/plain/${id}`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -208,4 +214,6 @@ export const {
   useDeleteUserRoadmapMutation,
   useUpdateUserRoadmapMutation,
   useLazyGetPlainUserCreatedRoadmapQuery,
+  useLazyGetPlainUserSavedRoadmapQuery,
+  useGetPlainUserSavedRoadmapQuery,
 } = roadmapApi;

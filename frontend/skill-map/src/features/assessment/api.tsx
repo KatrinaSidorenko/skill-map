@@ -1,6 +1,7 @@
 import { baseQuery } from '@/store/baseQuery';
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { setCheckedAnswerForQuestions, setCurrentTest } from './store';
+import { get } from 'http';
 
 export const assessmentApi = createApi({
   reducerPath: 'assessmentApi',
@@ -8,12 +9,28 @@ export const assessmentApi = createApi({
   endpoints: (builder) => ({
     generateRoadmapTest: builder.mutation<
       RoadmapTestResultDto,
-      { testId: string; config: RoadmapTestConfigDto }
+      { roadmapId: string; config: RoadmapTestConfigDto }
     >({
-      query: ({ testId, config }) => ({
-        url: `${testId}`,
+      query: ({ roadmapId, config }) => ({
+        url: `${roadmapId}`,
         method: 'POST',
         body: config,
+      }),
+    }),
+    checkRoadmapTestAnswers: builder.mutation<
+      ComplexTestCheckResult,
+      { testId: string; answers: RoadmapTestAnswersRequest }
+    >({
+      query: ({ testId, answers }) => ({
+        url: `check/${testId}`,
+        method: 'POST',
+        body: answers,
+      }),
+    }),
+    getRoadmapTest: builder.query<RoadmapTestResultDto, { testId: string }>({
+      query: ({ testId }) => ({
+        url: `${testId}`,
+        method: 'GET',
       }),
       onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
         try {
@@ -24,22 +41,12 @@ export const assessmentApi = createApi({
         }
       },
     }),
-    checkRoadmapTestAnswers: builder.mutation<
-      AnswersCheckResult,
-      { testId: string; answers: RoadmapTestAnswersRequest }
-    >({
-      query: ({ testId, answers }) => ({
-        url: `check/${testId}`,
-        method: 'POST',
-        body: answers,
-      }),
-    }),
-    getComplexRoadmapTestCheckResult: builder.query<
+    getRoadmapTestResults: builder.query<
       ComplexTestCheckResult,
       { testId: string }
     >({
       query: ({ testId }) => ({
-        url: `complex-check/${testId}`,
+        url: `results/${testId}`,
         method: 'GET',
       }),
       onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
@@ -57,5 +64,6 @@ export const assessmentApi = createApi({
 export const {
   useGenerateRoadmapTestMutation,
   useCheckRoadmapTestAnswersMutation,
-  useLazyGetComplexRoadmapTestCheckResultQuery,
+  useLazyGetRoadmapTestQuery,
+  useLazyGetRoadmapTestResultsQuery,
 } = assessmentApi;

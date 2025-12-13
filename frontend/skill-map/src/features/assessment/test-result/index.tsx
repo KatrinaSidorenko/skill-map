@@ -5,10 +5,15 @@ import { useAppSelector } from '@/store/hooks';
 import { useRouter } from 'next/navigation';
 import { selectCheckedQuestionResults } from '../store';
 import { QuestionResultFactory } from '../common/questions/factory';
+import SpinnerScreen from '@/components/base/spinner';
+import { useEffect } from 'react';
+import { useLazyGetRoadmapTestResultsQuery } from '../api';
 
-export default function TestResults() {
+// todo: get test results from backend
+export default function TestResults({ testId }: { testId?: string }) {
   const router = useRouter();
   const checkedQuestionResults = useAppSelector(selectCheckedQuestionResults);
+  // todo: if any checked results missing, redirect to home page
   const onBackHome = () => {
     router.replace('/home');
   };
@@ -37,10 +42,25 @@ export default function TestResults() {
       </VStack>
 
       <Box mt={6} display="flex" justifyContent="flex-end">
-        <Button size="md" variant="solid" onClick={onBackHome}>
-          Back to Home
+        <Button size="sm" variant="solid" onClick={onBackHome}>
+          Back to Roadmap
         </Button>
       </Box>
     </Box>
   );
+}
+
+export function TestResultsWrapper({ testId }: { testId?: string }) {
+  const [getRoadmapTest, { data, isLoading, isError }] =
+    useLazyGetRoadmapTestResultsQuery();
+  useEffect(() => {
+    if (testId) {
+      getRoadmapTest({ testId }).unwrap();
+    }
+  }, [testId, getRoadmapTest]);
+
+  if (isLoading || !data) {
+    return <SpinnerScreen />;
+  }
+  return <TestResults testId={testId} />;
 }

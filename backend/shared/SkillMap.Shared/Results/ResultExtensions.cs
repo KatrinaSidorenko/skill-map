@@ -9,6 +9,8 @@ public static class ResultExtension
 
     public static ResponseInfo GetResultResponse<T>(this Result<T> result)
         => new(result.Code, result.Message);
+    public static ExceptionResult ToExceptionResult<T>(this Result<T> result)
+        => new(result.Code, result.Message);
 
     public static bool IsBadRequest<T>(this Result<T> result)
         => !result.IsSuccessful && result.Code.Contains(ErrorCode.USER_INPUT_ERROR_PREFIX);

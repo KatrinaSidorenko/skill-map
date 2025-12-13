@@ -9,6 +9,7 @@ import roadmapSlice from '@/features/roadmaps/roadmap/store';
 import roadmapViewSlice from '@/features/roadmaps/roadmap-view/store';
 import { assessmentApi } from '@/features/assessment/api';
 import assesmentSlice from '@/features/assessment/store';
+import savedRoadmapsSlice from '@/features/roadmaps/saved-roadmap-view/store';
 
 export const store = configureStore({
   reducer: {
@@ -21,6 +22,7 @@ export const store = configureStore({
     [roadmapViewSlice.name]: roadmapViewSlice.reducer,
     [assessmentApi.reducerPath]: assessmentApi.reducer,
     [assesmentSlice.name]: assesmentSlice.reducer,
+    [savedRoadmapsSlice.name]: savedRoadmapsSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
