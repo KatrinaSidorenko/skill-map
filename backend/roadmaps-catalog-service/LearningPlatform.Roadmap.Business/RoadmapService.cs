@@ -3,7 +3,6 @@ using LearningPlatform.Roadmap.Business.Contracts.Constants;
 using LearningPlatform.Roadmap.Business.Contracts.Models;
 using LearningPlatform.Roadmap.Business.Mappers;
 using Microsoft.Extensions.Logging;
-using Serilog;
 using SkillMap.Shared.Extensions;
 using SkillMap.Shared.Models;
 using SkillMap.Shared.Results;
@@ -19,7 +18,7 @@ public class RoadmapService(
         var paginatedResult = await roadmapRepository.GetPublicPlainRoadmapsByIds([], @params, ct);
         if (!paginatedResult.IsSuccessful)
         {
-            Log.Error("Failed to get plain roadmaps: {Error}", paginatedResult.Message);
+            logger.LogError("Failed to get plain roadmaps: {Error}", paginatedResult.Message);
             return ResultType.FailedToGetRoadmaps<PaginationResult<List<PlainRoadmapDto>>>();
         }
 
@@ -34,21 +33,21 @@ public class RoadmapService(
         var roadmapResult = await roadmapRepository.GetRoadmapById(roadmapId, ct);
         if (!roadmapResult.IsSuccessful)
         {
-            Log.Error("Failed to get roadmap with ID {RoadmapId}: {Error}", roadmapId, roadmapResult.Message);
+            logger.LogError("Failed to get roadmap with ID {RoadmapId}: {Error}", roadmapId, roadmapResult.Message);
             return ResultType.FailedToGetRoadmap<RoadmapDto>(roadmapResult.Message);
         }
 
         var (nodes, edges) = roadmapResult.Data;
         if (nodes == null || !nodes?.Any() == true)
         {
-            Log.Error("Roadmap with ID {RoadmapId} does not exist or has no nodes", roadmapId);
+            logger.LogError("Roadmap with ID {RoadmapId} does not exist or has no nodes", roadmapId);
             return ResultType.RoadmapNotFound<RoadmapDto>(roadmapId);
         }
 
         var startNode = nodes.FirstOrDefault(n => n.Type == NodeType.Roadmap);
         if (startNode == null)
         {
-            Log.Error("Roadmap with ID {RoadmapId} does not have a start node", roadmapId);
+            logger.LogError("Roadmap with ID {RoadmapId} does not have a start node", roadmapId);
             return ResultType.RoadmapNotFound<RoadmapDto>(roadmapId);
         }
 
@@ -81,7 +80,7 @@ public class RoadmapService(
         var paginatedResult = await roadmapRepository.GetPublicPlainRoadmapsByIds(roadmapIds, @params, ct, excludePrivate);
         if (!paginatedResult.IsSuccessful)
         {
-            Log.Error("Failed to get plain roadmaps by IDs: {Error}", paginatedResult.Message);
+            logger.LogError("Failed to get plain roadmaps by IDs: {Error}", paginatedResult.Message);
             return ResultType.FailedToGetRoadmaps<PaginationResult<List<PlainRoadmapDto>>>();
         }
 
@@ -104,7 +103,7 @@ public class RoadmapService(
         var resourcesResult = await roadmapRepository.GetRoadmapItemMaterials(roadmapId, itemId, ct);
         if (!resourcesResult.IsSuccessful)
         {
-            Log.Error("Failed to get learning item resources for roadmap ID {RoadmapId} and item ID {ItemId}: {Error}", roadmapId, itemId, resourcesResult.Message);
+            logger.LogError("Failed to get learning item resources for roadmap ID {RoadmapId} and item ID {ItemId}: {Error}", roadmapId, itemId, resourcesResult.Message);
             return ResultType.FailedToGet<List<ResourceDto>>(resourcesResult.Message);
         }
         return Result.Success(resourcesResult.Data);

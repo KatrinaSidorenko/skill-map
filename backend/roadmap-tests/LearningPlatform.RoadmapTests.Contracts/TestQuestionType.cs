@@ -9,6 +9,13 @@ public enum TestQuestionType
     ShortAnswer,
 }
 
+public enum Difficulty
+{
+    Easy,
+    Medium,
+    Hard
+}
+
 public static class TestQuestionTypeExtensions
 {
     public static string ToQuestionTypeString(this TestQuestionType type)

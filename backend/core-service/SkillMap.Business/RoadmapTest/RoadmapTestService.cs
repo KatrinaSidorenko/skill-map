@@ -120,6 +120,7 @@ public class RoadmapTestService(
     {
         ct.ThrowIfCancellationRequested();
 
+        // todo: extrcat questions check to exyernal service that create question types and evaluate answers
         var roadmapTest = await userTestsService.GetUserTest(userId, testId, ct);
         var analysisByQuestion = BuildAnalysisByQuestion(roadmapTest, userAnswers);
         var analysisByTopic = GroupAnalysisByTopic(roadmapTest, analysisByQuestion);
