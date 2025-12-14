@@ -11,10 +11,10 @@ namespace LearningPlatform.RoadmapTests.Service.TopicQuestion;
 [ApiController]
 public class TopicQuestionsController : ControllerBase
 {
-    private readonly ITopicQuestionGenerationService _service;
+    private readonly ITopicQuestionsProvider _service;
 
     public TopicQuestionsController(
-        ITopicQuestionGenerationService service)
+        ITopicQuestionsProvider service)
     {
         _service = service;
     }

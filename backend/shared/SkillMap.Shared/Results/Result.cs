@@ -8,7 +8,6 @@ public class Result<T>
     public bool IsSuccessful { get; }
     public string Code { get; }
     public string Message { get; }
-
     public T Data { get; }
     public bool HasData => Data != null;
 

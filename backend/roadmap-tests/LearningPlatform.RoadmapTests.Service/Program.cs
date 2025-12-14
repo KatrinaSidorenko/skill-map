@@ -18,11 +18,10 @@ builder.Services
     .AddControllers()
     .AddNewtonsoftJson();
 
-builder.Services.AddScoped<ITopicQuestionGenerationService, TopicQuestionGenerationService>();
-builder.Services.AddScoped<IQuestionResponseValidator, QuestionResponseValidator>();
-builder.Services.AddScoped<IOpenAiQuestionGenerator, OpenAiQuestionGenerator>();
-builder.Services.AddScoped<ISimpleQuestionGenerator, SimpleQuestionGenerator>();
-builder.Services.AddScoped<IQuestionGenerator, TopicQuestionsGenerator>();
+builder.Services.AddScoped<ITopicQuestionsProvider, TopicQuestionsProvider>();
+builder.Services.AddScoped<IOpenAiQuestionSource, OpenAiQuestionsSource>();
+builder.Services.AddScoped<ISimpleQuestionSource, SimpleQuestionSource>();
+builder.Services.AddScoped<IQuestionSource, CompositeQuestionProvider>();
 
 builder.Services.Configure<OpenAiOptions>(builder.Configuration.GetSection(OpenAiOptions.SectionName));
 builder.Services.AddSingleton(sp =>

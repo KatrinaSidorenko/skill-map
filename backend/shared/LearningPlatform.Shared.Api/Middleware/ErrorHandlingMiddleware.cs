@@ -28,7 +28,9 @@ public class ErrorHandlingMiddleware(RequestDelegate next, ILogger<ErrorHandling
             ArgumentNullException _ => new ExceptionResponse(HttpStatusCode.BadRequest, "Application exception occurred."),
             KeyNotFoundException _ => new ExceptionResponse(HttpStatusCode.NotFound, "The request key not found."),
             UnauthorizedAccessException _ => new ExceptionResponse(HttpStatusCode.Unauthorized, "Unauthorized."),
+            ArgumentException argEx => new ExceptionResponse(HttpStatusCode.BadRequest, argEx.Message),
             LearningPlatformException lpe => new ExceptionResponse(lpe.ToStatusCode(), lpe.Message),
+            InvalidOperationException invOpEx => new ExceptionResponse(HttpStatusCode.InternalServerError, invOpEx.Message),
             _ => new ExceptionResponse(HttpStatusCode.InternalServerError, "Internal server error.")
         };
 

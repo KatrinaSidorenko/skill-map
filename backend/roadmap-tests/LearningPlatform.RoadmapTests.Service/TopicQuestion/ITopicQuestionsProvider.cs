@@ -4,10 +4,7 @@ using TopicQuestionsDto = LearningPlatform.RoadmapTests.Service.TopicQuestion.Mo
 
 namespace LearningPlatform.RoadmapTests.Service.TopicQuestion;
 
-public interface ITopicQuestionGenerationService
+public interface ITopicQuestionsProvider
 {
-    Task<TopicQuestionsDto> GenerateTopicQuestions(
-        TopicDto topic,
-        TopicQuestionsSettingDto settings,
-        CancellationToken ct);
+    Task<TopicQuestionsDto> GenerateTopicQuestions(TopicDto topic, TopicQuestionsSettingDto settings, CancellationToken ct);
 }

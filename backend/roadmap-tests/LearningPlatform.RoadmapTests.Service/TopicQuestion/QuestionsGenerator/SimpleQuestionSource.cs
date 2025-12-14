@@ -1,14 +1,15 @@
 ﻿using LearningPlatform.RoadmapTests.Contracts.Models;
 using LearningPlatform.RoadmapTests.Service.TopicQuestion.Models;
+using LearningPlatform.RoadmapTests.Service.TopicQuestion.QuestionsGenerator.Common;
 using AnswerDto = LearningPlatform.RoadmapTests.Service.TopicQuestion.Models.AnswerDto;
 using QuestionDto = LearningPlatform.RoadmapTests.Service.TopicQuestion.Models.QuestionDto;
 
 namespace LearningPlatform.RoadmapTests.Service.TopicQuestion.QuestionsGenerator;
 
-public interface ISimpleQuestionGenerator : IQuestionGenerator { }
-public sealed class SimpleQuestionGenerator : ISimpleQuestionGenerator
+public interface ISimpleQuestionSource : IQuestionSource { }
+public sealed class SimpleQuestionSource : ISimpleQuestionSource
 {
-    public async Task<List<QuestionDto>> Generate(
+    public async Task<GenerationResult<List<QuestionDto>>> Generate(
         TopicDto topic,
         TopicQuestionsSettingDto settings,
         CancellationToken ct)
@@ -32,7 +33,7 @@ public sealed class SimpleQuestionGenerator : ISimpleQuestionGenerator
             });
         }
 
-        return questions;
+        return new GenerationResult<List<QuestionDto>>(questions);
     }
 
     private static List<AnswerDto> GenerateAnswers(string questionId)

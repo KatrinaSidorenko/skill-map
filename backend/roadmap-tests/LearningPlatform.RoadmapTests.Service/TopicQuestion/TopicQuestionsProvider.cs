@@ -1,21 +1,22 @@
 ﻿using LearningPlatform.RoadmapTests.Contracts.Models;
 using LearningPlatform.RoadmapTests.Service.TopicQuestion.Models;
 using LearningPlatform.RoadmapTests.Service.TopicQuestion.QuestionsGenerator;
+using SkillMap.Shared.Results;
 using TopicQuestionsDto = LearningPlatform.RoadmapTests.Service.TopicQuestion.Models.TopicQuestionsDto;
 
 namespace LearningPlatform.RoadmapTests.Service.TopicQuestion;
 
-public sealed class TopicQuestionGenerationService
-: ITopicQuestionGenerationService
+public sealed class TopicQuestionsProvider : ITopicQuestionsProvider
 {
-    private readonly IQuestionGenerator _generator;
+    private readonly IQuestionSource _generator;
 
-    public TopicQuestionGenerationService(
-        IQuestionGenerator generator)
+    public TopicQuestionsProvider(
+        IQuestionSource generator)
     {
         _generator = generator;
     }
 
+    // todo: create more clever logic. Long polling system.
     public async Task<TopicQuestionsDto> GenerateTopicQuestions(
         TopicDto topic,
         TopicQuestionsSettingDto settings,
@@ -30,11 +31,16 @@ public sealed class TopicQuestionGenerationService
             throw new ArgumentException("At least one question type required");
 
         var questions = await _generator.Generate(topic, settings, ct);
+        if (!questions.IsSuccessful || !questions.HasData)
+        {
+            throw new InvalidOperationException(
+                $"Failed to generate questions for topic {topic.Id}. Reason: {questions.Reason}");
+        }
 
         return new TopicQuestionsDto
         {
             Id = topic.Id,
-            Questions = questions
+            Questions = questions.Data,
         };
     }
 }
