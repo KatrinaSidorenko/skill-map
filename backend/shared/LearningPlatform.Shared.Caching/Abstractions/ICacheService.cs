@@ -1,4 +1,4 @@
-﻿namespace SkillMap.Infrastructure.Cache;
+﻿namespace LearningPlatform.Shared.Caching.Abstractions;
 
 public interface ICacheService
 {

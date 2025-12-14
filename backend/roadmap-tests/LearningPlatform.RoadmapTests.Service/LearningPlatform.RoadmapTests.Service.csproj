@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\shared\LearningPlatform.Shared.Api\LearningPlatform.Shared.Api.csproj" />
+    <ProjectReference Include="..\..\shared\LearningPlatform.Shared.Caching\LearningPlatform.Shared.Caching.csproj" />
     <ProjectReference Include="..\LearningPlatform.RoadmapTests.Contracts\LearningPlatform.RoadmapTests.Contracts.csproj" />
   </ItemGroup>
 

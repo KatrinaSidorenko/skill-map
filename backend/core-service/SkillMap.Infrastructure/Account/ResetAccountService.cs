@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using LearningPlatform.Shared.Caching.Abstractions;
+using Microsoft.Extensions.Logging;
 using SkillMap.Business.Abstractions;
-using SkillMap.Infrastructure.Cache;
 using SkillMap.Infrastructure.Email;
 using SkillMap.Shared.Results;
 using System.Security.Cryptography;

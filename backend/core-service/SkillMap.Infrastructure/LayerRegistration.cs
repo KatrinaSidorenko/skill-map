@@ -5,7 +5,6 @@ using Microsoft.Extensions.Options;
 using SkillMap.Business.Abstractions;
 using SkillMap.Business.RoadmapTest;
 using SkillMap.Infrastructure.Account;
-using SkillMap.Infrastructure.Cache;
 using SkillMap.Infrastructure.Email;
 using SkillMap.Infrastructure.RoadmapTest;
 using SkillMap.Shared.Options;
@@ -22,8 +21,6 @@ public static class LayerRegistration
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IResetAccountService, ResetAccountService>();
-        services.AddScoped<ICacheService, InMemoryCacheService>();
-        services.AddMemoryCache();
         services.AddTransient<IEmailService, MailkitEmailService>();
         services.Configure<EmailOptions>(configuration.GetSection(EmailOptions.SectionName));
         services.Configure<RoadmapTestingServiceOptions>(configuration.GetSection(RoadmapTestingServiceOptions.SectionName));

@@ -4,6 +4,7 @@ using LearningPlatform.RoadmapTests.Service.Infrastructure.Cache;
 using LearningPlatform.RoadmapTests.Service.Infrastructure.Database;
 using LearningPlatform.RoadmapTests.Service.Infrastructure.OpenAi;
 using LearningPlatform.Shared.Api.Middleware;
+using LearningPlatform.Shared.Caching;
 using Microsoft.Extensions.Options;
 using OpenAI;
 using SkillMap.Shared.Options;
@@ -20,6 +21,7 @@ builder.Services
     .AddControllers()
     .AddNewtonsoftJson();
 
+builder.Services.AddCaching();
 builder.Services.AddScoped<ITopicQuestionsProvider, TopicQuestionsProvider>();
 builder.Services.AddScoped<IOpenAiQuestionSource, OpenAiQuestionsSource>();
 builder.Services.AddScoped<ISimpleQuestionSource, SimpleQuestionSource>();

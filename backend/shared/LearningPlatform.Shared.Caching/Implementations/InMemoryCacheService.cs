@@ -1,6 +1,7 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using LearningPlatform.Shared.Caching.Abstractions;
+using Microsoft.Extensions.Caching.Memory;
 
-namespace SkillMap.Infrastructure.Cache;
+namespace LearningPlatform.Shared.Caching.Implementations;
 
 public class InMemoryCacheService(IMemoryCache cache) : ICacheService
 {

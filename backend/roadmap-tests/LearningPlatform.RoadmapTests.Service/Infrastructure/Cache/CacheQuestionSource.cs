@@ -2,13 +2,14 @@
 using LearningPlatform.RoadmapTests.Service.Application.Abstractions;
 using LearningPlatform.RoadmapTests.Service.Application.Models;
 using LearningPlatform.RoadmapTests.Service.Infrastructure.Common;
+using LearningPlatform.Shared.Caching.Abstractions;
 
 namespace LearningPlatform.RoadmapTests.Service.Infrastructure.Cache;
 
-public class CacheQuestionSource : ICacheQuestionSource
+public class CacheQuestionSource(ICacheService cacheService) : ICacheQuestionSource
 {
     public async Task<GenerationResult<List<Application.Models.QuestionDto>>> Generate(TopicDto topic, TopicQuestionsSettingDto settings, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        return new GenerationResult<List<Application.Models.QuestionDto>>([]);
     }
 }
