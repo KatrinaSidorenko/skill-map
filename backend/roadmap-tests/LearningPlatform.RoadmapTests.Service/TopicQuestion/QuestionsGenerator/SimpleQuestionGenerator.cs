@@ -5,7 +5,8 @@ using QuestionDto = LearningPlatform.RoadmapTests.Service.TopicQuestion.Models.Q
 
 namespace LearningPlatform.RoadmapTests.Service.TopicQuestion.QuestionsGenerator;
 
-public sealed class SimpleQuestionGenerator : IQuestionGenerator
+public interface ISimpleQuestionGenerator : IQuestionGenerator { }
+public sealed class SimpleQuestionGenerator : ISimpleQuestionGenerator
 {
     public async Task<List<QuestionDto>> Generate(
         TopicDto topic,

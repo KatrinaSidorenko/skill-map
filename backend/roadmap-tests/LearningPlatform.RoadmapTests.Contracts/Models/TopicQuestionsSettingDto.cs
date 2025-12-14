@@ -11,4 +11,7 @@ public class TopicQuestionsSettingDto
 
     [JsonProperty("types")]
     public List<TestQuestionType> Types { get; set; }
+    [JsonIgnore]
+    public List<string> TypeStrings =>
+        Types.Select(t => t.ToQuestionTypeString()).ToList();
 }
