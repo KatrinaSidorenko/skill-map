@@ -1,10 +1,11 @@
 ﻿using LearningPlatform.RoadmapTests.Contracts.Models;
-using LearningPlatform.RoadmapTests.Service.TopicQuestion.Models;
-using LearningPlatform.RoadmapTests.Service.TopicQuestion.QuestionsGenerator.Common;
-using AnswerDto = LearningPlatform.RoadmapTests.Service.TopicQuestion.Models.AnswerDto;
-using QuestionDto = LearningPlatform.RoadmapTests.Service.TopicQuestion.Models.QuestionDto;
+using LearningPlatform.RoadmapTests.Service.Application.Abstractions;
+using LearningPlatform.RoadmapTests.Service.Application.Models;
+using LearningPlatform.RoadmapTests.Service.Infrastructure.Common;
+using AnswerDto = LearningPlatform.RoadmapTests.Service.Application.Models.AnswerDto;
+using QuestionDto = LearningPlatform.RoadmapTests.Service.Application.Models.QuestionDto;
 
-namespace LearningPlatform.RoadmapTests.Service.TopicQuestion.QuestionsGenerator;
+namespace LearningPlatform.RoadmapTests.Service.Application;
 
 public interface ISimpleQuestionSource : IQuestionSource { }
 public sealed class SimpleQuestionSource : ISimpleQuestionSource

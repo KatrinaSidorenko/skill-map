@@ -1,11 +1,12 @@
 ﻿using LearningPlatform.RoadmapTests.Contracts.Models;
-using LearningPlatform.RoadmapTests.Service.TopicQuestion.Models;
+using LearningPlatform.RoadmapTests.Service.Application;
+using LearningPlatform.RoadmapTests.Service.Application.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SkillMap.Shared.Results;
 using TopicQuestionsDto = LearningPlatform.RoadmapTests.Contracts.Models.TopicQuestionsDto;
 
-namespace LearningPlatform.RoadmapTests.Service.TopicQuestion;
+namespace LearningPlatform.RoadmapTests.Service.Api;
 
 [Route("api/[controller]")]
 [ApiController]

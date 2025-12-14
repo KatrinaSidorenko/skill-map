@@ -1,9 +1,9 @@
 ﻿using LearningPlatform.RoadmapTests.Contracts;
 using LearningPlatform.RoadmapTests.Contracts.Models;
-using LearningPlatform.RoadmapTests.Service.TopicQuestion.Models;
+using LearningPlatform.RoadmapTests.Service.Application.Models;
 using System.Text;
 
-namespace LearningPlatform.RoadmapTests.Service.TopicQuestion.QuestionsGenerator.OpenAi.Prompts;
+namespace LearningPlatform.RoadmapTests.Service.Infrastructure.OpenAi.Prompts;
 
 public class PromptBuilder
 {
@@ -37,7 +37,7 @@ public class PromptBuilder
     /// <summary>
     /// Prevents prompt injection & malformed content
     /// </summary>
-    private static string Sanitize(string? input)
+    private static string Sanitize(string input)
     {
         if (string.IsNullOrWhiteSpace(input))
             return string.Empty;

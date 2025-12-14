@@ -1,20 +1,21 @@
 ﻿using LearningPlatform.RoadmapTests.Contracts;
 using LearningPlatform.RoadmapTests.Contracts.Models;
-using LearningPlatform.RoadmapTests.Service.TopicQuestion.Models;
-using LearningPlatform.RoadmapTests.Service.TopicQuestion.QuestionsGenerator.Common;
-using LearningPlatform.RoadmapTests.Service.TopicQuestion.QuestionsGenerator.OpenAi.Prompts;
-using LearningPlatform.RoadmapTests.Service.TopicQuestion.QuestionsGenerator.OpenAi.Validators;
+using LearningPlatform.RoadmapTests.Service.Application.Abstractions;
+using LearningPlatform.RoadmapTests.Service.Application.Models;
+using LearningPlatform.RoadmapTests.Service.Infrastructure.Common;
+using LearningPlatform.RoadmapTests.Service.Infrastructure.OpenAi.Prompts;
+using LearningPlatform.RoadmapTests.Service.Infrastructure.OpenAi.Validators;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using OpenAI;
 using OpenAI.Chat;
 using SkillMap.Shared.Options;
-using AnswerDto = LearningPlatform.RoadmapTests.Service.TopicQuestion.Models.AnswerDto;
-using QuestionDto = LearningPlatform.RoadmapTests.Service.TopicQuestion.Models.QuestionDto;
+using AnswerDto = LearningPlatform.RoadmapTests.Service.Application.Models.AnswerDto;
+using QuestionDto = LearningPlatform.RoadmapTests.Service.Application.Models.QuestionDto;
 
-namespace LearningPlatform.RoadmapTests.Service.TopicQuestion.QuestionsGenerator;
+namespace LearningPlatform.RoadmapTests.Service.Infrastructure.OpenAi;
 
-public interface IOpenAiQuestionSource : IQuestionSource { }
+
 
 public sealed class OpenAiQuestionsSource(OpenAIClient client, IOptions<OpenAiOptions> options) : IOpenAiQuestionSource
 {

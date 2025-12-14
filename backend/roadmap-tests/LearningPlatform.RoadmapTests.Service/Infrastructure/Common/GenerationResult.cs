@@ -1,6 +1,6 @@
 ﻿using SkillMap.Shared.Results;
 
-namespace LearningPlatform.RoadmapTests.Service.TopicQuestion.QuestionsGenerator.Common;
+namespace LearningPlatform.RoadmapTests.Service.Infrastructure.Common;
 
 public record ErrorReason(string Code, string Description)
 {
@@ -46,7 +46,7 @@ public static class GenerationErrorReasons
 }
 public class GenerationResult<T> : Result<T>
 {
-    public ErrorReason? Reason { get; set; }
+    public ErrorReason Reason { get; set; }
     public GenerationResult(bool isSuccessful, T data) : base(isSuccessful, data) { }
     public GenerationResult(T data) : base(true, data) { }
     public GenerationResult(ErrorReason errorReason) : base(false, default!)
@@ -59,7 +59,7 @@ public static class GenerationResultExtensions
 {
     public static GenerationResult<TTo> ToGenerationResult<TTo, TFrom>(
         this GenerationResult<TFrom> source,
-        Func<TFrom, TTo>? mapData = null)
+        Func<TFrom, TTo> mapData = null)
     {
         if (source.IsSuccessful)
         {

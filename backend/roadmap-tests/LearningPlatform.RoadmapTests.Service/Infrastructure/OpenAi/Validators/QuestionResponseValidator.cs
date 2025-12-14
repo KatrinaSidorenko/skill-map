@@ -1,10 +1,10 @@
 ﻿using LearningPlatform.RoadmapTests.Contracts;
 using LearningPlatform.RoadmapTests.Contracts.Models;
-using LearningPlatform.RoadmapTests.Service.TopicQuestion.QuestionsGenerator.Common;
+using LearningPlatform.RoadmapTests.Service.Infrastructure.Common;
 using SkillMap.Shared.Results;
 using System.Runtime.CompilerServices;
 
-namespace LearningPlatform.RoadmapTests.Service.TopicQuestion.QuestionsGenerator.OpenAi.Validators;
+namespace LearningPlatform.RoadmapTests.Service.Infrastructure.OpenAi.Validators;
 
 public static class QuestionResponseValidator
 {

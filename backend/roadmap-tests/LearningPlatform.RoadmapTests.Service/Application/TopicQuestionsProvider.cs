@@ -1,10 +1,10 @@
 ﻿using LearningPlatform.RoadmapTests.Contracts.Models;
-using LearningPlatform.RoadmapTests.Service.TopicQuestion.Models;
-using LearningPlatform.RoadmapTests.Service.TopicQuestion.QuestionsGenerator;
+using LearningPlatform.RoadmapTests.Service.Application.Abstractions;
+using LearningPlatform.RoadmapTests.Service.Application.Models;
 using SkillMap.Shared.Results;
-using TopicQuestionsDto = LearningPlatform.RoadmapTests.Service.TopicQuestion.Models.TopicQuestionsDto;
+using TopicQuestionsDto = LearningPlatform.RoadmapTests.Service.Application.Models.TopicQuestionsDto;
 
-namespace LearningPlatform.RoadmapTests.Service.TopicQuestion;
+namespace LearningPlatform.RoadmapTests.Service.Application;
 
 public sealed class TopicQuestionsProvider : ITopicQuestionsProvider
 {
@@ -36,6 +36,8 @@ public sealed class TopicQuestionsProvider : ITopicQuestionsProvider
             throw new InvalidOperationException(
                 $"Failed to generate questions for topic {topic.Id}. Reason: {questions.Reason}");
         }
+
+        // add responsibility of caching + storing into database
 
         return new TopicQuestionsDto
         {

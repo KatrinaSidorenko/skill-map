@@ -3,7 +3,7 @@ using LearningPlatform.RoadmapTests.Contracts.Models;
 using Newtonsoft.Json;
 using SkillMap.Shared.Results;
 
-namespace LearningPlatform.RoadmapTests.Service.TopicQuestion.Models;
+namespace LearningPlatform.RoadmapTests.Service.Application.Models;
 
 public sealed class GenerateTopicQuestionsRequest
 {
@@ -21,7 +21,7 @@ public sealed record TopicDto(
 
 public static class GenerateTopicInputValidator
 {
-    public static ResponseInfo? Validate(this GenerateTopicQuestionsRequest request)
+    public static ResponseInfo Validate(this GenerateTopicQuestionsRequest request)
     {
         var messages = new List<string>();
         if (request.Topic is null)

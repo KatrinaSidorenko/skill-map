@@ -1,6 +1,6 @@
 ﻿using LearningPlatform.RoadmapTests.Contracts;
 
-namespace LearningPlatform.RoadmapTests.Service.TopicQuestion.QuestionsGenerator;
+namespace LearningPlatform.RoadmapTests.Service.Infrastructure.OpenAi.Prompts;
 
 
 public static class PromptTemplates

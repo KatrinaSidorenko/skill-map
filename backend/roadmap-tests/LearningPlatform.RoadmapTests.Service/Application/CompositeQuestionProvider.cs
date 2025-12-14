@@ -1,12 +1,11 @@
 ﻿using LearningPlatform.RoadmapTests.Contracts.Models;
-using LearningPlatform.RoadmapTests.Service.TopicQuestion.Models;
-using LearningPlatform.RoadmapTests.Service.TopicQuestion.QuestionsGenerator.Cache;
-using LearningPlatform.RoadmapTests.Service.TopicQuestion.QuestionsGenerator.Common;
-using LearningPlatform.RoadmapTests.Service.TopicQuestion.QuestionsGenerator.Database;
+using LearningPlatform.RoadmapTests.Service.Application.Abstractions;
+using LearningPlatform.RoadmapTests.Service.Application.Models;
+using LearningPlatform.RoadmapTests.Service.Infrastructure.Common;
 using SkillMap.Shared.Extensions;
-using QuestionDto = LearningPlatform.RoadmapTests.Service.TopicQuestion.Models.QuestionDto;
+using QuestionDto = LearningPlatform.RoadmapTests.Service.Application.Models.QuestionDto;
 
-namespace LearningPlatform.RoadmapTests.Service.TopicQuestion.QuestionsGenerator;
+namespace LearningPlatform.RoadmapTests.Service.Application;
 
 public sealed class CompositeQuestionProvider : IQuestionSource
 {

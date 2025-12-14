@@ -1,8 +1,8 @@
 ﻿using LearningPlatform.RoadmapTests.Contracts;
-using LearningPlatform.RoadmapTests.Service.TopicQuestion.Models;
+using LearningPlatform.RoadmapTests.Service.Application.Models;
 using SkillMap.Shared.Extensions;
 
-namespace LearningPlatform.RoadmapTests.Service.TopicQuestion.QuestionsGenerator.Common;
+namespace LearningPlatform.RoadmapTests.Service.Infrastructure.Common;
 
 public sealed class OpenAiQuestionsResponse
 {
