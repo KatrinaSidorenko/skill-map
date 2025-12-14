@@ -1,10 +1,11 @@
 using LearningPlatform.RoadmapTests.Service.TopicQuestion;
 using LearningPlatform.RoadmapTests.Service.TopicQuestion.QuestionsGenerator;
 using LearningPlatform.RoadmapTests.Service.TopicQuestion.QuestionsGenerator.OpenAi.Validators;
+using LearningPlatform.Shared.Api.Middleware;
 using Microsoft.Extensions.Options;
 using OpenAI;
 using SkillMap.Shared.Options;
-using System.Net.Http.Headers;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,8 +23,7 @@ builder.Services.AddScoped<IQuestionResponseValidator, QuestionResponseValidator
 builder.Services.AddScoped<IOpenAiQuestionGenerator, OpenAiQuestionGenerator>();
 builder.Services.AddScoped<ISimpleQuestionGenerator, SimpleQuestionGenerator>();
 builder.Services.AddScoped<IQuestionGenerator, TopicQuestionsGenerator>();
-// todo: add validation back later
-//builder.Services.AddFluentValidationAutoValidation();
+
 builder.Services.Configure<OpenAiOptions>(builder.Configuration.GetSection(OpenAiOptions.SectionName));
 builder.Services.AddSingleton(sp =>
 {
@@ -45,6 +45,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

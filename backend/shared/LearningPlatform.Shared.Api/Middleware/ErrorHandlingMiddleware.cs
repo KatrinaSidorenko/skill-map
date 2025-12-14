@@ -1,7 +1,9 @@
-﻿using SkillMap.Shared.Results;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using SkillMap.Shared.Results;
 using System.Net;
 
-namespace SkillMap.Api.Base.Middleware;
+namespace LearningPlatform.Shared.Api.Middleware;
 
 public class ErrorHandlingMiddleware(RequestDelegate next, ILogger<ErrorHandlingMiddleware> logger)
 {

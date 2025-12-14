@@ -1,7 +1,8 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
 using SkillMap.Shared.Constants;
 
-namespace SkillMap.Api.Base.Extensions;
+namespace LearningPlatform.Shared.Api.Extensions;
 
 public static class SwaggerGenerationExtension
 {

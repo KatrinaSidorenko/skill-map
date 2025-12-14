@@ -1,10 +1,10 @@
 ﻿using LearningPlatform.Roadmap.Business;
 using LearningPlatform.Roadmap.Business.Contracts;
 using LearningPlatform.Roadmap.Business.Contracts.Models;
+using LearningPlatform.Shared.Api.Searching;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SkillMap.Api.Base;
-using SkillMap.Api.Base.Searching;
 using SkillMap.Api.ModifiedRoadmap.Models;
 using SkillMap.Api.Roadmap.Models;
 using SkillMap.Api.Roadmaps;

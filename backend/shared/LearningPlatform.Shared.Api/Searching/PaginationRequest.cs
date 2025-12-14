@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SkillMap.Shared.Models;
 
-namespace SkillMap.Api.Base.Searching;
+namespace LearningPlatform.Shared.Api.Searching;
 
 public class PaginationRequest
 {

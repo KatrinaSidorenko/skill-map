@@ -1,7 +1,8 @@
 using SkillMap.Infrastructure;
 using SkillMap.Persistence;
 using SkillMap.Business;
-using SkillMap.Api.Base.Extensions;
+using LearningPlatform.Shared.Api.Extensions;
+using LearningPlatform.Shared.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +44,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseCors("AllowAll");
 
 app.UseHttpsRedirection();

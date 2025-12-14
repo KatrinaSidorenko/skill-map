@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
-namespace SkillMap.Api.Base.Middleware;
+namespace LearningPlatform.Shared.Api.Middleware;
 
 public class ExecutionTimeFilter : IActionFilter
 {
