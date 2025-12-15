@@ -17,7 +17,6 @@ export function QuestionsFactory(question: QuestionResultDto) {
 
 export function QuestionResultFactory(props: { question: TestQuestionResult }) {
   const { question } = props;
-  console.log('Rendering QuestionResultFactory for question:', question);
   switch (question.type) {
     case 'single_choice':
       return (

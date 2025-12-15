@@ -13,6 +13,10 @@ import { useLazyGetRoadmapTestResultsQuery } from '../api';
 export default function TestResults({ testId }: { testId?: string }) {
   const router = useRouter();
   const checkedQuestionResults = useAppSelector(selectCheckedQuestionResults);
+  console.log('TestResults Component Rendered with:', {
+    testId,
+    checkedQuestionResults,
+  });
   // todo: if any checked results missing, redirect to home page
   const onBackHome = () => {
     router.replace('/home');

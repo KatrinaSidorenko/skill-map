@@ -40,10 +40,11 @@ public class AnswerDetail
     
     [JsonProperty("isCorrect")]
     public bool IsCorrect { get; set; }
+    [JsonProperty("isSelected")]
+    public bool IsSelected { get; set; }
 }
 
 public class SingleChoiceAnswerDetail : AnswerDetail
 {
-    [JsonProperty("isSelected")]
-    public bool IsSelected { get; set; }
+    
 }

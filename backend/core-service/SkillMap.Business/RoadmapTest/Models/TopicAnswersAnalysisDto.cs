@@ -24,11 +24,9 @@ public class QuestionAnalysisResultDto
     public int TotalPossiblePoints { get; set; }
     public int AchievedPoints { get; set; }
     public TestQuestionType QuestionType { get; set; }
-}
-
-public class SingleAnswerQuestionAnalysisResultDto : QuestionAnalysisResultDto
-{
     public string SelectedAnswerId { get; set; }
     public string CorrectAnswerId { get; set; }
     public bool IsCorrect => AchievedPoints == TotalPossiblePoints;
 }
+
+public class SingleAnswerQuestionAnalysisResultDto : QuestionAnalysisResultDto { }

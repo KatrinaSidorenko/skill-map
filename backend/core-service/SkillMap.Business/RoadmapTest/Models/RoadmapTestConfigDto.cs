@@ -7,9 +7,9 @@ public class RoadmapTestConfigDto
 {
 
     [JsonProperty("numberOfQuestions")]
-    public int? NumberOfQuestions { get; set; }
+    public int? NumberOfQuestions { get; set; } = 15;
     [JsonProperty("timeLimitInMinutes")]
-    public int TimeLimitInMinutes { get; set; } = 30;
+    public int TimeLimitInMinutes { get; set; } = 15;
     [JsonProperty("difficultyLevel")]
     public string DifficultyLevel { get; set; } = Difficulty.Easy.ToDifficultyString();
 }

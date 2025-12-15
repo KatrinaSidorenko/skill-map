@@ -9,67 +9,87 @@ export function SingleChoiceOption({
   text,
   isDisabled,
   isCorrect,
+  isSelected, // Assuming this is passed to know what user picked
   isDefault,
 }: {
   id: string;
   text: string;
   isDisabled?: boolean;
   isCorrect?: boolean;
+  isSelected?: boolean;
   isDefault?: boolean;
 }) {
-  const baseProps = {
-    value: id,
-    p: 2,
-    borderRadius: 'md',
+  // 1. Determine "Review Mode" styles (When test is finished/disabled)
+  const getReviewStyles = () => {
+    if (!isDisabled) return {}; // Not in review mode
+    console.log({
+      id,
+      text,
+      isDisabled,
+      isCorrect,
+      isSelected,
+      isDefault,
+    });
+
+    // CASE A: This is the Correct Answer (Always Green)
+    // We force opacity: 1 so the user can clearly see the right answer even if disabled
+    if (isCorrect) {
+      return {
+        bg: 'green.50',
+        borderColor: 'green.500',
+        color: 'green.900',
+        borderWidth: '1px',
+        opacity: 1,
+        _checked: {
+          bg: 'green.50',
+          borderColor: 'green.500',
+          color: 'green.900',
+        }, // Override default checked style
+      };
+    }
+
+    // CASE B: User Selected this, but it is WRONG (Red)
+    if (isSelected && !isCorrect) {
+      return {
+        bg: 'red.50',
+        borderColor: 'red.500',
+        color: 'red.900',
+        borderWidth: '1px',
+        opacity: 1,
+        _checked: { bg: 'red.50', borderColor: 'red.500', color: 'red.900' },
+      };
+    }
+
+    // CASE C: Just a wrong option that wasn't picked (Dimmed)
+    return {
+      opacity: 0.5,
+      borderWidth: '0px',
+    };
+  };
+
+  // 2. Standard Interactive Styles (While taking the test)
+  const interactiveStyles = {
+    bg: 'white',
     borderWidth: '0px',
-    transition: 'background-color 0.12s, color 0.12s',
+    cursor: isDisabled ? 'default' : 'pointer',
+    transition: 'all 0.2s',
+    _hover: isDisabled ? {} : { bg: 'blue.50' },
+    _checked: {
+      bg: 'blue.50',
+      color: 'blue.700',
+      borderWidth: '1px',
+      borderColor: 'blue.500',
+    },
   };
 
-  const cursor = isDisabled ? 'default' : 'pointer';
-  const opacity = isDisabled ? 0.5 : 1;
-
-  // default styling (highest priority when isDefault === true)
-  const defaultStyle = {
-    bg: 'blue.50',
-    color: 'blue.700',
+  // 3. Merge Styles (Review styles override Interactive styles)
+  const finalStyles = {
+    ...interactiveStyles,
+    ...getReviewStyles(),
   };
-
-  // hover behaviour: if default -> blue hover, otherwise keep previous logic
-  const hoverStyle = isDefault
-    ? { bg: 'blue.50' }
-    : isDisabled
-      ? {}
-      : { bg: isCorrect ? 'green.50' : 'gray.50' };
-
-  // checked (selected) style: selected should be blue.
-  // If disabled, use slightly muted variants.
-  const checkedStyle = isDisabled
-    ? isDefault
-      ? { bg: 'blue.50', color: 'blue.700' }
-      : isCorrect
-        ? { bg: 'green.50', color: 'green.700' }
-        : { bg: 'gray.100', color: 'gray.700' }
-    : isDefault
-      ? defaultStyle
-      : { bg: 'blue.50', color: 'blue.700' };
-
-  // border: keep green border for correctness unless it's a default (then use blue)
-  const borderStyle = isDefault
-    ? { borderWidth: '1px', borderColor: 'blue.100' }
-    : isCorrect
-      ? { borderWidth: '1px', borderColor: 'green.100' }
-      : {};
 
   return (
-    <RadioGroup.Item
-      {...baseProps}
-      cursor={cursor}
-      opacity={opacity}
-      _hover={hoverStyle}
-      _checked={checkedStyle}
-      disabled={isDisabled}
-      {...borderStyle}
-    >
+    <RadioGroup.Item value={id} p={2} borderRadius="md" {...finalStyles}>
       <RadioGroup.ItemHiddenInput />
       <RadioGroup.ItemIndicator />
       <RadioGroup.ItemText>{text}</RadioGroup.ItemText>
@@ -192,6 +212,7 @@ export function SingleChoiceResult({
             id={a.answerId}
             text={a.text}
             isCorrect={a.isCorrect}
+            isSelected={a.isSelected}
             isDisabled
           />
         ))}

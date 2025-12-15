@@ -84,8 +84,8 @@ interface AnswerDetail {
   answerId: string;
   text: string;
   isCorrect: boolean;
-}
-
-interface SingleChoiceAnswerDetail extends AnswerDetail {
   isSelected: boolean;
 }
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+interface SingleChoiceAnswerDetail extends AnswerDetail {}

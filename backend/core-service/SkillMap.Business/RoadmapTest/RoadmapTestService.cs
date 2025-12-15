@@ -24,12 +24,18 @@ public class RoadmapTestService(
         // todo: refactor on result pattern
         var userRoadmap = await EnsureActiveUserRoadmap(userId, roadmapId, ct);
         var existingTest = await TryGetExistingInitialUnfinishedTest(userRoadmap.Id, ct);
-        if (existingTest != null)
+        if (existingTest != null) // todo: more complex politics about existing tests (like exists for 10 days ok if more regenaret)
         {
             return existingTest;
         }
 
-        var roadmap = await GetRoadmap(roadmapId, ct);
+        var roadmapResult = await roadmapService.GetRoadmapById(roadmapId, ct);
+        if (roadmapResult.IsFailed || !roadmapResult.HasData)
+        {
+            throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"Roadmap with id {roadmapId} not found");
+        }
+
+        var roadmap = roadmapResult.Data;
         var topics = roadmap.Nodes.Select(n => new Topic(n.Id, n.Title, n.Description)).ToList();
         var topicsAnalysis = CalculateTopicsAnalysis(topics, config, ct); // todo: not implemented
         var targetTopics = FilterTopicByTestConfig(topicsAnalysis, topics, config, ct); // todo: not implemented
@@ -76,31 +82,89 @@ public class RoadmapTestService(
         return userRoadmap;
     }
 
-    private async Task<RoadmapDto> GetRoadmap(string roadmapId, CancellationToken ct)
+    // todo: restrictions
+    // max questions per topic: 3
+    private const int MaxQuestionsPerTopic = 3;
+    private const int DefaultQuestions = 10;
+    private const double MinMinutesPerQuestion = 0.5;
+
+    private static Dictionary<string, TopicAnalysis> CalculateTopicsAnalysis(
+        List<Topic> topics,
+        RoadmapTestConfigDto config,
+        CancellationToken ct)
     {
-        var roadmapResult = await roadmapService.GetRoadmapById(roadmapId, ct);
-        if (!roadmapResult.IsSuccessful || roadmapResult.Data == null)
+        ct.ThrowIfCancellationRequested();
+
+        if (topics == null || !topics.Any())
+            return new Dictionary<string, TopicAnalysis>();
+
+        int requestedCount = config.NumberOfQuestions ?? DefaultQuestions;
+        int maxByTime = (int)(config.TimeLimitInMinutes / MinMinutesPerQuestion);
+        int maxByTopics = topics.Count * MaxQuestionsPerTopic;
+        int finalTargetCount = Math.Min(requestedCount, Math.Min(maxByTime, maxByTopics));
+
+        // 2. CALCULATE DISTRIBUTION (Base + Remainder)
+        // Example: 10 questions, 3 topics. 
+        // Base = 3. Remainder = 1.
+        int baseQuestionsPerTopic = finalTargetCount / topics.Count;
+        int extraQuestions = finalTargetCount % topics.Count;
+
+        var shuffledTopics = topics.OrderBy(x => Guid.NewGuid()).ToList();
+
+        var result = new Dictionary<string, TopicAnalysis>();
+
+        for (int i = 0; i < shuffledTopics.Count; i++)
         {
-            throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"Roadmap with id {roadmapId} not found");
+            var topic = shuffledTopics[i];
+            int count = baseQuestionsPerTopic;
+
+            if (i < extraQuestions)
+            {
+                count++;
+            }
+
+            count = Math.Min(count, MaxQuestionsPerTopic);
+            var (priority, coefficient) = GetPriorityAndCoefficient(count);
+
+            result[topic.Id] = new TopicAnalysis
+            {
+                Id = topic.Id,
+                QuestionsCount = count,
+                Priority = priority,
+                Coefficient = coefficient
+            };
         }
 
-        return roadmapResult.Data;
+        return result;
     }
 
-    private static Dictionary<string, TopicAnalysis> CalculateTopicsAnalysis(List<Topic> topics, RoadmapTestConfigDto config, CancellationToken ct)
+    private static (string Priority, double Coefficient) GetPriorityAndCoefficient(int count)
     {
-        ct.ThrowIfCancellationRequested();
-        // calculate priorities and coefficients for topics based on config
-        return topics.ToDictionary(
-            t => t.Id,
-            t => new TopicAnalysis { Id = t.Id, Priority = "high", Coefficient = 1.0, QuestionsCount = 1 });
+        return count switch
+        {
+            >= 3 => ("High", 1.0),   // Full focus
+            2 => ("Medium", 0.7), // Standard focus
+            1 => ("Low", 0.4),    // Brief check
+            _ => ("None", 0.0)    // Skipped
+        };
     }
-    private static List<Topic> FilterTopicByTestConfig(Dictionary<string, TopicAnalysis> topicsAnalysis,  List<Topic> topics, RoadmapTestConfigDto config, CancellationToken ct)
+    private static List<Topic> FilterTopicByTestConfig(
+        Dictionary<string, TopicAnalysis> topicsAnalysis,
+        List<Topic> topics,
+        RoadmapTestConfigDto config,
+        CancellationToken ct)
     {
-        ct.ThrowIfCancellationRequested();
-        // get priorities or coefficeint snad filter
-        // filter topics based on config
-        return topics.Take(3).ToList();
+        return topics
+            .Where(topic =>
+            {
+                if (!topicsAnalysis.TryGetValue(topic.Id, out var analysis))
+                    return false;
+
+                return analysis.QuestionsCount > 0;
+            })
+            .OrderByDescending(t => topicsAnalysis[t.Id].QuestionsCount)
+            .ThenBy(t => t.Name)
+            .ToList();
     }
     private static (Topic Topic, TopicQuestionsSettingDto Setting) GetTopicSettings(Topic topic, TopicAnalysis analysis, RoadmapTestConfigDto config)
     {
@@ -114,6 +178,7 @@ public class RoadmapTestService(
     }
 
     // todo: what is result already exists?
+    // todo: just save selected answers
     public async Task<ComplexTestCheckResult> CheckRoadmapTest(long userId, string testId, RoadmapTestAnswers userAnswers, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
@@ -127,8 +192,6 @@ public class RoadmapTestService(
 
         return BuildComplexTestCheckResult(roadmapTest, analysisByQuestion);
     }
-
-   // public async Task
 
     // analysis for each question
     private QuestionAnalysisResultDto AnalyzeQuestionAnswer(QuestionDto questionDto, QuestionAnswer? userAnswer)

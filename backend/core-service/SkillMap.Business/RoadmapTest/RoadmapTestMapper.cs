@@ -167,6 +167,8 @@ public static class RoadmapTestMapper
                             AchievedPoints = q.Value.AchievedPoints,
                             TotalPossiblePoints = q.Value.TotalPossiblePoints,
                             QuestionType = q.Value.QuestionType.ToQuestionTypeString(),
+                            SelectedAnswerId = q.Value.SelectedAnswerId,
+                            CorrectAnswerId = q.Value.CorrectAnswerId
                         })
                 })
         };
@@ -185,6 +187,8 @@ public static class RoadmapTestMapper
                             AchievedPoints = q.Value.AchievedPoints,
                             TotalPossiblePoints = q.Value.TotalPossiblePoints,
                             QuestionType = q.Value.QuestionType.FromQuestionTypeString(),
+                            SelectedAnswerId = q.Value.SelectedAnswerId,
+                            CorrectAnswerId = q.Value.CorrectAnswerId
                         })
                 }));
     }
