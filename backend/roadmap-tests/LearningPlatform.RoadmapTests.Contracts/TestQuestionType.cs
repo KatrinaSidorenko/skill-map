@@ -83,4 +83,26 @@ public static class TestQuestionTypeExtensions
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
     }
+
+    public static string ToDifficultyString(this Difficulty difficulty)
+    {
+        return difficulty switch
+        {
+            Difficulty.Easy => Difficulty.Easy.ToString().ToLower(),
+            Difficulty.Medium => Difficulty.Medium.ToString().ToLower(),
+            Difficulty.Hard => Difficulty.Hard.ToString().ToLower(),    
+            _ => throw new ArgumentOutOfRangeException(nameof(difficulty), difficulty, null)
+        };
+    }
+
+    public static Difficulty FromDifficultyString(this string difficulty)
+    {
+        return difficulty.ToLower() switch
+        {
+            "easy" => Difficulty.Easy,
+            "medium" => Difficulty.Medium,
+            "hard" => Difficulty.Hard,
+            _ => throw new ArgumentOutOfRangeException(nameof(difficulty), difficulty, null)
+        };
+    }
 }

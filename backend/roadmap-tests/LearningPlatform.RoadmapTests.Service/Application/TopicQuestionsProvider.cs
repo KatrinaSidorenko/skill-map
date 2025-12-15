@@ -22,6 +22,7 @@ public sealed class TopicQuestionsProvider : ITopicQuestionsProvider
         TopicQuestionsSettingDto settings,
         CancellationToken ct)
     {
+        // here we should work with domain models?
         ct.ThrowIfCancellationRequested();
 
         if (settings.QuestionsCount <= 0)

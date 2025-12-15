@@ -8,17 +8,15 @@ public sealed class SingleChoiceQuestion : Question
     public IReadOnlyList<ChoiceAnswer> Answers { get; }
 
     private SingleChoiceQuestion(
-        string id,
         string text,
         Difficulty difficulty,
         IReadOnlyList<ChoiceAnswer> answers)
-        : base(id, text, difficulty, TestQuestionType.SingleChoice)
+        : base(text, difficulty, TestQuestionType.SingleChoice)
     {
         Answers = answers;
     }
 
     public static SingleChoiceQuestion Create(
-        string id,
         string text,
         Difficulty difficulty,
         IEnumerable<ChoiceAnswer> answers)
@@ -31,7 +29,7 @@ public sealed class SingleChoiceQuestion : Question
         if (list.Count(a => a.IsCorrect) != 1)
             throw new LearningPlatformException(ErrorCode.VALIDATION_ERROR, "Exactly one correct answer required");
 
-        return new SingleChoiceQuestion(id, text, difficulty, list);
+        return new SingleChoiceQuestion(text, difficulty, list);
     }
 
     //public override bool Evaluate(AnswerSubmission submission)

@@ -3,6 +3,8 @@ using LearningPlatform.RoadmapTests.Service.Application.Abstractions;
 using LearningPlatform.RoadmapTests.Service.Infrastructure.Cache;
 using LearningPlatform.RoadmapTests.Service.Infrastructure.Database;
 using LearningPlatform.RoadmapTests.Service.Infrastructure.OpenAi;
+using LearningPlatform.RoadmapTests.Service.Persistence;
+using LearningPlatform.RoadmapTests.Service.Persistence.Abstractions;
 using LearningPlatform.Shared.Api.Middleware;
 using LearningPlatform.Shared.Caching;
 using Microsoft.Extensions.Options;
@@ -23,6 +25,8 @@ builder.Services
 
 builder.Services.AddCaching();
 builder.Services.AddScoped<ITopicQuestionsProvider, TopicQuestionsProvider>();
+
+// INFRUSTRUCTURE
 builder.Services.AddScoped<IOpenAiQuestionSource, OpenAiQuestionsSource>();
 builder.Services.AddScoped<ISimpleQuestionSource, SimpleQuestionSource>();
 builder.Services.AddScoped<ICacheQuestionSource, CacheQuestionSource>();
@@ -36,6 +40,10 @@ builder.Services.AddSingleton(sp =>
     return new OpenAIClient(options.ApiKey);
 });
 
+// PERSISTENCE
+builder.Services.Configure<DatabaseConnectionOptions>(builder.Configuration.GetSection(DatabaseConnectionOptions.SectionName));
+builder.Services.AddScoped<IDatabaseConnectionFactory, DatabaseConnectionFactory>();
+builder.Services.AddScoped<ITopicQuestionsRepository, TopicQuestionsRepository>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

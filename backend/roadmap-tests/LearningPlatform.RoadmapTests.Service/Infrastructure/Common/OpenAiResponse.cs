@@ -19,7 +19,7 @@ public sealed class OpenAiQuestion
     {
         return new QuestionDto
         {
-            Id = Guid.NewGuid().WithoutHyphens(),
+            //Id = Guid.NewGuid().WithoutHyphens(),
             Text = Text,
             Type = Type.FromQuestionTypeString(),
             Answers = Answers.Select(a => a.ToAnswerDto()).ToList()
@@ -36,7 +36,7 @@ public sealed class OpenAiAnswer
     {
         return new AnswerDto
         {
-            Id = Guid.NewGuid().WithoutHyphens(),
+            //Id = Guid.NewGuid().WithoutHyphens(),
             Text = Text,
             IsCorrect = IsCorrect
         };

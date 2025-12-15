@@ -52,7 +52,7 @@ public sealed class CompositeQuestionProvider : IQuestionSource
             {
                 var result = await generator.Generate(topic, stepSettings, ct);
 
-                if (!result.IsSuccessful && result.Data == null)
+                if (!result.IsSuccessful && !result.HasData)
                 {
                    _logger.LogWarning(
                         "Generator {Type} failed with reason: {Reason}",

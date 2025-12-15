@@ -1,14 +1,49 @@
-﻿using LearningPlatform.RoadmapTests.Contracts.Models;
+﻿using LearningPlatform.RoadmapTests.Contracts;
+using LearningPlatform.RoadmapTests.Contracts.Models;
 using LearningPlatform.RoadmapTests.Service.Application.Abstractions;
 using LearningPlatform.RoadmapTests.Service.Application.Models;
 using LearningPlatform.RoadmapTests.Service.Infrastructure.Common;
+using LearningPlatform.RoadmapTests.Service.Persistence.Abstractions;
+using LearningPlatform.RoadmapTests.Service.Persistence.Models;
+using SkillMap.Shared.Extensions;
+using System.Data.SqlTypes;
+using AnswerDto = LearningPlatform.RoadmapTests.Service.Application.Models.AnswerDto;
+using QuestionDto = LearningPlatform.RoadmapTests.Service.Application.Models.QuestionDto;
 
 namespace LearningPlatform.RoadmapTests.Service.Infrastructure.Database;
 
-public class DatabaseQuestionSource : IDatabaseQuestionSource
+public class DatabaseQuestionSource(ITopicQuestionsRepository topicQuestionsRepository) : IDatabaseQuestionSource
 {
-    public async Task<GenerationResult<List<Application.Models.QuestionDto>>> Generate(TopicDto topic, TopicQuestionsSettingDto settings, CancellationToken ct)
+    public async Task<GenerationResult<List<QuestionDto>>> Generate(TopicDto topic, TopicQuestionsSettingDto settings, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        var difficultyLevel = settings.DifficultyLevel.ToDifficultyString();
+        var searchId = topic.Id.Trim();
+        var searchName = topic.Name.Trim();
+        var searchDescription = topic.Description.Trim();
+
+        try
+        {
+            var similarTopic = await topicQuestionsRepository.SearchTopicsAsync(
+                  searchId: searchId,
+                  searchName: searchName,
+                  searchDescription: searchDescription,
+                  ct);
+
+            var questions = await topicQuestionsRepository.GetQuestionsByTopicIdAsync(similarTopic.First().Id, difficultyLevel, ct);
+
+            var questionsDto = questions.Select(q => new QuestionDto
+            {
+                Id = q.Id.ToString(),
+                Text = q.Text,
+                Type = q.Type.FromQuestionTypeString(),
+                Answers = q.Answers.DeserializeOrDefault<List<AnswerDto>>() ?? new List<AnswerDto>()
+            }).ToList();
+
+            return new GenerationResult<List<QuestionDto>>(questionsDto);
+        } 
+        catch (Exception ex)
+        {
+            return new GenerationResult<List<QuestionDto>>(GenerationErrorReasons.InternalError(ex.Message));
+        }
     }
 }
