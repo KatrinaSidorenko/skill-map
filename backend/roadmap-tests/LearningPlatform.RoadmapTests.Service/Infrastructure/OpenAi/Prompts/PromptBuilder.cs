@@ -16,22 +16,11 @@ public class PromptBuilder
         var user = PromptTemplates.TopicContext
             .Replace("{TOPIC_NAME}", Sanitize(topic.Name))
             .Replace("{TOPIC_DESCRIPTION}", Sanitize(topic.Description))
-            .Replace("{DIFFICULTY}", MapDifficulty(settings.DifficultyLevel))
+            .Replace("{DIFFICULTY}", settings.DifficultyLevel.ToDifficultyString())
             .Replace("{QUESTIONS_COUNT}", settings.QuestionsCount.ToString())
             .Replace("{QUESTION_TYPES}", string.Join(", ", settings.TypeStrings));
 
         return (system, user);
-    }
-
-    private static string MapDifficulty(RoadmapTestDifficultyLevel level)
-    {
-        return level switch
-        {
-            RoadmapTestDifficultyLevel.Easy => "Easy",
-            RoadmapTestDifficultyLevel.Medium => "Medium",
-            RoadmapTestDifficultyLevel.Hard => "Hard",
-            _ => "Medium"
-        };
     }
 
     /// <summary>

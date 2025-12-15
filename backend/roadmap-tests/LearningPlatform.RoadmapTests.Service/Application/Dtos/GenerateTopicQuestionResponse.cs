@@ -21,6 +21,8 @@ public sealed class QuestionDto
     public TestQuestionType Type { get; set; }
     [JsonProperty("answers")]
     public List<AnswerDto> Answers { get; set; } = new();
+    [JsonIgnore]
+    public bool IsGenerated { get; set; }
 }
 
 public sealed class AnswerDto

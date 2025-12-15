@@ -21,10 +21,9 @@ public class RoadmapTestService(
     {
         ct.ThrowIfCancellationRequested();
         // todo: add config validation
-
+        // todo: refactor on result pattern
         var userRoadmap = await EnsureActiveUserRoadmap(userId, roadmapId, ct);
-
-        var existingTest = await TryGetExistingUnfinishedTest(userRoadmap.Id, ct);
+        var existingTest = await TryGetExistingInitialUnfinishedTest(userRoadmap.Id, ct);
         if (existingTest != null)
         {
             return existingTest;
@@ -32,9 +31,8 @@ public class RoadmapTestService(
 
         var roadmap = await GetRoadmap(roadmapId, ct);
         var topics = roadmap.Nodes.Select(n => new Topic(n.Id, n.Title, n.Description)).ToList();
-
-        var topicsAnalysis = CalculateTopicsAnalysis(topics, config, ct);
-        var targetTopics = FilterTopicByTestConfig(topicsAnalysis, topics, config, ct);
+        var topicsAnalysis = CalculateTopicsAnalysis(topics, config, ct); // todo: not implemented
+        var targetTopics = FilterTopicByTestConfig(topicsAnalysis, topics, config, ct); // todo: not implemented
         var topicSettings = targetTopics.Select(t => GetTopicSettings(t, topicsAnalysis[t.Id], config)).ToList();
         var generateTestQuestions = await roadmapTestGenerator.GenerateRoadmapTest(topicSettings, ct);
 
@@ -46,11 +44,11 @@ public class RoadmapTestService(
             TestConfig = config
         };
 
-        var testId = await userTestsService.SaveUserTestWithResult(userId, userRoadmap.Id, roadmapId, RoadmapTestType.Initial, roadmapTest, ct);
+        var testId = await userTestsService.SaveUserTestWithEmptyResult(userId, userRoadmap.Id, roadmapId, RoadmapTestType.Initial, roadmapTest, ct);
         return roadmapTest.ToTestResult(testId);
     }
 
-    private async Task<RoadmapTestResultDto?> TryGetExistingUnfinishedTest(long userRoadmapId, CancellationToken ct)
+    private async Task<RoadmapTestResultDto?> TryGetExistingInitialUnfinishedTest(long userRoadmapId, CancellationToken ct)
     {
         var (exists, savedTest) = await userTestsService.ExistsUnfinishedTest(userRoadmapId, RoadmapTestType.Initial, ct);
         if (!exists || savedTest == null)

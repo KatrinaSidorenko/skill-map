@@ -22,7 +22,8 @@ public sealed class OpenAiQuestion
             //Id = Guid.NewGuid().WithoutHyphens(),
             Text = Text,
             Type = Type.FromQuestionTypeString(),
-            Answers = Answers.Select(a => a.ToAnswerDto()).ToList()
+            Answers = Answers.Select(a => a.ToAnswerDto()).ToList(),
+            IsGenerated = true
         };
     }
 }

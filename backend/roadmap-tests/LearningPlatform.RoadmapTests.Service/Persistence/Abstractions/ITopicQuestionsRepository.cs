@@ -8,6 +8,7 @@ public interface ITopicQuestionsRepository
     Task<TopicEntity> GetTopicByExternalIdAsync(string externalId, CancellationToken ct);
     Task InsertQuestionsAsync(long topicId, IEnumerable<QuestionEntity> questions, CancellationToken ct);
     Task<long> InsertTopicAsync(TopicEntity topic, CancellationToken ct);
+    Task<long> InsertTopicWithQuestions(TopicEntity topic, IEnumerable<QuestionEntity> questions, CancellationToken ct);
     Task<IReadOnlyList<QuestionEntity>> SearchQuestionsByTopicTextAsync(string searchText, CancellationToken ct);
     Task<List<TopicEntity>> SearchTopicsAsync(string searchId, string searchName, string searchDescription, CancellationToken ct);
 }

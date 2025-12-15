@@ -18,6 +18,7 @@ public static class GenerationErrorReasons
     public const string OPEN_AI_OUPUT_IS_EMPTY = "OPEN_AI_OUPUT_IS_EMPTY";
     public const string DESERIALIZATION_ERROR = "DESERIALIZATION_ERROR";
     public const string INTERNAL_ERROR = "INTERNAL_ERROR";
+    public const string NOT_FOUND = "NOT_FOUND";
 
     public static readonly ErrorReason InsufficientData = new(
         INSUFFICIENT_DATA,
@@ -47,6 +48,9 @@ public static class GenerationErrorReasons
     public static ErrorReason InternalError(string debugInfo = null) => new(
         INTERNAL_ERROR,
         debugInfo ?? "An internal error occurred during question generation.");
+    public static ErrorReason NotFound(string debugInfo = null) => new(
+        NOT_FOUND,
+        debugInfo ?? "No relevant data found for question generation.");
 }
 public class GenerationResult<T> : Result<T>
 {

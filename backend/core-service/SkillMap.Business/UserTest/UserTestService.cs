@@ -10,7 +10,7 @@ namespace SkillMap.Application.Services;
 
 public class UserTestService(IUnitOfWork unitOfWork) : IUserTestService
 {
-    public async Task<string> SaveUserTestWithResult(
+    public async Task<string> SaveUserTestWithEmptyResult(
         long userId,
         long userRoadmapId,
         string roadmapId,

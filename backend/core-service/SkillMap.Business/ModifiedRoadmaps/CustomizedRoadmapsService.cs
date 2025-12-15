@@ -204,7 +204,7 @@ public class CustomizedRoadmapsService(
     {
         var action = new RoadmapModification
         {
-            ExternalItemId = Guid.NewGuid().WithoutHyphens(),
+            ExternalItemId = Guid.NewGuid().ToStringWithoutHyphens(),
             Metadata = connection.SerializeOrDefault(),
             Action = ModificationAction.CreateConnection,
         };

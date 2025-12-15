@@ -165,4 +165,60 @@ public sealed class TopicQuestionsRepository : ITopicQuestionsRepository
                 cancellationToken: ct));
         return result.AsList();
     }
+
+    public async Task<long> InsertTopicWithQuestions(
+        TopicEntity topic,
+        IEnumerable<QuestionEntity> questions,
+        CancellationToken ct)
+    {
+        const string sqlInsertTopic = """
+            INSERT INTO roadmap_test.topics (external_id, name, description)
+            VALUES (@ExternalId, @Name, @Description)
+            RETURNING id;
+            """;
+        const string sqlTopicExists = """
+            SELECT id
+            FROM roadmap_test.topics
+            WHERE external_id = @ExternalId or name LIKE @Name or description LIKE @Description
+            LIMIT 1;
+            """;
+
+        const string sqlInsertQuestion = """
+            INSERT INTO roadmap_test.questions
+                (external_id, text, difficulty, type, answers, topic_id)
+            VALUES
+                (@ExternalId, @Text, @Difficulty, @Type, @Answers::jsonb, @TopicId)
+            """;
+
+        using var conn = await _connectionFactory.CreateOpenConnectionAsync(ct);
+        using var tx = conn.BeginTransaction();
+
+        var topicId = await conn.ExecuteScalarAsync<long?>(
+            new CommandDefinition(
+                sqlTopicExists,
+                topic,
+                transaction: tx,
+                cancellationToken: ct));
+        if (!topicId.HasValue)
+        {
+            topicId = await conn.ExecuteScalarAsync<long>(new CommandDefinition(sqlInsertTopic, topic, transaction: tx, cancellationToken: ct));
+        }
+        if (!topicId.HasValue)
+        {
+            throw new InvalidOperationException("Failed to insert or retrieve topic ID.");
+        }
+
+        foreach (var question in questions)
+        {
+            question.TopicId = topicId.Value;
+            await conn.ExecuteAsync(
+                new CommandDefinition(
+                    sqlInsertQuestion,
+                    question,
+                    transaction: tx,
+                    cancellationToken: ct));
+        }
+        tx.Commit();
+        return topicId.Value;
+    }
 }

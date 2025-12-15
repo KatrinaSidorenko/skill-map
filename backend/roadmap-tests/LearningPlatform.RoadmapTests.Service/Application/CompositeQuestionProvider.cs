@@ -36,7 +36,7 @@ public sealed class CompositeQuestionProvider : IQuestionSource
         CancellationToken ct)
     {
         var finalQuestions = new List<QuestionDto>();
-        var uniqueTracker = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var uniqueTracker = new HashSet<int>();
 
         foreach (var generator in _pipeline)
         {
@@ -64,7 +64,7 @@ public sealed class CompositeQuestionProvider : IQuestionSource
                 {
                     if (finalQuestions.Count >= settings.QuestionsCount) break;
 
-                    if (uniqueTracker.Add(q.Text))
+                    if (uniqueTracker.Add(q.Text.GetHashCode()))
                     {
                         finalQuestions.Add(q);
                     }

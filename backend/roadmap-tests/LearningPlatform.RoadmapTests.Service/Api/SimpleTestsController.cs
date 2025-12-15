@@ -3,6 +3,7 @@ using LearningPlatform.RoadmapTests.Contracts.Models;
 using LearningPlatform.RoadmapTests.Service.Application;
 using LearningPlatform.RoadmapTests.Service.Application.Mappers;
 using LearningPlatform.RoadmapTests.Service.Application.Models;
+using LearningPlatform.RoadmapTests.Service.Core;
 using LearningPlatform.RoadmapTests.Service.Persistence.Abstractions;
 using LearningPlatform.RoadmapTests.Service.Persistence.Models;
 using Microsoft.AspNetCore.Http;
@@ -114,19 +115,19 @@ public class SimpleTestsController : ControllerBase
                 {
                     new AnswerEntity
                     {
-                         Id = Guid.NewGuid().WithoutHyphens(),
+                         Id = Guid.NewGuid().ToStringWithoutHyphens(),
                         Text = "To invert control and supply dependencies from the outside",
                         IsCorrect = true
                     },
                     new AnswerEntity
                     {
-                         Id = Guid.NewGuid().WithoutHyphens(),
+                         Id = Guid.NewGuid().ToStringWithoutHyphens(),
                         Text = "To create dependencies inside the class using new",
                         IsCorrect = false
                     },
                     new AnswerEntity
                     {
-                         Id = Guid.NewGuid().WithoutHyphens(),
+                         Id = Guid.NewGuid().ToStringWithoutHyphens(),
                         Text = "To optimize for speed by avoiding interfaces",
                         IsCorrect = false
                     }
@@ -143,19 +144,19 @@ public class SimpleTestsController : ControllerBase
                 {
                     new AnswerEntity
                     {
-                        Id = Guid.NewGuid().WithoutHyphens(),
+                        Id = Guid.NewGuid().ToStringWithoutHyphens(),
                         Text = "Constructor injection",
                         IsCorrect = true
                     },
                     new AnswerEntity
                     {
-                         Id = Guid.NewGuid().WithoutHyphens(),
+                         Id = Guid.NewGuid().ToStringWithoutHyphens(),
                         Text = "Global singleton access",
                         IsCorrect = false
                     },
                     new AnswerEntity
                     {
-                         Id = Guid.NewGuid().WithoutHyphens(),
+                         Id = Guid.NewGuid().ToStringWithoutHyphens(),
                         Text = "Direct instantiation with new inside the consumer",
                         IsCorrect = false
                     }
@@ -198,5 +199,145 @@ public class SimpleTestsController : ControllerBase
         }).ToList();
 
         return Ok(questionsDto);
+    }
+
+    
+//{
+//      "id": null,
+//      "text": "Which statement best describes dependency injection?",
+//      "type": 0,
+//      "answers": [
+//        {
+//          "id": null,
+//          "text": "It injects dependencies from outside the class",
+//          "isCorrect": true
+//        },
+//        {
+//          "id": null,
+//          "text": "It makes the class create its own dependencies",
+//          "isCorrect": false
+//        },
+//        {
+//    "id": null,
+//          "text": "It prevents using interfaces",
+//          "isCorrect": false
+//        }
+//      ]
+//    },
+//    {
+//    "id": null,
+//      "text": "What principle does dependency injection primarily promote?",
+//      "type": 0,
+//      "answers": [
+//        {
+//        "id": null,
+//          "text": "Tight coupling",
+//          "isCorrect": false
+//        },
+//        {
+//        "id": null,
+//          "text": "Inversion of Control",
+//          "isCorrect": true
+//        },
+//        {
+//        "id": null,
+//          "text": "Manual dependency creation",
+//          "isCorrect": false
+//        }
+//      ]
+//    }
+    [HttpPost("bulk")]
+    public async Task<IActionResult> Bulk(CancellationToken ct)
+    {
+        var topicName = "Dependency Injection";
+        var topicDescription = "A design pattern used to achieve Inversion of Control by injecting dependencies rather than creating them directly.";
+        var difficultyLevel = Difficulty.Easy.ToString();
+
+        var topicEntity = new TopicEntity
+        {
+            ExternalId = "backend-di",
+            Name = topicName,
+            Description = topicDescription
+        };
+
+        var questions = new List<QuestionDto>
+        {
+            new QuestionDto
+            {
+                Id = null,
+                Text = "Which statement best describes dependency injection?",
+                Type = TestQuestionType.SingleChoice,
+                IsGenerated = true,
+                Answers = new List<AnswerDto>
+                {
+                    new AnswerDto
+                    {
+                        Id = null,
+                        Text = "It injects dependencies from outside the class",
+                        IsCorrect = true
+                    },
+                    new AnswerDto
+                    {
+                        Id = null,
+                        Text = "It makes the class create its own dependencies",
+                        IsCorrect = false
+                    },
+                    new AnswerDto
+                    {
+                        Id = null,
+                        Text = "It prevents using interfaces",
+                        IsCorrect = false
+                    }
+                }
+            },
+            new QuestionDto
+            {
+                Id = null,
+                Text = "What principle does dependency injection primarily promote?",
+                Type = TestQuestionType.SingleChoice,
+                IsGenerated = true,
+                Answers = new List<AnswerDto>
+                {
+                    new AnswerDto
+                    {
+                        Id = null,
+                        Text = "Tight coupling",
+                        IsCorrect = false
+                    },
+                    new AnswerDto
+                    {
+                        Id = null,
+                        Text = "Inversion of Control",
+                        IsCorrect = true
+                    },
+                    new AnswerDto
+                    {
+                        Id = null,
+                        Text = "Manual dependency creation",
+                        IsCorrect = false
+                    }
+                }
+            }
+        };
+
+        questions.ForEach(q =>
+        {
+            q.Id = Guid.NewGuid().ToStringWithoutHyphens();
+            q.Answers.ForEach(a =>
+            {
+                a.Id = Guid.NewGuid().ToStringWithoutHyphens();
+            });
+        });
+        var questionEntities = questions.Where(q => q.IsGenerated).Select(q => new Persistence.Models.QuestionEntity
+        {
+            ExternalId = q.Id,
+            Text = q.Text,
+            Difficulty = difficultyLevel,
+            Type = q.Type.ToQuestionTypeString(),
+            Answers = q.Answers.SerializeOrDefault(),
+        });
+
+        var topicId = await _topicQuestionsRepository.InsertTopicWithQuestions(topicEntity, questionEntities, ct);
+        return Ok(topicId);
     }
 }

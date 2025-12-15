@@ -23,23 +23,34 @@ public class DatabaseQuestionSource(ITopicQuestionsRepository topicQuestionsRepo
 
         try
         {
-            var similarTopic = await topicQuestionsRepository.SearchTopicsAsync(
+            var similarTopics = await topicQuestionsRepository.SearchTopicsAsync(
                   searchId: searchId,
                   searchName: searchName,
                   searchDescription: searchDescription,
                   ct);
 
-            var questions = await topicQuestionsRepository.GetQuestionsByTopicIdAsync(similarTopic.First().Id, difficultyLevel, ct);
-
-            var questionsDto = questions.Select(q => new QuestionDto
+            if (!similarTopics.Any())
             {
-                Id = q.Id.ToString(),
-                Text = q.Text,
-                Type = q.Type.FromQuestionTypeString(),
-                Answers = q.Answers.DeserializeOrDefault<List<AnswerDto>>() ?? new List<AnswerDto>()
-            }).ToList();
+                return new GenerationResult<List<QuestionDto>>(GenerationErrorReasons.NotFound("No similar topics found in the database."));
+            }
 
-            return new GenerationResult<List<QuestionDto>>(questionsDto);
+            var targetQuestionDtos = new List<QuestionDto>(settings.QuestionsCount);
+            foreach (var similarTopic in similarTopics)
+            {
+                if (targetQuestionDtos.Count >= settings.QuestionsCount)
+                    break;
+                var questions = await topicQuestionsRepository.GetQuestionsByTopicIdAsync(similarTopic.Id, difficultyLevel, ct);
+
+                targetQuestionDtos.AddRange(questions.Select(q => new QuestionDto
+                {
+                    Id = q.Id.ToString(),
+                    Text = q.Text,
+                    Type = q.Type.FromQuestionTypeString(),
+                    Answers = q.Answers.DeserializeOrDefault<List<AnswerDto>>() ?? new List<AnswerDto>()
+                }));
+            }
+
+            return new GenerationResult<List<QuestionDto>>(targetQuestionDtos);
         } 
         catch (Exception ex)
         {

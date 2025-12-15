@@ -17,5 +17,5 @@ public static class NumericExtensions
         return null;
     }
 
-    public static string WithoutHyphens(this Guid guid) => guid.ToString("N");
+    public static string ToStringWithoutHyphens(this Guid guid) => guid.ToString("N");
 }
