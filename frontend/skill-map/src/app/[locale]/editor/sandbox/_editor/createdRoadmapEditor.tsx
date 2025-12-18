@@ -12,10 +12,9 @@ import { Flex } from '@chakra-ui/react';
 import { ReactFlowProvider } from '@xyflow/react';
 import Container from '@/components/container/container';
 import ErrorScreen from '@/components/base/error';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   clearEditor,
-  selectRoadmapId,
+  setActiveRoadmapId,
   setEditorConfig,
   setPlainRiadmap,
   setRoadmap,
@@ -23,10 +22,14 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import Toolbox from '@/features/roadmaps/editor/toolbox';
 import NodeSidebar from '@/features/roadmaps/editor/sidebar';
+import { useAppDispatch } from '@/store/hooks';
 
-export default function EditorPage() {
+export default function CreatedRoadmapEditorPage({
+  roadmapId,
+}: {
+  roadmapId: string;
+}) {
   const dispatch = useAppDispatch();
-  const roadmapId = useAppSelector(selectRoadmapId);
 
   // todo: don't use cache for sandbox editor
   const { data, error, isLoading, isFetching } = useGetUserCreatedRoadmapQuery(
@@ -46,6 +49,7 @@ export default function EditorPage() {
 
   useEffect(() => {
     if (roadmap) {
+      dispatch(setActiveRoadmapId(roadmap.id));
       dispatch(clearEditor());
       dispatch(setEditorConfig({ useStatus: false }));
       dispatch(

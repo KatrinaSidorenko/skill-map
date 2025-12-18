@@ -19,7 +19,7 @@ public class DatabaseQuestionSource(ITopicQuestionsRepository topicQuestionsRepo
         var difficultyLevel = settings.DifficultyLevel.ToDifficultyString();
         var searchId = topic.Id.Trim();
         var searchName = topic.Name.Trim();
-        var searchDescription = topic.Description.Trim();
+        var searchDescription = topic.Description?.Trim();
 
         try
         {
@@ -50,7 +50,7 @@ public class DatabaseQuestionSource(ITopicQuestionsRepository topicQuestionsRepo
                 }));
             }
 
-            return new GenerationResult<List<QuestionDto>>(targetQuestionDtos);
+            return new GenerationResult<List<QuestionDto>>(targetQuestionDtos.DistinctBy(t => t.Id).ToList());
         } 
         catch (Exception ex)
         {

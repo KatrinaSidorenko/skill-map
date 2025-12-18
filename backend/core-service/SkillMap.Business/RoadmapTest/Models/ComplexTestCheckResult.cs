@@ -10,6 +10,8 @@ public class ComplexTestCheckResult
     public double TotalAchievedPoints => QuestionResults.Values.Sum(q => q.AchievedPoints);
     [JsonProperty("totalPossiblePoints")]
     public double TotalPossiblePoints => QuestionResults.Values.Sum(q => q.TotalPossiblePoints);
+    [JsonProperty("roadmapId")]
+    public string RoadmapId { get; set; }
 }
 
 public class TestQuestionResult

@@ -22,17 +22,6 @@ export function SingleChoiceOption({
   // 1. Determine "Review Mode" styles (When test is finished/disabled)
   const getReviewStyles = () => {
     if (!isDisabled) return {}; // Not in review mode
-    console.log({
-      id,
-      text,
-      isDisabled,
-      isCorrect,
-      isSelected,
-      isDefault,
-    });
-
-    // CASE A: This is the Correct Answer (Always Green)
-    // We force opacity: 1 so the user can clearly see the right answer even if disabled
     if (isCorrect) {
       return {
         bg: 'green.50',

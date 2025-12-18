@@ -1,8 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using LearningPlatform.Roadmap.Business;
+using Microsoft.AspNetCore.Mvc;
 using SkillMap.Api.Base;
+using SkillMap.Api.Roadmaps.Models;
 using SkillMap.Api.RoadmapTest.Models;
 using SkillMap.Business.RoadmapTest;
+using SkillMap.Business.RoadmapTest.Helpers;
 using SkillMap.Business.RoadmapTest.Models;
+using SkillMap.Business.UserRoadmaps;
+using SkillMap.Shared.Results;
 
 namespace SkillMap.Api.RoadmapTest;
 
@@ -40,6 +45,29 @@ public class RoadmapTestController : BaseController
     public async Task<IActionResult> GetComplexTestCheck(string testId, CancellationToken ct)
     {
         var response = await _roadmapTestService.GetComplexTestCheck(GetUserId(), testId, ct);
+        return Ok(response); // return suggestion with check results
+    }
+
+    [HttpGet("rebuild/{roadmapId}")]
+    public async Task<IActionResult> RebuildUserTest(string roadmapId, CancellationToken ct)
+    {
+        var response = await _roadmapTestService.RebuildRoadmapBasedOnTestResults(GetUserId(), roadmapId, ct);
         return Ok(response);
+    }
+
+    [HttpGet("suggestions/{testId}")]
+    public async Task<IActionResult> GetRoadmapChangesSuggestions(string testId, CancellationToken ct)
+    {
+        //var response = await _roadmapTestService.GetRoadmapChangesSuggestions(GetUserId(), testId, ct);
+        //return Ok(response);
+        return Ok(new RoadmapTestSuggestionResponse());
+    }
+
+    [HttpGet("applysuggestions/{testId}")]
+    public async Task<IActionResult> ApplyRoadmapChangesSuggestions(string testId, CancellationToken ct)
+    {
+        //var response = await _roadmapTestService.ApplyRoadmapChangesSuggestions(GetUserId(), testId, ct);
+        //return Ok(response);
+        return Ok();
     }
 }

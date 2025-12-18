@@ -24,9 +24,12 @@ import ContentNotFoundScreen from '@/components/base/notfound';
 import Toolbox from '@/features/roadmaps/editor/toolbox';
 import NodeSidebar from '@/features/roadmaps/editor/sidebar';
 
-export default function EditorPage() {
+export default function SavedRoadmapEditorPage({
+  roadmapId,
+}: {
+  roadmapId: string;
+}) {
   const dispatch = useAppDispatch();
-  const roadmapId = useAppSelector(selectRoadmapId);
   const { data, error, isLoading, isFetching } = useGetSavedRoadmapQuery(
     roadmapId ?? '',
   );

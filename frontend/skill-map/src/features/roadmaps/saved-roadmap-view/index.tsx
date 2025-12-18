@@ -13,9 +13,7 @@ import {
 } from '@chakra-ui/react';
 import { FiArrowRight, FiTrash2 } from 'react-icons/fi';
 import { useRouter } from 'next/navigation';
-import { useAppDispatch } from '@/store/hooks';
 import useLocalization from '@/i18n/useLocalization';
-import { setActiveRoadmapId } from '../editor/store';
 import { MOCK_IMAGE_URL } from '@/store/mock';
 import { formatDistanceToNow } from 'date-fns';
 import { getProgressInPercentage, getStatusColor } from '../helpers';
@@ -33,14 +31,12 @@ export default function SavedRoadmapView({
   roadmap: SavedPlainRoadmap;
 }) {
   const router = useRouter();
-  const dispatch = useAppDispatch();
   const { getRoadmapTransaltions } = useLocalization();
   const statusColor = getStatusColor(roadmap.status);
   const [generateTest, { isLoading }] = useGenerateRoadmapTestMutation();
 
   const handleOpenEditor = () => {
-    dispatch(setActiveRoadmapId(roadmap.id));
-    router.push('/editor/sandbox');
+    router.push(`/editor/sandbox/saved/${roadmap.id}`);
   };
 
   const takeTest = async () => {

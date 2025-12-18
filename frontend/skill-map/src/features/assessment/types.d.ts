@@ -68,6 +68,8 @@ interface ComplexTestCheckResult {
   questionResults: Record<string, TestQuestionResult>;
   totalAchievedPoints: number;
   totalPossiblePoints: number;
+  roadmapId: string;
+  changesSuggestion: RoadmapTestSuggestionsDto;
 }
 
 interface TestQuestionResult {
@@ -85,6 +87,18 @@ interface AnswerDetail {
   text: string;
   isCorrect: boolean;
   isSelected: boolean;
+}
+
+// SUGGESTIONS
+interface RoadmapTestSuggestionItem {
+  learningItemId: string;
+  status: LearningStatus;
+  title: string;
+  description: string;
+}
+
+interface RoadmapTestSuggestionsDto {
+  suggestions: RoadmapTestSuggestionItem[];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
