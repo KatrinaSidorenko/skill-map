@@ -143,24 +143,24 @@ public sealed class TopicQuestionsRepository : ITopicQuestionsRepository
         CancellationToken ct)
     {
         const string sql = """
-            SELECT *
-            FROM roadmap_test.topics
-            WHERE
-                external_id ILIKE '%' || @searchId || '%'
-                OR name ILIKE '%' || @searchName || '%'
-                OR description ILIKE '%' || @searchDescription || '%'
-            ORDER BY created_at DESC
-            LIMIT 50;
-            """;
+        SELECT *
+        FROM roadmap_test.topics
+        WHERE 
+            (@searchId = '' OR external_id ILIKE '%' || @searchId || '%')
+            AND (@searchName = '' OR name ILIKE '%' || @searchName || '%')
+            AND (@searchDescription = '' OR description ILIKE '%' || @searchDescription || '%')
+        ORDER BY created_at DESC
+        LIMIT 50;
+        """;
         using var conn = await _connectionFactory.CreateOpenConnectionAsync(ct);
         var result = await conn.QueryAsync<TopicEntity>(
             new CommandDefinition(
                 sql,
-                new 
-                { 
-                    searchId,
-                    searchName,
-                    searchDescription
+                new
+                {
+                    searchId = searchId ?? "",
+                    searchName = searchName ?? "",
+                    searchDescription = searchDescription ?? ""
                 },
                 cancellationToken: ct));
         return result.AsList();

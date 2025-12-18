@@ -50,7 +50,7 @@ public class DatabaseQuestionSource(ITopicQuestionsRepository topicQuestionsRepo
                 }));
             }
 
-            return new GenerationResult<List<QuestionDto>>(targetQuestionDtos.DistinctBy(t => t.Id).ToList());
+            return new GenerationResult<List<QuestionDto>>(targetQuestionDtos.DistinctBy(t => HashCode.Combine(t.Type, t.Text)).ToList());
         } 
         catch (Exception ex)
         {

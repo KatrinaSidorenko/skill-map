@@ -14,7 +14,7 @@ public enum NodeMarkType
 public class MarkNode : Node
 {
     [JsonProperty("markType")]
-    public string MarkType { get; set; }
+    public NodeMarkType MarkType { get; set; }
 }
 
 public class RoadmapModificationAdvisor
@@ -55,7 +55,7 @@ public class RoadmapModificationAdvisor
             Id = n.Id,
             Title = n.Title,
             Description = n.Description,
-            MarkType = NodeMarkType.InProgress.ToString() // Default state
+            MarkType = NodeMarkType.InProgress // Default state
         });
 
         // =========================================================
@@ -71,17 +71,17 @@ public class RoadmapModificationAdvisor
 
             if (score >= PassThreshold)
             {
-                nodeStates[nodeId].MarkType = NodeMarkType.Completed.ToString();
+                nodeStates[nodeId].MarkType = NodeMarkType.Completed;
             }
             else if (score <= FailThreshold)
             {
-                nodeStates[nodeId].MarkType = NodeMarkType.NeedsReview.ToString();
+                nodeStates[nodeId].MarkType = NodeMarkType.NeedsReview;
             }
             else
             {
                 // "Yellow" state - barely passed, but not completed. 
                 // We leave it as InProgress (needs more study)
-                nodeStates[nodeId].MarkType = NodeMarkType.InProgress.ToString();
+                nodeStates[nodeId].MarkType = NodeMarkType.InProgress;
             }
         }
 
@@ -106,12 +106,12 @@ public class RoadmapModificationAdvisor
 
                 // RULE A: Cascading Failure (Red Light)
                 // If ANY parent needs review, the child definitely needs review (or is blocked).
-                if (currentState.MarkType != NodeMarkType.NeedsReview.ToString())
+                if (currentState.MarkType != NodeMarkType.NeedsReview)
                 {
-                    bool parentFailed = parents.Where(p => nodeStates.ContainsKey(p)).Any(pId => nodeStates[pId].MarkType == NodeMarkType.NeedsReview.ToString());
+                    bool parentFailed = parents.Where(p => nodeStates.ContainsKey(p)).Any(pId => nodeStates[pId].MarkType == NodeMarkType.NeedsReview);
                     if (parentFailed)
                     {
-                        currentState.MarkType = NodeMarkType.NeedsReview.ToString();
+                        currentState.MarkType = NodeMarkType.NeedsReview;
                         changed = true;
                     }
                 }

@@ -25,10 +25,11 @@ export default function TestResults({ testId }: { testId?: string }) {
   const onViewSuggestions = () => {
     if (!testId) return;
 
+    console.log(checkedQuestionResults?.changesSuggestion);
     createRoadmapTestSuggestionsDialog.open(
       'createRoadmapTestSuggestionsDialog',
       {
-        suggestionsDto: mockRoadmapTestSuggestions,
+        suggestionsDto: checkedQuestionResults?.changesSuggestion,
         onApply: async (selectedIds) => {
           // 🔹 Call backend mutation here
           // await applySuggestions({ testId, learningItemIds: selectedIds })

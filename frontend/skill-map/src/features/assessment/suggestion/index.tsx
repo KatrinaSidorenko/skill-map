@@ -90,9 +90,9 @@ export const RoadmapTestSuggestionsDialog = (props) => {
                         <Text fontWeight="semibold" lineHeight="short">
                           {item.title}
                         </Text>
-                        <Text fontSize="sm" color="gray.600">
+                        {/* <Text fontSize="sm" color="gray.600">
                           {item.description}
-                        </Text>
+                        </Text> */}
                         <Badge colorPalette="purple" variant="outline">
                           {item.status}
                         </Badge>

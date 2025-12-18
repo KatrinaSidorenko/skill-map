@@ -30,7 +30,7 @@ public static class LayerRegistration
             {
                 var options = sp.GetRequiredService<IOptions<RoadmapTestingServiceOptions>>();
                 client.BaseAddress = new Uri(options.Value.BaseUrl);
-                client.Timeout = TimeSpan.FromSeconds(30);
+                client.Timeout = TimeSpan.FromSeconds(60 * 2);
             });
 
         return services;
