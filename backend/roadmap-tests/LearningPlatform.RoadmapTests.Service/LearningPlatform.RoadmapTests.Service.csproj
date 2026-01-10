@@ -4,16 +4,18 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>44a73aa1-661e-41bc-9402-50540323958e</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation" Version="12.1.1" />
-    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    <PackageReference Include="Dapper" Version="2.1.66" />
+    <PackageReference Include="Npgsql" Version="10.0.0" />
+    <PackageReference Include="OpenAI" Version="2.8.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\shared\LearningPlatform.Shared.Api\LearningPlatform.Shared.Api.csproj" />
+    <ProjectReference Include="..\..\shared\LearningPlatform.Shared.Caching\LearningPlatform.Shared.Caching.csproj" />
     <ProjectReference Include="..\LearningPlatform.RoadmapTests.Contracts\LearningPlatform.RoadmapTests.Contracts.csproj" />
   </ItemGroup>
 

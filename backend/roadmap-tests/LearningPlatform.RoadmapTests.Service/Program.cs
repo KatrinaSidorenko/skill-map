@@ -1,5 +1,16 @@
-using LearningPlatform.RoadmapTests.Service.TopicQuestion;
-using LearningPlatform.RoadmapTests.Service.TopicQuestion.QuestionsGenerator;
+using LearningPlatform.RoadmapTests.Service.Application;
+using LearningPlatform.RoadmapTests.Service.Application.Abstractions;
+using LearningPlatform.RoadmapTests.Service.Infrastructure.Cache;
+using LearningPlatform.RoadmapTests.Service.Infrastructure.Database;
+using LearningPlatform.RoadmapTests.Service.Infrastructure.OpenAi;
+using LearningPlatform.RoadmapTests.Service.Persistence;
+using LearningPlatform.RoadmapTests.Service.Persistence.Abstractions;
+using LearningPlatform.Shared.Api.Middleware;
+using LearningPlatform.Shared.Caching;
+using Microsoft.Extensions.Options;
+using OpenAI;
+using SkillMap.Shared.Options;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,10 +23,27 @@ builder.Services
     .AddControllers()
     .AddNewtonsoftJson();
 
-builder.Services.AddScoped<ITopicQuestionGenerationService, TopicQuestionGenerationService>();
-builder.Services.AddScoped<IQuestionGenerator, SimpleQuestionGenerator>();
-// todo: add validation back later
-//builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddCaching();
+builder.Services.AddScoped<ITopicQuestionsProvider, TopicQuestionsProvider>();
+
+// INFRUSTRUCTURE
+builder.Services.AddScoped<IOpenAiQuestionSource, OpenAiQuestionsSource>();
+builder.Services.AddScoped<ISimpleQuestionSource, SimpleQuestionSource>();
+builder.Services.AddScoped<ICacheQuestionSource, CacheQuestionSource>();
+builder.Services.AddScoped<IDatabaseQuestionSource, DatabaseQuestionSource>();
+builder.Services.AddScoped<IQuestionSource, CompositeQuestionProvider>();
+
+builder.Services.Configure<OpenAiOptions>(builder.Configuration.GetSection(OpenAiOptions.SectionName));
+builder.Services.AddSingleton(sp =>
+{
+    var options = sp.GetRequiredService<IOptions<OpenAiOptions>>().Value;
+    return new OpenAIClient(options.ApiKey);
+});
+
+// PERSISTENCE
+builder.Services.Configure<DatabaseConnectionOptions>(builder.Configuration.GetSection(DatabaseConnectionOptions.SectionName));
+builder.Services.AddScoped<IDatabaseConnectionFactory, DatabaseConnectionFactory>();
+builder.Services.AddScoped<ITopicQuestionsRepository, TopicQuestionsRepository>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -30,6 +58,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

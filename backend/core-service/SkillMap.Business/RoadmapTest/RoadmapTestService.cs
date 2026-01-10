@@ -2,37 +2,60 @@
 using LearningPlatform.Roadmap.Business.Contracts.Models;
 using LearningPlatform.RoadmapTests.Contracts;
 using LearningPlatform.RoadmapTests.Contracts.Models;
+using SkillMap.Business.Roadmaps;
+using SkillMap.Business.Roadmaps.Models;
+using SkillMap.Business.RoadmapTest.Helpers;
 using SkillMap.Business.RoadmapTest.Models;
 using SkillMap.Business.UserRoadmaps;
 using SkillMap.Business.UserRoadmaps.Models;
 using SkillMap.Business.UserTest;
+using SkillMap.Core.Constants;
 using SkillMap.Shared.Extensions;
 using SkillMap.Shared.Results;
 
 namespace SkillMap.Business.RoadmapTest;
 
+// todo: refcator to more simple cognitive model
 public class RoadmapTestService(
     IUserRoadmapsService userRoadmapsService, 
     IRoadmapTestGenerator roadmapTestGenerator, 
     IRoadmapService roadmapService,
+    ICustomizedRoadmapsService customizedRoadmapsService,
     IUserTestService userTestsService) : IRoadmapTestService
 {
     public async Task<RoadmapTestResultDto> GenerateRoadmapTest(long userId, string roadmapId, RoadmapTestConfigDto config, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
         // todo: add config validation
-
+        // todo: refactor on result pattern
         var userRoadmap = await EnsureActiveUserRoadmap(userId, roadmapId, ct);
-
-        var existingTest = await TryGetExistingUnfinishedTest(userRoadmap.Id, ct);
-        if (existingTest != null)
+        var existingTest = await TryGetExistingInitialUnfinishedTest(userRoadmap.Id, ct);
+        if (existingTest != null) // todo: more complex politics about existing tests (like exists for 10 days ok if more regenaret)
         {
             return existingTest;
         }
 
-        var roadmap = await GetRoadmap(roadmapId, ct);
-        var topics = roadmap.Nodes.Select(n => new Topic(n.Id, n.Title, n.Description)).ToList();
+        var roadmapResult = await roadmapService.GetRoadmapById(roadmapId, ct);
+        if (roadmapResult.IsFailed || !roadmapResult.HasData)
+        {
+            throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"Roadmap with id {roadmapId} not found");
+        }
 
+        var userSavedRoadmapResult = await customizedRoadmapsService.GetUserModifiedRoadmap(userId, roadmapId, ct);
+        if (!userSavedRoadmapResult.IsSuccessful || userSavedRoadmapResult.Data == null)
+        {
+            throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"No customized roadmap found for user {userId} and roadmap {roadmapId}");
+        }
+
+        var roadmap = userSavedRoadmapResult.Data;
+        var nodes = roadmap.Nodes.Select(n => new Node
+        {
+            Id = n.Id,
+            Title = n.Title,
+            Description = n.Description,
+        }).ToList();
+        var topics = roadmap.Nodes.Select(n => new Topic(n.Id, n.Title, n.Description)).ToList();
+        var coreTopics = new RoadmapAnalyzer().SelectStratifiedCoreTopics(nodes, roadmap.Edges, questionsLimit: config.NumberOfQuestions ?? DefaultNumberOfQuestions);
         var topicsAnalysis = CalculateTopicsAnalysis(topics, config, ct);
         var targetTopics = FilterTopicByTestConfig(topicsAnalysis, topics, config, ct);
         var topicSettings = targetTopics.Select(t => GetTopicSettings(t, topicsAnalysis[t.Id], config)).ToList();
@@ -46,11 +69,11 @@ public class RoadmapTestService(
             TestConfig = config
         };
 
-        var testId = await userTestsService.SaveUserTestWithResult(userId, userRoadmap.Id, roadmapId, RoadmapTestType.Initial, roadmapTest, ct);
+        var testId = await userTestsService.SaveUserTestWithEmptyResult(userId, userRoadmap.Id, roadmapId, RoadmapTestType.Initial, roadmapTest, ct);
         return roadmapTest.ToTestResult(testId);
     }
 
-    private async Task<RoadmapTestResultDto?> TryGetExistingUnfinishedTest(long userRoadmapId, CancellationToken ct)
+    private async Task<RoadmapTestResultDto?> TryGetExistingInitialUnfinishedTest(long userRoadmapId, CancellationToken ct)
     {
         var (exists, savedTest) = await userTestsService.ExistsUnfinishedTest(userRoadmapId, RoadmapTestType.Initial, ct);
         if (!exists || savedTest == null)
@@ -78,44 +101,106 @@ public class RoadmapTestService(
         return userRoadmap;
     }
 
-    private async Task<RoadmapDto> GetRoadmap(string roadmapId, CancellationToken ct)
+    private const int MaxQuestionsPerTopic = 3;
+    private const int DefaultNumberOfQuestions = 10;
+    private const double MinMinutesPerQuestion = 0.5;
+    private static HashSet<TestQuestionType> SupportedQuestionTypes = new()
     {
-        var roadmapResult = await roadmapService.GetRoadmapById(roadmapId, ct);
-        if (!roadmapResult.IsSuccessful || roadmapResult.Data == null)
+        TestQuestionType.SingleChoice,
+    };
+
+    private static Dictionary<string, TopicAnalysis> CalculateTopicsAnalysis(
+        List<Topic> topics,
+        RoadmapTestConfigDto config,
+        CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+
+        if (topics == null || !topics.Any())
+            return new Dictionary<string, TopicAnalysis>();
+
+        int requestedCount = config.NumberOfQuestions ?? DefaultNumberOfQuestions;
+        int maxByTime = (int)(config.TimeLimitInMinutes / MinMinutesPerQuestion);
+        int maxByTopics = topics.Count * MaxQuestionsPerTopic;
+        int finalTargetCount = Math.Min(requestedCount, Math.Min(maxByTime, maxByTopics));
+
+        // 2. CALCULATE DISTRIBUTION (Base + Remainder)
+        // Example: 10 questions, 3 topics. 
+        // Base = 3. Remainder = 1.
+        int baseQuestionsPerTopic = finalTargetCount / topics.Count;
+        baseQuestionsPerTopic = Math.Min(baseQuestionsPerTopic, MaxQuestionsPerTopic);
+        int extraQuestions = finalTargetCount % topics.Count;
+        extraQuestions = Math.Min(extraQuestions, topics.Count);
+
+        var shuffledTopics = topics.OrderBy(x => Guid.NewGuid()).ToList();
+
+        var result = new Dictionary<string, TopicAnalysis>();
+
+        for (int i = 0; i < shuffledTopics.Count; i++)
         {
-            throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"Roadmap with id {roadmapId} not found");
+            var topic = shuffledTopics[i];
+            int count = baseQuestionsPerTopic;
+
+            if (i < extraQuestions)
+            {
+                count++;
+            }
+
+            var (priority, coefficient) = GetPriorityAndCoefficient(count);
+
+            result[topic.Id] = new TopicAnalysis
+            {
+                Id = topic.Id,
+                QuestionsCount = count,
+                Priority = priority,
+                Coefficient = coefficient
+            };
         }
 
-        return roadmapResult.Data;
+        return result;
     }
 
-    private static Dictionary<string, TopicAnalysis> CalculateTopicsAnalysis(List<Topic> topics, RoadmapTestConfigDto config, CancellationToken ct)
+    private static (string Priority, double Coefficient) GetPriorityAndCoefficient(int count)
     {
-        ct.ThrowIfCancellationRequested();
-        // calculate priorities and coefficients for topics based on config
-        return topics.ToDictionary(
-            t => t.Id,
-            t => new TopicAnalysis { Id = t.Id, Priority = "high", Coefficient = 1.0, QuestionsCount = 1 });
+        return count switch
+        {
+            >= 3 => ("High", 1.0),   // Full focus
+            2 => ("Medium", 0.7), // Standard focus
+            1 => ("Low", 0.4),    // Brief check
+            _ => ("None", 0.0)    // Skipped
+        };
     }
-    private static List<Topic> FilterTopicByTestConfig(Dictionary<string, TopicAnalysis> topicsAnalysis,  List<Topic> topics, RoadmapTestConfigDto config, CancellationToken ct)
+    private static List<Topic> FilterTopicByTestConfig(
+        Dictionary<string, TopicAnalysis> topicsAnalysis,
+        List<Topic> topics,
+        RoadmapTestConfigDto config,
+        CancellationToken ct)
     {
-        ct.ThrowIfCancellationRequested();
-        // get priorities or coefficeint snad filter
-        // filter topics based on config
-        return topics.Take(3).ToList();
+        return topics
+            .Where(topic =>
+            {
+                var analysis = topicsAnalysis.GetOrDefault(topic.Id);
+                if (analysis == null || analysis?.QuestionsCount <= 0)
+                    return false;
+
+                return true;
+            })
+            .OrderByDescending(t => topicsAnalysis[t.Id].QuestionsCount)
+            .ThenBy(t => t.Name)
+            .ToList();
     }
-    private static (Topic Topic, TopicQuestionsSettingDto Setting) GetTopicSettings(Topic topic, TopicAnalysis analysis, RoadmapTestConfigDto config)
+    private static (Topic Topic, TopicQuestionsSettingDto Setting) GetTopicSettings(Topic topic, TopicAnalysis analysis, string difficultyLevel)
     {
-        // map config to topic settings
        return (topic, new TopicQuestionsSettingDto
        {
-           DifficultyLevel = config.DifficultyLevel.FromDifficultyString(),
+           DifficultyLevel = difficultyLevel.FromDifficultyString(),
            QuestionsCount = analysis.QuestionsCount,
-           Types = [TestQuestionType.SingleChoice],
+           Types = SupportedQuestionTypes.ToList(),
        });
     }
 
     // todo: what is result already exists?
+    // todo: just save selected answers
     public async Task<ComplexTestCheckResult> CheckRoadmapTest(long userId, string testId, RoadmapTestAnswers userAnswers, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
@@ -127,10 +212,8 @@ public class RoadmapTestService(
         var testAnalysisResult = new RoadmapTestResultsDto(analysisByTopic);
         await userTestsService.SaveTestAnalysisResult(long.Parse(roadmapTest.UserRoadmapId), testId, testAnalysisResult, ct); // todo: check parse
 
-        return BuildComplexTestCheckResult(roadmapTest, analysisByQuestion);
+        return new(); // todo: it is not used anymore
     }
-
-   // public async Task
 
     // analysis for each question
     private QuestionAnalysisResultDto AnalyzeQuestionAnswer(QuestionDto questionDto, QuestionAnswer? userAnswer)
@@ -161,16 +244,107 @@ public class RoadmapTestService(
         return roadmapTest.ToTestResult(testId);
     }
 
-    // todo: remove duplication with CheckRoadmapTest
     public async Task<ComplexTestCheckResult> GetComplexTestCheck(long userId, string testId, CancellationToken ct)
     {
         var roadmapTest = await userTestsService.GetUserTest(userId, testId, ct);
+        var roadmapId = roadmapTest.RoadmapId;
         var testAnalysisResult = await userTestsService.GetTestAnalysisResult(userId, testId, ct);
+        var userSavedRoadmapResult = await customizedRoadmapsService.GetUserModifiedRoadmap(userId, roadmapId, ct);
+        if (!userSavedRoadmapResult.IsSuccessful || userSavedRoadmapResult.Data == null)
+        {
+            throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"No customized roadmap found for user {userId} and roadmap {roadmapId}");
+        }
+
+        var roadmap = userSavedRoadmapResult.Data;
         var analysisByQuestion = testAnalysisResult.TopicsAnalysis
             .SelectMany(t => t.Value.QuestionsAnalysis)
             .ToDictionary(q => q.Key, q => q.Value);
+        var testResults = testAnalysisResult.TopicsAnalysis.ToDictionary(
+            ta => ta.Key,
+            ta => (
+                TotalPossible: ta.Value.QuestionsAnalysis.Values.Sum(qa => qa.TotalPossiblePoints),
+                Achieved: ta.Value.QuestionsAnalysis.Values.Sum(qa => qa.AchievedPoints)
+            ));
+        var suggestedChanges = await new RoadmapModificationAdvisor().SuggestRoadmapTopicChnages(
+           roadmap.Nodes.Select(n => new Node
+           {
+               Id = n.Id,
+               Title = n.Title,
+               Description = n.Description,
+           }).ToList(),
+           roadmap.Edges,
+           testResults);
 
-        return BuildComplexTestCheckResult(roadmapTest, analysisByQuestion);
+        var actualRoadmapNodeStatuses = roadmap.Nodes.ToDictionary(n => n.Id, n => n.Status);
+        var suggestChangesWithDiff = suggestedChanges.Where(sc =>
+        {
+            var actualStatus = actualRoadmapNodeStatuses.GetOrDefault(sc.Id);
+            if (actualStatus == null)
+                return false;
+            var nodeMarkToLearningStatus = ToLearningStatusString(sc.MarkType);
+            return actualStatus != nodeMarkToLearningStatus;
+        }).ToList();
+
+        return BuildComplexTestCheckResult(roadmapTest, analysisByQuestion, suggestChangesWithDiff);
+    }
+
+    public async Task<SavedUerRoadmap> RebuildRoadmapBasedOnTestResults(long userId, string roadmapId, CancellationToken ct)
+    {
+        var userRoadmapResult = await userRoadmapsService.GetUserRoadmap(userId, roadmapId, ct);
+        if (!userRoadmapResult.IsSuccessful)
+        {
+            throw new LearningPlatformException(userRoadmapResult.ToExceptionResult());
+        }
+        var userRoadmap = userRoadmapResult.Data;
+        if (userRoadmap == null || userRoadmap.IsActive != true)
+        {
+            throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"User roadmap with id {roadmapId} is null for user {userId}");
+        }
+
+        
+        var testResult = await userTestsService.GetLatestCompletedTestAnalysisResult(userRoadmap.Id, RoadmapTestType.Initial, ct);
+        if (testResult == null)
+        {
+            throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"No completed initial test found for user roadmap id {userRoadmap.Id}");
+        }
+
+        var userSavedRoadmapResult = await customizedRoadmapsService.GetUserModifiedRoadmap(userId, roadmapId, ct);
+        if (!userSavedRoadmapResult.IsSuccessful || userSavedRoadmapResult.Data == null)
+        {
+            throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"No customized roadmap found for user {userId} and roadmap {roadmapId}");
+        }
+
+        var roadmap = userSavedRoadmapResult.Data;
+        var testResults = testResult.TopicsAnalysis.ToDictionary(
+            ta => ta.Key,
+            ta => (
+                TotalPossible: ta.Value.QuestionsAnalysis.Values.Sum(qa => qa.TotalPossiblePoints),
+                Achieved: ta.Value.QuestionsAnalysis.Values.Sum(qa => qa.AchievedPoints)
+            ));
+        var suggestedChanges = await new RoadmapModificationAdvisor().SuggestRoadmapTopicChnages(
+           roadmap.Nodes.Select(n => new Node
+           {
+               Id = n.Id,
+               Title = n.Title,
+               Description = n.Description,
+           }).ToList(),
+           roadmap.Edges,
+           testResults);
+
+        var nodeStatuses = suggestedChanges.ToDictionary(
+            sc => sc.Id,
+            sc => sc.MarkType);
+
+        //roadmap.Nodes.ForEach(n =>
+        //{
+        //    var status = nodeStatuses.GetOrDefault(n.Id);
+        //    if (status != null)
+        //    {
+        //        n.Status = status;
+
+        //    }
+        //});
+        return roadmap;
     }
 
     private Dictionary<string, QuestionAnalysisResultDto> BuildAnalysisByQuestion(RoadmapTestDao roadmapTest, RoadmapTestAnswers userAnswers)
@@ -191,16 +365,37 @@ public class RoadmapTestService(
             });
     }
 
-    private static ComplexTestCheckResult BuildComplexTestCheckResult(RoadmapTestDao roadmapTest, Dictionary<string, QuestionAnalysisResultDto> analysisByQuestion)
+    private static ComplexTestCheckResult BuildComplexTestCheckResult(RoadmapTestDao roadmapTest, Dictionary<string, QuestionAnalysisResultDto> analysisByQuestion, List<MarkNode> suggestedChanges)
     {
         return new ComplexTestCheckResult
         {
             QuestionResults = roadmapTest.TopicQuestions
                 .SelectMany(t => t.Questions)
-                .ToDictionary(q => q.Id, q => BuildQuestionResult(q, analysisByQuestion[q.Id]))
+                .ToDictionary(q => q.Id, q => BuildQuestionResult(q, analysisByQuestion[q.Id])),
+            RoadmapId = roadmapTest.RoadmapId,
+            ChangesSuggestion = new RoadmapChangesSuggestionsDto
+            {
+                Suggestions = suggestedChanges.Select(sc => new RoadmapTestSuggestionItemDto
+                {
+                    LearningItemId = sc.Id,
+                    LearningStatus = ToLearningStatusString(sc.MarkType),
+                    Title = sc.Title,
+                    Description = sc.Description
+                }).ToList()
+            }
         };
     }
 
+    private static string ToLearningStatusString(NodeMarkType markType)
+    {
+        return markType switch
+        {
+            NodeMarkType.Completed => LearningStatus.Completed.ToStatusString(),
+            NodeMarkType.NeedsReview => LearningStatus.InProgress.ToStatusString(),
+            NodeMarkType.InProgress => LearningStatus.InProgress.ToStatusString(),
+            _ => "Unknown"
+        };
+    }
     private static TestQuestionResult BuildQuestionResult(QuestionDto question, QuestionAnalysisResultDto analysis)
     {
         return new TestQuestionResult
@@ -229,7 +424,7 @@ public class RoadmapTestService(
                     Text = answer.Text,
                     AnswerId = answer.Id,
                     IsCorrect = answer.IsCorrect,
-                    IsSelected = singleChoiceAnalysis != null && singleChoiceAnalysis.SelectedAnswerId == answer.Id
+                    IsSelected = analysis.SelectedAnswerId == answer.Id
                 };
             }
             default:

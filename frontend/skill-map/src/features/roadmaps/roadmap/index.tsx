@@ -15,7 +15,6 @@ import '@xyflow/react/dist/style.css';
 
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 
-import { addOrRemoveRoadmap } from '../store';
 import {
   useDeleteRoadmapMutation,
   useGetRoadmapByIdQuery,
@@ -42,6 +41,8 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
 
   const { data, error, isLoading, isFetching } =
     useGetRoadmapByIdQuery(roadmapId);
+  // const { data, error, isLoading, isFetching } =
+  //   useGetRebuildRoadmapByIdQuery(roadmapId);
   const [saveRoadmapTrigger, { isLoading: isSavingRoadmap }] =
     useSaveRoadmapMutation();
   const [deleteRoadmapTrigger, { isLoading: isDeleteingRoadmap }] =

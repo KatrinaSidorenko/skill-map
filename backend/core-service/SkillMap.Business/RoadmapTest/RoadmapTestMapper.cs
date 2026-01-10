@@ -99,12 +99,12 @@ public static class RoadmapTestMapper
     };
 
     // --- To DAO Model ---
-    public static RoadmapTestDao ToDaoModel(this Core.Entities.UserRoadmapTest.RoadmapTest entity, string testType, string userRoadmapId, long userTestId)
+    public static RoadmapTestDao ToDaoModel(this Core.Entities.UserRoadmapTest.RoadmapTest entity, string testType, string userRoadmapId, long userTestId, string roadmapId)
     {
         return new RoadmapTestDao
         {
             Id = userTestId.ToString(),
-           // RoadmapId = entity,
+            RoadmapId = roadmapId,
            UserRoadmapId = userRoadmapId,
             Type = testType,
             TestConfig = entity.Config?.ToDaoConfig(),
@@ -167,6 +167,8 @@ public static class RoadmapTestMapper
                             AchievedPoints = q.Value.AchievedPoints,
                             TotalPossiblePoints = q.Value.TotalPossiblePoints,
                             QuestionType = q.Value.QuestionType.ToQuestionTypeString(),
+                            SelectedAnswerId = q.Value.SelectedAnswerId,
+                            CorrectAnswerId = q.Value.CorrectAnswerId
                         })
                 })
         };
@@ -185,6 +187,8 @@ public static class RoadmapTestMapper
                             AchievedPoints = q.Value.AchievedPoints,
                             TotalPossiblePoints = q.Value.TotalPossiblePoints,
                             QuestionType = q.Value.QuestionType.FromQuestionTypeString(),
+                            SelectedAnswerId = q.Value.SelectedAnswerId,
+                            CorrectAnswerId = q.Value.CorrectAnswerId
                         })
                 }));
     }

@@ -6,9 +6,9 @@ public record ExceptionResponse(HttpStatusCode StatusCode, string Message);
 public class Result<T>
 {
     public bool IsSuccessful { get; }
+    public bool IsFailed => !IsSuccessful;
     public string Code { get; }
     public string Message { get; }
-
     public T Data { get; }
     public bool HasData => Data != null;
 

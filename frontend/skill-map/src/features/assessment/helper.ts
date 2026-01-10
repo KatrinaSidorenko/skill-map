@@ -1,5 +1,5 @@
 export const DEFAULT_GENERATE_TEST_CONFIG = {
-  numberOfQuestions: 1,
-  timeLimitInMinutes: 30,
+  numberOfQuestions: 5,
+  timeLimitInMinutes: 10,
   difficultyLevel: 'easy',
 } as RoadmapTestConfigDto;

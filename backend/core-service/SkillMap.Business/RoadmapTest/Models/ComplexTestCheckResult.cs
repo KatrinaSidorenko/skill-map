@@ -7,9 +7,13 @@ public class ComplexTestCheckResult
     [JsonProperty("questionResults")]
     public Dictionary<string, TestQuestionResult> QuestionResults { get; set; }
     [JsonProperty("totalAchievedPoints")]
-    public double TotalAchievedPoints => QuestionResults.Values.Sum(q => q.AchievedPoints);
+    public double TotalAchievedPoints => QuestionResults?.Values?.Sum(q => q.AchievedPoints) ?? 0.0;
     [JsonProperty("totalPossiblePoints")]
-    public double TotalPossiblePoints => QuestionResults.Values.Sum(q => q.TotalPossiblePoints);
+    public double TotalPossiblePoints => QuestionResults?.Values?.Sum(q => q.TotalPossiblePoints) ?? 0.0;
+    [JsonProperty("roadmapId")]
+    public string RoadmapId { get; set; }
+    [JsonProperty("changesSuggestion")]
+    public RoadmapChangesSuggestionsDto ChangesSuggestion { get; set; }
 }
 
 public class TestQuestionResult
@@ -40,10 +44,11 @@ public class AnswerDetail
     
     [JsonProperty("isCorrect")]
     public bool IsCorrect { get; set; }
+    [JsonProperty("isSelected")]
+    public bool IsSelected { get; set; }
 }
 
 public class SingleChoiceAnswerDetail : AnswerDetail
 {
-    [JsonProperty("isSelected")]
-    public bool IsSelected { get; set; }
+    
 }

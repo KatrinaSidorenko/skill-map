@@ -26,7 +26,6 @@ import {
 import { updateRoadmapDialog } from '../sandbox/edit-dialog';
 import { MOCK_IMAGE_URL } from '@/store/mock';
 import ContentNotFoundScreen from '@/components/base/notfound';
-import { setActiveRoadmapId } from '../editor/store';
 
 export default function RoadmapView() {
   const router = useRouter();
@@ -70,8 +69,7 @@ export default function RoadmapView() {
 
   const handleOpenEditor = () => {
     if (!roadmapId) return;
-    dispatch(setActiveRoadmapId(roadmapId));
-    router.push(`/editor/sandbox`);
+    router.push(`/editor/sandbox/${roadmapId}`);
   };
 
   if (!roadmapView) {

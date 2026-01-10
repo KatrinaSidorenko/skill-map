@@ -47,9 +47,7 @@ public sealed class RoadmapTestGeneratorClient : IRoadmapTestGenerator
         List<(Topic topic, TopicQuestionsSettingDto settings)> topicsSettings,
         CancellationToken ct)
     {
-        // Parallelize topic calls (VERY important)
-        var tasks = topicsSettings.Select(ts =>
-            GenerateTopicQuestions(ts.topic, ts.settings, ct));
+        var tasks = topicsSettings.Select(ts => GenerateTopicQuestions(ts.topic, ts.settings, ct));
 
         var results = await Task.WhenAll(tasks);
 

@@ -10,5 +10,6 @@ public interface IUserTestService
     Task<RoadmapTestDao> GetUserTest(long userId, string testId, CancellationToken ct);
     Task<RoadmapTestResultsDto> GetTestAnalysisResult(long userId, string testId, CancellationToken ct);
     Task SaveTestAnalysisResult(long userRoadmapId, string testId, RoadmapTestResultsDto analysisResult, CancellationToken ct);
-    Task<string> SaveUserTestWithResult(long userId, long userRoadmapId, string roadmapId, RoadmapTestType testType, RoadmapTestDao roadmapTest, CancellationToken ct);
+    Task<string> SaveUserTestWithEmptyResult(long userId, long userRoadmapId, string roadmapId, RoadmapTestType testType, RoadmapTestDao roadmapTest, CancellationToken ct);
+    Task<RoadmapTestResultsDto> GetLatestCompletedTestAnalysisResult(long userRoadmapId, RoadmapTestType roadmapTestType, CancellationToken ct);
 }

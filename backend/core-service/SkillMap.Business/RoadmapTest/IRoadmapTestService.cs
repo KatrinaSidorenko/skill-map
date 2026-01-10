@@ -1,4 +1,6 @@
-﻿using SkillMap.Business.RoadmapTest.Models;
+﻿using LearningPlatform.Roadmap.Business.Contracts.Models;
+using SkillMap.Business.Roadmaps.Models;
+using SkillMap.Business.RoadmapTest.Models;
 
 namespace SkillMap.Business.RoadmapTest;
 
@@ -8,4 +10,5 @@ public interface IRoadmapTestService
     Task<RoadmapTestResultDto> GenerateRoadmapTest(long userId, string roadmapId, RoadmapTestConfigDto config, CancellationToken ct);
     Task<ComplexTestCheckResult> GetComplexTestCheck(long userId, string testId, CancellationToken ct);
     Task<RoadmapTestResultDto> GetUserTest(long userId, string testId, CancellationToken ct);
+    Task<SavedUerRoadmap> RebuildRoadmapBasedOnTestResults(long userId, string roadmapId, CancellationToken ct);
 }

@@ -1,7 +1,9 @@
 using SkillMap.Infrastructure;
 using SkillMap.Persistence;
 using SkillMap.Business;
-using SkillMap.Api.Base.Extensions;
+using LearningPlatform.Shared.Api.Extensions;
+using LearningPlatform.Shared.Api.Middleware;
+using LearningPlatform.Shared.Caching;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +28,7 @@ builder.Services.AddCors(options =>
                     .AllowAnyHeader());
 });
 
+builder.Services.AddCaching();
 builder.Services
     .AddInfrastructureLayer(builder.Configuration)
     .AddBusinessLayer()
@@ -33,7 +36,7 @@ builder.Services
 
 //builder.Services.AddScoped<IQuestionsGenerator, QuestionsGenerator>();
 // add memory cache for testing prototype
-builder.Services.AddMemoryCache();
+
 
 var app = builder.Build();
 
@@ -43,6 +46,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseCors("AllowAll");
 
 app.UseHttpsRedirection();

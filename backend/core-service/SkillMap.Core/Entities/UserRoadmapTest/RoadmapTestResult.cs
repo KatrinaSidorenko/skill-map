@@ -27,12 +27,13 @@ public class QuestionAnalysisResult
     public int TotalPossiblePoints { get; set; }
     public int AchievedPoints { get; set; }
     public string QuestionType { get; set; }
-}
-
-public class SingleAnswerQuestionAnalysisResultDto : QuestionAnalysisResult
-{
     public string SelectedAnswerId { get; set; }
     public string CorrectAnswerId { get; set; }
     [JsonIgnore]
     public bool IsCorrect => AchievedPoints == TotalPossiblePoints;
+}
+
+public class SingleAnswerQuestionAnalysisResultDto : QuestionAnalysisResult
+{
+
 }
