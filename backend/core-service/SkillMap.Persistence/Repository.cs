@@ -53,6 +53,9 @@ internal class Repository<TEntity> : IRepository<TEntity>
 
             if (pageNum.HasValue && count.HasValue)
                 query = query.Skip((pageNum.Value - 1) * count.Value).Take(count.Value);
+
+            if (count.HasValue && !pageNum.HasValue)
+                query = query.Take(count.Value);
         }
         catch (Exception ex)
         {

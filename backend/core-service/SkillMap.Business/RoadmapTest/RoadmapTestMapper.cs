@@ -1,8 +1,11 @@
 ﻿using LearningPlatform.RoadmapTests.Contracts;
 using LearningPlatform.RoadmapTests.Contracts.Models;
+using SkillMap.Business.RoadmapTest.Helpers;
 using SkillMap.Business.RoadmapTest.Models;
+using SkillMap.Core.Constants;
 using SkillMap.Core.Entities.UserRoadmapTest;
 using SkillMap.Shared.Results;
+using SingleAnswerQuestionAnalysisResultDto = SkillMap.Business.RoadmapTest.Models.SingleAnswerQuestionAnalysisResultDto;
 
 namespace SkillMap.Business.RoadmapTest;
 
@@ -151,7 +154,7 @@ public static class RoadmapTestMapper
     };
 
     // --- Result Conversion ---
-    public static SkillMap.Core.Entities.UserRoadmapTest.RoadmapTestResult ToEntityResult(this RoadmapTestResultsDto dto)
+    public static SkillMap.Core.Entities.UserRoadmapTest.RoadmapTestResult ToDomainTestResult(this RoadmapTestResultsDto dto)
     {
         // Basic example — adapt to your DTOs
         return new SkillMap.Core.Entities.UserRoadmapTest.RoadmapTestResult
@@ -174,13 +177,11 @@ public static class RoadmapTestMapper
         };
     }
 
-    public static RoadmapTestResultsDto ToDaoResult(this SkillMap.Core.Entities.UserRoadmapTest.RoadmapTestResult entity)
+    public static RoadmapTestResultsDto ToDaoResult(this RoadmapTestResult entity)
     {
         return new RoadmapTestResultsDto(entity.TopicsAnalysis?.ToDictionary(
                 kvp => kvp.Key,
-                kvp => new Models.TopicAnswersAnalysisDto
-                {
-                    QuestionsAnalysis = kvp.Value.QuestionsAnalysis?.ToDictionary(
+                kvp => new TopicAnswersAnalysisDto(kvp.Value.QuestionsAnalysis?.ToDictionary(
                         q => q.Key,
                         q => new Models.QuestionAnalysisResultDto
                         {
@@ -189,7 +190,67 @@ public static class RoadmapTestMapper
                             QuestionType = q.Value.QuestionType.FromQuestionTypeString(),
                             SelectedAnswerId = q.Value.SelectedAnswerId,
                             CorrectAnswerId = q.Value.CorrectAnswerId
-                        })
-                }));
+                        }))));
+    }
+
+    public static TestEstimationResult ToTestEstimationResult(this RoadmapTestResultsDto result, RoadmapTestDao roadmapTest)
+    {
+        var analysisByQuestion = result.TopicsAnalysis
+            .SelectMany(t => t.Value.QuestionsAnalysis)
+            .ToDictionary(qa => qa.Key, qa => qa.Value);
+        return new TestEstimationResult
+        {
+            TopicsAnalysis = result.TopicsAnalysis,
+            QuestionResults = roadmapTest.TopicQuestions
+                .SelectMany(t => t.Questions)
+                .ToDictionary(q => q.Id, q => BuildQuestionResult(q, analysisByQuestion[q.Id])),
+            RoadmapId = roadmapTest.RoadmapId
+        };
+    }
+
+    public static string ToLearningStatusString(this NodeMarkType markType)
+    {
+        return markType switch
+        {
+            NodeMarkType.Completed => LearningStatus.Completed.ToStatusString(),
+            NodeMarkType.NeedsReview => LearningStatus.NotStarted.ToStatusString(),
+            NodeMarkType.InProgress => LearningStatus.InProgress.ToStatusString(),
+            _ => "Unknown"
+        };
+    }
+    private static TestQuestionResult BuildQuestionResult(QuestionDto question, QuestionAnalysisResultDto analysis)
+    {
+        return new TestQuestionResult
+        {
+            Type = analysis.QuestionType.ToQuestionTypeString(),
+            TotalPossiblePoints = analysis.TotalPossiblePoints,
+            AchievedPoints = analysis.AchievedPoints,
+            IsCorrect = analysis.AchievedPoints >= analysis.TotalPossiblePoints,
+            QuestionId = question.Id,
+            Text = question.Text,
+            AnswerDetails = question.Answers
+                .Select(answer => BuildAnswerDetail(question, answer, analysis))
+                .ToDictionary(ad => ad.AnswerId, ad => ad)
+        };
+    }
+
+    private static AnswerDetail BuildAnswerDetail(QuestionDto question, AnswerDto answer, QuestionAnalysisResultDto analysis)
+    {
+        switch (question.Type)
+        {
+            case TestQuestionType.SingleChoice:
+                {
+                    var singleChoiceAnalysis = analysis as SingleAnswerQuestionAnalysisResultDto;
+                    return new SingleChoiceAnswerDetail
+                    {
+                        Text = answer.Text,
+                        AnswerId = answer.Id,
+                        IsCorrect = answer.IsCorrect,
+                        IsSelected = analysis.SelectedAnswerId == answer.Id
+                    };
+                }
+            default:
+                throw new LearningPlatformException(ErrorCode.INTERNAL_ERROR, $"Unsupported question type {question.Type}");
+        }
     }
 }

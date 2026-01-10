@@ -93,8 +93,7 @@ using SkillMap.Shared.Results;
 public class TestingPrototypeController(
     IUserRoadmapsService userRoadmapsService,
     IRoadmapTestGenerator roadmapTestGenerator,
-    IRoadmapService roadmapService,
-    IUserRoadmapTestService userTestsService) : ControllerBase
+    IRoadmapService roadmapService) : ControllerBase
 {
     // 1. task 1: create GET question and answers for 1 topic
     // desired complexity
