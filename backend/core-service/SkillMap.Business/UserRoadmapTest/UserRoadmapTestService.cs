@@ -10,9 +10,9 @@ using System.Threading;
 
 namespace SkillMap.Application.Services;
 
-public class UserTestService(IUnitOfWork unitOfWork) : IUserTestService
+public class UserRoadmapTestService(IUnitOfWork unitOfWork) : IUserRoadmapTestService
 {
-    public async Task<string> SaveUserTestWithEmptyResult(
+    public async Task<string> SaveUserRoadmapTest(
         long userId,
         long userRoadmapId,
         string roadmapId,
@@ -21,7 +21,6 @@ public class UserTestService(IUnitOfWork unitOfWork) : IUserTestService
         CancellationToken ct)
     {
         roadmapTest.RoadmapId = roadmapId;
-        //roadmapTest.Id = $"{userId}_{roadmapId}"; // todo: Guid id
 
         var entity = new UserRoadmapTest
         {
@@ -34,24 +33,11 @@ public class UserTestService(IUnitOfWork unitOfWork) : IUserTestService
         if (!addResult.IsSuccessful)
             throw new LearningPlatformException(ErrorCode.INTERNAL_ERROR, "Failed to save user test");
 
-        var userTestResultsRepository = unitOfWork.CreateRepository<UserTestResult>();
-        var resultEntity = new UserTestResult
-        {
-            MaxPoints = 0,
-            ScoredPoints = 0,
-            ResultData = null,
-            UserRoadmapTest = entity,
-        };
-
-        addResult = await userTestResultsRepository.AddAsync(resultEntity, ct);
-        if (!addResult.IsSuccessful)
-            throw new LearningPlatformException(ErrorCode.INTERNAL_ERROR, "Failed to save user test result");
-
         await unitOfWork.SaveChangesAsync(ct);
         return entity.Id.ToString();
     }
 
-    public async Task<RoadmapTestDao> GetUserTest(
+    public async Task<RoadmapTestDao> GetUserRoadmapTest(
         long userId,
         string testId,
         CancellationToken ct)
@@ -87,23 +73,7 @@ public class UserTestService(IUnitOfWork unitOfWork) : IUserTestService
         if (!testEntity.IsSuccessful || !testEntity.HasData)
             throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"No test found for user roadmap {userRoadmapId}");
 
-        // try to find existing result
         var roadmapTestResult = analysisResult.ToEntityResult();
-
-        var existingResult = await userTestResultRepository.GetFirstOrDefaultAsync(
-            x => x.UserRoadmapTestId == testEntity.Data.Id,
-            ct);
-        if (existingResult.IsSuccessful && existingResult.HasData)
-        {
-            existingResult.Data.CompletedAt = DateTime.UtcNow;
-            await existingResult.Data.SetTestResults(roadmapTestResult, ct);
-            var updateResult = await userTestResultRepository.UpdateAsync(existingResult.Data, ct);
-            if (!updateResult.IsSuccessful)
-                throw new LearningPlatformException(ErrorCode.INTERNAL_ERROR, "Failed to update test result");
-            await userTestResultRepository.SaveChangesAsync(ct);
-            return;
-        }
-
         var resultEntity = new UserTestResult
         {
             UserRoadmapTestId = testEntity.Data.Id,
@@ -142,35 +112,25 @@ public class UserTestService(IUnitOfWork unitOfWork) : IUserTestService
         return testData.ToDaoResult();
     }
 
-    public async Task<(bool IsFound, RoadmapTestDao? Test)> ExistsUnfinishedTest(long userRoadmapId, RoadmapTestType roadmapTestType, CancellationToken ct)
+    public async Task<(bool IsFound, long? RoadmapTestId)> HasRoadmapCompletedTest(long userRoadmapId, RoadmapTestType roadmapTestType, CancellationToken ct)
     {
         var userRoadmapTestsRepository = unitOfWork.CreateRepository<UserRoadmapTest>();
         var userTestResultsRepository = unitOfWork.CreateRepository<UserTestResult>();
-        var userRoadmapRepository = unitOfWork.CreateRepository<UserRoadmap>();
-        var testResult = await userRoadmapTestsRepository.GetFirstOrDefaultAsync(
+        var userRoadmapTest = await userRoadmapTestsRepository.GetFirstOrDefaultAsync(
             x => x.UserRoadmapId == userRoadmapId && x.TestType == roadmapTestType.ToFriendlyString(),
             ct);
-        if (!testResult.HasData)
+        if (!userRoadmapTest.HasData)
         {
             return (false, null);
         }
-
-        var savedTestResult = await userTestResultsRepository.GetFirstOrDefaultAsync(
-            x => x.UserRoadmapTestId == testResult.Data.Id,
+        var testResult = await userTestResultsRepository.GetFirstOrDefaultAsync(
+            x => x.UserRoadmapTestId == userRoadmapTest.Data.Id,
             ct);
-        if (!savedTestResult.IsSuccessful)
+        if (!testResult.IsSuccessful)
         {
-            return (false, null); // something went wrong
+            return (false, null);
         }
-
-        var userRoadmapResult = await userRoadmapRepository.GetByIdAsync(userRoadmapId, ct);
-        if (!userRoadmapResult.IsSuccessful || !userRoadmapResult.HasData)
-        {
-            return (false, null); // something went wrong
-        }
-
-        var testData = await testResult.Data.GetRoadmapTest(ct);
-        return (savedTestResult.Data?.ResultData.Length > 0, testData.ToDaoModel(testResult.Data.TestType, testResult.Data.UserRoadmapId.ToString(), testResult.Data.Id, userRoadmapResult.Data.RoadmapId));
+        return (testResult.Data?.ResultData.Length > 0, userRoadmapTest.Data.Id);
     }
 
     public async Task<RoadmapTestResultsDto> GetLatestCompletedTestAnalysisResult(long userRoadmapId, RoadmapTestType roadmapTestType, CancellationToken ct)

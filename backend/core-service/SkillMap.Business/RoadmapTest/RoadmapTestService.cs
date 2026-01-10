@@ -21,7 +21,7 @@ public class RoadmapTestService(
     IRoadmapTestGenerator roadmapTestGenerator, 
     IRoadmapService roadmapService,
     ICustomizedRoadmapsService customizedRoadmapsService,
-    IUserTestService userTestsService) : IRoadmapTestService
+    IUserRoadmapTestService userRoadmapTestService) : IRoadmapTestService
 {
     public async Task<RoadmapTestResultDto> GenerateRoadmapTest(long userId, string roadmapId, RoadmapTestConfigDto config, CancellationToken ct)
     {
@@ -29,8 +29,8 @@ public class RoadmapTestService(
         // todo: add config validation
         // todo: refactor on result pattern
         var userRoadmap = await EnsureActiveUserRoadmap(userId, roadmapId, ct);
-        var existingTest = await TryGetExistingInitialUnfinishedTest(userRoadmap.Id, ct);
-        if (existingTest != null) // todo: more complex politics about existing tests (like exists for 10 days ok if more regenaret)
+        var existingTest = await GetOrDefaultInitialUnfinishedTest(userId, userRoadmap.Id, ct);
+        if (existingTest != null)
         {
             return existingTest;
         }
@@ -69,19 +69,21 @@ public class RoadmapTestService(
             TestConfig = config
         };
 
-        var testId = await userTestsService.SaveUserTestWithEmptyResult(userId, userRoadmap.Id, roadmapId, RoadmapTestType.Initial, roadmapTest, ct);
+        var testId = await userRoadmapTestService.SaveUserRoadmapTest(userId, userRoadmap.Id, roadmapId, RoadmapTestType.Initial, roadmapTest, ct);
         return roadmapTest.ToTestResult(testId);
     }
 
-    private async Task<RoadmapTestResultDto?> TryGetExistingInitialUnfinishedTest(long userRoadmapId, CancellationToken ct)
+    private async Task<RoadmapTestResultDto?> GetOrDefaultInitialUnfinishedTest(long userId, long userRoadmapId, CancellationToken ct)
     {
-        var (exists, savedTest) = await userTestsService.ExistsUnfinishedTest(userRoadmapId, RoadmapTestType.Initial, ct);
-        if (!exists || savedTest == null)
+        var (hasCompletedTest, roadmapTestId) = await userRoadmapTestService.HasRoadmapCompletedTest(userRoadmapId, RoadmapTestType.Initial, ct);
+        if (!hasCompletedTest)
         {
             return null;
         }
 
-        return savedTest.ToTestResult(savedTest.Id);
+        var testIdStr = roadmapTestId.ToString();
+        var roadmapTest = await userRoadmapTestService.GetUserRoadmapTest(userId, testIdStr, ct);
+        return roadmapTest.ToTestResult(testIdStr);
     }
 
     private async Task<UserRoadmapDto> EnsureActiveUserRoadmap(long userId, string roadmapId, CancellationToken ct)
@@ -206,11 +208,11 @@ public class RoadmapTestService(
         ct.ThrowIfCancellationRequested();
 
         // todo: extrcat questions check to exyernal service that create question types and evaluate answers
-        var roadmapTest = await userTestsService.GetUserTest(userId, testId, ct);
+        var roadmapTest = await userRoadmapTestService.GetUserRoadmapTest(userId, testId, ct);
         var analysisByQuestion = BuildAnalysisByQuestion(roadmapTest, userAnswers);
         var analysisByTopic = GroupAnalysisByTopic(roadmapTest, analysisByQuestion);
         var testAnalysisResult = new RoadmapTestResultsDto(analysisByTopic);
-        await userTestsService.SaveTestAnalysisResult(long.Parse(roadmapTest.UserRoadmapId), testId, testAnalysisResult, ct); // todo: check parse
+        await userRoadmapTestService.SaveTestAnalysisResult(long.Parse(roadmapTest.UserRoadmapId), testId, testAnalysisResult, ct); // todo: check parse
 
         return new(); // todo: it is not used anymore
     }
@@ -240,15 +242,15 @@ public class RoadmapTestService(
     }
     public async Task<RoadmapTestResultDto> GetUserTest(long userId, string testId, CancellationToken ct)
     {
-        var roadmapTest = await userTestsService.GetUserTest(userId, testId, ct);
+        var roadmapTest = await userRoadmapTestService.GetUserRoadmapTest(userId, testId, ct);
         return roadmapTest.ToTestResult(testId);
     }
 
     public async Task<ComplexTestCheckResult> GetComplexTestCheck(long userId, string testId, CancellationToken ct)
     {
-        var roadmapTest = await userTestsService.GetUserTest(userId, testId, ct);
+        var roadmapTest = await userRoadmapTestService.GetUserRoadmapTest(userId, testId, ct);
         var roadmapId = roadmapTest.RoadmapId;
-        var testAnalysisResult = await userTestsService.GetTestAnalysisResult(userId, testId, ct);
+        var testAnalysisResult = await userRoadmapTestService.GetTestAnalysisResult(userId, testId, ct);
         var userSavedRoadmapResult = await customizedRoadmapsService.GetUserModifiedRoadmap(userId, roadmapId, ct);
         if (!userSavedRoadmapResult.IsSuccessful || userSavedRoadmapResult.Data == null)
         {
@@ -302,7 +304,7 @@ public class RoadmapTestService(
         }
 
         
-        var testResult = await userTestsService.GetLatestCompletedTestAnalysisResult(userRoadmap.Id, RoadmapTestType.Initial, ct);
+        var testResult = await userRoadmapTestService.GetLatestCompletedTestAnalysisResult(userRoadmap.Id, RoadmapTestType.Initial, ct);
         if (testResult == null)
         {
             throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"No completed initial test found for user roadmap id {userRoadmap.Id}");
@@ -391,7 +393,7 @@ public class RoadmapTestService(
         return markType switch
         {
             NodeMarkType.Completed => LearningStatus.Completed.ToStatusString(),
-            NodeMarkType.NeedsReview => LearningStatus.InProgress.ToStatusString(),
+            NodeMarkType.NeedsReview => LearningStatus.NotStarted.ToStatusString(),
             NodeMarkType.InProgress => LearningStatus.InProgress.ToStatusString(),
             _ => "Unknown"
         };

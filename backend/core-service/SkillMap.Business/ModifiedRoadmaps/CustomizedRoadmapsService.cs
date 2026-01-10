@@ -105,6 +105,9 @@ public class CustomizedRoadmapsService(
         dto.Progress = progress;
         dto.Status = status;
         dto.SavedAt = userRoadmap.CreatedAt;
+
+        // finished?? Slove the policy for this term
+        // try find finished initial test
         return Result.Success(dto);
     }
 

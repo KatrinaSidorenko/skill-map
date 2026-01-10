@@ -94,7 +94,7 @@ public class TestingPrototypeController(
     IUserRoadmapsService userRoadmapsService,
     IRoadmapTestGenerator roadmapTestGenerator,
     IRoadmapService roadmapService,
-    IUserTestService userTestsService) : ControllerBase
+    IUserRoadmapTestService userTestsService) : ControllerBase
 {
     // 1. task 1: create GET question and answers for 1 topic
     // desired complexity
