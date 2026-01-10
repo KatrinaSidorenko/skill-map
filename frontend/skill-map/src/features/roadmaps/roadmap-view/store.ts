@@ -39,8 +39,5 @@ export const { setRoadmapView, setActiveRoadmapViewId, updateRoadmapView } =
 
 export const selectRoadmapView = (state: { roadmapViewSlice: InitialState }) =>
   state.roadmapViewSlice.roadmapView;
-export const selectRoadmapViewId = (state: {
-  roadmapViewSlice: InitialState;
-}) => state.roadmapViewSlice.roadmapId;
 
 export default roadmapViewSlice;

@@ -15,22 +15,53 @@ import {
 import { FiEdit2, FiTrash2, FiArrowRight } from 'react-icons/fi';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { useDeleteUserRoadmapMutation } from '@/features/roadmaps/api';
+import {
+  useDeleteUserRoadmapMutation,
+  useLazyGetPlainUserCreatedRoadmapQuery,
+} from '@/features/roadmaps/api';
 import { toaster } from '@/components/ui/toaster';
 import useLocalization from '@/i18n/useLocalization';
-import {
-  selectRoadmapView,
-  selectRoadmapViewId,
-  updateRoadmapView,
-} from './store';
+import { selectRoadmapView, setRoadmapView, updateRoadmapView } from './store';
 import { updateRoadmapDialog } from '../sandbox/edit-dialog';
 import { MOCK_IMAGE_URL } from '@/store/mock';
 import ContentNotFoundScreen from '@/components/base/notfound';
+import SpinnerScreen from '@/components/base/spinner';
+import { useEffect } from 'react';
 
-export default function RoadmapView() {
+export function RoadmapViewWrapper({ roadmapId }: { roadmapId: string }) {
+  const dispatch = useAppDispatch();
+  const [getRoadmap, { isLoading }] = useLazyGetPlainUserCreatedRoadmapQuery();
+
+  useEffect(() => {
+    if (!roadmapId) return;
+
+    const fetchRoadmap = async () => {
+      try {
+        const roadmap = await getRoadmap(roadmapId).unwrap();
+        dispatch(
+          setRoadmapView({
+            ...roadmap,
+            isSaved: false,
+          } as PlainRoadmapView),
+        );
+      } catch (error) {
+        console.error('Failed to load roadmap:', error);
+      }
+    };
+
+    fetchRoadmap();
+  }, [roadmapId, dispatch, getRoadmap]);
+
+  if (isLoading) {
+    return <SpinnerScreen />;
+  }
+
+  return <RoadmapView roadmapId={roadmapId} />;
+}
+
+export function RoadmapView({ roadmapId }: { roadmapId?: string }) {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const roadmapId = useAppSelector(selectRoadmapViewId);
   const roadmapView = useAppSelector(selectRoadmapView);
 
   const { getEditorTranslations } = useLocalization();

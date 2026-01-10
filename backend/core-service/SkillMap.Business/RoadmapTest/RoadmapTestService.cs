@@ -58,7 +58,7 @@ public class RoadmapTestService(
         var coreTopics = new RoadmapAnalyzer().SelectStratifiedCoreTopics(nodes, roadmap.Edges, questionsLimit: config.NumberOfQuestions ?? DefaultNumberOfQuestions);
         var topicsAnalysis = CalculateTopicsAnalysis(topics, config, ct);
         var targetTopics = FilterTopicByTestConfig(topicsAnalysis, topics, config, ct);
-        var topicSettings = targetTopics.Select(t => GetTopicSettings(t, topicsAnalysis[t.Id], config)).ToList();
+        var topicSettings = targetTopics.Select(t => GetTopicSettings(t, topicsAnalysis[t.Id], config.DifficultyLevel)).ToList();
         var generateTestQuestions = await roadmapTestGenerator.GenerateRoadmapTest(topicSettings, ct);
 
         var roadmapTest = new RoadmapTestDao
