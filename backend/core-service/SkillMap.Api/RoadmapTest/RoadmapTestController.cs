@@ -33,11 +33,11 @@ public class RoadmapTestController : BaseController
         return Ok(response);
     }
 
-    [HttpGet("{testId}/start")]
+    [HttpPost("{testId}/start")]
     public async Task<IActionResult> StartTakingRoadmapTest(string testId, CancellationToken ct)
     {
         var testResultId = await _userRoadmapTestService.SaveStartOfTakingRoadmapTest(testId, ct);
-        return Ok(testResultId);
+        return Ok(new TestResultResponse(testResultId));
     }
 
 
@@ -45,13 +45,14 @@ public class RoadmapTestController : BaseController
     public async Task<IActionResult> CheckRoadmapTest(string testId, [FromBody] RoadmapTestAnswersRequest userAnswers, CancellationToken ct)
     {
         var testResultId = await _roadmapTestService.EstimateRoadmapTest(testId, userAnswers.ToDto(), ct);
-        return Ok(testResultId);
+        return Ok(new TestResultResponse(testResultId));
     }
 
     [HttpGet("{testId}")]
     public async Task<IActionResult> GetUserRoadmapTest(string testId, CancellationToken ct)
     {
         var roadmapTest = await _userRoadmapTestService.GetRoadmapTest(testId, ct);
+        var testResultId = await _userRoadmapTestService.SaveStartOfTakingRoadmapTest(testId, ct);
         return Ok(roadmapTest.ToTestResult(testId));
     }
 

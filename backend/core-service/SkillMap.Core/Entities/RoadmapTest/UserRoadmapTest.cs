@@ -6,5 +6,4 @@ public class UserRoadmapTest : TrackedEntity
     public string TestType { get; set; }
     public byte[] TestData { get; set; }
     public virtual UserRoadmap UserRoadmap { get; set; }
-    public virtual ICollection<UserTestResult> UserTestResults { get; set; }
 }

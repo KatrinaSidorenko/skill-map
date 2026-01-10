@@ -46,6 +46,19 @@ public class UserRoadmapTestService(IUnitOfWork unitOfWork) : IUserRoadmapTestSe
         if (!roadmapTest.IsSuccessful || !roadmapTest.HasData)
             throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"Roadmap test with id {roadmapTestId} not found");
 
+        var userTestResultRepository = unitOfWork.CreateRepository<UserTestResult>();
+        var existingTestResult = await userTestResultRepository.GetAllAsync(
+            //filter: x => x.UserRoadmapTestId == roadmapTest.Data.Id && !x.CompletedAt.HasValue,
+            filter: x => x.UserRoadmapTestId == roadmapTest.Data.Id,
+            orderBy: q => q.OrderByDescending(x => x.StartedAt),
+            pageNum: null,
+            count: 1,
+            ct);
+        if (existingTestResult.IsSuccessful && existingTestResult.HasData && existingTestResult.Data.Any())
+        {
+            return existingTestResult.Data.First().Id.ToString();
+        }
+
         // by simple path. assume that in db are any started results for this test
         var userTestResult = new UserTestResult
         {
@@ -53,7 +66,6 @@ public class UserRoadmapTestService(IUnitOfWork unitOfWork) : IUserRoadmapTestSe
             StartedAt = DateTime.UtcNow,
         };
 
-        var userTestResultRepository = unitOfWork.CreateRepository<UserTestResult>();
         var addResult = await userTestResultRepository.AddAsync(userTestResult, ct);
         if (!addResult.IsSuccessful)
             throw new LearningPlatformException(ErrorCode.INTERNAL_ERROR, "Failed to save test start time");

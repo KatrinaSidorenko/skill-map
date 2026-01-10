@@ -2,10 +2,7 @@
 
 import { VStack, Button, Heading, Box } from '@chakra-ui/react';
 import { useAppSelector } from '@/store/hooks';
-import {
-  selectQuestionAnswers,
-  selectTestQuestions,
-} from '../store';
+import { selectQuestionAnswers, selectTestQuestions } from '../store';
 import { QuestionsFactory } from '../common/questions/factory';
 import {
   useCheckRoadmapTestAnswersMutation,
@@ -35,13 +32,13 @@ export default function TestForm({ testId }: { testId?: string }) {
       return;
     }
     try {
-      await checkAnswers({
+      const testResult = await checkAnswers({
         testId: testId,
         answers: {
           questionAnswers: Object.values(testAnswers),
         },
       }).unwrap();
-      router.replace(`/assessment-panel/${testId}/result`);
+      router.replace(`/assessment-panel/${testId}/result/${testResult.id}`);
     } catch (error) {
       toaster.error({
         title: 'Failed to submit the test. Please try again later.',

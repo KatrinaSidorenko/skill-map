@@ -22,8 +22,8 @@ internal class UserTestResultConfiguration : IEntityTypeConfiguration<UserTestRe
         builder.Property(utr => utr.ScoredPoints)
             .IsRequired();
 
-        builder.Property(utr => utr.CompletedAt)
-            .IsRequired();
+        builder.Property(utr => utr.StartedAt).IsRequired();
+        builder.Property(utr => utr.CompletedAt);
 
         builder.Property(utr => utr.ResultData).IsRequired(false);
         builder.HasOne(utr => utr.UserRoadmapTest)

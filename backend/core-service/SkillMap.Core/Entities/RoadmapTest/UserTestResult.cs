@@ -7,6 +7,6 @@ public class UserTestResult : TrackedEntity
     public double ScoredPoints { get; set; }
     public byte[] ResultData { get; set; }
     public DateTime StartedAt { get; set; }
-    public DateTime CompletedAt { get; set; }
+    public DateTime? CompletedAt { get; set; }
     public virtual UserRoadmapTest UserRoadmapTest { get; set; }
 }

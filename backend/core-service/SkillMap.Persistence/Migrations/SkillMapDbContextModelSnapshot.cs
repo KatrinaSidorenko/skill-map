@@ -209,7 +209,7 @@ namespace SkillMap.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<DateTime>("CompletedAt")
+                    b.Property<DateTime?>("CompletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("CreatedAt")
@@ -233,12 +233,7 @@ namespace SkillMap.Persistence.Migrations
                     b.Property<long>("UserRoadmapTestId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("UserRoadmapTestId1")
-                        .HasColumnType("bigint");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserRoadmapTestId1");
 
                     b.HasIndex("UserRoadmapTestId", "CompletedAt");
 
@@ -297,10 +292,6 @@ namespace SkillMap.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SkillMap.Core.Entities.UserRoadmapTest.UserRoadmapTest", null)
-                        .WithMany("UserTestResults")
-                        .HasForeignKey("UserRoadmapTestId1");
-
                     b.Navigation("UserRoadmapTest");
                 });
 
@@ -316,11 +307,6 @@ namespace SkillMap.Persistence.Migrations
                     b.Navigation("RoadmapSnapshots");
 
                     b.Navigation("UserRoadmapTests");
-                });
-
-            modelBuilder.Entity("SkillMap.Core.Entities.UserRoadmapTest.UserRoadmapTest", b =>
-                {
-                    b.Navigation("UserTestResults");
                 });
 #pragma warning restore 612, 618
         }
