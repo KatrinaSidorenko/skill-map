@@ -10,7 +10,6 @@ public class RoadmapAnalyzer
         List<Edge> edges,
         int questionsLimit)
     {
-        // 1. Build Graph & Calculate In-Degrees
         var graph = new Dictionary<string, List<string>>();
         var inDegree = nodes.ToDictionary(n => n.Id, n => 0);
 
@@ -23,18 +22,12 @@ public class RoadmapAnalyzer
             if (inDegree.ContainsKey(edge.Target)) inDegree[edge.Target]++;
         }
 
-        // 2. Calculate Levels (Longest Path) & Descendants (Impact)
-        // We can compute Level during a topological sort or DFS
         var nodeLevels = new Dictionary<string, int>();
-        var nodeImpacts = new Dictionary<string, int>(); // From previous answer logic
+        var nodeImpacts = new Dictionary<string, int>(); 
 
-        // (Assume CalculateImpacts() and CalculateLevels() are helper methods)
         CalculateLevels(nodes, graph, inDegree, nodeLevels);
         CalculateDescendants(nodes, graph, nodeImpacts);
 
-        // 3. Stratified Selection
-        // Group by Level -> Sort by Impact -> Take Top 1
-        // questions by each level based on levels count and questionsLimit
         var levelsCount = nodeLevels.Values.Max() + 1;
         var questionsPerLevel = Math.Max(1, questionsLimit / levelsCount);
 
@@ -56,7 +49,6 @@ public class RoadmapAnalyzer
             .Select(n => new Topic(n.Id, n.Title, n.Description)).ToList();
     }
 
-    // Helper to calculate Levels (BFS approach)
     private void CalculateLevels(
         List<Node> nodes,
         Dictionary<string, List<string>> graph,
@@ -65,7 +57,6 @@ public class RoadmapAnalyzer
     {
         var queue = new Queue<(string Id, int Level)>();
 
-        // Start with Roots (In-Degree 0)
         foreach (var node in nodes.Where(n => inDegree[n.Id] == 0))
         {
             queue.Enqueue((node.Id, 0));
@@ -80,8 +71,6 @@ public class RoadmapAnalyzer
             {
                 foreach (var child in children)
                 {
-                    // Logic: A child's level is Max(current_parents) + 1
-                    // Simply updating it as we traverse works for Longest Path in DAG
                     int nextLevel = currentLevel + 1;
                     if (!levels.ContainsKey(child) || levels[child] < nextLevel)
                     {
@@ -98,21 +87,16 @@ public class RoadmapAnalyzer
     Dictionary<string, List<string>> graph,
     Dictionary<string, int> nodeImpacts)
     {
-        // Cache to store the unique set of descendants for each node
-        // Key: NodeId, Value: HashSet of all downstream NodeIds
         var memoizationCache = new Dictionary<string, HashSet<string>>();
 
         foreach (var node in nodes)
         {
-            // Compute (or retrieve from cache) the full set of descendants
             var descendants = GetUniqueDescendants(node.Id, graph, memoizationCache);
 
-            // The "Impact" is the count of these unique descendants
             nodeImpacts[node.Id] = descendants.Count;
         }
     }
 
-    // Recursive helper method
     private HashSet<string> GetUniqueDescendants(
         string nodeId,
         Dictionary<string, List<string>> graph,

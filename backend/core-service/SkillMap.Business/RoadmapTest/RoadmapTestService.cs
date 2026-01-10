@@ -101,11 +101,13 @@ public class RoadmapTestService(
         return userRoadmap;
     }
 
-    // todo: restrictions
-    // max questions per topic: 3
     private const int MaxQuestionsPerTopic = 3;
     private const int DefaultNumberOfQuestions = 10;
     private const double MinMinutesPerQuestion = 0.5;
+    private static HashSet<TestQuestionType> SupportedQuestionTypes = new()
+    {
+        TestQuestionType.SingleChoice,
+    };
 
     private static Dictionary<string, TopicAnalysis> CalculateTopicsAnalysis(
         List<Topic> topics,
@@ -126,7 +128,9 @@ public class RoadmapTestService(
         // Example: 10 questions, 3 topics. 
         // Base = 3. Remainder = 1.
         int baseQuestionsPerTopic = finalTargetCount / topics.Count;
+        baseQuestionsPerTopic = Math.Min(baseQuestionsPerTopic, MaxQuestionsPerTopic);
         int extraQuestions = finalTargetCount % topics.Count;
+        extraQuestions = Math.Min(extraQuestions, topics.Count);
 
         var shuffledTopics = topics.OrderBy(x => Guid.NewGuid()).ToList();
 
@@ -142,7 +146,6 @@ public class RoadmapTestService(
                 count++;
             }
 
-            count = Math.Min(count, MaxQuestionsPerTopic);
             var (priority, coefficient) = GetPriorityAndCoefficient(count);
 
             result[topic.Id] = new TopicAnalysis
@@ -176,23 +179,23 @@ public class RoadmapTestService(
         return topics
             .Where(topic =>
             {
-                if (!topicsAnalysis.TryGetValue(topic.Id, out var analysis))
+                var analysis = topicsAnalysis.GetOrDefault(topic.Id);
+                if (analysis == null || analysis?.QuestionsCount <= 0)
                     return false;
 
-                return analysis.QuestionsCount > 0;
+                return true;
             })
             .OrderByDescending(t => topicsAnalysis[t.Id].QuestionsCount)
             .ThenBy(t => t.Name)
             .ToList();
     }
-    private static (Topic Topic, TopicQuestionsSettingDto Setting) GetTopicSettings(Topic topic, TopicAnalysis analysis, RoadmapTestConfigDto config)
+    private static (Topic Topic, TopicQuestionsSettingDto Setting) GetTopicSettings(Topic topic, TopicAnalysis analysis, string difficultyLevel)
     {
-        // map config to topic settings
        return (topic, new TopicQuestionsSettingDto
        {
-           DifficultyLevel = config.DifficultyLevel.FromDifficultyString(),
+           DifficultyLevel = difficultyLevel.FromDifficultyString(),
            QuestionsCount = analysis.QuestionsCount,
-           Types = [TestQuestionType.SingleChoice],
+           Types = SupportedQuestionTypes.ToList(),
        });
     }
 
@@ -241,7 +244,6 @@ public class RoadmapTestService(
         return roadmapTest.ToTestResult(testId);
     }
 
-    // todo: remove duplication with CheckRoadmapTest
     public async Task<ComplexTestCheckResult> GetComplexTestCheck(long userId, string testId, CancellationToken ct)
     {
         var roadmapTest = await userTestsService.GetUserTest(userId, testId, ct);
