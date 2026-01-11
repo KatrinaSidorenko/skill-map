@@ -1,12 +1,13 @@
 ﻿using SkillMap.Core.Entities.UserRoadmapTest;
 using SkillMap.Shared.Gzip;
 using RoadmapTestDao = SkillMap.Core.Entities.UserRoadmapTest.RoadmapTest;
+using UserRoadmpTestDao = SkillMap.Core.Entities.UserRoadmapTest.UserRoadmapTest;
 
 namespace SkillMap.Business.RoadmapTest;
 
 public static class RoadmapTestExtensions
 {
-    public static async Task<RoadmapTestDao> GetRoadmapTest(this UserRoadmapTest userRoadmapTest, CancellationToken ct)
+    public static async Task<RoadmapTestDao> GetRoadmapTest(this UserRoadmpTestDao userRoadmapTest, CancellationToken ct)
     {
         if (userRoadmapTest.TestData == null || userRoadmapTest.TestData.Length == 0)
         {
@@ -16,13 +17,7 @@ public static class RoadmapTestExtensions
         return await userRoadmapTest.TestData.InGzipJsonObjectUtf8<RoadmapTestDao>(ct);
     }
 
-    // todo: implement real calculation logic
-    public static double CalculateMaxPoints(this RoadmapTestDao roadmapTest)
-    {
-        return 10;
-    }
-
-    public static async Task SetRoadmapTest(this UserRoadmapTest userRoadmapTest, RoadmapTestDao roadmapTest, CancellationToken ct)
+    public static async Task SetRoadmapTest(this UserRoadmpTestDao userRoadmapTest, RoadmapTestDao roadmapTest, CancellationToken ct)
     {
         if (roadmapTest == null)
         {
@@ -46,6 +41,9 @@ public static class RoadmapTestExtensions
         {
             throw new ArgumentNullException(nameof(testResult), "TestResult cannot be null.");
         }
+
+        userTestResult.MaxPoints = testResult.TotalPossiblePoints;
+        userTestResult.ScoredPoints = testResult.AchievedPoints;
         userTestResult.ResultData = await testResult.GzipJsonObjectUtf8(ct);
     }
 }
