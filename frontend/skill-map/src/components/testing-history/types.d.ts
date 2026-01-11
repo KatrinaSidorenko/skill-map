@@ -15,3 +15,5 @@ interface TestAttemptDto {
   completedAt: string | null; // ISO date string or null
   score: number | null;
 }
+
+type TestType = 'initial' | 'intermediate' | 'final';

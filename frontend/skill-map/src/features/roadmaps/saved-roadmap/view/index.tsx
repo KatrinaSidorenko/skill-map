@@ -21,13 +21,17 @@ import { formatDistanceToNow } from 'date-fns';
 import { getProgressInPercentage, getStatusColor } from '../../helpers';
 import ContentNotFoundScreen from '@/components/base/notfound';
 import {
+  useDeleteRoadmapMutation,
   useLazyGetPlainUserSavedRoadmapQuery,
   useLazyGetRoadmapTestingHistoryQuery,
 } from '../../api';
 import { useEffect } from 'react';
 import { toaster } from '@/components/ui/toaster';
 import SpinnerScreen from '@/components/base/spinner';
-import { useGenerateRoadmapTestMutation } from '@/features/assessment/api';
+import {
+  useCreateStartTestTakeAttemptMutation,
+  useGenerateRoadmapTestMutation,
+} from '@/features/assessment/api';
 import { DEFAULT_GENERATE_TEST_CONFIG } from '@/features/assessment/helper';
 import TestingHistory from '@/components/testing-history';
 import { testingHistoryMock } from '@/components/testing-history/mock';
@@ -41,6 +45,23 @@ export default function SavedRoadmapView({
   const { getRoadmapTransaltions } = useLocalization();
   const statusColor = getStatusColor(roadmap.status);
   const [generateTest, { isLoading }] = useGenerateRoadmapTestMutation();
+  const [deleteRoadmap, { isLoading: isDeletingRoadmap }] =
+    useDeleteRoadmapMutation();
+  const [startNewAttempt, { isLoading: isStartingNewAttempt }] =
+    useCreateStartTestTakeAttemptMutation();
+  const takeTest = async () => {
+    try {
+      const result = await generateTest({
+        roadmapId: roadmap.id,
+        config: DEFAULT_GENERATE_TEST_CONFIG,
+      }).unwrap();
+      console.log('Generated Test:', result);
+      router.push(`/assessment/${result.testId}`);
+    } catch (error) {
+      console.error('Error generating test:', error);
+    }
+  };
+
   const [
     getRoadmapTestingHistory,
     { data: testingHistory, isLoading: isTestingHistoryLoading },
@@ -59,19 +80,49 @@ export default function SavedRoadmapView({
     router.push(`/editor/sandbox/saved/${roadmap.id}`);
   };
 
-  const takeTest = async () => {
-    try {
-      const result = await generateTest({
-        roadmapId: roadmap.id,
-        config: DEFAULT_GENERATE_TEST_CONFIG,
-      }).unwrap();
-      console.log('Generated Test:', result);
-      router.push(`/assessment/${result.testId}`);
-    } catch (error) {
-      console.error('Error generating test:', error);
-    }
+  const onOpenAttempt = ({
+    testId,
+    resultId,
+  }: {
+    testId: string;
+    resultId: string;
+  }) => {
+    router.replace(`/assessment/${testId}/result/${resultId}`);
   };
 
+  const onStartNewAttempt = async ({ testId }: { testId: string }) => {
+    await startNewAttempt({ testId })
+      .unwrap()
+      .then(() => {
+        router.push(`/assessment/${testId}`);
+      })
+      .catch(() => {
+        toaster.error({
+          title: 'Failed to start a new attempt. Please try again later.',
+        });
+      });
+  };
+
+  const onContinueAttempt = ({
+    testId,
+    resultId,
+  }: {
+    testId: string;
+    resultId: string;
+  }) => {
+    router.push(`/assessment/${testId}`);
+  };
+
+  const deleteRoadmapHandler = async () => {
+    try {
+      await deleteRoadmap({ id: roadmap.id }).unwrap();
+      router.push('/saved');
+    } catch (error) {
+      toaster.error({
+        title: 'Failed to delete the saved roadmap. Please try again later.',
+      });
+    }
+  };
   const formattedDate = formatDistanceToNow(new Date(roadmap.savedAt), {
     addSuffix: true,
   });
@@ -194,15 +245,6 @@ export default function SavedRoadmapView({
 
             {/* Actions */}
             <HStack w="full" justify="flex-end" gap={3} flexWrap="wrap">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={takeTest}
-                loading={isLoading}
-              >
-                Take Test
-              </Button>
-
               <Button size="sm" onClick={handleOpenEditor}>
                 <HStack gap={2}>
                   <FiArrowRight />
@@ -210,7 +252,13 @@ export default function SavedRoadmapView({
                 </HStack>
               </Button>
 
-              <Button size="sm" variant="outline" colorPalette="red">
+              <Button
+                size="sm"
+                variant="outline"
+                colorPalette="red"
+                onClick={deleteRoadmapHandler}
+                loading={isDeletingRoadmap}
+              >
                 <HStack gap={2}>
                   <FiTrash2 />
                   <Span>Delete Saved</Span>
@@ -228,13 +276,11 @@ export default function SavedRoadmapView({
         <TestingHistory
           data={testingHistory}
           isLoading={isTestingHistoryLoading}
-          onOpenAttempt={({ testId, resultId }) =>
-            console.log('open', testId, resultId)
-          }
-          onContinueAttempt={({ testId, resultId }) =>
-            console.log('continue', testId, resultId)
-          }
-          onStartNewAttempt={({ testId }) => console.log('start new', testId)}
+          onGenerateInitialTest={takeTest}
+          isInitialTestGenerating={isLoading}
+          onOpenAttempt={onOpenAttempt}
+          onContinueAttempt={onContinueAttempt}
+          onStartNewAttempt={onStartNewAttempt}
         />
       </Box>
     </Box>

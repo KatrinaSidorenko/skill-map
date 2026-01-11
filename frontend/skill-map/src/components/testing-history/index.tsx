@@ -10,6 +10,7 @@ import {
   HStack,
   Separator,
   Span,
+  Spinner,
   Stack,
   Text,
   VStack,
@@ -18,7 +19,9 @@ import {
 type Props = {
   data?: TestingHistoryDto | null;
   isLoading?: boolean;
+  isInitialTestGenerating?: boolean;
 
+  onGenerateInitialTest?: () => void;
   onOpenAttempt?: (args: { testId: string; resultId: string }) => void;
   onContinueAttempt?: (args: { testId: string; resultId: string }) => void;
   onStartNewAttempt?: (args: { testId: string }) => void;
@@ -96,15 +99,23 @@ function mapAccordionDefaults(
     .map((t) => t.testId);
 }
 
+function isInitialTestingExist(data: TestingHistoryDto | null | undefined) {
+  if (!data) return false;
+  return data.items.some((item) => item.type === 'initial');
+}
+
 export default function TestingHistory({
   data,
   isLoading,
+  isInitialTestGenerating,
   onOpenAttempt,
   onContinueAttempt,
   onStartNewAttempt,
+  onGenerateInitialTest,
   title = 'Testing history',
 }: Props) {
   const items = data?.items ?? [];
+  const hasInitialTesting = isInitialTestingExist(data);
 
   const normalized = useMemo(() => {
     return items.map((t) => {
@@ -161,10 +172,7 @@ export default function TestingHistory({
           p={5}
         >
           <VStack align="stretch" gap={3}>
-            {/* <Progress value={55} borderRadius="full" /> */}
-            <Text color="text.primary" opacity={0.75}>
-              Fetching your attempts…
-            </Text>
+            <Spinner />
           </VStack>
         </Box>
       ) : normalized.length === 0 ? (
@@ -183,6 +191,15 @@ export default function TestingHistory({
               When you complete a test, it will appear here with all your
               attempts.
             </Text>
+            {!hasInitialTesting && onGenerateInitialTest && (
+              <Button
+                mt={2}
+                onClick={() => onGenerateInitialTest()}
+                loading={isInitialTestGenerating}
+              >
+                Generate Initial Test
+              </Button>
+            )}
           </VStack>
         </Box>
       ) : (
