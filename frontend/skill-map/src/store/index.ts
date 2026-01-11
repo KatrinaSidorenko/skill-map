@@ -6,10 +6,10 @@ import accountSlice from '@/features/account/store';
 import { accountApi } from '@/features/account/api';
 import roadmapEditorSlice from '@/features/roadmaps/editor/store';
 import roadmapSlice from '@/features/roadmaps/roadmap/store';
-import roadmapViewSlice from '@/features/roadmaps/roadmap-view/store';
+import roadmapViewSlice from '@/features/roadmaps/roadmap/view/store';
 import { assessmentApi } from '@/features/assessment/api';
 import assesmentSlice from '@/features/assessment/store';
-import savedRoadmapsSlice from '@/features/roadmaps/saved-roadmap-view/store';
+import savedRoadmapsSlice from '@/features/roadmaps/saved-roadmap/view/store';
 
 export const store = configureStore({
   reducer: {

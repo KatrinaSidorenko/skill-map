@@ -22,7 +22,7 @@ import {
 import { toaster } from '@/components/ui/toaster';
 import useLocalization from '@/i18n/useLocalization';
 import { selectRoadmapView, setRoadmapView, updateRoadmapView } from './store';
-import { updateRoadmapDialog } from '../sandbox/edit-dialog';
+import { updateRoadmapDialog } from '../../sandbox/edit-dialog';
 import { MOCK_IMAGE_URL } from '@/store/mock';
 import ContentNotFoundScreen from '@/components/base/notfound';
 import SpinnerScreen from '@/components/base/spinner';

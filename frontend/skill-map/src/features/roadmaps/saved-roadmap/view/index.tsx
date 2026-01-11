@@ -16,9 +16,9 @@ import { useRouter } from 'next/navigation';
 import useLocalization from '@/i18n/useLocalization';
 import { MOCK_IMAGE_URL } from '@/store/mock';
 import { formatDistanceToNow } from 'date-fns';
-import { getProgressInPercentage, getStatusColor } from '../helpers';
+import { getProgressInPercentage, getStatusColor } from '../../helpers';
 import ContentNotFoundScreen from '@/components/base/notfound';
-import { useLazyGetPlainUserSavedRoadmapQuery } from '../api';
+import { useLazyGetPlainUserSavedRoadmapQuery } from '../../api';
 import { useEffect } from 'react';
 import { toaster } from '@/components/ui/toaster';
 import SpinnerScreen from '@/components/base/spinner';
@@ -46,7 +46,7 @@ export default function SavedRoadmapView({
         config: DEFAULT_GENERATE_TEST_CONFIG,
       }).unwrap();
       console.log('Generated Test:', result);
-      router.push(`/assessment-panel/${result.testId}`);
+      router.push(`/assessment/${result.testId}`);
     } catch (error) {
       console.error('Error generating test:', error);
     }

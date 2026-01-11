@@ -6,14 +6,10 @@ import { useLazyGetSavedRoadmapsQuery } from '../api';
 import { Flex } from '@chakra-ui/react';
 import { defaultPagination } from '../helpers';
 import useLocalization from '@/i18n/useLocalization';
-import { useAppDispatch } from '@/store/hooks';
-import { setActiveRoadmapId } from '../editor/store';
 import { useRouter } from 'next/navigation';
-import { setActiveSavedRoadmapViewId } from '../saved-roadmap-view/store';
 
 export default function SavedRoadmapsPage() {
   const router = useRouter();
-  const dispatch = useAppDispatch();
   const { pageSize } = defaultPagination;
   const { getRoadmapsTranslations } = useLocalization();
   const [fetchSavedRoadmaps] = useLazyGetSavedRoadmapsQuery();
@@ -32,7 +28,7 @@ export default function SavedRoadmapsPage() {
   };
 
   const handleCardClick = (id: string) => {
-    router.push(`/saved-roadmap/${id}`);
+    router.push(`/saved/roadmap/${id}`);
   };
 
   return (

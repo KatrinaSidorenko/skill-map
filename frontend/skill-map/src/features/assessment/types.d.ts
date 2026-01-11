@@ -1,4 +1,4 @@
-const ASSESSMENT_PANEL_ROUTE = '/assessment-panel';
+const ASSESSMENT_PANEL_ROUTE = '/assessment';
 const ASSESSMENT_TEST_RESULT_ROUTE = `${ASSESSMENT_PANEL_ROUTE}/result`;
 
 interface RoadmapTestConfigDto {

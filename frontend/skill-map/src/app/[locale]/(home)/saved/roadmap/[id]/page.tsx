@@ -1,4 +1,4 @@
-import { SavedRoadmapViewWrapper } from '@/features/roadmaps/saved-roadmap-view';
+import { SavedRoadmapViewWrapper } from '@/features/roadmaps/saved-roadmap/view';
 
 export default async function Page({
   params,
