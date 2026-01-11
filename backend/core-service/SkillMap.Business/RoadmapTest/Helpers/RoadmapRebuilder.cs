@@ -15,7 +15,7 @@ public class RoadmapRebuilder
     {
         // 1. Identify which nodes to KEEP (Active Work) and REMOVE (Done)
         var nodesToKeep = new HashSet<string>(
-            nodes.Where(n => n.MarkType != NodeMarkType.Completed)
+            nodes.Where(n => n.MarkType != NodeMarkType.Finished)
                  .Select(n => n.Id)
         );
 

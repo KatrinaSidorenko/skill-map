@@ -221,7 +221,7 @@ public class TestingPrototypeController(
             roadmap.Nodes,
             roadmap.Edges,
             testResults);
-        var completed = suggestedChanges.Where(n => n.MarkType == NodeMarkType.Completed).ToList();
+        var completed = suggestedChanges.Where(n => n.MarkType == NodeMarkType.Finished).ToList();
         var rebuildedRoadmap = new RoadmapRebuilder().RebuildRemainingRoadmap(
             suggestedChanges,
             roadmap.Edges);

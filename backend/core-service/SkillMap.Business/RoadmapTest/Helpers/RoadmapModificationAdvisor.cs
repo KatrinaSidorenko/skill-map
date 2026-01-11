@@ -1,14 +1,14 @@
 ﻿using LearningPlatform.Roadmap.Business.Contracts.Models;
-using SkillMap.Business.Roadmaps.Models;
 using Newtonsoft.Json;
 
 namespace SkillMap.Business.RoadmapTest.Helpers;
 
 public enum NodeMarkType
 {
-    Completed,
+    Finished,
     NeedsReview,
-    InProgress,
+    Uncertain,
+    Untested,
 }
 
 public class MarkNode : Node
@@ -55,7 +55,7 @@ public class RoadmapModificationAdvisor
             Id = n.Id,
             Title = n.Title,
             Description = n.Description,
-            MarkType = NodeMarkType.InProgress // Default state
+            MarkType = NodeMarkType.Untested // Default state
         });
 
         // =========================================================
@@ -71,7 +71,7 @@ public class RoadmapModificationAdvisor
 
             if (score >= PassThreshold)
             {
-                nodeStates[nodeId].MarkType = NodeMarkType.Completed;
+                nodeStates[nodeId].MarkType = NodeMarkType.Finished;
             }
             else if (score <= FailThreshold)
             {
@@ -81,7 +81,7 @@ public class RoadmapModificationAdvisor
             {
                 // "Yellow" state - barely passed, but not completed. 
                 // We leave it as InProgress (needs more study)
-                nodeStates[nodeId].MarkType = NodeMarkType.InProgress;
+                nodeStates[nodeId].MarkType = NodeMarkType.Uncertain;
             }
         }
 

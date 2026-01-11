@@ -270,13 +270,17 @@ public class RoadmapTestService(
             var actualStatus = actualRoadmapNodeStatuses.GetOrDefault(sc.Id);
             if (actualStatus == null)
                 return false;
+            if (sc.MarkType != NodeMarkType.Finished || sc.MarkType != NodeMarkType.NeedsReview)
+                return false;
+
             var nodeMarkToLearningStatus = sc.MarkType.ToLearningStatusString();
             return actualStatus != nodeMarkToLearningStatus;
         }).ToList();
 
+        // rethink the model of suggestions
         return new RoadmapChangesSuggestionsDto
         {
-            Suggestions = suggestedChanges.Select(sc => new RoadmapTestSuggestionItemDto
+            Suggestions = suggestChangesWithDiff.Select(sc => new RoadmapTestSuggestionItemDto
             {
                 LearningItemId = sc.Id,
                 LearningStatus = sc.MarkType.ToLearningStatusString(),

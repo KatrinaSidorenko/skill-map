@@ -8,9 +8,18 @@ import SpinnerScreen from '@/components/base/spinner';
 import { useEffect } from 'react';
 import { createRoadmapTestSuggestionsDialog } from '../suggestion';
 import { selectCheckedQuestionResults } from '../store';
-import { useLazyGetRoadmapTestResultQuery } from '../api';
+import {
+  useLazyGetRoadmapChangesSuggestionQuery,
+  useLazyGetRoadmapTestResultQuery,
+} from '../api';
 
-export default function TestResults({ testId }: { testId?: string }) {
+export default function TestResults({
+  testId,
+  testResultId,
+}: {
+  testId?: string;
+  testResultId?: string;
+}) {
   const router = useRouter();
   const checkedQuestionResults = useAppSelector(selectCheckedQuestionResults);
 
@@ -21,25 +30,29 @@ export default function TestResults({ testId }: { testId?: string }) {
     router.replace(`/saved-roadmap/${checkedQuestionResults?.roadmapId}`);
   };
 
+  const [getRoadmapChangesSuggestion, { data, isLoading }] =
+    useLazyGetRoadmapChangesSuggestionQuery();
+
   const onViewSuggestions = () => {
-    if (!testId) return;
+    if (!testResultId) return;
 
-    console.log('View Suggestions clicked');
-    // console.log(checkedQuestionResults?.changesSuggestion);
-    // createRoadmapTestSuggestionsDialog.open(
-    //   'createRoadmapTestSuggestionsDialog',
-    //   {
-    //     suggestionsDto: checkedQuestionResults?.changesSuggestion,
-    //     onApply: async (selectedIds) => {
-    //       // 🔹 Call backend mutation here
-    //       // await applySuggestions({ testId, learningItemIds: selectedIds })
-
-    //       router.replace(
-    //         `/editor/sandbox/saved/${checkedQuestionResults?.roadmapId}`,
-    //       );
-    //     },
-    //   },
-    // );
+    getRoadmapChangesSuggestion({ testResultId })
+      .unwrap()
+      .then((data) => {
+        createRoadmapTestSuggestionsDialog.open(
+          'createRoadmapTestSuggestionsDialog',
+          {
+            suggestionsDto: data,
+            onApply: async (selectedIds) => {
+              // 🔹 Call backend mutation here
+              // await applySuggestions({ testId, learningItemIds: selectedIds })
+              router.replace(
+                `/editor/sandbox/saved/${checkedQuestionResults?.roadmapId}`,
+              );
+            },
+          },
+        );
+      });
   };
 
   return (
@@ -68,7 +81,12 @@ export default function TestResults({ testId }: { testId?: string }) {
           <Button size="sm" variant="ghost" onClick={onCancel}>
             Cancel
           </Button>
-          <Button size="sm" colorScheme="green" onClick={onViewSuggestions}>
+          <Button
+            size="sm"
+            colorScheme="green"
+            onClick={onViewSuggestions}
+            loading={isLoading}
+          >
             View Suggestions
           </Button>
         </HStack>
@@ -98,5 +116,5 @@ export function TestResultsWrapper({
     return <SpinnerScreen />;
   }
 
-  return <TestResults testId={testId} />;
+  return <TestResults testId={testId} testResultId={testResultId} />;
 }

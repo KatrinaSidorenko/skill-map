@@ -1,6 +1,7 @@
 import { baseQuery } from '@/store/baseQuery';
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { setCheckedAnswerForQuestions, setCurrentTest } from './store';
+import { get } from 'http';
 
 export const assessmentApi = createApi({
   reducerPath: 'assessmentApi',
@@ -66,6 +67,15 @@ export const assessmentApi = createApi({
         }
       },
     }),
+    getRoadmapChangesSuggestion: builder.query<
+      RoadmapTestSuggestionsDto,
+      { testResultId: string }
+    >({
+      query: ({ testResultId }) => ({
+        url: `suggestions/${testResultId}`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -75,4 +85,5 @@ export const {
   useLazyGetRoadmapTestQuery,
   useLazyGetRoadmapTestResultQuery,
   useCreateStartTestTakeAttemptMutation,
+  useLazyGetRoadmapChangesSuggestionQuery,
 } = assessmentApi;

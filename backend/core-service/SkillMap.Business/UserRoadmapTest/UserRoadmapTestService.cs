@@ -48,8 +48,7 @@ public class UserRoadmapTestService(IUnitOfWork unitOfWork) : IUserRoadmapTestSe
 
         var userTestResultRepository = unitOfWork.CreateRepository<UserTestResult>();
         var existingTestResult = await userTestResultRepository.GetAllAsync(
-            //filter: x => x.UserRoadmapTestId == roadmapTest.Data.Id && !x.CompletedAt.HasValue,
-            filter: x => x.UserRoadmapTestId == roadmapTest.Data.Id,
+            filter: x => x.UserRoadmapTestId == roadmapTest.Data.Id && !x.CompletedAt.HasValue,
             orderBy: q => q.OrderByDescending(x => x.StartedAt),
             pageNum: null,
             count: 1,
@@ -97,7 +96,7 @@ public class UserRoadmapTestService(IUnitOfWork unitOfWork) : IUserRoadmapTestSe
         var userTestResultRepository = unitOfWork.CreateRepository<UserTestResult>();
         var roadmapTestResult = analysisResult.ToDomainTestResult();
         var existingTestResult = await userTestResultRepository.GetAllAsync(
-            filter: x => x.UserRoadmapTestId == testIdL,
+            filter: x => x.UserRoadmapTestId == testIdL && !x.CompletedAt.HasValue,
             orderBy: q => q.OrderByDescending(x => x.StartedAt), 
             pageNum: null,
             count: 1, 
@@ -108,6 +107,7 @@ public class UserRoadmapTestService(IUnitOfWork unitOfWork) : IUserRoadmapTestSe
         }
 
         var resultEntity = existingTestResult.Data.First();
+        resultEntity.CompletedAt = DateTime.UtcNow;
         await resultEntity.SetTestResults(roadmapTestResult, ct);
 
         var updatingResult = await userTestResultRepository.UpdateAsync(resultEntity, ct);

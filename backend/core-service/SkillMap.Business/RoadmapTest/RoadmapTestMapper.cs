@@ -212,9 +212,10 @@ public static class RoadmapTestMapper
     {
         return markType switch
         {
-            NodeMarkType.Completed => LearningStatus.Completed.ToStatusString(),
+            NodeMarkType.Finished => LearningStatus.Completed.ToStatusString(),
             NodeMarkType.NeedsReview => LearningStatus.NotStarted.ToStatusString(),
-            NodeMarkType.InProgress => LearningStatus.InProgress.ToStatusString(),
+            NodeMarkType.Uncertain => LearningStatus.InProgress.ToStatusString(),
+            NodeMarkType.Untested => LearningStatus.NotStarted.ToStatusString(),
             _ => "Unknown"
         };
     }
