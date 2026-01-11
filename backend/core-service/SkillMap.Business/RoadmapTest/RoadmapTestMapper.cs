@@ -215,8 +215,7 @@ public static class RoadmapTestMapper
             NodeMarkType.Finished => LearningStatus.Completed.ToStatusString(),
             NodeMarkType.NeedsReview => LearningStatus.NotStarted.ToStatusString(),
             NodeMarkType.Uncertain => LearningStatus.InProgress.ToStatusString(),
-            NodeMarkType.Untested => LearningStatus.NotStarted.ToStatusString(),
-            _ => "Unknown"
+            _ => null
         };
     }
     private static TestQuestionResult BuildQuestionResult(QuestionDto question, QuestionAnalysisResultDto analysis)
