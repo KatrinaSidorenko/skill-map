@@ -94,8 +94,7 @@ public class CustomizedRoadmapsService(
             return ResultType.RoadmapNotFound<PlainRoadmapWithDetailsDto>(roadmapId);
 
         var roadmap = roadmapResult.Data.Result.First();
-        var modificationsResult = await modificationsRepository.GetAllAsync(
-            m => m.UserRoadmapId == userRoadmap.Id, ct: ct);
+        var modificationsResult = await modificationsRepository.GetAllAsync(m => m.UserRoadmapId == userRoadmap.Id, ct: ct);
         if (!modificationsResult.IsSuccessful)
             return ResultType.FailedToGet<PlainRoadmapWithDetailsDto>("Failed to load modifications");
         var modifications = modificationsResult.Data.ToList();
@@ -105,6 +104,7 @@ public class CustomizedRoadmapsService(
         dto.Progress = progress;
         dto.Status = status;
         dto.SavedAt = userRoadmap.CreatedAt;
+
         return Result.Success(dto);
     }
 

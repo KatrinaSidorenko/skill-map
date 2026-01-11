@@ -6,9 +6,8 @@ namespace SkillMap.Business.RoadmapTest;
 
 public interface IRoadmapTestService
 {
-    Task<ComplexTestCheckResult> CheckRoadmapTest(long userId, string testId, RoadmapTestAnswers userAnswers, CancellationToken ct);
-    Task<RoadmapTestResultDto> GenerateRoadmapTest(long userId, string roadmapId, RoadmapTestConfigDto config, CancellationToken ct);
-    Task<ComplexTestCheckResult> GetComplexTestCheck(long userId, string testId, CancellationToken ct);
-    Task<RoadmapTestResultDto> GetUserTest(long userId, string testId, CancellationToken ct);
+    Task<RoadmapTestResultDto> CreateInitialRoadmapTest(long userId, string roadmapId, RoadmapTestConfigDto config, CancellationToken ct);
     Task<SavedUerRoadmap> RebuildRoadmapBasedOnTestResults(long userId, string roadmapId, CancellationToken ct);
+    Task<string> EstimateRoadmapTest(string roadmapTestId, RoadmapTestAnswers userAnswers, CancellationToken ct);
+    Task<RoadmapChangesSuggestionsDto> CreateRoadmapChangesSuggestions(long userId, string roadmapTestResultId, CancellationToken ct);
 }

@@ -10,8 +10,10 @@ using SkillMap.Business.UserRoadmaps;
 using SkillMap.Business.UserRoadmaps.Models;
 using SkillMap.Business.UserTest;
 using SkillMap.Core.Constants;
+using SkillMap.Core.Entities.UserRoadmapTest;
 using SkillMap.Shared.Extensions;
 using SkillMap.Shared.Results;
+using SingleAnswerQuestionAnalysisResultDto = SkillMap.Business.RoadmapTest.Models.SingleAnswerQuestionAnalysisResultDto;
 
 namespace SkillMap.Business.RoadmapTest;
 
@@ -21,33 +23,48 @@ public class RoadmapTestService(
     IRoadmapTestGenerator roadmapTestGenerator, 
     IRoadmapService roadmapService,
     ICustomizedRoadmapsService customizedRoadmapsService,
-    IUserTestService userTestsService) : IRoadmapTestService
+    IUserRoadmapTestService userRoadmapTestService) : IRoadmapTestService
 {
-    public async Task<RoadmapTestResultDto> GenerateRoadmapTest(long userId, string roadmapId, RoadmapTestConfigDto config, CancellationToken ct)
+    public async Task<RoadmapTestResultDto> CreateInitialRoadmapTest(long userId, string roadmapId, RoadmapTestConfigDto config, CancellationToken ct)
+    {
+        var testType = RoadmapTestType.Initial;
+        var userRoadmap = await EnsureActiveUserRoadmap(userId, roadmapId, ct);
+        // todo: config validation
+        // move by simpliest way - always create new test
+        // but
+        // we have 3 states:
+        // 1. no test - create new
+        // 2. test in progress - return existing
+        // 3. test completed - create new
+
+        var generatedTest = await GenerateRoadmapTest(userId, roadmapId, config, ct);
+        var topicsQuestions = generatedTest.Values.SelectMany(v => v.Questions).ToList();
+        var topicSettings = generatedTest.ToDictionary(t => t.Key, t => t.Value.CreationSettings);
+       
+        var roadmapTest = new RoadmapTestDao
+        {
+            RoadmapId = roadmapId,
+            TopicQuestions = topicsQuestions,
+            TopicSettings = topicSettings,
+            TestConfig = config
+        };
+
+        var testId = await userRoadmapTestService.SaveUserRoadmapTest(userId, userRoadmap.Id, roadmapId, testType, roadmapTest, ct);
+        return roadmapTest.ToTestResult(testId);
+    }
+
+    private async Task<Dictionary<string, (List<TopicQuestionsDto> Questions, TopicQuestionsSettingDto CreationSettings)>> 
+        GenerateRoadmapTest(long userId, string roadmapId, RoadmapTestConfigDto config, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
-        // todo: add config validation
-        // todo: refactor on result pattern
-        var userRoadmap = await EnsureActiveUserRoadmap(userId, roadmapId, ct);
-        var existingTest = await TryGetExistingInitialUnfinishedTest(userRoadmap.Id, ct);
-        if (existingTest != null) // todo: more complex politics about existing tests (like exists for 10 days ok if more regenaret)
-        {
-            return existingTest;
-        }
-
-        var roadmapResult = await roadmapService.GetRoadmapById(roadmapId, ct);
-        if (roadmapResult.IsFailed || !roadmapResult.HasData)
-        {
-            throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"Roadmap with id {roadmapId} not found");
-        }
-
-        var userSavedRoadmapResult = await customizedRoadmapsService.GetUserModifiedRoadmap(userId, roadmapId, ct);
-        if (!userSavedRoadmapResult.IsSuccessful || userSavedRoadmapResult.Data == null)
+        
+        var userModifiedRoadmap = await customizedRoadmapsService.GetUserModifiedRoadmap(userId, roadmapId, ct);
+        if (!userModifiedRoadmap.IsSuccessful || userModifiedRoadmap.Data == null)
         {
             throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"No customized roadmap found for user {userId} and roadmap {roadmapId}");
         }
 
-        var roadmap = userSavedRoadmapResult.Data;
+        var roadmap = userModifiedRoadmap.Data;
         var nodes = roadmap.Nodes.Select(n => new Node
         {
             Id = n.Id,
@@ -58,30 +75,15 @@ public class RoadmapTestService(
         var coreTopics = new RoadmapAnalyzer().SelectStratifiedCoreTopics(nodes, roadmap.Edges, questionsLimit: config.NumberOfQuestions ?? DefaultNumberOfQuestions);
         var topicsAnalysis = CalculateTopicsAnalysis(topics, config, ct);
         var targetTopics = FilterTopicByTestConfig(topicsAnalysis, topics, config, ct);
-        var topicSettings = targetTopics.Select(t => GetTopicSettings(t, topicsAnalysis[t.Id], config.DifficultyLevel)).ToList();
-        var generateTestQuestions = await roadmapTestGenerator.GenerateRoadmapTest(topicSettings, ct);
+        var topicQuestionsCreationSettings = targetTopics.Select(t => GetTopicSettings(t, topicsAnalysis[t.Id], config.DifficultyLevel)).ToList();
+        var generateTestQuestions = await roadmapTestGenerator.GenerateRoadmapTest(topicQuestionsCreationSettings, ct);
 
-        var roadmapTest = new RoadmapTestDao
-        {
-            RoadmapId = roadmapId,
-            TopicQuestions = generateTestQuestions,
-            TopicSettings = topicSettings.ToDictionary(ts => ts.Topic.Id, ts => ts.Setting),
-            TestConfig = config
-        };
-
-        var testId = await userTestsService.SaveUserTestWithEmptyResult(userId, userRoadmap.Id, roadmapId, RoadmapTestType.Initial, roadmapTest, ct);
-        return roadmapTest.ToTestResult(testId);
-    }
-
-    private async Task<RoadmapTestResultDto?> TryGetExistingInitialUnfinishedTest(long userRoadmapId, CancellationToken ct)
-    {
-        var (exists, savedTest) = await userTestsService.ExistsUnfinishedTest(userRoadmapId, RoadmapTestType.Initial, ct);
-        if (!exists || savedTest == null)
-        {
-            return null;
-        }
-
-        return savedTest.ToTestResult(savedTest.Id);
+        return targetTopics.ToDictionary(
+            t => t.Id,
+            t => (
+                Questions: generateTestQuestions.Where(g => g.Id == t.Id).ToList(),
+                CreationSettings: topicQuestionsCreationSettings.First(ts => ts.Topic.Id == t.Id).Setting
+            ));
     }
 
     private async Task<UserRoadmapDto> EnsureActiveUserRoadmap(long userId, string roadmapId, CancellationToken ct)
@@ -199,20 +201,17 @@ public class RoadmapTestService(
        });
     }
 
-    // todo: what is result already exists?
-    // todo: just save selected answers
-    public async Task<ComplexTestCheckResult> CheckRoadmapTest(long userId, string testId, RoadmapTestAnswers userAnswers, CancellationToken ct)
+    public async Task<string> EstimateRoadmapTest(string roadmapTestId, RoadmapTestAnswers userAnswers, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
 
-        // todo: extrcat questions check to exyernal service that create question types and evaluate answers
-        var roadmapTest = await userTestsService.GetUserTest(userId, testId, ct);
-        var analysisByQuestion = BuildAnalysisByQuestion(roadmapTest, userAnswers);
-        var analysisByTopic = GroupAnalysisByTopic(roadmapTest, analysisByQuestion);
-        var testAnalysisResult = new RoadmapTestResultsDto(analysisByTopic);
-        await userTestsService.SaveTestAnalysisResult(long.Parse(roadmapTest.UserRoadmapId), testId, testAnalysisResult, ct); // todo: check parse
+        var roadmapTestContent = await userRoadmapTestService.GetRoadmapTest(roadmapTestId, ct);
+        var questionsEstimationResults = EstimateQuestionsAnswers(roadmapTestContent, userAnswers);
+        var topicsEstimationResults = roadmapTestContent.TopicQuestions
+            .ToDictionary(t => t.Id, t => new TopicAnswersAnalysisDto(t.Questions.ToDictionary(q => q.Id, q => questionsEstimationResults.GetOrDefault(q.Id))));
+        var testAnalysisResult = new RoadmapTestResultsDto(topicsEstimationResults);
 
-        return new(); // todo: it is not used anymore
+        return await userRoadmapTestService.SaveEndOfTakingRoadmapTestWithAnalysis(roadmapTestId, testAnalysisResult, ct);
     }
 
     // analysis for each question
@@ -238,27 +237,17 @@ public class RoadmapTestService(
                 throw new LearningPlatformException(ErrorCode.INTERNAL_ERROR, $"Unsupported question type {questionDto.Type}");
         }
     }
-    public async Task<RoadmapTestResultDto> GetUserTest(long userId, string testId, CancellationToken ct)
-    {
-        var roadmapTest = await userTestsService.GetUserTest(userId, testId, ct);
-        return roadmapTest.ToTestResult(testId);
-    }
 
-    public async Task<ComplexTestCheckResult> GetComplexTestCheck(long userId, string testId, CancellationToken ct)
+    public async Task<RoadmapChangesSuggestionsDto> CreateRoadmapChangesSuggestions(long userId, string roadmapTestResultId, CancellationToken ct)
     {
-        var roadmapTest = await userTestsService.GetUserTest(userId, testId, ct);
-        var roadmapId = roadmapTest.RoadmapId;
-        var testAnalysisResult = await userTestsService.GetTestAnalysisResult(userId, testId, ct);
-        var userSavedRoadmapResult = await customizedRoadmapsService.GetUserModifiedRoadmap(userId, roadmapId, ct);
-        if (!userSavedRoadmapResult.IsSuccessful || userSavedRoadmapResult.Data == null)
+        var testAnalysisResult = await userRoadmapTestService.GetRoadmapTestAnalysisResult(roadmapTestResultId, ct);
+        var userModifiedRoadmap = await customizedRoadmapsService.GetUserModifiedRoadmap(userId, testAnalysisResult.RoadmapId, ct);
+        if (!userModifiedRoadmap.IsSuccessful || userModifiedRoadmap.Data == null)
         {
-            throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"No customized roadmap found for user {userId} and roadmap {roadmapId}");
+            throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"No customized roadmap found for user {userId} and roadmap {testAnalysisResult.RoadmapId}");
         }
 
-        var roadmap = userSavedRoadmapResult.Data;
-        var analysisByQuestion = testAnalysisResult.TopicsAnalysis
-            .SelectMany(t => t.Value.QuestionsAnalysis)
-            .ToDictionary(q => q.Key, q => q.Value);
+        var roadmap = userModifiedRoadmap.Data;
         var testResults = testAnalysisResult.TopicsAnalysis.ToDictionary(
             ta => ta.Key,
             ta => (
@@ -281,13 +270,25 @@ public class RoadmapTestService(
             var actualStatus = actualRoadmapNodeStatuses.GetOrDefault(sc.Id);
             if (actualStatus == null)
                 return false;
-            var nodeMarkToLearningStatus = ToLearningStatusString(sc.MarkType);
+            if (sc.MarkType != NodeMarkType.Finished || sc.MarkType != NodeMarkType.NeedsReview)
+                return false;
+
+            var nodeMarkToLearningStatus = sc.MarkType.ToLearningStatusString();
             return actualStatus != nodeMarkToLearningStatus;
         }).ToList();
 
-        return BuildComplexTestCheckResult(roadmapTest, analysisByQuestion, suggestChangesWithDiff);
+        // rethink the model of suggestions
+        return new RoadmapChangesSuggestionsDto
+        {
+            Suggestions = suggestChangesWithDiff.Select(sc => new RoadmapTestSuggestionItemDto
+            {
+                LearningItemId = sc.Id,
+                LearningStatus = sc.MarkType.ToLearningStatusString(),
+                Title = sc.Title,
+                Description = sc.Description
+            }).ToList()
+        };
     }
-
     public async Task<SavedUerRoadmap> RebuildRoadmapBasedOnTestResults(long userId, string roadmapId, CancellationToken ct)
     {
         var userRoadmapResult = await userRoadmapsService.GetUserRoadmap(userId, roadmapId, ct);
@@ -302,7 +303,7 @@ public class RoadmapTestService(
         }
 
         
-        var testResult = await userTestsService.GetLatestCompletedTestAnalysisResult(userRoadmap.Id, RoadmapTestType.Initial, ct);
+        var testResult = await userRoadmapTestService.GetLatestCompletedTestAnalysisResult(userRoadmap.Id, RoadmapTestType.Initial, ct);
         if (testResult == null)
         {
             throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"No completed initial test found for user roadmap id {userRoadmap.Id}");
@@ -347,88 +348,11 @@ public class RoadmapTestService(
         return roadmap;
     }
 
-    private Dictionary<string, QuestionAnalysisResultDto> BuildAnalysisByQuestion(RoadmapTestDao roadmapTest, RoadmapTestAnswers userAnswers)
+    private Dictionary<string, QuestionAnalysisResultDto> EstimateQuestionsAnswers(RoadmapTestDao roadmapTest, RoadmapTestAnswers userAnswers)
     {
         var userAnswersDict = userAnswers.QuestionAnswers.ToDictionary(qa => qa.QuestionId, qa => qa);
         return roadmapTest.TopicQuestions
             .SelectMany(t => t.Questions)
             .ToDictionary(q => q.Id, q => AnalyzeQuestionAnswer(q, userAnswersDict.GetOrDefault(q.Id)));
-    }
-
-    private static Dictionary<string, TopicAnswersAnalysisDto> GroupAnalysisByTopic(RoadmapTestDao roadmapTest, Dictionary<string, QuestionAnalysisResultDto> analysisByQuestion)
-    {
-        return roadmapTest.TopicQuestions.ToDictionary(
-            t => t.Id,
-            t => new TopicAnswersAnalysisDto
-            {
-                QuestionsAnalysis = t.Questions.ToDictionary(q => q.Id, q => analysisByQuestion[q.Id])
-            });
-    }
-
-    private static ComplexTestCheckResult BuildComplexTestCheckResult(RoadmapTestDao roadmapTest, Dictionary<string, QuestionAnalysisResultDto> analysisByQuestion, List<MarkNode> suggestedChanges)
-    {
-        return new ComplexTestCheckResult
-        {
-            QuestionResults = roadmapTest.TopicQuestions
-                .SelectMany(t => t.Questions)
-                .ToDictionary(q => q.Id, q => BuildQuestionResult(q, analysisByQuestion[q.Id])),
-            RoadmapId = roadmapTest.RoadmapId,
-            ChangesSuggestion = new RoadmapChangesSuggestionsDto
-            {
-                Suggestions = suggestedChanges.Select(sc => new RoadmapTestSuggestionItemDto
-                {
-                    LearningItemId = sc.Id,
-                    LearningStatus = ToLearningStatusString(sc.MarkType),
-                    Title = sc.Title,
-                    Description = sc.Description
-                }).ToList()
-            }
-        };
-    }
-
-    private static string ToLearningStatusString(NodeMarkType markType)
-    {
-        return markType switch
-        {
-            NodeMarkType.Completed => LearningStatus.Completed.ToStatusString(),
-            NodeMarkType.NeedsReview => LearningStatus.InProgress.ToStatusString(),
-            NodeMarkType.InProgress => LearningStatus.InProgress.ToStatusString(),
-            _ => "Unknown"
-        };
-    }
-    private static TestQuestionResult BuildQuestionResult(QuestionDto question, QuestionAnalysisResultDto analysis)
-    {
-        return new TestQuestionResult
-        {
-            Type = analysis.QuestionType.ToQuestionTypeString(),
-            TotalPossiblePoints = analysis.TotalPossiblePoints,
-            AchievedPoints = analysis.AchievedPoints,
-            IsCorrect = analysis.AchievedPoints >= analysis.TotalPossiblePoints,
-            QuestionId = question.Id,
-            Text = question.Text,
-            AnswerDetails = question.Answers
-                .Select(answer => BuildAnswerDetail(question, answer, analysis))
-                .ToDictionary(ad => ad.AnswerId, ad => ad)
-        };
-    }
-
-    private static AnswerDetail BuildAnswerDetail(QuestionDto question, AnswerDto answer, QuestionAnalysisResultDto analysis)
-    {
-        switch (question.Type)
-        {
-            case TestQuestionType.SingleChoice:
-            {
-                var singleChoiceAnalysis = analysis as SingleAnswerQuestionAnalysisResultDto;
-                return new SingleChoiceAnswerDetail
-                {
-                    Text = answer.Text,
-                    AnswerId = answer.Id,
-                    IsCorrect = answer.IsCorrect,
-                    IsSelected = analysis.SelectedAnswerId == answer.Id
-                };
-            }
-            default:
-                throw new LearningPlatformException(ErrorCode.INTERNAL_ERROR, $"Unsupported question type {question.Type}");
-        }
     }
 }

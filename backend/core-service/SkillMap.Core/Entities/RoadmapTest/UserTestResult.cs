@@ -3,9 +3,10 @@
 public class UserTestResult : TrackedEntity
 {
     public long UserRoadmapTestId { get; set; }
-    public int MaxPoints { get; set; } // todo: change to double later
-    public int ScoredPoints { get; set; }
+    public double MaxPoints { get; set; }
+    public double ScoredPoints { get; set; }
     public byte[] ResultData { get; set; }
-    public DateTime CompletedAt { get; set; }
+    public DateTime StartedAt { get; set; }
+    public DateTime? CompletedAt { get; set; }
     public virtual UserRoadmapTest UserRoadmapTest { get; set; }
 }

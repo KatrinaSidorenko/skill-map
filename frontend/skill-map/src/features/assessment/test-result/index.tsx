@@ -6,12 +6,20 @@ import { useRouter } from 'next/navigation';
 import { QuestionResultFactory } from '../common/questions/factory';
 import SpinnerScreen from '@/components/base/spinner';
 import { useEffect } from 'react';
-import { useLazyGetRoadmapTestResultsQuery } from '../api';
 import { createRoadmapTestSuggestionsDialog } from '../suggestion';
 import { selectCheckedQuestionResults } from '../store';
-import { mockRoadmapTestSuggestions } from '../mock';
+import {
+  useLazyGetRoadmapChangesSuggestionQuery,
+  useLazyGetRoadmapTestResultQuery,
+} from '../api';
 
-export default function TestResults({ testId }: { testId?: string }) {
+export default function TestResults({
+  testId,
+  testResultId,
+}: {
+  testId?: string;
+  testResultId?: string;
+}) {
   const router = useRouter();
   const checkedQuestionResults = useAppSelector(selectCheckedQuestionResults);
 
@@ -22,24 +30,29 @@ export default function TestResults({ testId }: { testId?: string }) {
     router.replace(`/saved-roadmap/${checkedQuestionResults?.roadmapId}`);
   };
 
+  const [getRoadmapChangesSuggestion, { data, isLoading }] =
+    useLazyGetRoadmapChangesSuggestionQuery();
+
   const onViewSuggestions = () => {
-    if (!testId) return;
+    if (!testResultId) return;
 
-    console.log(checkedQuestionResults?.changesSuggestion);
-    createRoadmapTestSuggestionsDialog.open(
-      'createRoadmapTestSuggestionsDialog',
-      {
-        suggestionsDto: checkedQuestionResults?.changesSuggestion,
-        onApply: async (selectedIds) => {
-          // 🔹 Call backend mutation here
-          // await applySuggestions({ testId, learningItemIds: selectedIds })
-
-          router.replace(
-            `/editor/sandbox/saved/${checkedQuestionResults?.roadmapId}`,
-          );
-        },
-      },
-    );
+    getRoadmapChangesSuggestion({ testResultId })
+      .unwrap()
+      .then((data) => {
+        createRoadmapTestSuggestionsDialog.open(
+          'createRoadmapTestSuggestionsDialog',
+          {
+            suggestionsDto: data,
+            onApply: async (selectedIds) => {
+              // 🔹 Call backend mutation here
+              // await applySuggestions({ testId, learningItemIds: selectedIds })
+              router.replace(
+                `/editor/sandbox/saved/${checkedQuestionResults?.roadmapId}`,
+              );
+            },
+          },
+        );
+      });
   };
 
   return (
@@ -68,7 +81,12 @@ export default function TestResults({ testId }: { testId?: string }) {
           <Button size="sm" variant="ghost" onClick={onCancel}>
             Cancel
           </Button>
-          <Button size="sm" colorScheme="green" onClick={onViewSuggestions}>
+          <Button
+            size="sm"
+            colorScheme="green"
+            onClick={onViewSuggestions}
+            loading={isLoading}
+          >
             View Suggestions
           </Button>
         </HStack>
@@ -78,19 +96,25 @@ export default function TestResults({ testId }: { testId?: string }) {
   );
 }
 
-export function TestResultsWrapper({ testId }: { testId?: string }) {
-  const [getRoadmapTest, { data, isLoading }] =
-    useLazyGetRoadmapTestResultsQuery();
+export function TestResultsWrapper({
+  testId,
+  testResultId,
+}: {
+  testId?: string;
+  testResultId?: string;
+}) {
+  const [getRoadmapTestingResult, { data, isLoading }] =
+    useLazyGetRoadmapTestResultQuery();
 
   useEffect(() => {
-    if (testId) {
-      getRoadmapTest({ testId }).unwrap();
+    if (testResultId) {
+      getRoadmapTestingResult({ testResultId }).unwrap();
     }
-  }, [testId, getRoadmapTest]);
+  }, [testResultId, getRoadmapTestingResult]);
 
   if (isLoading || !data) {
     return <SpinnerScreen />;
   }
 
-  return <TestResults testId={testId} />;
+  return <TestResults testId={testId} testResultId={testResultId} />;
 }

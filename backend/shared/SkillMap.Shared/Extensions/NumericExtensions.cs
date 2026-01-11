@@ -18,4 +18,12 @@ public static class NumericExtensions
     }
 
     public static string ToStringWithoutHyphens(this Guid guid) => guid.ToString("N");
+    public static long EnsureParseLong(this string value)
+    {
+        if (!long.TryParse(value, out var result))
+        {
+            throw new FormatException($"The value '{value}' is not a valid long integer.");
+        }
+        return result;
+    }
 }

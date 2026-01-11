@@ -93,8 +93,7 @@ using SkillMap.Shared.Results;
 public class TestingPrototypeController(
     IUserRoadmapsService userRoadmapsService,
     IRoadmapTestGenerator roadmapTestGenerator,
-    IRoadmapService roadmapService,
-    IUserTestService userTestsService) : ControllerBase
+    IRoadmapService roadmapService) : ControllerBase
 {
     // 1. task 1: create GET question and answers for 1 topic
     // desired complexity
@@ -222,7 +221,7 @@ public class TestingPrototypeController(
             roadmap.Nodes,
             roadmap.Edges,
             testResults);
-        var completed = suggestedChanges.Where(n => n.MarkType == NodeMarkType.Completed).ToList();
+        var completed = suggestedChanges.Where(n => n.MarkType == NodeMarkType.Finished).ToList();
         var rebuildedRoadmap = new RoadmapRebuilder().RebuildRemainingRoadmap(
             suggestedChanges,
             roadmap.Edges);

@@ -64,12 +64,11 @@ interface CheckedSingleAnswerQuestion extends CheckedQuestion {
 }
 
 // CUSTOM TYPES FOR TEST RESULTS PAGE
-interface ComplexTestCheckResult {
+interface TestEstimationResult {
   questionResults: Record<string, TestQuestionResult>;
   totalAchievedPoints: number;
   totalPossiblePoints: number;
   roadmapId: string;
-  changesSuggestion: RoadmapTestSuggestionsDto;
 }
 
 interface TestQuestionResult {
@@ -103,3 +102,7 @@ interface RoadmapTestSuggestionsDto {
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface SingleChoiceAnswerDetail extends AnswerDetail {}
+
+interface TestResultResponse {
+  id: string;
+}

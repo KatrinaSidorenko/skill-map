@@ -2,8 +2,10 @@
 
 namespace SkillMap.Business.RoadmapTest.Models;
 
-public class ComplexTestCheckResult
+public class TestEstimationResult
 {
+    [JsonIgnore]
+    public Dictionary<string, TopicAnswersAnalysisDto> TopicsAnalysis { get; set; }
     [JsonProperty("questionResults")]
     public Dictionary<string, TestQuestionResult> QuestionResults { get; set; }
     [JsonProperty("totalAchievedPoints")]
@@ -12,8 +14,6 @@ public class ComplexTestCheckResult
     public double TotalPossiblePoints => QuestionResults?.Values?.Sum(q => q.TotalPossiblePoints) ?? 0.0;
     [JsonProperty("roadmapId")]
     public string RoadmapId { get; set; }
-    [JsonProperty("changesSuggestion")]
-    public RoadmapChangesSuggestionsDto ChangesSuggestion { get; set; }
 }
 
 public class TestQuestionResult

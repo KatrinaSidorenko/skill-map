@@ -12,7 +12,7 @@ using SkillMap.Persistence;
 namespace SkillMap.Persistence.Migrations
 {
     [DbContext(typeof(SkillMapDbContext))]
-    [Migration("20251115113743_initial")]
+    [Migration("20260110181150_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -212,20 +212,23 @@ namespace SkillMap.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<DateTime>("CompletedAt")
+                    b.Property<DateTime?>("CompletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("MaxPoints")
-                        .HasColumnType("integer");
+                    b.Property<double>("MaxPoints")
+                        .HasColumnType("double precision");
 
                     b.Property<byte[]>("ResultData")
                         .HasColumnType("bytea");
 
-                    b.Property<int>("ScoredPoints")
-                        .HasColumnType("integer");
+                    b.Property<double>("ScoredPoints")
+                        .HasColumnType("double precision");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");

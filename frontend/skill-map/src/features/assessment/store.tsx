@@ -4,7 +4,7 @@ interface InitialState {
   testId: string | null;
   questions: QuestionResultDto[];
   questionAnswers: Record<string, QuestionAnswer>;
-  questionCheckedResults: ComplexTestCheckResult | null;
+  questionCheckedResults: TestEstimationResult | null;
 }
 
 const initialState: InitialState = {
@@ -38,7 +38,7 @@ const assesmentSlice = createSlice({
     },
     setCheckedAnswerForQuestions: (
       state,
-      action: { payload: { checkResult: ComplexTestCheckResult } },
+      action: { payload: { checkResult: TestEstimationResult } },
     ) => {
       state.questionCheckedResults = action.payload.checkResult;
     },

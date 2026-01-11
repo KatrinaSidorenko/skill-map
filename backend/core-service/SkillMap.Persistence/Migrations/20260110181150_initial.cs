@@ -131,10 +131,11 @@ namespace SkillMap.Persistence.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserRoadmapTestId = table.Column<long>(type: "bigint", nullable: false),
-                    MaxPoints = table.Column<int>(type: "integer", nullable: false),
-                    ScoredPoints = table.Column<int>(type: "integer", nullable: false),
+                    MaxPoints = table.Column<double>(type: "double precision", nullable: false),
+                    ScoredPoints = table.Column<double>(type: "double precision", nullable: false),
                     ResultData = table.Column<byte[]>(type: "bytea", nullable: true),
-                    CompletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    StartedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CompletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },

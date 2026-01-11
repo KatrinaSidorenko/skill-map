@@ -17,6 +17,11 @@ public class TopicAnswersAnalysisDto
     public Dictionary<string, QuestionAnalysisResultDto> QuestionsAnalysis { get; set; }
     public int TotalPossiblePoints => QuestionsAnalysis.Values.Sum(q => q.TotalPossiblePoints);
     public int AchievedPoints => QuestionsAnalysis.Values.Sum(q => q.AchievedPoints);
+
+    public TopicAnswersAnalysisDto(Dictionary<string, QuestionAnalysisResultDto> questionsAnalysis)
+    {
+        QuestionsAnalysis = questionsAnalysis;
+    }
 }
 
 public class QuestionAnalysisResultDto

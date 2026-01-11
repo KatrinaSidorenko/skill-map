@@ -12,13 +12,22 @@ export const assessmentApi = createApi({
       { roadmapId: string; config: RoadmapTestConfigDto }
     >({
       query: ({ roadmapId, config }) => ({
-        url: `${roadmapId}`,
+        url: `${roadmapId}/initial`,
         method: 'POST',
         body: config,
       }),
     }),
+    createStartTestTakeAttempt: builder.mutation<
+      TestResultResponse,
+      { testId: string }
+    >({
+      query: ({ testId }) => ({
+        url: `${testId}/start`,
+        method: 'POST',
+      }),
+    }),
     checkRoadmapTestAnswers: builder.mutation<
-      ComplexTestCheckResult,
+      TestResultResponse,
       { testId: string; answers: RoadmapTestAnswersRequest }
     >({
       query: ({ testId, answers }) => ({
@@ -41,12 +50,12 @@ export const assessmentApi = createApi({
         }
       },
     }),
-    getRoadmapTestResults: builder.query<
-      ComplexTestCheckResult,
-      { testId: string }
+    getRoadmapTestResult: builder.query<
+      TestEstimationResult,
+      { testResultId: string }
     >({
-      query: ({ testId }) => ({
-        url: `results/${testId}`,
+      query: ({ testResultId }) => ({
+        url: `results/${testResultId}`,
         method: 'GET',
       }),
       onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
@@ -58,6 +67,15 @@ export const assessmentApi = createApi({
         }
       },
     }),
+    getRoadmapChangesSuggestion: builder.query<
+      RoadmapTestSuggestionsDto,
+      { testResultId: string }
+    >({
+      query: ({ testResultId }) => ({
+        url: `suggestions/${testResultId}`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -65,5 +83,7 @@ export const {
   useGenerateRoadmapTestMutation,
   useCheckRoadmapTestAnswersMutation,
   useLazyGetRoadmapTestQuery,
-  useLazyGetRoadmapTestResultsQuery,
+  useLazyGetRoadmapTestResultQuery,
+  useCreateStartTestTakeAttemptMutation,
+  useLazyGetRoadmapChangesSuggestionQuery,
 } = assessmentApi;

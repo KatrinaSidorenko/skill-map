@@ -21,7 +21,7 @@ public static class LayerRegistration
         services.AddScoped<ICustomizedRoadmapsService, CustomizedRoadmapsService>();
         //services.AddScoped<IRoadmapService, RoadmapService>();
         services.AddScoped<IRoadmapTestService, RoadmapTestService>();
-        services.AddScoped<IUserTestService, UserTestService>();
+        services.AddScoped<IUserRoadmapTestService, UserRoadmapTestService>();
         services.AddRoadmapModule();
 
         services.AddValidatorsFromAssemblies([typeof(IAccountService).Assembly]);
