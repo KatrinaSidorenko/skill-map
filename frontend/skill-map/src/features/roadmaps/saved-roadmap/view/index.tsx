@@ -30,11 +30,11 @@ import { toaster } from '@/components/ui/toaster';
 import SpinnerScreen from '@/components/base/spinner';
 import {
   useCreateStartTestTakeAttemptMutation,
+  useGenerateIntermediateRoadmapTestMutation,
   useGenerateRoadmapTestMutation,
 } from '@/features/assessment/api';
 import { DEFAULT_GENERATE_TEST_CONFIG } from '@/features/assessment/helper';
 import TestingHistory from '@/components/testing-history';
-import { testingHistoryMock } from '@/components/testing-history/mock';
 
 export default function SavedRoadmapView({
   roadmap,
@@ -45,6 +45,10 @@ export default function SavedRoadmapView({
   const { getRoadmapTransaltions } = useLocalization();
   const statusColor = getStatusColor(roadmap.status);
   const [generateTest, { isLoading }] = useGenerateRoadmapTestMutation();
+  const [
+    generateIntermediateRoadmapTest,
+    { isLoading: isGeneratingIntermediate },
+  ] = useGenerateIntermediateRoadmapTestMutation();
   const [deleteRoadmap, { isLoading: isDeletingRoadmap }] =
     useDeleteRoadmapMutation();
   const [startNewAttempt, { isLoading: isStartingNewAttempt }] =
@@ -59,6 +63,19 @@ export default function SavedRoadmapView({
       router.push(`/assessment/${result.testId}`);
     } catch (error) {
       console.error('Error generating test:', error);
+    }
+  };
+
+  const takeIntermediateTest = async () => {
+    try {
+      const result = await generateIntermediateRoadmapTest({
+        roadmapId: roadmap.id,
+        config: DEFAULT_GENERATE_TEST_CONFIG,
+      }).unwrap();
+      console.log('Generated Intermediate Test:', result);
+      router.push(`/assessment/${result.testId}`);
+    } catch (error) {
+      console.error('Error generating intermediate test:', error);
     }
   };
 
@@ -281,6 +298,8 @@ export default function SavedRoadmapView({
           onOpenAttempt={onOpenAttempt}
           onContinueAttempt={onContinueAttempt}
           onStartNewAttempt={onStartNewAttempt}
+          onGenerateIntermediateTest={takeIntermediateTest}
+          isIntermediateTestGenerating={isGeneratingIntermediate}
         />
       </Box>
     </Box>

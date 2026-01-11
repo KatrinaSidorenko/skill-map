@@ -34,6 +34,13 @@ public class RoadmapTestController : BaseController
         return Ok(response);
     }
 
+    [HttpPost("{roadmapId}/intermediate")]
+    public async Task<IActionResult> CreateIntermediateRoadmapTest([FromRoute]string roadmapId, [FromBody]RoadmapTestConfigDto config, CancellationToken ct)
+    {
+        var response = await _roadmapTestService.CreateIntermediateRoadmapTest(GetUserId(), roadmapId, config, ct);
+        return Ok(response);
+    }
+
     [HttpGet("history/{roadmapId}")]
     public async Task<TestingHistoryDto> GetRoadmapTestingHistory(string roadmapId, CancellationToken ct)
         => await _userRoadmapTestService.GetRoadmapTestingHistory(GetUserId(), roadmapId, ct);

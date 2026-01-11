@@ -17,6 +17,16 @@ export const assessmentApi = createApi({
         body: config,
       }),
     }),
+    generateIntermediateRoadmapTest: builder.mutation<
+      RoadmapTestResultDto,
+      { roadmapId: string; config: RoadmapTestConfigDto }
+    >({
+      query: ({ roadmapId, config }) => ({
+        url: `${roadmapId}/intermediate`,
+        method: 'POST',
+        body: config,
+      }),
+    }),
     createStartTestTakeAttempt: builder.mutation<
       TestResultResponse,
       { testId: string }
@@ -86,4 +96,5 @@ export const {
   useLazyGetRoadmapTestResultQuery,
   useCreateStartTestTakeAttemptMutation,
   useLazyGetRoadmapChangesSuggestionQuery,
+  useGenerateIntermediateRoadmapTestMutation,
 } = assessmentApi;

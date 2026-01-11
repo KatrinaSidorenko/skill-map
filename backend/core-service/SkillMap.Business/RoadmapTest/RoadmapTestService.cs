@@ -21,7 +21,6 @@ namespace SkillMap.Business.RoadmapTest;
 public class RoadmapTestService(
     IUserRoadmapsService userRoadmapsService, 
     IRoadmapTestGenerator roadmapTestGenerator, 
-    IRoadmapService roadmapService,
     ICustomizedRoadmapsService customizedRoadmapsService,
     IUserRoadmapTestService userRoadmapTestService) : IRoadmapTestService
 {
@@ -37,7 +36,13 @@ public class RoadmapTestService(
         // 2. test in progress - return existing
         // 3. test completed - create new
 
-        var generatedTest = await GenerateRoadmapTest(userId, roadmapId, config, ct);
+        var generatedTestResult = await GenerateRoadmapTest(userId, roadmapId, config, ct);
+        if (generatedTestResult.IsFailed)
+        {
+            throw new LearningPlatformException(generatedTestResult.ToExceptionResult());
+        }
+
+        var generatedTest = generatedTestResult.Data;
         var topicsQuestions = generatedTest.Values.SelectMany(v => v.Questions).ToList();
         var topicSettings = generatedTest.ToDictionary(t => t.Key, t => t.Value.CreationSettings);
        
@@ -53,37 +58,72 @@ public class RoadmapTestService(
         return roadmapTest.ToTestResult(testId);
     }
 
-    private async Task<Dictionary<string, (List<TopicQuestionsDto> Questions, TopicQuestionsSettingDto CreationSettings)>> 
-        GenerateRoadmapTest(long userId, string roadmapId, RoadmapTestConfigDto config, CancellationToken ct)
+    public async Task<RoadmapTestResultDto> CreateIntermediateRoadmapTest(long userId, string roadmapId, RoadmapTestConfigDto config, CancellationToken ct)
+    {
+        var testType = RoadmapTestType.Intermediate;
+        var userRoadmap = await EnsureActiveUserRoadmap(userId, roadmapId, ct);
+        var generatedTestResult = await GenerateRoadmapTest(userId, roadmapId, 
+            config, ct, 
+            nodesFilter: n => n.Status == LearningStatus.InProgress.ToStatusString() || n.Status == LearningStatus.Completed.ToStatusString());
+        if (generatedTestResult.IsFailed)
+        {
+            throw new LearningPlatformException(generatedTestResult.ToExceptionResult());
+        }
+
+        var generatedTest = generatedTestResult.Data;
+        var topicsQuestions = generatedTest.Values.SelectMany(v => v.Questions).ToList();
+        var topicSettings = generatedTest.ToDictionary(t => t.Key, t => t.Value.CreationSettings);
+        var roadmapTest = new RoadmapTestDao
+        {
+            RoadmapId = roadmapId,
+            TopicQuestions = topicsQuestions,
+            TopicSettings = topicSettings,
+            TestConfig = config
+        };
+        var testId = await userRoadmapTestService.SaveUserRoadmapTest(userId, userRoadmap.Id, roadmapId, testType, roadmapTest, ct);
+        return roadmapTest.ToTestResult(testId);
+    }
+
+     private async Task<Result<Dictionary<string, (List<TopicQuestionsDto> Questions, TopicQuestionsSettingDto CreationSettings)>>> 
+        GenerateRoadmapTest(long userId, string roadmapId, 
+        RoadmapTestConfigDto config, 
+        CancellationToken ct,
+        int minNodesForTest = 3,
+        Predicate<ModifiedNode> nodesFilter = null)
     {
         ct.ThrowIfCancellationRequested();
         
         var userModifiedRoadmap = await customizedRoadmapsService.GetUserModifiedRoadmap(userId, roadmapId, ct);
-        if (!userModifiedRoadmap.IsSuccessful || userModifiedRoadmap.Data == null)
+        var roadmap = userModifiedRoadmap.GetDataOrThrow();
+        var targetNodes = nodesFilter != null
+            ? roadmap.Nodes.Where(n => nodesFilter(n)).ToList()
+            : roadmap.Nodes;
+        if (targetNodes.Count < minNodesForTest)
         {
-            throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"No customized roadmap found for user {userId} and roadmap {roadmapId}");
+            return Result.Failure<Dictionary<string, (List<TopicQuestionsDto> Questions, TopicQuestionsSettingDto CreationSettings)>>(
+                ErrorCode.INVALID_INPUT,
+                $"Not enough nodes to generate test. Required at least {minNodesForTest}, but found {targetNodes.Count}");
         }
-
-        var roadmap = userModifiedRoadmap.Data;
-        var nodes = roadmap.Nodes.Select(n => new Node
+        
+        var nodes = targetNodes.Select(n => new Node
         {
             Id = n.Id,
             Title = n.Title,
             Description = n.Description,
         }).ToList();
-        var topics = roadmap.Nodes.Select(n => new Topic(n.Id, n.Title, n.Description)).ToList();
+        var topics = targetNodes.Select(n => new Topic(n.Id, n.Title, n.Description)).ToList();
         var coreTopics = new RoadmapAnalyzer().SelectStratifiedCoreTopics(nodes, roadmap.Edges, questionsLimit: config.NumberOfQuestions ?? DefaultNumberOfQuestions);
         var topicsAnalysis = CalculateTopicsAnalysis(topics, config, ct);
         var targetTopics = FilterTopicByTestConfig(topicsAnalysis, topics, config, ct);
         var topicQuestionsCreationSettings = targetTopics.Select(t => GetTopicSettings(t, topicsAnalysis[t.Id], config.DifficultyLevel)).ToList();
         var generateTestQuestions = await roadmapTestGenerator.GenerateRoadmapTest(topicQuestionsCreationSettings, ct);
 
-        return targetTopics.ToDictionary(
+        return Result.Success(targetTopics.ToDictionary(
             t => t.Id,
             t => (
                 Questions: generateTestQuestions.Where(g => g.Id == t.Id).ToList(),
                 CreationSettings: topicQuestionsCreationSettings.First(ts => ts.Topic.Id == t.Id).Setting
-            ));
+            )));
     }
 
     private async Task<UserRoadmapDto> EnsureActiveUserRoadmap(long userId, string roadmapId, CancellationToken ct)
