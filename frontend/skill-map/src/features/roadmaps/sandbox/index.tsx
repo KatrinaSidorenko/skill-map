@@ -42,7 +42,7 @@ export default function RoadmapsSandboxContainer() {
 
   const handleCardClick = (id: string) => {
     dispatch(setActiveRoadmapViewId(id));
-    router.push(`/roadmap-view/${id}`);
+    router.push(`/sandbox/roadmap/${id}`);
   };
 
   const renderRoadmapCard = (roadmap: PlainRoadmap) => (
