@@ -194,6 +194,12 @@ export const roadmapApi = createApi({
         method: 'GET',
       }),
     }),
+    getRoadmapTestingHistory: builder.query<TestingHistoryDto, string>({
+      query: (id) => ({
+        url: `roadmaptest/history/${id}`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -223,4 +229,5 @@ export const {
   useLazyGetPlainUserSavedRoadmapQuery,
   useGetPlainUserSavedRoadmapQuery,
   useGetRebuildRoadmapByIdQuery,
+  useLazyGetRoadmapTestingHistoryQuery,
 } = roadmapApi;

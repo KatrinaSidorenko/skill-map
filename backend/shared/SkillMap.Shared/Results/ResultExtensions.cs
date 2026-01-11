@@ -32,4 +32,20 @@ public static class ResultExtension
             // var c when c.Contains(ErrorCode.UNAUTHORIZED_PREFIX) => HttpStatusCode.Unauthorized,
             _ => HttpStatusCode.InternalServerError
         };
+
+    public static void ThrowIfFailed<T>(this Result<T> result, string? targetActionCodeError = null, string? targetActionMessage = null)
+    {
+        if (result.IsFailed || !result.HasData)
+            throw new LearningPlatformException(targetActionCodeError ?? result.Code, targetActionMessage ?? result.Message);
+    }
+
+    public static T GetDataOrThrow<T>(this Result<T> result, string? targetActionCodeError = null, string? targetActionMessage = null)
+    {
+        if (result.IsFailed || !result.HasData)
+            throw new LearningPlatformException(targetActionCodeError ?? result.Code, targetActionMessage ?? result.Message);
+        return result.Data;
+    }
+
+    public static T GetDataOrThrowNotFound<T>(this Result<T> result, string? targetActionMessage = null)
+        => result.GetDataOrThrow(ErrorCode.NOT_FOUND, targetActionMessage ?? string.Join(result.Code, result.Message, ";"));
 }

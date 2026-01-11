@@ -8,6 +8,7 @@ using SkillMap.Business.RoadmapTest;
 using SkillMap.Business.RoadmapTest.Helpers;
 using SkillMap.Business.RoadmapTest.Models;
 using SkillMap.Business.UserRoadmaps;
+using SkillMap.Business.UserRoadmapTest.Models;
 using SkillMap.Business.UserTest;
 using SkillMap.Shared.Results;
 
@@ -32,6 +33,10 @@ public class RoadmapTestController : BaseController
         var response = await _roadmapTestService.CreateInitialRoadmapTest(GetUserId(), roadmapId, config, ct);
         return Ok(response);
     }
+
+    [HttpGet("history/{roadmapId}")]
+    public async Task<TestingHistoryDto> GetRoadmapTestingHistory(string roadmapId, CancellationToken ct)
+        => await _userRoadmapTestService.GetRoadmapTestingHistory(GetUserId(), roadmapId, ct);
 
     [HttpPost("{testId}/start")]
     public async Task<IActionResult> StartTakingRoadmapTest(string testId, CancellationToken ct)
@@ -71,8 +76,8 @@ public class RoadmapTestController : BaseController
     //}
 
     [HttpGet("suggestions/{testResultId}")]
-    public async Task<IActionResult> GetRoadmapChangesSuggestions(string testResultId, CancellationToken ct)
-        => Ok(await _roadmapTestService.CreateRoadmapChangesSuggestions(GetUserId(), testResultId, ct));
+    public async Task<RoadmapChangesSuggestionsDto> GetRoadmapChangesSuggestions(string testResultId, CancellationToken ct)
+        => await _roadmapTestService.GetRoadmapChangesSuggestions(GetUserId(), testResultId, ct);
 
     [HttpGet("applysuggestions/{testId}")]
     public async Task<IActionResult> ApplyRoadmapChangesSuggestions(string testId, CancellationToken ct)

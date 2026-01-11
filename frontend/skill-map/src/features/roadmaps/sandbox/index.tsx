@@ -9,9 +9,9 @@ import { defaultPagination } from '../helpers';
 import RoadmapGrid from '@/components/roadmap/roadmapGrid';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch } from '@/store/hooks';
-import { createRoadmapDialog, updateRoadmapDialog } from './edit-dialog';
+import { createRoadmapDialog } from './edit-dialog';
 import { RoadmapCard } from '@/components/roadmap/roadmapCard';
-import { setActiveRoadmapViewId } from '../roadmap-view/store';
+import { setActiveRoadmapViewId } from '../roadmap/view/store';
 
 export default function RoadmapsSandboxContainer() {
   const { getEditorTranslations, getRoadmapsTranslations } = useLocalization();
@@ -42,7 +42,7 @@ export default function RoadmapsSandboxContainer() {
 
   const handleCardClick = (id: string) => {
     dispatch(setActiveRoadmapViewId(id));
-    router.push(`/roadmap-view/${id}`);
+    router.push(`/sandbox/roadmap/${id}`);
   };
 
   const renderRoadmapCard = (roadmap: PlainRoadmap) => (

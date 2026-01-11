@@ -38,7 +38,7 @@ export default function TestForm({ testId }: { testId?: string }) {
           questionAnswers: Object.values(testAnswers),
         },
       }).unwrap();
-      router.replace(`/assessment-panel/${testId}/result/${testResult.id}`);
+      router.replace(`/assessment/${testId}/result/${testResult.id}`);
     } catch (error) {
       toaster.error({
         title: 'Failed to submit the test. Please try again later.',

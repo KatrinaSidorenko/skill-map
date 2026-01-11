@@ -27,7 +27,7 @@ export default function TestResults({
   const totalPossible = checkedQuestionResults?.totalPossiblePoints ?? 0;
 
   const onCancel = () => {
-    router.replace(`/saved-roadmap/${checkedQuestionResults?.roadmapId}`);
+    router.replace(`/saved/roadmap/${checkedQuestionResults?.roadmapId}`);
   };
 
   const [getRoadmapChangesSuggestion, { data, isLoading }] =

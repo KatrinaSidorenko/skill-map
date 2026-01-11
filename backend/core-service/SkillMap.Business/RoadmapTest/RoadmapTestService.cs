@@ -215,7 +215,7 @@ public class RoadmapTestService(
     }
 
     // analysis for each question
-    private QuestionAnalysisResultDto AnalyzeQuestionAnswer(QuestionDto questionDto, QuestionAnswer? userAnswer)
+    private QuestionAnalysisResultDto EstimateQuestionAnswer(QuestionDto questionDto, QuestionAnswer? userAnswer)
     {
         switch(questionDto.Type)
         {
@@ -238,49 +238,41 @@ public class RoadmapTestService(
         }
     }
 
-    public async Task<RoadmapChangesSuggestionsDto> CreateRoadmapChangesSuggestions(long userId, string roadmapTestResultId, CancellationToken ct)
+    public async Task<RoadmapChangesSuggestionsDto> GetRoadmapChangesSuggestions(long userId, string roadmapTestResultId, CancellationToken ct)
     {
         var testAnalysisResult = await userRoadmapTestService.GetRoadmapTestAnalysisResult(roadmapTestResultId, ct);
-        var userModifiedRoadmap = await customizedRoadmapsService.GetUserModifiedRoadmap(userId, testAnalysisResult.RoadmapId, ct);
-        if (!userModifiedRoadmap.IsSuccessful || userModifiedRoadmap.Data == null)
-        {
-            throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"No customized roadmap found for user {userId} and roadmap {testAnalysisResult.RoadmapId}");
-        }
-
-        var roadmap = userModifiedRoadmap.Data;
-        var testResults = testAnalysisResult.TopicsAnalysis.ToDictionary(
+        var userModifiedRoadmapResult = await customizedRoadmapsService.GetUserModifiedRoadmap(userId, testAnalysisResult.RoadmapId, ct);
+        var userModifiedRoadmap = userModifiedRoadmapResult.GetDataOrThrowNotFound();
+        var pointsByTopics = testAnalysisResult.TopicsAnalysis.ToDictionary(
             ta => ta.Key,
             ta => (
                 TotalPossible: ta.Value.QuestionsAnalysis.Values.Sum(qa => qa.TotalPossiblePoints),
                 Achieved: ta.Value.QuestionsAnalysis.Values.Sum(qa => qa.AchievedPoints)
             ));
         var suggestedChanges = await new RoadmapModificationAdvisor().SuggestRoadmapTopicChnages(
-           roadmap.Nodes.Select(n => new Node
+           userModifiedRoadmap.Nodes.Select(n => new Node
            {
                Id = n.Id,
                Title = n.Title,
                Description = n.Description,
            }).ToList(),
-           roadmap.Edges,
-           testResults);
+           userModifiedRoadmap.Edges,
+           pointsByTopics);
 
-        var actualRoadmapNodeStatuses = roadmap.Nodes.ToDictionary(n => n.Id, n => n.Status);
-        var suggestChangesWithDiff = suggestedChanges.Where(sc =>
+        var actualRoadmapNodeStatuses = userModifiedRoadmap.Nodes.ToDictionary(n => n.Id, n => n.Status);
+        var changesWithCurrentStateDiff = suggestedChanges.Where(sc =>
         {
             var actualStatus = actualRoadmapNodeStatuses.GetOrDefault(sc.Id);
             if (actualStatus == null)
                 return false;
-            if (sc.MarkType != NodeMarkType.Finished || sc.MarkType != NodeMarkType.NeedsReview)
-                return false;
 
-            var nodeMarkToLearningStatus = sc.MarkType.ToLearningStatusString();
+            var nodeMarkToLearningStatus = sc.MarkType.ToLearningStatusString() ?? actualStatus;
             return actualStatus != nodeMarkToLearningStatus;
         }).ToList();
 
-        // rethink the model of suggestions
         return new RoadmapChangesSuggestionsDto
         {
-            Suggestions = suggestChangesWithDiff.Select(sc => new RoadmapTestSuggestionItemDto
+            Suggestions = changesWithCurrentStateDiff.Select(sc => new RoadmapTestSuggestionItemDto
             {
                 LearningItemId = sc.Id,
                 LearningStatus = sc.MarkType.ToLearningStatusString(),
@@ -289,7 +281,7 @@ public class RoadmapTestService(
             }).ToList()
         };
     }
-    public async Task<SavedUerRoadmap> RebuildRoadmapBasedOnTestResults(long userId, string roadmapId, CancellationToken ct)
+    public async Task<SavedUerRoadmap> RebuildRoadmapBasedOnTestResults(long userId, string roadmapId, CancellationToken ct) // bullshit
     {
         var userRoadmapResult = await userRoadmapsService.GetUserRoadmap(userId, roadmapId, ct);
         if (!userRoadmapResult.IsSuccessful)
@@ -353,6 +345,6 @@ public class RoadmapTestService(
         var userAnswersDict = userAnswers.QuestionAnswers.ToDictionary(qa => qa.QuestionId, qa => qa);
         return roadmapTest.TopicQuestions
             .SelectMany(t => t.Questions)
-            .ToDictionary(q => q.Id, q => AnalyzeQuestionAnswer(q, userAnswersDict.GetOrDefault(q.Id)));
+            .ToDictionary(q => q.Id, q => EstimateQuestionAnswer(q, userAnswersDict.GetOrDefault(q.Id)));
     }
 }

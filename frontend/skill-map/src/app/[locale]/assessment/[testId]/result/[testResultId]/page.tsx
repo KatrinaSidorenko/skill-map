@@ -1,4 +1,4 @@
-import { TestResultsWrapper } from '@/features/assessment/test-result';
+import { TestResultsWrapper } from '@/features/assessment/result';
 
 export default async function Page({
   params,

@@ -1,4 +1,4 @@
-import { RoadmapViewWrapper } from '@/features/roadmaps/roadmap-view';
+import { RoadmapViewWrapper } from '@/features/roadmaps/roadmap/view';
 
 export default async function RoadmapViewPage({
   params,

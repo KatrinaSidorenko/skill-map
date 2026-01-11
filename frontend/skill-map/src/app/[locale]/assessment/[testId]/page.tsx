@@ -1,4 +1,4 @@
-import { TestFormWrapper } from '@/features/assessment/test-form';
+import { TestFormWrapper } from '@/features/assessment/form';
 
 export default async function Page({
   params,
