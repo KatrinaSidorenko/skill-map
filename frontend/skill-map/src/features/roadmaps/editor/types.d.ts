@@ -2,7 +2,16 @@ interface NodeContent {
   label: string;
 }
 
-type LearningItemChangeRequest = ModifiedNode;
+interface LearningItemChangeRequest {
+  id: string;
+  title?: string;
+  description?: string;
+  status?: LearningStatus;
+}
+
+interface LearningItemsChangesRequest {
+  changes: LearningItemChangeRequest[];
+}
 
 interface DeleteLearningItemRequest {
   id: string;

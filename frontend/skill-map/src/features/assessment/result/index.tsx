@@ -12,6 +12,8 @@ import {
   useLazyGetRoadmapChangesSuggestionQuery,
   useLazyGetRoadmapTestResultQuery,
 } from '../api';
+import { useSaveLearningItemChangesMutation } from '@/features/roadmaps/api';
+import { toaster } from '@/components/ui/toaster';
 
 export default function TestResults({
   testId,
@@ -22,6 +24,7 @@ export default function TestResults({
 }) {
   const router = useRouter();
   const checkedQuestionResults = useAppSelector(selectCheckedQuestionResults);
+  const [saveRoadmapItemsChanges] = useSaveLearningItemChangesMutation();
 
   const totalAchieved = checkedQuestionResults?.totalAchievedPoints ?? 0;
   const totalPossible = checkedQuestionResults?.totalPossiblePoints ?? 0;
@@ -44,8 +47,21 @@ export default function TestResults({
           {
             suggestionsDto: data,
             onApply: async (selectedIds) => {
-              // 🔹 Call backend mutation here
-              // await applySuggestions({ testId, learningItemIds: selectedIds })
+              await saveRoadmapItemsChanges({
+                roadmapId: checkedQuestionResults?.roadmapId ?? '',
+                changes: {
+                  changes: data.suggestions
+                    .filter((s) => selectedIds.includes(s.learningItemId))
+                    .map((s) => ({
+                      id: s.learningItemId,
+                      // title: s.title,
+                      // description: s.description,
+                      status: s.status as LearningStatus,
+                    })),
+                },
+              }).catch((e) => {
+                toaster.error({ title: 'Error', description: e.message });
+              });
               router.replace(
                 `/editor/sandbox/saved/${checkedQuestionResults?.roadmapId}`,
               );

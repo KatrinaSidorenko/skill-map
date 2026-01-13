@@ -59,11 +59,15 @@ export default function NodeSidebar({
     try {
       await saveChange({
         roadmapId,
-        change: {
-          id: node.id,
-          title: label,
-          description,
-          status: (status[0] || 'notstarted') as LearningStatus,
+        changes: {
+          changes: [
+            {
+              id: node.id,
+              title: label,
+              description,
+              status: (status[0] || 'notstarted') as LearningStatus,
+            },
+          ],
         },
       }).unwrap();
 

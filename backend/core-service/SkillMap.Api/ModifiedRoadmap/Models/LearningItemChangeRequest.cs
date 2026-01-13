@@ -3,6 +3,12 @@ using Newtonsoft.Json;
 
 namespace SkillMap.Api.ModifiedRoadmap.Models;
 
+public class LearningItemsChangesRequest
+{
+    [JsonProperty("changes")]
+    public List<LearningItemChangeRequest> Changes { get; set; }
+}
+
 public class LearningItemChangeRequest
 {
     [JsonProperty("id")]

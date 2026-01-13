@@ -15,5 +15,6 @@ public interface ICustomizedRoadmapsService
     Task<Result<SavedUerRoadmap>> GetUserModifiedRoadmap(long userId, string roadmapId, CancellationToken ct);
     Task<Result<bool>> SaveDeleteItemChange(long userId, string roadmapId, DeleteLearningItemChange itemChange, CancellationToken ct);
     Task<Result<bool>> SaveLearningItemChange(long userId, string roadmapId, LearningItemChange item, CancellationToken ct);
+    Task<Result<bool>> SaveLearningItemsChanges(long userId, string roadmapId, List<LearningItemChange> items, CancellationToken ct);
     Task<Result<bool>> UpdateStatus(long userId, string roadmapId, string itemId, UpdateStatusMetadata metadata, CancellationToken ct);
 }

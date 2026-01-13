@@ -40,9 +40,9 @@ public class ModifiedRoadmapsController(ICustomizedRoadmapsService customizedRoa
     }
 
     [HttpPost("save-change/{roadmapId}")]
-    public async Task<IActionResult> SaveChanges([FromRoute] string roadmapId, [FromBody]LearningItemChangeRequest item, CancellationToken ct)
+    public async Task<IActionResult> SaveChanges([FromRoute] string roadmapId, [FromBody] LearningItemsChangesRequest changesRequest, CancellationToken ct)
     {
-        var result = await customizedRoadmapsService.SaveLearningItemChange(GetUserId(), roadmapId, item.ToChange(), ct);
+        var result = await customizedRoadmapsService.SaveLearningItemsChanges(GetUserId(), roadmapId, changesRequest.Changes.Select(c => c.ToChange()).ToList(), ct);
         return Response(result, (r) => NoContent());
     }
 

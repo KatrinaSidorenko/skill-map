@@ -163,6 +163,27 @@ public class CustomizedRoadmapsService(
         return Result.Success(true);
     }
 
+    private async Task<Result<bool>> SaveModifications(long userId, string roadmapId, List<RoadmapModification> modifications, CancellationToken ct)
+    {
+        var userRoadmapResult = await userRoadmapsService.GetUserRoadmap(userId, roadmapId, ct);
+        if (!userRoadmapResult.IsSuccessful)
+        {
+            return ResultType.UserRoadmapNotFound<bool>(userId, roadmapId);
+        }
+        var userRoadmap = userRoadmapResult.Data;
+        foreach (var modification in modifications)
+        {
+            modification.UserRoadmapId = userRoadmap.Id;
+            await modificationsRepository.AddAsync(modification, ct);
+        }
+        var saveResult = await modificationsRepository.SaveChangesAsync(ct);
+        if (!saveResult.IsSuccessful)
+        {
+            return ResultType.FailedToApplyModifications<bool>(userId, roadmapId);
+        }
+        return Result.Success(true);
+    }
+
     public async Task<Result<bool>> SaveLearningItemChange(long userId, string roadmapId, LearningItemChange item, CancellationToken ct)
     {
         var action = new RoadmapModification
@@ -173,6 +194,22 @@ public class CustomizedRoadmapsService(
         };
         
         return await SaveModification(userId, roadmapId, action, ct);
+    }
+    public async Task<Result<bool>> SaveLearningItemsChanges(long userId, string roadmapId, List<LearningItemChange> items, CancellationToken ct)
+    {
+        var actions = items.Select(item => new RoadmapModification
+        {
+            ExternalItemId = item.Id,
+            Metadata = item.SerializeOrDefault(),
+            Action = ModificationAction.SnapshotUpdate,
+        }).ToList();
+        var saveResult = await SaveModifications(userId, roadmapId, actions, ct);
+        if (saveResult.IsFailed)
+        {
+            return ResultType.FailedToApplyModifications<bool>(userId, roadmapId);
+        }
+
+        return Result.Success(true);
     }
 
     public async Task<Result<bool>> SaveDeleteItemChange(long userId, string roadmapId, DeleteLearningItemChange itemChange, CancellationToken ct)

@@ -55,12 +55,12 @@ export const roadmapApi = createApi({
     }),
     saveLearningItemChanges: builder.mutation<
       void,
-      { roadmapId: string; change: LearningItemChangeRequest }
+      { roadmapId: string; changes: LearningItemsChangesRequest }
     >({
-      query: ({ roadmapId, change }) => ({
+      query: ({ roadmapId, changes }) => ({
         url: `modifiedroadmaps/save-change/${roadmapId}`,
         method: 'POST',
-        body: change,
+        body: changes,
       }),
     }),
     deleteLearningItem: builder.mutation<

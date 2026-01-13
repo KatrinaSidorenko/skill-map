@@ -17,7 +17,7 @@ import { useState } from 'react';
 
 // @ts-expect-error (chakra-ui-dialog-overlay): No types available
 export const RoadmapTestSuggestionsDialog = (props) => {
-  const { suggestionsDto, onApply, ...rest } = props;
+  const { suggestionsDto, onApply,  ...rest } = props;
 
   const [selectedIds, setSelectedIds] = useState<string[]>(
     suggestionsDto.suggestions.map((s) => s.learningItemId),
