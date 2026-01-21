@@ -1,6 +1,8 @@
-﻿namespace SkillMap.Shared.Results;
+﻿using System.Runtime.CompilerServices;
 
-public class ResultType
+namespace SkillMap.Shared.Results;
+
+public static class ResultType
 {
     public static Result<T> FailedToSave<T>(string message) => Result.Failure<T>(ErrorCode.FAILED_TO_SAVE, message);
     public static Result<T> FailedToGet<T>(string message) => Result.Failure<T>(ErrorCode.FAILED_TO_GET, message);
@@ -65,4 +67,8 @@ public class ResultType
         Result.Failure<T>(ErrorCode.INVALID_OR_EXPIRED_TOKEN, "The provided token is invalid or has expired");
     public static Result<T> FailedToUpdatePassword<T>(string email) =>
         FailedToUpdate<T>($"Failed to update password for user with email {email}");
+
+    // ROADMAP TEST
+    public static Result<T> FailedToGenerateTest<T>(string error)
+        => FailedToCreate<T>($"Failed to generate roadmap test. Details: {error}");
 }

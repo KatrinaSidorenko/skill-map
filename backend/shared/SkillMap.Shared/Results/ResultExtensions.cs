@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SkillMap.Shared.Results;
 
@@ -45,7 +46,10 @@ public static class ResultExtension
             throw new LearningPlatformException(targetActionCodeError ?? result.Code, targetActionMessage ?? result.Message);
         return result.Data;
     }
-
     public static T GetDataOrThrowNotFound<T>(this Result<T> result, string? targetActionMessage = null)
         => result.GetDataOrThrow(ErrorCode.NOT_FOUND, targetActionMessage ?? string.Join(result.Code, result.Message, ";"));
+    public static Result<To> Map<To, TFrom>(this Result<TFrom> result)
+        => result.IsSuccessful ? Result.Success<To>() : Result.Failure<To>(result.Code, result.Message);
+    public static bool IsSuccessWithData<T>(this Result<T> result)
+        => result.IsSuccessful && result.HasData;
 }

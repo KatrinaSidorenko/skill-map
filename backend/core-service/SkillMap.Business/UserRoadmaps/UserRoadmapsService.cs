@@ -39,9 +39,10 @@ public class UserRoadmapsService(IRepository<UserRoadmap> userRoadmapsRepository
         return Result.Success(true);
     }
 
-    public async Task<Result<UserRoadmapDto>> GetUserRoadmap(long userId, string roadmapId, CancellationToken ct)
+    public async Task<Result<UserRoadmapDto>> GetUserRoadmap(long userId, string roadmapId, CancellationToken ct, bool? isActive = null)
     {
-        var dbUserRoadmapResult = await userRoadmapsRepository.GetFirstOrDefaultAsync(ur => ur.UserId == userId && ur.RoadmapId == roadmapId, ct: ct);
+        var dbUserRoadmapResult = await userRoadmapsRepository.GetFirstOrDefaultAsync(
+            ur => ur.UserId == userId && ur.RoadmapId == roadmapId && (!isActive.HasValue || ur.IsActive == isActive.Value), ct: ct);
         if (!dbUserRoadmapResult.HasData)
         {
             return ResultType.UserRoadmapNotFound<UserRoadmapDto>(userId, roadmapId);

@@ -3,7 +3,7 @@ using SkillMap.Shared.Gzip;
 using RoadmapTestDao = SkillMap.Core.Entities.UserRoadmapTest.RoadmapTest;
 using UserRoadmpTestDao = SkillMap.Core.Entities.UserRoadmapTest.UserRoadmapTest;
 
-namespace SkillMap.Business.RoadmapTest;
+namespace SkillMap.Business.RoadmapTest.Helpers;
 
 public static class RoadmapTestExtensions
 {

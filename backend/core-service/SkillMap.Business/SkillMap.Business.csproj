@@ -7,11 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.9" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\roadmap-tests\LearningPlatform.RoadmapTests.Contracts\LearningPlatform.RoadmapTests.Contracts.csproj" />
     <ProjectReference Include="..\..\roadmaps-catalog-service\LearningPlatform.Roadmap.Business\LearningPlatform.Roadmap.Business.csproj" />
     <ProjectReference Include="..\..\shared\SkillMap.Shared\SkillMap.Shared.csproj" />

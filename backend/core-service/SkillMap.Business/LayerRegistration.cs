@@ -24,8 +24,6 @@ public static class LayerRegistration
         services.AddScoped<IUserRoadmapTestService, UserRoadmapTestService>();
         services.AddRoadmapModule();
 
-        services.AddValidatorsFromAssemblies([typeof(IAccountService).Assembly]);
-
         return services;
     }
 }

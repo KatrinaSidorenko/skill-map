@@ -33,14 +33,14 @@ public class UserRoadmapsController : BaseController
     public async Task<IActionResult> SaveRoadmap([FromQuery]string roadmapId, CancellationToken ct)
     {
         var result = await UserRoadmapsService.LinkRoadmap(GetUserId(), roadmapId, ct);
-        return Response(result);
+        return HandleResponse(result);
     }
 
     [HttpDelete("archive/{roadmapId}")]
     public async Task<IActionResult> RemoveRoadmap(string roadmapId, CancellationToken ct)
     {
         var result = await UserRoadmapsService.RemoveRoadmap(GetUserId(), roadmapId, ct);
-        return Response(result);
+        return HandleResponse(result);
     }
 
     [HttpPost]
@@ -51,14 +51,14 @@ public class UserRoadmapsController : BaseController
         dto.IsPublic = request.IsPublic;
 
         var result = await UserRoadmapsService.CreateUserRoadmap(GetUserId(), dto, ct);
-        return Response(result, (r) => Ok(new { id = result.Data }));
+        return HandleResponse(result, (r) => Ok(new { id = result.Data }));
     }
 
     [HttpGet]
     public async Task<IActionResult> GetUserRoadmaps([FromQuery]SearchingRequest @params, CancellationToken ct)
     {
         var plainRoadmapsResult = await UserRoadmapsService.GetUserCreatedRoadmaps(GetUserId(), @params.ToParams(), ct);
-        return Response(plainRoadmapsResult, (r) =>
+        return HandleResponse(plainRoadmapsResult, (r) =>
         {
             return Ok(new PaginationResponse<PlainRoadmapResponse>()
             {
@@ -107,7 +107,7 @@ public class UserRoadmapsController : BaseController
     public async Task<IActionResult> GetUserRoadmap([FromRoute] string roadmapId, CancellationToken ct)
     {
         var result = await RoadmapService.GetRoadmapById(roadmapId, ct, includeStartNode: false);
-        return Response(result, (r) => Ok(new RoadmapResponse
+        return HandleResponse(result, (r) => Ok(new RoadmapResponse
         {
             Roadmap = r.Data
         }));
@@ -127,7 +127,7 @@ public class UserRoadmapsController : BaseController
         var result = await UserRoadmapsService.RemoveRoadmap(GetUserId(), roadmapId, ct);
         if (!result.IsSuccessful)
         {
-            return Response(result);
+            return HandleResponse(result);
         }
         
         await RoadmapService.DeleteRoadmap(roadmapId, ct);
@@ -138,6 +138,6 @@ public class UserRoadmapsController : BaseController
     public async Task<IActionResult> GetPlainRoadmap([FromRoute] string roadmapId, CancellationToken ct)
     {
         var result = await UserRoadmapsService.GetCreatedUserRoadmap(GetUserId(), roadmapId, ct);
-        return Response(result, (r) => Ok(r.Data));
+        return HandleResponse(result, (r) => Ok(r.Data));
     }
 }
