@@ -53,7 +53,7 @@ public class ResetAccountService(IEmailService emailService, ICacheService cache
         var subject = "Password Reset Request";
         var body = $"Use the following token to reset your password. This token is valid for {TokenExpirationMinutes} minutes.\n\nToken: {token}";
         var sendResult = await emailService.SendEmailAsync(email, subject, body, ct: ct);
-        if (!sendResult.IsSuccessful)
+        if (!sendResult)
         {
             return ResultType.FailedToSendEmail<bool>(email);
         }
