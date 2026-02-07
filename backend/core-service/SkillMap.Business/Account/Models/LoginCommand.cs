@@ -4,12 +4,12 @@ using SkillMap.Shared.Results;
 
 namespace SkillMap.Business.Account.Models;
 
-public class LoginDto : AbstractValidator<LoginDto>
+public class LoginCommand : AbstractValidator<LoginCommand>
 {
     public string Email { get; set; }
     public string Password { get; set; }
 
-    public LoginDto()
+    public LoginCommand()
     {
 
         RuleFor(x => x.Email)

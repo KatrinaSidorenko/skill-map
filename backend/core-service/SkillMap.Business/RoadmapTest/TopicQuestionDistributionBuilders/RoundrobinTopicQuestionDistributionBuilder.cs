@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LearningPlatform.RoadmapTests.Contracts;
 using LearningPlatform.RoadmapTests.Contracts.Models;
 
+using SkillMap.Business.RoadmapTest.Helpers;
 using SkillMap.Business.RoadmapTest.Models;
 using SkillMap.Business.RoadmapTest.TopicQuestionDistributionBuilder;
 
@@ -14,7 +15,6 @@ namespace SkillMap.Business.RoadmapTest.TopicAnalyzers;
 
 public class RoundrobinTopicQuestionDistributionBuilder : ITopicQuestionDistributionBuilder
 {
-
     private static (string Priority, double Coefficient) GetPriorityAndCoefficient(int count)
     {
         return count switch
@@ -35,16 +35,16 @@ public class RoundrobinTopicQuestionDistributionBuilder : ITopicQuestionDistribu
         if (topics == null || !topics.Any())
             return new Dictionary<string, TopicQuestionPlan>();
 
-        int requestedCount = config.NumberOfQuestions ?? DefaultNumberOfQuestions;
-        int maxByTime = (int)(config.TimeLimitInMinutes / MinMinutesPerQuestion);
-        int maxByTopics = topics.Count * MaxQuestionsPerTopic;
+        int requestedCount = config.NumberOfQuestions ?? RoadmapTestConstants.DefaultNumberOfQuestions;
+        int maxByTime = (int)(config.TimeLimitInMinutes / RoadmapTestConstants.MinMinutesPerQuestion);
+        int maxByTopics = topics.Count * RoadmapTestConstants.MaxQuestionsPerTopic;
         int finalTargetCount = Math.Min(requestedCount, Math.Min(maxByTime, maxByTopics));
 
         // 2. CALCULATE DISTRIBUTION (Base + Remainder)
         // Example: 10 questions, 3 topics. 
         // Base = 3. Remainder = 1.
         int baseQuestionsPerTopic = finalTargetCount / topics.Count;
-        baseQuestionsPerTopic = Math.Min(baseQuestionsPerTopic, MaxQuestionsPerTopic);
+        baseQuestionsPerTopic = Math.Min(baseQuestionsPerTopic, RoadmapTestConstants.MaxQuestionsPerTopic);
         int extraQuestions = finalTargetCount % topics.Count;
         extraQuestions = Math.Min(extraQuestions, topics.Count);
 

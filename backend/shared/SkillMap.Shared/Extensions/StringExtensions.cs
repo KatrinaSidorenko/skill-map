@@ -10,7 +10,7 @@ public static class StringExtensions
         input switch
         {
             null => throw new ArgumentNullException(nameof(input)),
-            string.Empty => input,
+            "" => input,
             _ => input[0].ToString().ToUpper() + input.Substring(1)
         };
 }

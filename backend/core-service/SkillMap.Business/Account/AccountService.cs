@@ -11,35 +11,35 @@ namespace SkillMap.Business.Account;
 public class AccountService(
     ITokenService tokenService,
     IRepository<AppUser> userRepository,
-    IValidator<LoginDto> loginValidator,
+    IValidator<LoginCommand> loginValidator,
     IValidator<UserRegistrationDto> userValidator,
     IResetAccountService resetAccountService,
     IPasswordHasher passwordHasher) : IAccountService
 {
-    public async Task<Result<UserDto>> Login(LoginDto loginDto, CancellationToken ct)
+    public async Task<Result<UserDto>> Login(LoginCommand loginCommand, CancellationToken ct)
     {
-        var validationResult = await loginValidator.ValidateAsync(loginDto, ct);
+        var validationResult = await loginValidator.ValidateAsync(loginCommand, ct);
         if (!validationResult.IsValid)
         {
             return ResultType.ValidationError<UserDto>(validationResult.GetErrors());
         }
 
-        var email = loginDto.Email;
-        var password = loginDto.Password;
-        var userResult = await userRepository.GetFirstOrDefaultAsync(x => x.Email == email, ct);
-        if (!userResult.IsSuccessful || userResult.Data is null)
+        var email = loginCommand.Email;
+        var password = loginCommand.Password;
+        AppUser? user = await userRepository.GetFirstOrDefaultAsync(x => x.Email == email, ct);
+        if (user == null)
         {
             return ResultType.UserNotFound<UserDto>(email);
         }
 
-        var isPasswordValid = passwordHasher.Verify(password, userResult.Data.PasswordHash);
+        var isPasswordValid = passwordHasher.Verify(password, user.PasswordHash);
         if (!isPasswordValid)
         {
             return ResultType.InvalidPassword<UserDto>(email);
         }
 
-        var token = tokenService.GenerateToken(userResult.Data);
-        var userDto = userResult.Data.ToUserDto();
+        var token = tokenService.GenerateToken(user);
+        var userDto = user.ToUserDto();
         userDto.Token = token;
 
         return Result.Success(userDto);
@@ -57,26 +57,21 @@ public class AccountService(
         var appUser = userDto.ToAppUser();
         appUser.PasswordHash = hashedPassword;
 
-        var userResult = await userRepository.GetFirstOrDefaultAsync(x => x.Email == appUser.Email, ct);
-        if (userResult?.Data is not null)
+        AppUser? user = await userRepository.GetFirstOrDefaultAsync(x => x.Email == appUser.Email, ct);
+        if (user is not null)
         {
             return ResultType.UserWithSuchEmailAlreadyExists<bool>(appUser.Email);
         }
 
         await userRepository.AddAsync(appUser, ct);
-        var result = await userRepository.SaveChangesAsync(ct);
-        if (!result.IsSuccessful)
-        {
-            return ResultType.FailedToCreateUser<bool>(appUser.Email);
-        }
-
-        return Result.Success(true);
+        bool saved = await userRepository.SaveChangesAsync(ct);
+        return !saved ? ResultType.FailedToCreateUser<bool>(appUser.Email) : Result.Success(true);
     }
 
     public async Task<Result<bool>> ResetPassword(string email, CancellationToken ct)
     {
-        var userResult = await userRepository.GetFirstOrDefaultAsync(x => x.Email == email, ct);
-        if (!userResult.IsSuccessful || userResult.Data is null)
+        AppUser? user = await userRepository.GetFirstOrDefaultAsync(x => x.Email == email, ct);
+        if (user is null)
         {
             return ResultType.UserNotFound<bool>(email);
         }
@@ -92,16 +87,15 @@ public class AccountService(
             return ResultType.InvalidOrExpiredToken<bool>();
         }
         var email = emailResult.Data;
-        var userResult = await userRepository.GetFirstOrDefaultAsync(x => x.Email == email, ct);
-        if (!userResult.IsSuccessful || userResult.Data is null)
+        AppUser? user = await userRepository.GetFirstOrDefaultAsync(x => x.Email == email, ct);
+        if (user is null)
         {
             return ResultType.UserNotFound<bool>(email);
         }
-        var user = userResult.Data;
         user.PasswordHash = passwordHasher.Hash(setNewPasswordDto.Password);
         await userRepository.UpdateAsync(user, ct);
-        var result = await userRepository.SaveChangesAsync(ct);
-        if (!result.IsSuccessful)
+        bool saved = await userRepository.SaveChangesAsync(ct);
+        if (!saved)
         {
             return ResultType.FailedToUpdatePassword<bool>(email);
         }
