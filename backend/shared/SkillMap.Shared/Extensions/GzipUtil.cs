@@ -1,6 +1,10 @@
-﻿using SkillMap.Shared.Extensions;
+﻿// <copyright file="GzipUtil.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
 using System.IO.Compression;
 using System.Text;
+using SkillMap.Shared.Extensions;
 
 namespace SkillMap.Shared.Gzip;
 
@@ -22,7 +26,8 @@ public static class GzipUtils
                     {
                         await memory.WriteAsync(buffer, 0, count, ct);
                     }
-                } while (count > 0);
+                }
+                while (count > 0);
 
                 return memory.ToArray();
             }
@@ -37,6 +42,7 @@ public static class GzipUtils
             await gzip.WriteAsync(data, ct);
             await gzip.FlushAsync(ct);
         }
+
         ms.Position = 0;
         return ms.ToArray();
     }

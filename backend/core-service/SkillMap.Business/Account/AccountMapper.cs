@@ -1,4 +1,5 @@
 ﻿using Riok.Mapperly.Abstractions;
+
 using SkillMap.Business.Account.Models;
 using SkillMap.Core.Entities;
 

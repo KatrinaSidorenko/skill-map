@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Net;
+
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+
 using SkillMap.Shared.Results;
-using System.Net;
 
 namespace LearningPlatform.Shared.Api.Middleware;
 
@@ -35,7 +37,7 @@ public class ErrorHandlingMiddleware(RequestDelegate next, ILogger<ErrorHandling
         };
 
         httpResponse.ContentType = "application/json";
-        httpResponse.StatusCode = (int)response.StatusCode;
+        httpResponse.StatusCode = (int)response.statusCode;
         await httpResponse.WriteAsJsonAsync(response, ct);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+
 using SkillMap.Shared.Constants;
 
 namespace LearningPlatform.Shared.Api.Extensions;

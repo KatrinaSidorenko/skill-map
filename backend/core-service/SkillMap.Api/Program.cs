@@ -1,9 +1,10 @@
-using SkillMap.Infrastructure;
-using SkillMap.Persistence;
-using SkillMap.Business;
 using LearningPlatform.Shared.Api.Extensions;
 using LearningPlatform.Shared.Api.Middleware;
 using LearningPlatform.Shared.Caching;
+
+using SkillMap.Business;
+using SkillMap.Infrastructure;
+using SkillMap.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 

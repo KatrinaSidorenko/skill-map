@@ -2,8 +2,10 @@
 using LearningPlatform.Roadmap.Business.Contracts;
 using LearningPlatform.Roadmap.Business.Contracts.Models;
 using LearningPlatform.Shared.Api.Searching;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 using SkillMap.Api.Base;
 using SkillMap.Api.ModifiedRoadmap.Models;
 using SkillMap.Api.Roadmap.Models;
@@ -12,6 +14,7 @@ using SkillMap.Api.Roadmaps.Models;
 using SkillMap.Api.UserRoadmaps.Models;
 using SkillMap.Business.UserRoadmaps;
 using SkillMap.Core.Constants;
+
 using CreateEdgeRequest = SkillMap.Api.ModifiedRoadmap.Models.CreateEdgeRequest;
 //using CreateNodeRequest = SkillMap.Api.Roadmap.Models.CreateNodeRequest;
 
@@ -30,7 +33,7 @@ public class UserRoadmapsController : BaseController
     }
 
     [HttpPost("save")]
-    public async Task<IActionResult> SaveRoadmap([FromQuery]string roadmapId, CancellationToken ct)
+    public async Task<IActionResult> SaveRoadmap([FromQuery] string roadmapId, CancellationToken ct)
     {
         var result = await UserRoadmapsService.LinkRoadmap(GetUserId(), roadmapId, ct);
         return HandleResponse(result);
@@ -55,7 +58,7 @@ public class UserRoadmapsController : BaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetUserRoadmaps([FromQuery]SearchingRequest @params, CancellationToken ct)
+    public async Task<IActionResult> GetUserRoadmaps([FromQuery] SearchingRequest @params, CancellationToken ct)
     {
         var plainRoadmapsResult = await UserRoadmapsService.GetUserCreatedRoadmaps(GetUserId(), @params.ToParams(), ct);
         return HandleResponse(plainRoadmapsResult, (r) =>
@@ -77,7 +80,7 @@ public class UserRoadmapsController : BaseController
     //}
 
     [HttpPost("create-connection/{roadmapId}")]
-    public async Task<IActionResult> CreateLearningItemConnection([FromRoute]string roadmapId, [FromBody] CreateEdgeRequest request, CancellationToken ct)
+    public async Task<IActionResult> CreateLearningItemConnection([FromRoute] string roadmapId, [FromBody] CreateEdgeRequest request, CancellationToken ct)
     {
         var edgeDto = new EdgeDto
         {
@@ -129,7 +132,7 @@ public class UserRoadmapsController : BaseController
         {
             return HandleResponse(result);
         }
-        
+
         await RoadmapService.DeleteRoadmap(roadmapId, ct);
         return NoContent();
     }

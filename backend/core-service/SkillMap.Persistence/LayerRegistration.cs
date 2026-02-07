@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
 using SkillMap.Business.Abstractions;
 using SkillMap.Persistence.Neo4j;
 

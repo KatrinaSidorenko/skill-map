@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+
 using SkillMap.Business.Abstractions;
 using SkillMap.Business.Account.Models;
 using SkillMap.Core.Entities;
@@ -8,8 +9,8 @@ using SkillMap.Shared.Results;
 namespace SkillMap.Business.Account;
 
 public class AccountService(
-    ITokenService tokenService, 
-    IRepository<AppUser> userRepository, 
+    ITokenService tokenService,
+    IRepository<AppUser> userRepository,
     IValidator<LoginDto> loginValidator,
     IValidator<UserRegistrationDto> userValidator,
     IResetAccountService resetAccountService,

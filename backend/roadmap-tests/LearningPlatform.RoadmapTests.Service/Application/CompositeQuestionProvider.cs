@@ -2,7 +2,9 @@
 using LearningPlatform.RoadmapTests.Service.Application.Abstractions;
 using LearningPlatform.RoadmapTests.Service.Application.Models;
 using LearningPlatform.RoadmapTests.Service.Infrastructure.Common;
+
 using SkillMap.Shared.Extensions;
+
 using QuestionDto = LearningPlatform.RoadmapTests.Service.Application.Models.QuestionDto;
 
 namespace LearningPlatform.RoadmapTests.Service.Application;
@@ -46,7 +48,7 @@ public sealed class CompositeQuestionProvider : IQuestionSource
             if (needed <= 0) { break; }
 
             var stepSettings = settings.DeepCopy();
-            stepSettings.QuestionsCount = needed; 
+            stepSettings.QuestionsCount = needed;
 
             try
             {
@@ -54,9 +56,9 @@ public sealed class CompositeQuestionProvider : IQuestionSource
 
                 if (!result.IsSuccessful && !result.HasData)
                 {
-                   _logger.LogWarning(
-                        "Generator {Type} failed with reason: {Reason}",
-                        generator.GetType().Name, result.Reason?.ToString() ?? "Unknown");
+                    _logger.LogWarning(
+                         "Generator {Type} failed with reason: {Reason}",
+                         generator.GetType().Name, result.Reason?.ToString() ?? "Unknown");
                     continue;
                 }
 

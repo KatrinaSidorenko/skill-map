@@ -12,10 +12,10 @@ public sealed class Topic
     public Topic(string externalId, string name, string? description)
     {
         if (string.IsNullOrWhiteSpace(externalId))
-            throw new LearningPlatformException(ErrorCode.VALIDATION_ERROR, "Topic id is required");
+            throw new LearningPlatformException(ErrorCode.VALIDATIONERROR, "Topic id is required");
 
         if (string.IsNullOrWhiteSpace(name))
-            throw new LearningPlatformException(ErrorCode.VALIDATION_ERROR, "Topic name is required");
+            throw new LearningPlatformException(ErrorCode.VALIDATIONERROR, "Topic name is required");
 
         ExternalId = externalId;
         Name = name;

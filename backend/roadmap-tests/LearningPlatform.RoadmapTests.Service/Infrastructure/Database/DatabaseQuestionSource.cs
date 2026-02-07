@@ -1,12 +1,15 @@
-﻿using LearningPlatform.RoadmapTests.Contracts;
+﻿using System.Data.SqlTypes;
+
+using LearningPlatform.RoadmapTests.Contracts;
 using LearningPlatform.RoadmapTests.Contracts.Models;
 using LearningPlatform.RoadmapTests.Service.Application.Abstractions;
 using LearningPlatform.RoadmapTests.Service.Application.Models;
 using LearningPlatform.RoadmapTests.Service.Infrastructure.Common;
 using LearningPlatform.RoadmapTests.Service.Persistence.Abstractions;
 using LearningPlatform.RoadmapTests.Service.Persistence.Models;
+
 using SkillMap.Shared.Extensions;
-using System.Data.SqlTypes;
+
 using AnswerDto = LearningPlatform.RoadmapTests.Service.Application.Models.AnswerDto;
 using QuestionDto = LearningPlatform.RoadmapTests.Service.Application.Models.QuestionDto;
 
@@ -51,7 +54,7 @@ public class DatabaseQuestionSource(ITopicQuestionsRepository topicQuestionsRepo
             }
 
             return new GenerationResult<List<QuestionDto>>(targetQuestionDtos.DistinctBy(t => HashCode.Combine(t.Type, t.Text)).ToList());
-        } 
+        }
         catch (Exception ex)
         {
             return new GenerationResult<List<QuestionDto>>(GenerationErrorReasons.InternalError(ex.Message));

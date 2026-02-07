@@ -7,12 +7,12 @@ public class TarjanSccDetector
     private const int Unvisited = -1;
 
     private int _index;
-    private int[] _visited;
-    private int[] _lowLinks;
-    private bool[] _onStack;
-    private Stack<int> _stack;
-    private List<List<int>> _adjacencyList;
-    private List<List<int>> _sccComponents;
+    private readonly int[] _visited;
+    private readonly int[] _lowLinks;
+    private readonly bool[] _onStack;
+    private readonly Stack<int> _stack;
+    private readonly List<List<int>> _adjacencyList;
+    private readonly List<List<int>> _sccComponents;
     private readonly Graph _graph;
     private readonly List<NodeDto> _nodes;
 
@@ -87,4 +87,3 @@ public class TarjanSccDetector
         }
     }
 }
-

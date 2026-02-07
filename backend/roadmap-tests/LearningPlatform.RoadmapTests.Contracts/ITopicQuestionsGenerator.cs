@@ -2,8 +2,8 @@
 
 namespace LearningPlatform.RoadmapTests.Contracts;
 
-public interface IRoadmapTestGenerator
+public interface ITopicQuestionsGenerator
 {
     Task<TopicQuestionsDto> GenerateTopicQuestions(Topic topic, TopicQuestionsSettingDto settings, CancellationToken ct);
-    Task<List<TopicQuestionsDto>> GenerateRoadmapTest(List<(Topic topic, TopicQuestionsSettingDto settings)> topicsSettings, CancellationToken ct);
+    Task<List<TopicQuestionsDto>> GenerateTopicsQuestions(List<(Topic topic, TopicQuestionsSettingDto settings)> topicsSettings, CancellationToken ct);
 }

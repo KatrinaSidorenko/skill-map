@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+
 using SkillMap.Business.Abstractions;
 using SkillMap.Core.Entities;
 using SkillMap.Shared.Results;
@@ -32,7 +33,7 @@ public class BaseController : ControllerBase
         {
             return BadRequest(result);
         }
-        
+
         if (result.IsInternalError())
         {
             return InternalServerError(result);

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 using SkillMap.Core.Entities.UserRoadmapTest;
 
 namespace SkillMap.Persistence.EntityConfigurations;
@@ -34,4 +35,3 @@ internal class UserTestResultConfiguration : IEntityTypeConfiguration<UserTestRe
         builder.HasIndex(utr => new { utr.UserRoadmapTestId, utr.CompletedAt });
     }
 }
-

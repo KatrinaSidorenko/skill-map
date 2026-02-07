@@ -1,5 +1,8 @@
-﻿using LearningPlatform.Roadmap.Business.Contracts;
+﻿using System.Xml.Linq;
+
+using LearningPlatform.Roadmap.Business.Contracts;
 using LearningPlatform.Roadmap.Business.Contracts.Constants;
+
 using SkillMap.Business.Abstractions;
 using SkillMap.Business.ModifiedRoadmaps.Helpers;
 using SkillMap.Business.ModifiedRoadmaps.Mappers;
@@ -13,13 +16,12 @@ using SkillMap.Shared.Extensions;
 using SkillMap.Shared.Gzip;
 using SkillMap.Shared.Models;
 using SkillMap.Shared.Results;
-using System.Xml.Linq;
 
 namespace SkillMap.Business.Roadmaps;
 
 public class CustomizedRoadmapsService(
-    IRoadmapService roadmapService, 
-    IUserRoadmapsService userRoadmapsService, 
+    IRoadmapService roadmapService,
+    IUserRoadmapsService userRoadmapsService,
     IRepository<RoadmapModification> modificationsRepository) : ICustomizedRoadmapsService
 {
     private const int MaxModificationsCount = 5;
@@ -45,7 +47,7 @@ public class CustomizedRoadmapsService(
             .GroupBy(r => r.RoadmapId)
             .ToDictionary(g => g.Key, g => g.First().CreatedAt);
 
-        var paginatedRoadmapsResult = await roadmapService.GetPlainRoadmapsByIds([..userRoadmapIds], @params, ct, excludePrivate: false);
+        var paginatedRoadmapsResult = await roadmapService.GetPlainRoadmapsByIds([.. userRoadmapIds], @params, ct, excludePrivate: false);
         if (!paginatedRoadmapsResult.IsSuccessful)
             return ResultType.RoadmapNotFound<PaginationResult<List<PlainRoadmapWithDetailsDto>>>("");
 
@@ -192,7 +194,7 @@ public class CustomizedRoadmapsService(
             Metadata = item.SerializeOrDefault(),
             Action = ModificationAction.SnapshotUpdate,
         };
-        
+
         return await SaveModification(userId, roadmapId, action, ct);
     }
     public async Task<Result<bool>> SaveLearningItemsChanges(long userId, string roadmapId, List<LearningItemChange> items, CancellationToken ct)

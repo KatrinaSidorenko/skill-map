@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+
 using SkillMap.Shared.Models;
 
 namespace LearningPlatform.Shared.Api.Searching;

@@ -1,21 +1,29 @@
-﻿namespace SkillMap.Shared.Results;
+﻿// <copyright file="LearningPlatformException.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
 
-public record ExceptionResult(string Code, string Message);
+namespace SkillMap.Shared.Results;
+
+public record ExceptionResult(string code, string message);
 public class LearningPlatformException : Exception
 {
     public string Code { get; }
 
-    public LearningPlatformException(ExceptionResult result) : base(result.Message)
+    public LearningPlatformException(ExceptionResult result)
+        : base(result.message)
     {
-        Code = result.Code;
-    }
-    public LearningPlatformException(string code, string message) : base(message)
-    {
-        Code = code;
+        this.Code = result.code;
     }
 
-    public LearningPlatformException(string code): base(string.Empty)
+    public LearningPlatformException(string code, string message)
+        : base(message)
     {
-        Code = code;
+        this.Code = code;
+    }
+
+    public LearningPlatformException(string code)
+        : base(string.Empty)
+    {
+        this.Code = code;
     }
 }

@@ -1,7 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
+
 using Neo4j.Driver;
+
 using SkillMap.Persistence.Neo4j.Helpers;
 using SkillMap.Shared.Results;
+
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace SkillMap.Persistence.Neo4j;

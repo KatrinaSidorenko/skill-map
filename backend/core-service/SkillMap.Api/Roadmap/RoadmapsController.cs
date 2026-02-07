@@ -1,7 +1,9 @@
 ﻿using LearningPlatform.Roadmap.Business.Contracts;
 using LearningPlatform.Shared.Api.Searching;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 using SkillMap.Api.Base;
 using SkillMap.Api.ModifiedRoadmap.Models;
 using SkillMap.Api.Roadmap.Models;
@@ -24,7 +26,7 @@ public class RoadmapsController : BaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllPlainRoadmaps([FromQuery]SearchingRequest @params, CancellationToken ct)
+    public async Task<IActionResult> GetAllPlainRoadmaps([FromQuery] SearchingRequest @params, CancellationToken ct)
     {
         var plainRoadmapsResult = await RoadmapService.GetPlainRoadmaps(@params.ToParams(), ct);
         return HandleResponse(plainRoadmapsResult, (r) =>

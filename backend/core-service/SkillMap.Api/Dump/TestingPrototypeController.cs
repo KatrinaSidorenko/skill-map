@@ -82,7 +82,9 @@
 
 using LearningPlatform.Roadmap.Business.Contracts;
 using LearningPlatform.RoadmapTests.Contracts;
+
 using Microsoft.AspNetCore.Mvc;
+
 using SkillMap.Business.RoadmapTest.Helpers;
 using SkillMap.Business.UserRoadmaps;
 using SkillMap.Business.UserTest;
@@ -92,7 +94,7 @@ using SkillMap.Shared.Results;
 [ApiController]
 public class TestingPrototypeController(
     IUserRoadmapsService userRoadmapsService,
-    IRoadmapTestGenerator roadmapTestGenerator,
+    ITopicQuestionsGenerator roadmapTestGenerator,
     IRoadmapService roadmapService) : ControllerBase
 {
     // 1. task 1: create GET question and answers for 1 topic
@@ -202,29 +204,29 @@ public class TestingPrototypeController(
         var userRoadmap = userRoadmapResult.Data;
         if (userRoadmap == null || userRoadmap.IsActive != true)
         {
-            throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"User roadmap with id {roadmapId} is null for user {userId}");
+            throw new LearningPlatformException(ErrorCode.NOTFOUND, $"User roadmap with id {roadmapId} is null for user {userId}");
         }
 
         var roadmapResult = await roadmapService.GetRoadmapById(roadmapId, ct);
         if (roadmapResult.IsFailed || !roadmapResult.HasData)
         {
-            throw new LearningPlatformException(ErrorCode.NOT_FOUND, $"Roadmap with id {roadmapId} not found");
+            throw new LearningPlatformException(ErrorCode.NOTFOUND, $"Roadmap with id {roadmapId} not found");
         }
 
         var roadmap = roadmapResult.Data;
         //var coreTopics = new RoadmapAnalyzer().FindCoreTopics(roadmap.Nodes, roadmap.Edges);
 
-        var coreTopics2 = new RoadmapAnalyzer().SelectStratifiedCoreTopics(roadmap.Nodes, roadmap.Edges, questionsLimit: 10);
-        var random = new Random();
-        var testResults = coreTopics2.Select(t => new KeyValuePair<string, (int, int)>(t.Id, (2, random.Next(2, 2)))).ToDictionary(kv => kv.Key, kv => kv.Value);
-        var suggestedChanges = await new RoadmapModificationAdvisor().SuggestRoadmapTopicChnages(
-            roadmap.Nodes,
-            roadmap.Edges,
-            testResults);
-        var completed = suggestedChanges.Where(n => n.MarkType == NodeMarkType.Finished).ToList();
-        var rebuildedRoadmap = new RoadmapRebuilder().RebuildRemainingRoadmap(
-            suggestedChanges,
-            roadmap.Edges);
-        return Ok(rebuildedRoadmap);
+        //var coreTopics2 = new StratifiedRoadmapTopicsSelector().SelectStratifiedCoreTopics(roadmap.Nodes, roadmap.Edges, questionsLimit: 10);
+        //var random = new Random();
+        //var testResults = coreTopics2.Select(t => new KeyValuePair<string, (int, int)>(t.Id, (2, random.Next(2, 2)))).ToDictionary(kv => kv.Key, kv => kv.Value);
+        //var suggestedChanges = await new RoadmapModificationAdvisor().SuggestRoadmapTopicChnages(
+        //    roadmap.Nodes,
+        //    roadmap.Edges,
+        //    testResults);
+        //var completed = suggestedChanges.Where(n => n.MarkType == NodeMarkType.Finished).ToList();
+        //var rebuildedRoadmap = new RoadmapRebuilder().RebuildRemainingRoadmap(
+        //    suggestedChanges,
+        //    roadmap.Edges);
+        return Ok();
     }
 }

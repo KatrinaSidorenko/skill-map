@@ -1,6 +1,6 @@
-﻿namespace SkillMap.Business.RoadmapTest.Models;
+﻿namespace SkillMap.Business.RoadmapTest.TopicQuestionDistributionBuilder;
 
-public class TopicAnalysis
+public class TopicQuestionPlan
 {
     public string Priority { get; set; }
     public double Coefficient { get; set; }

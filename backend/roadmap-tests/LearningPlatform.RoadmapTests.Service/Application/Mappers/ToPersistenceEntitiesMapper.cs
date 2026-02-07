@@ -1,8 +1,9 @@
 ﻿namespace LearningPlatform.RoadmapTests.Service.Application.Mappers;
 
-using Newtonsoft.Json;
-using LearningPlatform.RoadmapTests.Service.Persistence.Models;
 using LearningPlatform.RoadmapTests.Service.Application.Models;
+using LearningPlatform.RoadmapTests.Service.Persistence.Models;
+
+using Newtonsoft.Json;
 
 public static class ToPersistenceEntitiesMapper
 {
@@ -83,4 +84,3 @@ public static class ToPersistenceEntitiesMapper
         return JsonConvert.SerializeObject(payload);
     }
 }
-

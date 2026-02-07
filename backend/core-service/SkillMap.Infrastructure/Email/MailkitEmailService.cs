@@ -1,8 +1,11 @@
 ﻿using MailKit.Net.Smtp;
 using MailKit.Security;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
 using MimeKit;
+
 using SkillMap.Business.Abstractions;
 using SkillMap.Shared.Options;
 using SkillMap.Shared.Results;
@@ -44,7 +47,7 @@ public class MailkitEmailService : IEmailService
             //await smtp.SendAsync(email);
             //await smtp.DisconnectAsync(true);
             _logger.LogInformation("Email sent to {To}", to);
-            return Result.Success(true);    
+            return Result.Success(true);
         }
         catch (Exception ex)
         {

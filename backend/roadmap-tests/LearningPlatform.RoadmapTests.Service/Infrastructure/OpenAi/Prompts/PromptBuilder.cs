@@ -1,7 +1,8 @@
-﻿using LearningPlatform.RoadmapTests.Contracts;
+﻿using System.Text;
+
+using LearningPlatform.RoadmapTests.Contracts;
 using LearningPlatform.RoadmapTests.Contracts.Models;
 using LearningPlatform.RoadmapTests.Service.Application.Models;
-using System.Text;
 
 namespace LearningPlatform.RoadmapTests.Service.Infrastructure.OpenAi.Prompts;
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 using SkillMap.Core.Entities;
 
 namespace SkillMap.Persistence.EntityConfigurations;
@@ -14,7 +15,7 @@ public class RoadmapSnapshotConfiguration : IEntityTypeConfiguration<RoadmapSnap
         builder.Property(rs => rs.CreatedAt).IsRequired();
         builder.Property(rs => rs.UpdatedAt).IsRequired(false);
         builder.Property(rs => rs.UserRoadmapId).IsRequired();
-       
+
         builder.Property(rs => rs.Content).IsRequired();
 
         builder.HasOne(rs => rs.UserRoadmap)

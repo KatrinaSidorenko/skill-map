@@ -90,7 +90,7 @@ public static class TestQuestionTypeExtensions
         {
             Difficulty.Easy => Difficulty.Easy.ToString().ToLower(),
             Difficulty.Medium => Difficulty.Medium.ToString().ToLower(),
-            Difficulty.Hard => Difficulty.Hard.ToString().ToLower(),    
+            Difficulty.Hard => Difficulty.Hard.ToString().ToLower(),
             _ => throw new ArgumentOutOfRangeException(nameof(difficulty), difficulty, null)
         };
     }

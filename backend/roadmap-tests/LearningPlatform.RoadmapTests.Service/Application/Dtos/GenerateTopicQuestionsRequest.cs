@@ -1,6 +1,9 @@
 ﻿using FluentValidation;
+
 using LearningPlatform.RoadmapTests.Contracts.Models;
+
 using Newtonsoft.Json;
+
 using SkillMap.Shared.Results;
 
 namespace LearningPlatform.RoadmapTests.Service.Application.Models;
@@ -30,7 +33,7 @@ public static class GenerateTopicInputValidator
             messages.Add("Settings are required");
 
         return messages.Count > 0
-            ? new ResponseInfo(ErrorCode.INVALID_INPUT, string.Join("; ", messages))
+            ? new ResponseInfo(ErrorCode.INVALIDINPUT, string.Join("; ", messages))
             : null;
     }
 }

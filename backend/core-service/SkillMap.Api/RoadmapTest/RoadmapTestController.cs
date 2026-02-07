@@ -1,5 +1,7 @@
 ﻿using LearningPlatform.Roadmap.Business;
+
 using Microsoft.AspNetCore.Mvc;
+
 using SkillMap.Api.Base;
 using SkillMap.Api.Roadmaps.Models;
 using SkillMap.Api.RoadmapTest.Models;
@@ -32,7 +34,7 @@ public class RoadmapTestController : BaseController
         => HandleResponse(await _roadmapTestService.CreateInitialRoadmapTest(GetUserId(), roadmapId, config, ct));
 
     [HttpPost("{roadmapId}/intermediate")]
-    public async Task<IActionResult> CreateIntermediateRoadmapTest([FromRoute]string roadmapId, [FromBody]RoadmapTestConfigDto config, CancellationToken ct)
+    public async Task<IActionResult> CreateIntermediateRoadmapTest([FromRoute] string roadmapId, [FromBody] RoadmapTestConfigDto config, CancellationToken ct)
         => HandleResponse(await _roadmapTestService.CreateIntermediateRoadmapTest(GetUserId(), roadmapId, config, ct));
 
     [HttpGet("history/{roadmapId}")]

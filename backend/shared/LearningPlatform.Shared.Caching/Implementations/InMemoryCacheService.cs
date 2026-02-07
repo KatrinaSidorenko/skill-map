@@ -1,4 +1,5 @@
 ﻿using LearningPlatform.Shared.Caching.Abstractions;
+
 using Microsoft.Extensions.Caching.Memory;
 
 namespace LearningPlatform.Shared.Caching.Implementations;
@@ -40,4 +41,3 @@ public class InMemoryCacheService(IMemoryCache cache) : ICacheService
         return Task.CompletedTask;
     }
 }
-

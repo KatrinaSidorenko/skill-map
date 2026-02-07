@@ -1,11 +1,11 @@
 ﻿using LearningPlatform.Roadmap.Business.Contracts.Models;
 using LearningPlatform.RoadmapTests.Contracts.Models;
 
-namespace SkillMap.Business.RoadmapTest.Helpers;
+namespace SkillMap.Business.RoadmapTest.TopicSelectors;
 
-public class RoadmapAnalyzer
+public class StratifiedRoadmapTopicsSelector : IRoadmapTopicsSelector
 {
-    public List<Topic> SelectStratifiedCoreTopics(
+    public List<Topic> SelectCoreTopics(
         List<Node> nodes,
         List<Edge> edges,
         int questionsLimit)
@@ -23,7 +23,7 @@ public class RoadmapAnalyzer
         }
 
         var nodeLevels = new Dictionary<string, int>();
-        var nodeImpacts = new Dictionary<string, int>(); 
+        var nodeImpacts = new Dictionary<string, int>();
 
         CalculateLevels(nodes, graph, inDegree, nodeLevels);
         CalculateDescendants(nodes, graph, nodeImpacts);

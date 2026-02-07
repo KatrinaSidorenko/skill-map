@@ -1,5 +1,6 @@
-﻿using Newtonsoft.Json;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
+
+using Newtonsoft.Json;
 
 namespace SkillMap.Business.RoadmapTest.Models;
 

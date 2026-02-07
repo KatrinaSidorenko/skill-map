@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using SkillMap.Core.Entities;
-using System.Security.Claims;
-using SkillMap.Shared.Extensions;
+﻿using System.Security.Claims;
+
+using Microsoft.AspNetCore.Http;
+
 using SkillMap.Business.Abstractions;
+using SkillMap.Core.Entities;
+using SkillMap.Shared.Extensions;
 
 namespace SkillMap.Infrastructure.Account;
 

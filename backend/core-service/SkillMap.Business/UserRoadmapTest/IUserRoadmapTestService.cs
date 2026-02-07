@@ -1,7 +1,9 @@
-﻿using LearningPlatform.RoadmapTests.Contracts;
+﻿using System;
+
+using LearningPlatform.RoadmapTests.Contracts;
+
 using SkillMap.Business.RoadmapTest.Models;
 using SkillMap.Business.UserRoadmapTest.Models;
-using System;
 
 namespace SkillMap.Business.UserTest;
 

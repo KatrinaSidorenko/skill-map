@@ -1,5 +1,6 @@
-﻿using LearningPlatform.Roadmap.Business.Contracts.Models;
-using LearningPlatform.Roadmap.Business.Contracts.Constants;
+﻿using LearningPlatform.Roadmap.Business.Contracts.Constants;
+using LearningPlatform.Roadmap.Business.Contracts.Models;
+
 using SkillMap.Shared.Extensions;
 
 namespace SkillMap.Persistence.Neo4j.Helpers;
@@ -153,7 +154,7 @@ public static class CommandsBuilder
             SET r += $props
         ";
 
-       
+
         return new Command
         {
             Text = createEdgeQuery,

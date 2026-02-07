@@ -1,7 +1,10 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System.Data;
+
+using Microsoft.Extensions.Options;
+
 using Npgsql;
+
 using SkillMap.Shared.Options;
-using System.Data;
 
 namespace LearningPlatform.RoadmapTests.Service.Persistence;
 
@@ -45,4 +48,3 @@ public sealed class DatabaseConnectionFactory : IDatabaseConnectionFactory
         }
     }
 }
-

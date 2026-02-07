@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
+﻿using System.Diagnostics;
+
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 
 namespace LearningPlatform.Shared.Api.Middleware;
 
@@ -16,7 +17,7 @@ public class ExecutionTimeFilter : IActionFilter
 
     public void OnActionExecuting(ActionExecutingContext context)
     {
-        
+
     }
 
     public void OnActionExecuted(ActionExecutedContext context)

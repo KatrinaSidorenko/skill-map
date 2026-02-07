@@ -1,11 +1,13 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+
 using SkillMap.Business.Abstractions;
 using SkillMap.Core.Entities;
 using SkillMap.Shared.Options;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace SkillMap.Infrastructure.Account;
 

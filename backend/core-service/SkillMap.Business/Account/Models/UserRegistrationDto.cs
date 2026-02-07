@@ -1,6 +1,9 @@
-﻿using FluentValidation;
+﻿using System;
+
+using FluentValidation;
+
 using SkillMap.Shared.Results;
-using System;
+
 using UserRole = SkillMap.Core.Constants.Role;
 
 namespace SkillMap.Business.Account.Models;
@@ -17,28 +20,28 @@ public class UserRegistrationDto : AbstractValidator<UserRegistrationDto>
         RuleFor(x => x.UserName)
             .NotEmpty()
             .WithMessage("User name is required.")
-            .WithErrorCode(ErrorCode.USERNAME_REQUIRED);
+            .WithErrorCode(ErrorCode.USERNAMEREQUIRED);
 
         RuleFor(x => x.Email)
             .NotEmpty()
             .WithMessage("Email is required.")
             .EmailAddress()
             .WithMessage("A valid email is required.")
-            .WithErrorCode(ErrorCode.EMAIL_INVALID);
+            .WithErrorCode(ErrorCode.EMAILINVALID);
 
         RuleFor(x => x.Password)
             .NotEmpty()
             .WithMessage("Password is required.")
             .MinimumLength(6)
             .WithMessage("Password must be at least 6 characters long.")
-            .WithErrorCode(ErrorCode.PASSWORD_INVALID);
+            .WithErrorCode(ErrorCode.PASSWORDINVALID);
 
         RuleFor(x => x.Role)
             .NotEmpty()
             .WithMessage("Role is required.")
-            .WithErrorCode(ErrorCode.ROLE_REQUIRED)
+            .WithErrorCode(ErrorCode.ROLEREQUIRED)
             .Must(r => UserRole.AVAILABLE_ROLES.Contains(r))
             .WithMessage("Role must be one of the available roles.")
-            .WithErrorCode(ErrorCode.ROLE_INVALID);
+            .WithErrorCode(ErrorCode.ROLEINVALID);
     }
 }

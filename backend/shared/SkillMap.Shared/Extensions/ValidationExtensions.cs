@@ -1,4 +1,8 @@
-﻿using FluentValidation.Results;
+﻿// <copyright file="ValidationExtensions.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+using FluentValidation.Results;
 
 namespace SkillMap.Shared.Extensions;
 

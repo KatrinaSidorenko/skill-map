@@ -1,4 +1,5 @@
 ﻿using LearningPlatform.RoadmapTests.Contracts;
+
 using SkillMap.Shared.Results;
 
 namespace LearningPlatform.RoadmapTests.Service.Core.Questions;
@@ -24,10 +25,10 @@ public sealed class SingleChoiceQuestion : Question
         var list = answers.ToList();
 
         if (list.Count < 2)
-            throw new LearningPlatformException(ErrorCode.VALIDATION_ERROR, "At least 2 answers required");
+            throw new LearningPlatformException(ErrorCode.VALIDATIONERROR, "At least 2 answers required");
 
         if (list.Count(a => a.IsCorrect) != 1)
-            throw new LearningPlatformException(ErrorCode.VALIDATION_ERROR, "Exactly one correct answer required");
+            throw new LearningPlatformException(ErrorCode.VALIDATIONERROR, "Exactly one correct answer required");
 
         return new SingleChoiceQuestion(text, difficulty, list);
     }

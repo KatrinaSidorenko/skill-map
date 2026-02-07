@@ -1,7 +1,9 @@
 ﻿using LearningPlatform.RoadmapTests.Contracts;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+
 using SkillMap.Business.Abstractions;
 using SkillMap.Business.RoadmapTest;
 using SkillMap.Infrastructure.Account;
@@ -25,7 +27,7 @@ public static class LayerRegistration
         services.Configure<EmailOptions>(configuration.GetSection(EmailOptions.SectionName));
         services.Configure<RoadmapTestingServiceOptions>(configuration.GetSection(RoadmapTestingServiceOptions.SectionName));
 
-        services.AddHttpClient<IRoadmapTestGenerator, RoadmapTestGeneratorClient>(
+        services.AddHttpClient<ITopicQuestionsGenerator, RoadmapTestGeneratorClient>(
             (sp, client) =>
             {
                 var options = sp.GetRequiredService<IOptions<RoadmapTestingServiceOptions>>();

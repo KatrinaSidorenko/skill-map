@@ -37,5 +37,5 @@ public class NodeResponse
     [JsonProperty("children")]
     public List<NodeResponse> Children { get; set; } = new List<NodeResponse>();
     [JsonProperty("isDeleted")]
-    public bool IsDeleted { get; set; } 
+    public bool IsDeleted { get; set; }
 }
