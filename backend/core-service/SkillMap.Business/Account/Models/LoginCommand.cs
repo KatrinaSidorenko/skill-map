@@ -1,14 +1,15 @@
 ﻿using FluentValidation;
+
 using SkillMap.Shared.Results;
 
 namespace SkillMap.Business.Account.Models;
 
-public class LoginDto : AbstractValidator<LoginDto>
+public class LoginCommand : AbstractValidator<LoginCommand>
 {
     public string Email { get; set; }
     public string Password { get; set; }
 
-    public LoginDto()
+    public LoginCommand()
     {
 
         RuleFor(x => x.Email)
@@ -16,13 +17,13 @@ public class LoginDto : AbstractValidator<LoginDto>
             .WithMessage("Email is required.")
             .EmailAddress()
             .WithMessage("A valid email is required.")
-            .WithErrorCode(ErrorCode.EMAIL_INVALID);
+            .WithErrorCode(ErrorCode.EMAILINVALID);
 
         RuleFor(x => x.Password)
             .NotEmpty()
             .WithMessage("Password is required.")
             .MinimumLength(6)
             .WithMessage("Password must be at least 6 characters long.")
-            .WithErrorCode(ErrorCode.PASSWORD_INVALID);
+            .WithErrorCode(ErrorCode.PASSWORDINVALID);
     }
 }

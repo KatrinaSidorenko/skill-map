@@ -1,8 +1,11 @@
 ﻿using MailKit.Net.Smtp;
 using MailKit.Security;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
 using MimeKit;
+
 using SkillMap.Business.Abstractions;
 using SkillMap.Shared.Options;
 using SkillMap.Shared.Results;
@@ -20,7 +23,7 @@ public class MailkitEmailService : IEmailService
         _logger = logger;
     }
 
-    public async Task<Result<bool>> SendEmailAsync(string to, string subject, string body, bool isHtml = true, CancellationToken ct = default)
+    public async Task<bool> SendEmailAsync(string to, string subject, string body, bool isHtml = true, CancellationToken ct = default)
     {
         var email = new MimeMessage();
         email.From.Add(new MailboxAddress(_options.FromName, _options.FromEmail));
@@ -44,12 +47,12 @@ public class MailkitEmailService : IEmailService
             //await smtp.SendAsync(email);
             //await smtp.DisconnectAsync(true);
             _logger.LogInformation("Email sent to {To}", to);
-            return Result.Success(true);    
+            return true;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to send email to {To}", to);
-            return ResultType.FailedToSendEmail<bool>(to);
+            return false;
         }
     }
 }

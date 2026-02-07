@@ -12,4 +12,3 @@ public class UnitOfWork(SkillMapDbContext context) : IUnitOfWork
     public IRepository<TEntity> CreateRepository<TEntity>() where TEntity : class
         => new Repository<TEntity>(context);
 }
-

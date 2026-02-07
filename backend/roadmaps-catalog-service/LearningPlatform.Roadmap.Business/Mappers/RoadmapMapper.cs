@@ -1,7 +1,8 @@
-﻿using LearningPlatform.Roadmap.Business.Contracts.Constants;
+﻿using LearningPlatform.Roadmap.Business.Contracts;
+using LearningPlatform.Roadmap.Business.Contracts.Constants;
 using LearningPlatform.Roadmap.Business.Contracts.Models;
+
 using SkillMap.Shared.Extensions;
-using LearningPlatform.Roadmap.Business.Contracts;
 
 namespace LearningPlatform.Roadmap.Business.Mappers;
 

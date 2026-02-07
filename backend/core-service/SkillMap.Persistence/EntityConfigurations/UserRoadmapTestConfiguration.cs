@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 using SkillMap.Core.Entities.UserRoadmapTest;
 
 namespace SkillMap.Persistence.EntityConfigurations;

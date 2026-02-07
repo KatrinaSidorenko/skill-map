@@ -1,9 +1,14 @@
-﻿using LearningPlatform.RoadmapTests.Contracts.Models;
+﻿using System.ClientModel;
+
+using LearningPlatform.RoadmapTests.Contracts.Models;
 using LearningPlatform.RoadmapTests.Service.Infrastructure.Common;
+
 using Newtonsoft.Json;
+
 using OpenAI.Chat;
+
 using SkillMap.Shared.Extensions;
-using System.ClientModel;
+
 using QuestionDto = LearningPlatform.RoadmapTests.Service.Application.Models.QuestionDto;
 
 namespace LearningPlatform.RoadmapTests.Service.Infrastructure.OpenAi.Validators;
@@ -42,7 +47,7 @@ public static class OpenAiResponseValidator
         {
             return new GenerationResult<OpenAiQuestionsResponse>(GenerationErrorReasons.OpenAIOutputIsEmpty(response.Value.SerializeOrDefault()));
         }
-       
+
         var parsed = content.DeserializeOrDefault<OpenAiQuestionsResponse>();
         if (parsed is null)
         {

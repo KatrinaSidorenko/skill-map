@@ -1,10 +1,13 @@
-﻿using LearningPlatform.Shared.Caching.Abstractions;
+﻿using System.Security.Cryptography;
+using System.Text;
+
+using LearningPlatform.Shared.Caching.Abstractions;
+
 using Microsoft.Extensions.Logging;
+
 using SkillMap.Business.Abstractions;
 using SkillMap.Infrastructure.Email;
 using SkillMap.Shared.Results;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace SkillMap.Infrastructure.Account;
 
@@ -26,7 +29,7 @@ public class ResetAccountService(IEmailService emailService, ICacheService cache
         using var sha256 = SHA256.Create();
         var tokenBytes = Encoding.UTF8.GetBytes(token);
         var hashedBytes = sha256.ComputeHash(tokenBytes);
-        
+
         return GetSafeToken(Convert.ToBase64String(hashedBytes));
     }
 
@@ -41,7 +44,7 @@ public class ResetAccountService(IEmailService emailService, ICacheService cache
     {
         var token = GenerateSecureToken();
         var hashedToken = HashToken(token);
-        
+
         logger.LogWarning("token: {Token}, hashedToken: {HashedToken}", token, hashedToken);
         var key = $"{CacheKeyPrefix}:{hashedToken}";
         await cacheService.SetAsync(key, email, TimeSpan.FromMinutes(TokenExpirationMinutes), ct);
@@ -50,7 +53,7 @@ public class ResetAccountService(IEmailService emailService, ICacheService cache
         var subject = "Password Reset Request";
         var body = $"Use the following token to reset your password. This token is valid for {TokenExpirationMinutes} minutes.\n\nToken: {token}";
         var sendResult = await emailService.SendEmailAsync(email, subject, body, ct: ct);
-        if (!sendResult.IsSuccessful)
+        if (!sendResult)
         {
             return ResultType.FailedToSendEmail<bool>(email);
         }

@@ -1,4 +1,5 @@
 ﻿using LearningPlatform.Roadmap.Business.Contracts.Models;
+
 using SkillMap.Shared.Extensions;
 
 namespace LearningPlatform.Roadmap.Business.Algo;
@@ -47,7 +48,7 @@ public static class TopologicalSort
             if (neighbors == null || neighbors.Count < 0) { continue; }
 
             var orderedNeighbors = neighbors.OrderBy(n => n.Title).ToList();
-            foreach (var neighbor in orderedNeighbors) 
+            foreach (var neighbor in orderedNeighbors)
             {
                 nodesInDegrees[neighbor]--;
                 if (nodesInDegrees[neighbor] == 0)

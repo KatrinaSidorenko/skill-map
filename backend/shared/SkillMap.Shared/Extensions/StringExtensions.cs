@@ -1,4 +1,8 @@
-﻿namespace SkillMap.Shared.Extensions;
+﻿// <copyright file="StringExtensions.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace SkillMap.Shared.Extensions;
 
 public static class StringExtensions
 {

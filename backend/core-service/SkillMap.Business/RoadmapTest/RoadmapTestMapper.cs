@@ -1,10 +1,12 @@
 ﻿using LearningPlatform.RoadmapTests.Contracts;
 using LearningPlatform.RoadmapTests.Contracts.Models;
+
 using SkillMap.Business.RoadmapTest.Helpers;
 using SkillMap.Business.RoadmapTest.Models;
 using SkillMap.Core.Constants;
 using SkillMap.Core.Entities.UserRoadmapTest;
 using SkillMap.Shared.Results;
+
 using SingleAnswerQuestionAnalysisResultDto = SkillMap.Business.RoadmapTest.Models.SingleAnswerQuestionAnalysisResultDto;
 
 namespace SkillMap.Business.RoadmapTest;
@@ -48,7 +50,7 @@ public static class RoadmapTestMapper
                         CorrectAnswerId = single.CorrectAnswerId,
                         QuestionType = single.QuestionType.ToQuestionTypeString()
                     } as CheckedQuestion,
-                    _ => throw new LearningPlatformException(ErrorCode.INTERNAL_ERROR, $"Unsupported question type {qa.Value.QuestionType}"),
+                    _ => throw new LearningPlatformException(ErrorCode.INTERNALERROR, $"Unsupported question type {qa.Value.QuestionType}"),
                 };
             })
         };
@@ -108,7 +110,7 @@ public static class RoadmapTestMapper
         {
             Id = userTestId.ToString(),
             RoadmapId = roadmapId,
-           UserRoadmapId = userRoadmapId,
+            UserRoadmapId = userRoadmapId,
             Type = testType,
             TestConfig = entity.Config?.ToDaoConfig(),
             TopicSettings = entity.TopicSettings?.ToDictionary(
@@ -250,7 +252,7 @@ public static class RoadmapTestMapper
                     };
                 }
             default:
-                throw new LearningPlatformException(ErrorCode.INTERNAL_ERROR, $"Unsupported question type {question.Type}");
+                throw new LearningPlatformException(ErrorCode.INTERNALERROR, $"Unsupported question type {question.Type}");
         }
     }
 }

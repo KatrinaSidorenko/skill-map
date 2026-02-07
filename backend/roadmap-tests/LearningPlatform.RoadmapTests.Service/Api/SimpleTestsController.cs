@@ -6,9 +6,12 @@ using LearningPlatform.RoadmapTests.Service.Application.Models;
 using LearningPlatform.RoadmapTests.Service.Core;
 using LearningPlatform.RoadmapTests.Service.Persistence.Abstractions;
 using LearningPlatform.RoadmapTests.Service.Persistence.Models;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+
 using SkillMap.Shared.Extensions;
+
 using AnswerDto = LearningPlatform.RoadmapTests.Service.Application.Models.AnswerDto;
 using QuestionDto = LearningPlatform.RoadmapTests.Service.Application.Models.QuestionDto;
 
@@ -30,55 +33,55 @@ public class SimpleTestsController : ControllerBase
     //var topicEntity = topicQuestionsDto.ToTopicEntity(topicName, topicDescription);
     //var topicQuestionsEntity = topicQuestionsDto.ToQuestionEntities(difficultyLevel);
 
-//    {
-//  "id": "backend-di",
-//  "questions": [
-//    {
-//      "id": "backend-di-q1",
-//      "text": "What is the primary goal of dependency injection?",
-//      "type": 0,
-//      "answers": [
-//        {
-//          "id": "backend-di-q1-a1",
-//          "text": "To invert control and supply dependencies from the outside",
-//          "isCorrect": true
-//        },
-//        {
-//          "id": "backend-di-q1-a2",
-//          "text": "To create dependencies inside the class using new",
-//          "isCorrect": false
-//        },
-//        {
-//    "id": "backend-di-q1-a3",
-//          "text": "To optimize for speed by avoiding interfaces",
-//          "isCorrect": false
-//        }
-//      ]
-//    },
-//    {
-//    "id": "backend-di-q2",
-//      "text": "Which technique is commonly used in DI to provide dependencies through a constructor?",
-//      "type": 0,
-//      "answers": [
-//        {
-//        "id": "backend-di-q2-a1",
-//          "text": "Constructor injection",
-//          "isCorrect": true
-//        },
-//        {
-//        "id": "backend-di-q2-a2",
-//          "text": "Global singleton access",
-//          "isCorrect": false
-//        },
-//        {
-//        "id": "backend-di-q2-a3",
-//          "text": "Direct instantiation with new inside the consumer",
-//          "isCorrect": false
-//        }
-//      ]
-//    }
-//  ]
-//}
+    //    {
+    //  "id": "backend-di",
+    //  "questions": [
+    //    {
+    //      "id": "backend-di-q1",
+    //      "text": "What is the primary goal of dependency injection?",
+    //      "type": 0,
+    //      "answers": [
+    //        {
+    //          "id": "backend-di-q1-a1",
+    //          "text": "To invert control and supply dependencies from the outside",
+    //          "isCorrect": true
+    //        },
+    //        {
+    //          "id": "backend-di-q1-a2",
+    //          "text": "To create dependencies inside the class using new",
+    //          "isCorrect": false
+    //        },
+    //        {
+    //    "id": "backend-di-q1-a3",
+    //          "text": "To optimize for speed by avoiding interfaces",
+    //          "isCorrect": false
+    //        }
+    //      ]
+    //    },
+    //    {
+    //    "id": "backend-di-q2",
+    //      "text": "Which technique is commonly used in DI to provide dependencies through a constructor?",
+    //      "type": 0,
+    //      "answers": [
+    //        {
+    //        "id": "backend-di-q2-a1",
+    //          "text": "Constructor injection",
+    //          "isCorrect": true
+    //        },
+    //        {
+    //        "id": "backend-di-q2-a2",
+    //          "text": "Global singleton access",
+    //          "isCorrect": false
+    //        },
+    //        {
+    //        "id": "backend-di-q2-a3",
+    //          "text": "Direct instantiation with new inside the consumer",
+    //          "isCorrect": false
+    //        }
+    //      ]
+    //    }
+    //  ]
+    //}
     [HttpPost]
     public async Task<IActionResult> Create(CancellationToken ct)
     {
@@ -99,7 +102,7 @@ public class SimpleTestsController : ControllerBase
     }
 
     [HttpPost("questions")]
-    public async Task<IActionResult> CreateQuestions([FromQuery]long topicId, CancellationToken ct)
+    public async Task<IActionResult> CreateQuestions([FromQuery] long topicId, CancellationToken ct)
     {
         var difficultyLevel = Difficulty.Easy.ToDifficultyString();
         var questions = new List<QuestionEntity>
@@ -201,51 +204,51 @@ public class SimpleTestsController : ControllerBase
         return Ok(questionsDto);
     }
 
-    
-//{
-//      "id": null,
-//      "text": "Which statement best describes dependency injection?",
-//      "type": 0,
-//      "answers": [
-//        {
-//          "id": null,
-//          "text": "It injects dependencies from outside the class",
-//          "isCorrect": true
-//        },
-//        {
-//          "id": null,
-//          "text": "It makes the class create its own dependencies",
-//          "isCorrect": false
-//        },
-//        {
-//    "id": null,
-//          "text": "It prevents using interfaces",
-//          "isCorrect": false
-//        }
-//      ]
-//    },
-//    {
-//    "id": null,
-//      "text": "What principle does dependency injection primarily promote?",
-//      "type": 0,
-//      "answers": [
-//        {
-//        "id": null,
-//          "text": "Tight coupling",
-//          "isCorrect": false
-//        },
-//        {
-//        "id": null,
-//          "text": "Inversion of Control",
-//          "isCorrect": true
-//        },
-//        {
-//        "id": null,
-//          "text": "Manual dependency creation",
-//          "isCorrect": false
-//        }
-//      ]
-//    }
+
+    //{
+    //      "id": null,
+    //      "text": "Which statement best describes dependency injection?",
+    //      "type": 0,
+    //      "answers": [
+    //        {
+    //          "id": null,
+    //          "text": "It injects dependencies from outside the class",
+    //          "isCorrect": true
+    //        },
+    //        {
+    //          "id": null,
+    //          "text": "It makes the class create its own dependencies",
+    //          "isCorrect": false
+    //        },
+    //        {
+    //    "id": null,
+    //          "text": "It prevents using interfaces",
+    //          "isCorrect": false
+    //        }
+    //      ]
+    //    },
+    //    {
+    //    "id": null,
+    //      "text": "What principle does dependency injection primarily promote?",
+    //      "type": 0,
+    //      "answers": [
+    //        {
+    //        "id": null,
+    //          "text": "Tight coupling",
+    //          "isCorrect": false
+    //        },
+    //        {
+    //        "id": null,
+    //          "text": "Inversion of Control",
+    //          "isCorrect": true
+    //        },
+    //        {
+    //        "id": null,
+    //          "text": "Manual dependency creation",
+    //          "isCorrect": false
+    //        }
+    //      ]
+    //    }
     [HttpPost("bulk")]
     public async Task<IActionResult> Bulk(CancellationToken ct)
     {

@@ -1,4 +1,5 @@
 ﻿using LearningPlatform.Roadmap.Business.Contracts.Models;
+
 using SkillMap.Business.Roadmaps.Models;
 using SkillMap.Core.Constants;
 using SkillMap.Core.Entities;
@@ -65,7 +66,7 @@ public static class ModificationsHelper
         };
     }
 
- 
+
 
     //public static List<NodeResponse> GetCreatedNodes(this IEnumerable<RoadmapModification> nodes)
     //{
@@ -115,7 +116,8 @@ public static class ModificationsHelper
         // if all children are completed, set parent to completed, progress to 100
         // if all children are not started, set parent to not started, progress to 0
         var snapshotUpdates = (modificationsByActions.GetOrDefault(ModificationAction.SnapshotUpdate) ?? new List<RoadmapModification>())
-            .Select(m => new {
+            .Select(m => new
+            {
                 m.UpdatedAt,
                 Metadata = m.Metadata?.DeserializeOrDefault<LearningItemChange>()
             })

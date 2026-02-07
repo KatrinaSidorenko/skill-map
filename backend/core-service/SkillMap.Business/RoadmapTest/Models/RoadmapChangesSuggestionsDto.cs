@@ -1,9 +1,10 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using Newtonsoft.Json;
 
 namespace SkillMap.Business.RoadmapTest.Models;
 
@@ -24,4 +25,3 @@ public class RoadmapTestSuggestionItemDto
     [JsonProperty("description")]
     public string Description { get; set; } = string.Empty;
 }
-

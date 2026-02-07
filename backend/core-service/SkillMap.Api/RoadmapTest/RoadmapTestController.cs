@@ -1,5 +1,7 @@
 ﻿using LearningPlatform.Roadmap.Business;
+
 using Microsoft.AspNetCore.Mvc;
+
 using SkillMap.Api.Base;
 using SkillMap.Api.Roadmaps.Models;
 using SkillMap.Api.RoadmapTest.Models;
@@ -28,18 +30,12 @@ public class RoadmapTestController : BaseController
     }
 
     [HttpPost("{roadmapId}/initial")]
-    public async Task<IActionResult> CreateInitialRoadmapTest([FromRoute]string roadmapId, [FromBody]RoadmapTestConfigDto config, CancellationToken ct)
-    {
-        var response = await _roadmapTestService.CreateInitialRoadmapTest(GetUserId(), roadmapId, config, ct);
-        return Ok(response);
-    }
+    public async Task<IActionResult> CreateInitialRoadmapTest([FromRoute] string roadmapId, [FromBody] RoadmapTestConfigDto config, CancellationToken ct)
+        => HandleResponse(await _roadmapTestService.CreateInitialRoadmapTest(GetUserId(), roadmapId, config, ct));
 
     [HttpPost("{roadmapId}/intermediate")]
-    public async Task<IActionResult> CreateIntermediateRoadmapTest([FromRoute]string roadmapId, [FromBody]RoadmapTestConfigDto config, CancellationToken ct)
-    {
-        var response = await _roadmapTestService.CreateIntermediateRoadmapTest(GetUserId(), roadmapId, config, ct);
-        return Ok(response);
-    }
+    public async Task<IActionResult> CreateIntermediateRoadmapTest([FromRoute] string roadmapId, [FromBody] RoadmapTestConfigDto config, CancellationToken ct)
+        => HandleResponse(await _roadmapTestService.CreateIntermediateRoadmapTest(GetUserId(), roadmapId, config, ct));
 
     [HttpGet("history/{roadmapId}")]
     public async Task<TestingHistoryDto> GetRoadmapTestingHistory(string roadmapId, CancellationToken ct)

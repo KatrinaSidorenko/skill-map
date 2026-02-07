@@ -25,7 +25,7 @@ public static class GraphHelpers
         foreach (var component in sccComponents)
         {
             var componentEdges = edges.Where(e => component.Contains(e.Source) && component.Contains(e.Target)).ToList();
-            
+
             cycleEdges.AddRange(componentEdges.Where(e => !e.IsCorrectEdgeDirection()));
         }
 
@@ -34,8 +34,8 @@ public static class GraphHelpers
 
     private static bool IsCorrectEdgeDirection(this EdgeDto edge)
         => edge.Source.Type.IsTopic() && edge.Target.Type.IsSubTopic();
-        //|| edge.Source.Type.IsSubTopic() && edge.Target.Type.IsSubTopic()
-        //|| edge.Source.Type.IsTopic() && edge.Target.Type.IsTopic();
+    //|| edge.Source.Type.IsSubTopic() && edge.Target.Type.IsSubTopic()
+    //|| edge.Source.Type.IsTopic() && edge.Target.Type.IsTopic();
 
     public static NodeDto GetRootNode(this List<EdgeDto> edges)
     {

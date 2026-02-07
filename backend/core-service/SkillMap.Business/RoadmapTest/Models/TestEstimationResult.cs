@@ -41,7 +41,7 @@ public class AnswerDetail
     public string AnswerId { get; set; }
     [JsonProperty("text")]
     public string Text { get; set; }
-    
+
     [JsonProperty("isCorrect")]
     public bool IsCorrect { get; set; }
     [JsonProperty("isSelected")]
@@ -50,5 +50,5 @@ public class AnswerDetail
 
 public class SingleChoiceAnswerDetail : AnswerDetail
 {
-    
+
 }

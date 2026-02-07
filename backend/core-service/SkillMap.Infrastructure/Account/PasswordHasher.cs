@@ -1,6 +1,7 @@
-﻿using SkillMap.Business.Abstractions;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
+
+using SkillMap.Business.Abstractions;
 
 namespace SkillMap.Infrastructure.Account;
 

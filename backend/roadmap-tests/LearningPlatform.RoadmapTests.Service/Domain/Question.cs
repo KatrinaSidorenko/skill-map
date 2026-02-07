@@ -1,4 +1,5 @@
 ﻿using LearningPlatform.RoadmapTests.Contracts;
+
 using SkillMap.Shared.Results;
 
 namespace LearningPlatform.RoadmapTests.Service.Core;
@@ -20,7 +21,7 @@ public abstract class Question
         //    throw new LearningPlatformException(ErrorCode.VALIDATION_ERROR, "Question id is required");
 
         if (string.IsNullOrWhiteSpace(text))
-            throw new LearningPlatformException(ErrorCode.VALIDATION_ERROR, "Question text is required");
+            throw new LearningPlatformException(ErrorCode.VALIDATIONERROR, "Question text is required");
 
         Text = text;
         Difficulty = difficulty;

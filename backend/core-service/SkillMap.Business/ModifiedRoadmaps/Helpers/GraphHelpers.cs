@@ -1,8 +1,10 @@
-﻿using LearningPlatform.Roadmap.Business.Contracts.Constants;
+﻿using System.Runtime.CompilerServices;
+
+using LearningPlatform.Roadmap.Business.Contracts.Constants;
+
 using SkillMap.Business.Roadmaps.Models;
 using SkillMap.Shared;
 using SkillMap.Shared.Extensions;
-using System.Runtime.CompilerServices;
 
 namespace SkillMap.Business.Roadmaps.Helpers;
 
@@ -30,7 +32,7 @@ public static class TreeResponseExtensions
                 {
                     graph.Edges[node.ParentId].Add(node.Id);
                 }
-               
+
             }
 
             graph = graph.ToGraph(node.Children);
@@ -49,7 +51,7 @@ public static class TreeResponseExtensions
             Type = NodeType.Roadmap,
             Children = treeResponse.Nodes,
             Index = -1
-        }) ;
+        });
 
         nodes.AddRange(treeResponse.Nodes);
 
@@ -173,4 +175,3 @@ public static class TreeResponseExtensions
     //    return nodes;
     //}
 }
-

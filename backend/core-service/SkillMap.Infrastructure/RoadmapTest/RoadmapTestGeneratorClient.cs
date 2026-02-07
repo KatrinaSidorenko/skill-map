@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+
 using LearningPlatform.RoadmapTests.Contracts;
 using LearningPlatform.RoadmapTests.Contracts.Models;
 
@@ -10,7 +11,7 @@ public sealed class GenerateTopicQuestionsHttpRequest
     public TopicQuestionsSettingDto Settings { get; init; }
 }
 
-public sealed class RoadmapTestGeneratorClient : IRoadmapTestGenerator
+public sealed class RoadmapTestGeneratorClient : ITopicQuestionsGenerator
 {
     private readonly HttpClient _httpClient;
 
@@ -43,7 +44,7 @@ public sealed class RoadmapTestGeneratorClient : IRoadmapTestGenerator
         return result;
     }
 
-    public async Task<List<TopicQuestionsDto>> GenerateRoadmapTest(
+    public async Task<List<TopicQuestionsDto>> GenerateTopicsQuestions(
         List<(Topic topic, TopicQuestionsSettingDto settings)> topicsSettings,
         CancellationToken ct)
     {

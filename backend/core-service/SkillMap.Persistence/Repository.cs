@@ -1,13 +1,13 @@
-﻿using SkillMap.Business.Abstractions;
-using SkillMap.Shared.Results;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
+
 using Microsoft.EntityFrameworkCore;
+
+using SkillMap.Business.Abstractions;
 
 namespace SkillMap.Persistence;
 
-// potential problem with transactions if multiple repositories are used in a single service
 internal class Repository<TEntity> : IRepository<TEntity>
-    where TEntity : class
+ where TEntity : class
 {
     private readonly SkillMapDbContext _context;
     private readonly DbSet<TEntity> _dbSet;
@@ -18,110 +18,83 @@ internal class Repository<TEntity> : IRepository<TEntity>
         _dbSet = context.Set<TEntity>();
     }
 
-    public async Task<Result<bool>> AddAsync(TEntity entity, CancellationToken ct = default)
+    public async Task<bool> AddAsync(TEntity entity, CancellationToken ct = default)
     {
-        await  _dbSet.AddAsync(entity);
-        return Result.Success(true);
+        await _dbSet.AddAsync(entity, ct);
+        return true;
     }
 
-    public async Task<Result<bool>> DeleteAsync(long id, CancellationToken ct = default)
+    public async Task<bool> DeleteAsync(long id, CancellationToken ct = default)
     {
         var entity = await _dbSet.FindAsync(new object[] { id }, ct);
         if (entity == null)
         {
-            return ResultType.NotFound<bool>($"{typeof(TEntity)} with id {id} not found");
+            return false;
         }
 
         _dbSet.Remove(entity);
-        return Result.Success(true);
+        return true;
     }
 
-    public async Task<Result<IEnumerable<TEntity>>> GetAllAsync(
-        Expression<Func<TEntity, bool>>? filter = null,
-        Expression<Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>>? orderBy = null,
-        int? pageNum = null, int? count = null,
-        CancellationToken ct = default)
+    public async Task<IEnumerable<TEntity>> GetAllAsync(
+    Expression<Func<TEntity, bool>>? filter = null,
+    Expression<Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>>? orderBy = null,
+    int? pageNum = null, int? count = null,
+    CancellationToken ct = default)
     {
         IQueryable<TEntity> query = _dbSet;
-        try
-        {
-            if (filter != null)
-                query = query.Where(filter);
 
-            if (orderBy != null)
-                query = orderBy.Compile()(query);
+        if (filter != null)
+            query = query.Where(filter);
 
-            if (pageNum.HasValue && count.HasValue)
-                query = query.Skip((pageNum.Value - 1) * count.Value).Take(count.Value);
+        if (orderBy != null)
+            query = orderBy.Compile()(query);
 
-            if (count.HasValue && !pageNum.HasValue)
-                query = query.Take(count.Value);
-        }
-        catch (Exception ex)
-        {
-            return Result.Failure<IEnumerable<TEntity>>("query_error", ex.Message);
-        }
+        if (pageNum.HasValue && count.HasValue)
+            query = query.Skip((pageNum.Value - 1) * count.Value).Take(count.Value);
+
+        if (count.HasValue && !pageNum.HasValue)
+            query = query.Take(count.Value);
 
         var result = await query.ToListAsync(ct);
-        return Result.Success<IEnumerable<TEntity>>(result);
+        return result;
     }
 
-    public async Task<Result<TEntity>> GetByIdAsync(long id, CancellationToken ct = default)
+    public async Task<TEntity?> GetByIdAsync(long id, CancellationToken ct = default)
     {
         var entity = await _dbSet.FindAsync(new object[] { id }, ct);
-        if (entity == null)
-        {
-            return ResultType.NotFound<TEntity>($"{typeof(TEntity)} with id {id} not found");
-        }
-
-        return Result.Success(entity);
+        return entity;
     }
 
-    public async Task<Result<TEntity>> GetFirstOrDefaultAsync(Expression<Func<TEntity, bool>> filter, CancellationToken ct = default)
+    public async Task<TEntity?> GetFirstOrDefaultAsync(Expression<Func<TEntity, bool>> filter, CancellationToken ct = default)
     {
         var entity = await _dbSet.FirstOrDefaultAsync(filter, ct);
-        if (entity == null)
-        {
-            return ResultType.NotFound<TEntity>($"{typeof(TEntity)} not found");
-        }
-
-        return Result.Success(entity);
+        return entity;
     }
 
-    public Task<Result<bool>> UpdateAsync(TEntity entity, CancellationToken ct = default)
+    public Task<bool> UpdateAsync(TEntity entity, CancellationToken ct = default)
     {
         _dbSet.Update(entity);
-        return Task.FromResult(Result.Success(true));
+        return Task.FromResult(true);
     }
 
-    public async Task<Result<TEntity>> GetByPredicate(
-               Expression<Func<TEntity, bool>> filter,
-                      CancellationToken ct = default) 
+    public async Task<TEntity?> GetByPredicate(
+    Expression<Func<TEntity, bool>> filter,
+    CancellationToken ct = default)
     {
         var entity = await _dbSet.FirstOrDefaultAsync(filter, ct);
-        if (entity == null)
-        {
-            return ResultType.NotFound<TEntity>($"{typeof(TEntity)} not found");
-        }
-        return Result.Success(entity);
+        return entity;
     }
 
-    public async Task<Result<bool>> IsUnique(Expression<Func<TEntity, bool>> filter, CancellationToken ct = default)
+    public async Task<bool> IsUnique(Expression<Func<TEntity, bool>> filter, CancellationToken ct = default)
     {
         var exists = await _dbSet.AnyAsync(filter, ct);
-        return Result.Success(!exists);
+        return !exists;
     }
 
-    public async Task<Result<bool>> SaveChangesAsync(CancellationToken ct = default)
+    public async Task<bool> SaveChangesAsync(CancellationToken ct = default)
     {
-        try
-        {
-            var saved = await _context.SaveChangesAsync(ct);
-            return Result.Success(saved > 0);
-        }
-        catch (Exception ex)
-        {
-            return ResultType.FailedToSave<bool>(ex.Message);
-        }
+        var saved = await _context.SaveChangesAsync(ct);
+        return saved > 0;
     }
 }

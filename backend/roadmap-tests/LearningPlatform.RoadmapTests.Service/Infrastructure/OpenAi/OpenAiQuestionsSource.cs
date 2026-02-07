@@ -5,11 +5,16 @@ using LearningPlatform.RoadmapTests.Service.Application.Models;
 using LearningPlatform.RoadmapTests.Service.Infrastructure.Common;
 using LearningPlatform.RoadmapTests.Service.Infrastructure.OpenAi.Prompts;
 using LearningPlatform.RoadmapTests.Service.Infrastructure.OpenAi.Validators;
+
 using Microsoft.Extensions.Options;
+
 using Newtonsoft.Json;
+
 using OpenAI;
 using OpenAI.Chat;
+
 using SkillMap.Shared.Options;
+
 using AnswerDto = LearningPlatform.RoadmapTests.Service.Application.Models.AnswerDto;
 using QuestionDto = LearningPlatform.RoadmapTests.Service.Application.Models.QuestionDto;
 

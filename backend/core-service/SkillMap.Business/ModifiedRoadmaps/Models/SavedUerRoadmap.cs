@@ -1,8 +1,10 @@
 ﻿using LearningPlatform.Roadmap.Business.Contracts.Models;
+
 using Newtonsoft.Json;
 
 namespace SkillMap.Business.Roadmaps.Models;
 
+// todo: what does saved mean?? bullshit name
 public class SavedUerRoadmap
 {
     [JsonProperty("id")]

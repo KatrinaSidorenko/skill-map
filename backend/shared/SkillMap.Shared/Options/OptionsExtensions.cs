@@ -1,4 +1,8 @@
-﻿namespace SkillMap.Shared.Options;
+﻿// <copyright file="OptionsExtensions.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace SkillMap.Shared.Options;
 
 public static class OptionsExtensions
 {

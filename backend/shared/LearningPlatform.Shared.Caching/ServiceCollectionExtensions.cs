@@ -1,5 +1,6 @@
 ﻿using LearningPlatform.Shared.Caching.Abstractions;
 using LearningPlatform.Shared.Caching.Implementations;
+
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LearningPlatform.Shared.Caching;

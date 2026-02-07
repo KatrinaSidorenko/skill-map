@@ -1,8 +1,11 @@
 ﻿using LearningPlatform.Roadmap.Business.Contracts;
 using LearningPlatform.Roadmap.Business.Contracts.Constants;
 using LearningPlatform.Roadmap.Business.Contracts.Models;
+
 using Microsoft.Extensions.Logging;
+
 using Neo4j.Driver;
+
 using SkillMap.Persistence.Neo4j.Helpers;
 using SkillMap.Shared.Models;
 using SkillMap.Shared.Results;
@@ -209,9 +212,9 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
                 var result = await tx.RunAsync(query, new
                 {
                     ids = roadmapIds,
-                    skip = @params.PaginationParams.Skip,
-                    limit = @params.PaginationParams.PageSize,
-                    searchTerm = @params.SearchTermByName
+                    skip = @params.paginationParams.Skip,
+                    limit = @params.paginationParams.pageSize,
+                    searchTerm = @params.searchTermByName
                 });
 
                 var nodes = new List<NodeDto>();
@@ -235,7 +238,7 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
                 var result = await tx.RunAsync(countQuery, new
                 {
                     ids = roadmapIds,
-                    searchTerm = @params.SearchTermByName
+                    searchTerm = @params.searchTermByName
                 });
                 await result.FetchAsync();
                 return result.Current["total"].As<int>();

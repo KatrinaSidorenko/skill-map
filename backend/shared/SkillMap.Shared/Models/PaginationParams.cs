@@ -1,6 +1,10 @@
-﻿namespace SkillMap.Shared.Models;
+﻿// <copyright file="PaginationParams.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
 
-public record PaginationParams(int PageNumber, int PageSize)
+namespace SkillMap.Shared.Models;
+
+public record PaginationParams(int pageNumber, int pageSize)
 {
-    public int Skip => (PageNumber - 1) * PageSize;
+    public int Skip => (this.pageNumber - 1) * this.pageSize;
 }

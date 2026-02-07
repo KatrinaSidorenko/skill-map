@@ -1,6 +1,8 @@
 ﻿using LearningPlatform.Roadmap.Business.Contracts.Constants;
 using LearningPlatform.Roadmap.Business.Contracts.Models;
+
 using Neo4j.Driver;
+
 using SkillMap.Shared.Extensions;
 
 namespace SkillMap.Persistence.Neo4j.Helpers;
@@ -15,7 +17,7 @@ public static class DtosMapper
         return dict;
     }
 
-    public static Dictionary<string, object> ToDict(this IRelationship rel,  Dictionary<string, Dictionary<string, object>> nodes)
+    public static Dictionary<string, object> ToDict(this IRelationship rel, Dictionary<string, Dictionary<string, object>> nodes)
     {
         var startId = rel.StartNodeElementId;
         var endId = rel.EndNodeElementId;

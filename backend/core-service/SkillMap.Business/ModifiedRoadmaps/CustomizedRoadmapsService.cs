@@ -1,5 +1,8 @@
-﻿using LearningPlatform.Roadmap.Business.Contracts;
+﻿using System.Xml.Linq;
+
+using LearningPlatform.Roadmap.Business.Contracts;
 using LearningPlatform.Roadmap.Business.Contracts.Constants;
+
 using SkillMap.Business.Abstractions;
 using SkillMap.Business.ModifiedRoadmaps.Helpers;
 using SkillMap.Business.ModifiedRoadmaps.Mappers;
@@ -13,13 +16,12 @@ using SkillMap.Shared.Extensions;
 using SkillMap.Shared.Gzip;
 using SkillMap.Shared.Models;
 using SkillMap.Shared.Results;
-using System.Xml.Linq;
 
 namespace SkillMap.Business.Roadmaps;
 
 public class CustomizedRoadmapsService(
-    IRoadmapService roadmapService, 
-    IUserRoadmapsService userRoadmapsService, 
+    IRoadmapService roadmapService,
+    IUserRoadmapsService userRoadmapsService,
     IRepository<RoadmapModification> modificationsRepository) : ICustomizedRoadmapsService
 {
     private const int MaxModificationsCount = 5;
@@ -45,7 +47,7 @@ public class CustomizedRoadmapsService(
             .GroupBy(r => r.RoadmapId)
             .ToDictionary(g => g.Key, g => g.First().CreatedAt);
 
-        var paginatedRoadmapsResult = await roadmapService.GetPlainRoadmapsByIds([..userRoadmapIds], @params, ct, excludePrivate: false);
+        var paginatedRoadmapsResult = await roadmapService.GetPlainRoadmapsByIds([.. userRoadmapIds], @params, ct, excludePrivate: false);
         if (!paginatedRoadmapsResult.IsSuccessful)
             return ResultType.RoadmapNotFound<PaginationResult<List<PlainRoadmapWithDetailsDto>>>("");
 
@@ -57,12 +59,10 @@ public class CustomizedRoadmapsService(
         }).ToList();
 
         var allUserRoadmapIds = userRoadmaps.Select(ur => ur.Id).ToList();
-        var allModificationsResult = await modificationsRepository.GetAllAsync(
-            m => allUserRoadmapIds.Contains(m.UserRoadmapId), ct: ct);
-        if (!allModificationsResult.IsSuccessful)
-            return ResultType.FailedToGet<PaginationResult<List<PlainRoadmapWithDetailsDto>>>("Failed to load modifications");
+        var allModifications = await modificationsRepository.GetAllAsync(
+            m => allUserRoadmapIds.Contains(m.UserRoadmapId), ct: ct) ?? Enumerable.Empty<RoadmapModification>();
 
-        var modificationsByUserRoadmap = allModificationsResult.Data
+        var modificationsByUserRoadmap = allModifications
             .GroupBy(m => m.UserRoadmapId)
             .ToDictionary(g => g.Key, g => g.ToList());
 
@@ -70,7 +70,7 @@ public class CustomizedRoadmapsService(
         {
             var userRoadmap = userRoadmaps.FirstOrDefault(ur => ur.RoadmapId == dto.Id);
             if (userRoadmap == null) continue;
-            var modifications = modificationsByUserRoadmap.GetOrDefault(userRoadmap.Id) ?? [];
+            var modifications = modificationsByUserRoadmap.GetOrDefault(userRoadmap.Id) ?? new List<RoadmapModification>();
             var (progress, status) = RoadmapProgressCalculator.Calculate(modifications, dto.TotalTopics);
             dto.Progress = progress;
             dto.Status = status;
@@ -94,10 +94,7 @@ public class CustomizedRoadmapsService(
             return ResultType.RoadmapNotFound<PlainRoadmapWithDetailsDto>(roadmapId);
 
         var roadmap = roadmapResult.Data.Result.First();
-        var modificationsResult = await modificationsRepository.GetAllAsync(m => m.UserRoadmapId == userRoadmap.Id, ct: ct);
-        if (!modificationsResult.IsSuccessful)
-            return ResultType.FailedToGet<PlainRoadmapWithDetailsDto>("Failed to load modifications");
-        var modifications = modificationsResult.Data.ToList();
+        var modifications = (await modificationsRepository.GetAllAsync(m => m.UserRoadmapId == userRoadmap.Id, ct: ct))?.ToList() ?? new List<RoadmapModification>();
 
         var (progress, status) = RoadmapProgressCalculator.Calculate(modifications, roadmap.TotalTopics);
         var dto = roadmap.ToPlainRoadmapWithDetailsDto();
@@ -125,12 +122,9 @@ public class CustomizedRoadmapsService(
             return ResultType.RoadmapNotFound<SavedUerRoadmap>(roadmapId);
 
         var source = sourceRoadmapResult.Data;
-        var modificationsResult = await modificationsRepository.GetAllAsync(
-            m => m.UserRoadmapId == userRoadmap.Id, ct: ct);
-        if (!modificationsResult.IsSuccessful)
-            return ResultType.FailedToGet<SavedUerRoadmap>("Failed to get roadmap modifications");
+        var modifications = (await modificationsRepository.GetAllAsync(
+            m => m.UserRoadmapId == userRoadmap.Id, ct: ct))?.ToList() ?? new List<RoadmapModification>();
 
-        var modifications = modificationsResult.Data.ToList();
         var modifiedRoadmap = RoadmapModificationApplier.Apply(source, modifications);
 
         return Result.Success(new SavedUerRoadmap
@@ -156,11 +150,7 @@ public class CustomizedRoadmapsService(
         modification.UserRoadmapId = userRoadmap.Id;
         await modificationsRepository.AddAsync(modification, ct);
         var saveResult = await modificationsRepository.SaveChangesAsync(ct);
-        if (!saveResult.IsSuccessful)
-        {
-            return ResultType.FailedToApplyModifications<bool>(userId, roadmapId);
-        }
-        return Result.Success(true);
+        return !saveResult ? ResultType.FailedToApplyModifications<bool>(userId, roadmapId) : Result.Success(true);
     }
 
     private async Task<Result<bool>> SaveModifications(long userId, string roadmapId, List<RoadmapModification> modifications, CancellationToken ct)
@@ -177,11 +167,7 @@ public class CustomizedRoadmapsService(
             await modificationsRepository.AddAsync(modification, ct);
         }
         var saveResult = await modificationsRepository.SaveChangesAsync(ct);
-        if (!saveResult.IsSuccessful)
-        {
-            return ResultType.FailedToApplyModifications<bool>(userId, roadmapId);
-        }
-        return Result.Success(true);
+        return !saveResult ? ResultType.FailedToApplyModifications<bool>(userId, roadmapId) : Result.Success(true);
     }
 
     public async Task<Result<bool>> SaveLearningItemChange(long userId, string roadmapId, LearningItemChange item, CancellationToken ct)
@@ -192,7 +178,7 @@ public class CustomizedRoadmapsService(
             Metadata = item.SerializeOrDefault(),
             Action = ModificationAction.SnapshotUpdate,
         };
-        
+
         return await SaveModification(userId, roadmapId, action, ct);
     }
     public async Task<Result<bool>> SaveLearningItemsChanges(long userId, string roadmapId, List<LearningItemChange> items, CancellationToken ct)

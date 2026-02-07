@@ -1,7 +1,9 @@
 ﻿using LearningPlatform.Roadmap.Business.Contracts;
 using LearningPlatform.Shared.Api.Searching;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 using SkillMap.Api.Base;
 using SkillMap.Api.ModifiedRoadmap.Models;
 using SkillMap.Api.Roadmap.Models;
@@ -24,10 +26,10 @@ public class RoadmapsController : BaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllPlainRoadmaps([FromQuery]SearchingRequest @params, CancellationToken ct)
+    public async Task<IActionResult> GetAllPlainRoadmaps([FromQuery] SearchingRequest @params, CancellationToken ct)
     {
         var plainRoadmapsResult = await RoadmapService.GetPlainRoadmaps(@params.ToParams(), ct);
-        return Response(plainRoadmapsResult, (r) =>
+        return HandleResponse(plainRoadmapsResult, (r) =>
         {
             return Ok(new PaginationResponse<PlainRoadmapResponse>()
             {
@@ -48,7 +50,7 @@ public class RoadmapsController : BaseController
             result.Data.IsSaved = roadmapIds.Contains(roadmapId);
         }
 
-        return Response(result, (r) => Ok(new RoadmapResponse
+        return HandleResponse(result, (r) => Ok(new RoadmapResponse
         {
             Roadmap = r.Data
         }));
@@ -58,6 +60,6 @@ public class RoadmapsController : BaseController
     public async Task<IActionResult> GetLearningItemMaterials([FromRoute] string roadmapId, [FromQuery] string itemId, CancellationToken ct)
     {
         var result = await RoadmapService.GetLearningItemMaterials(roadmapId, itemId, ct);
-        return Response(result, (r) => Ok(r.Data.Select(m => m.ToMaterialResponse()).ToList()));
+        return HandleResponse(result, (r) => Ok(r.Data.Select(m => m.ToMaterialResponse()).ToList()));
     }
 }
