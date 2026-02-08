@@ -26,7 +26,7 @@ public class AccountService(
 
         var email = loginCommand.Email;
         var password = loginCommand.Password;
-        AppUser? user = await userRepository.GetFirstOrDefaultAsync(x => x.Email == email, ct);
+        var user = await userRepository.GetFirstOrDefaultAsync(x => x.Email == email, ct);
         if (user == null)
         {
             return ResultType.UserNotFound<UserDto>(email);
@@ -57,20 +57,20 @@ public class AccountService(
         var appUser = userDto.ToAppUser();
         appUser.PasswordHash = hashedPassword;
 
-        AppUser? user = await userRepository.GetFirstOrDefaultAsync(x => x.Email == appUser.Email, ct);
+        var user = await userRepository.GetFirstOrDefaultAsync(x => x.Email == appUser.Email, ct);
         if (user is not null)
         {
             return ResultType.UserWithSuchEmailAlreadyExists<bool>(appUser.Email);
         }
 
         await userRepository.AddAsync(appUser, ct);
-        bool saved = await userRepository.SaveChangesAsync(ct);
-        return !saved ? ResultType.FailedToCreateUser<bool>(appUser.Email) : Result.Success(true);
+        var result = await userRepository.SaveChangesAsync(ct);
+        return !result ? ResultType.FailedToCreateUser<bool>(appUser.Email) : Result.Success(true);
     }
 
     public async Task<Result<bool>> ResetPassword(string email, CancellationToken ct)
     {
-        AppUser? user = await userRepository.GetFirstOrDefaultAsync(x => x.Email == email, ct);
+        var user = await userRepository.GetFirstOrDefaultAsync(x => x.Email == email, ct);
         if (user is null)
         {
             return ResultType.UserNotFound<bool>(email);
@@ -87,15 +87,15 @@ public class AccountService(
             return ResultType.InvalidOrExpiredToken<bool>();
         }
         var email = emailResult.Data;
-        AppUser? user = await userRepository.GetFirstOrDefaultAsync(x => x.Email == email, ct);
+        var user = await userRepository.GetFirstOrDefaultAsync(x => x.Email == email, ct);
         if (user is null)
         {
             return ResultType.UserNotFound<bool>(email);
         }
         user.PasswordHash = passwordHasher.Hash(setNewPasswordDto.Password);
         await userRepository.UpdateAsync(user, ct);
-        bool saved = await userRepository.SaveChangesAsync(ct);
-        if (!saved)
+        var result = await userRepository.SaveChangesAsync(ct);
+        if (!result)
         {
             return ResultType.FailedToUpdatePassword<bool>(email);
         }

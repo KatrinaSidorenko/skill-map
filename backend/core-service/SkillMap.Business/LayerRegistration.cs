@@ -1,8 +1,4 @@
-﻿using FluentValidation;
-
-using LearningPlatform.Roadmap.Business;
-using LearningPlatform.Roadmap.Business.Contracts;
-using LearningPlatform.RoadmapTests.Contracts;
+﻿using LearningPlatform.Roadmap.Business;
 
 using Microsoft.Extensions.DependencyInjection;
 

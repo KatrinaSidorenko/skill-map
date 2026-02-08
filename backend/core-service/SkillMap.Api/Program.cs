@@ -20,6 +20,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGeneration();
 builder.Services.AddSwaggerGen();
 
+// todo: it is not good practice
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
