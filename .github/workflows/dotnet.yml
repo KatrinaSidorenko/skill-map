@@ -13,6 +13,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
 
     steps:
     - uses: actions/checkout@v4
@@ -23,7 +26,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Format check
-      run: dotnet format --verify-no-changes
+      run: dotnet format --no-restore --verify-no-changes
     - name: Build
       run: dotnet build --no-restore
     # - name: Test
