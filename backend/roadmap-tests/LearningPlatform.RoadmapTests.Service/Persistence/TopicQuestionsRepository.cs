@@ -1,4 +1,6 @@
-﻿using Dapper;
+﻿using System.Text;
+
+using Dapper;
 
 using LearningPlatform.RoadmapTests.Service.Persistence;
 using LearningPlatform.RoadmapTests.Service.Persistence.Abstractions;
@@ -91,8 +93,7 @@ public sealed class TopicQuestionsRepository : ITopicQuestionsRepository
         const string sql = """
             SELECT q.*
             FROM roadmap_test.questions q
-            JOIN roadmap_test.topics t ON t.id = @topicId
-            WHERE q.difficulty = @difficultyLevel
+            WHERE q.topic_id = @topicId AND q.difficulty = @difficultyLevel
             ORDER BY q.id;
 """;
 
@@ -143,28 +144,48 @@ public sealed class TopicQuestionsRepository : ITopicQuestionsRepository
         string searchDescription,
         CancellationToken ct)
     {
-        const string sql = """
-        SELECT *
-        FROM roadmap_test.topics
-        WHERE 
-            (@searchId = '' OR external_id ILIKE '%' || @searchId || '%')
-            AND (@searchName = '' OR name ILIKE '%' || @searchName || '%')
-            AND (@searchDescription = '' OR description ILIKE '%' || @searchDescription || '%')
-        ORDER BY created_at DESC
-        LIMIT 50;
-        """;
+
+        var conditions = new List<string>();
+        var parameters = new DynamicParameters();
+
+        if (!string.IsNullOrWhiteSpace(searchId))
+        {
+            conditions.Add("external_id ILIKE '%' || @searchId || '%'");
+            parameters.Add("searchId", searchId);
+        }
+
+        if (!string.IsNullOrWhiteSpace(searchName))
+        {
+            conditions.Add("name ILIKE '%' || @searchName || '%'");
+            parameters.Add("searchName", searchName);
+        }
+
+        if (!string.IsNullOrWhiteSpace(searchDescription))
+        {
+            conditions.Add("description ILIKE '%' || @searchDescription || '%'");
+            parameters.Add("searchDescription", searchDescription);
+        }
+
+        var sql = new StringBuilder("SELECT * FROM roadmap_test.topics ");
+
+        if (conditions.Count > 0)
+        {
+            sql.AppendLine("WHERE " + string.Join(" AND ", conditions));
+        }
+
+        sql.AppendLine(" ORDER BY created_at DESC LIMIT 50");
+
+
         using var conn = await _connectionFactory.CreateOpenConnectionAsync(ct);
+
         var result = await conn.QueryAsync<TopicEntity>(
             new CommandDefinition(
-                sql,
-                new
-                {
-                    searchId = searchId ?? "",
-                    searchName = searchName ?? "",
-                    searchDescription = searchDescription ?? ""
-                },
+                sql.ToString(),
+                parameters,
                 cancellationToken: ct));
+
         return result.AsList();
+
     }
 
     public async Task<long> InsertTopicWithQuestions(

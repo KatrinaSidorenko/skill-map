@@ -1,7 +1,8 @@
-﻿using LearningPlatform.Roadmap.Business;
+﻿using FluentValidation;
+
+using LearningPlatform.Roadmap.Business;
 
 using Microsoft.Extensions.DependencyInjection;
-
 using SkillMap.Application.Services;
 using SkillMap.Business.Account;
 using SkillMap.Business.Roadmaps;
@@ -16,6 +17,7 @@ public static class LayerRegistration
     public static IServiceCollection AddBusinessLayer(this IServiceCollection services)
     {
         services.AddScoped<IAccountService, AccountService>();
+        services.AddValidatorsFromAssemblies([typeof(IAccountService).Assembly]);
         services.AddScoped<IUserRoadmapsService, UserRoadmapsService>();
         services.AddScoped<ICustomizedRoadmapsService, CustomizedRoadmapsService>();
         services.AddScoped<IUserRoadmapTestService, UserRoadmapTestService>();

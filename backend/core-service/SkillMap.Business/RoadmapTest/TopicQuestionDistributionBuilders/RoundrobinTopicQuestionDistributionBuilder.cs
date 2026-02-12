@@ -35,7 +35,7 @@ public class RoundrobinTopicQuestionDistributionBuilder : ITopicQuestionDistribu
         if (topics == null || !topics.Any())
             return new Dictionary<string, TopicQuestionPlan>();
 
-        int requestedCount = config.NumberOfQuestions ?? RoadmapTestConstants.DefaultNumberOfQuestions;
+        int requestedCount = config.NumberOfQuestions ?? RoadmapTestConstants.MaxNumberOfQuestions;
         int maxByTime = (int)(config.TimeLimitInMinutes / RoadmapTestConstants.MinMinutesPerQuestion);
         int maxByTopics = topics.Count * RoadmapTestConstants.MaxQuestionsPerTopic;
         int finalTargetCount = Math.Min(requestedCount, Math.Min(maxByTime, maxByTopics));

@@ -31,11 +31,11 @@ public class RoadmapTestController : BaseController
 
     [HttpPost("{roadmapId}/initial")]
     public async Task<IActionResult> CreateInitialRoadmapTest([FromRoute] string roadmapId, [FromBody] RoadmapTestConfigDto config, CancellationToken ct)
-        => HandleResponse(await _roadmapTestService.CreateInitialRoadmapTest(GetUserId(), roadmapId, config, ct));
+        => HandleResponse(await _roadmapTestService.CreateInitialRoadmapTest(GetUserId(), roadmapId, config, ct), (r) => Ok(r));
 
     [HttpPost("{roadmapId}/intermediate")]
     public async Task<IActionResult> CreateIntermediateRoadmapTest([FromRoute] string roadmapId, [FromBody] RoadmapTestConfigDto config, CancellationToken ct)
-        => HandleResponse(await _roadmapTestService.CreateIntermediateRoadmapTest(GetUserId(), roadmapId, config, ct));
+        => HandleResponse(await _roadmapTestService.CreateIntermediateRoadmapTest(GetUserId(), roadmapId, config, ct), (r) => Ok(r));
 
     [HttpGet("history/{roadmapId}")]
     public async Task<TestingHistoryDto> GetRoadmapTestingHistory(string roadmapId, CancellationToken ct)
