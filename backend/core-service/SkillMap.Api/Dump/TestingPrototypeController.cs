@@ -81,11 +81,14 @@
 //}
 
 using LearningPlatform.Roadmap.Business.Contracts;
+using LearningPlatform.Roadmap.Business.Contracts.Models;
 using LearningPlatform.RoadmapTests.Contracts;
 
 using Microsoft.AspNetCore.Mvc;
 
 using SkillMap.Business.RoadmapTest.Helpers;
+using SkillMap.Business.RoadmapTest.Models;
+using SkillMap.Business.RoadmapTest.TopicQuestionComposers;
 using SkillMap.Business.UserRoadmaps;
 using SkillMap.Business.UserTest;
 using SkillMap.Shared.Results;
@@ -228,5 +231,169 @@ public class TestingPrototypeController(
         //    suggestedChanges,
         //    roadmap.Edges);
         return Ok();
+    }
+
+    [HttpGet("select-test-topics")]
+    public async Task<IActionResult> SelectTestTopics(CancellationToken ct)
+    {
+        // ─────────────────────────────────────────────────────────────────────────────
+        // Internet Learning Roadmap — Test Data
+        // Matches the DAG analysed in the assessment selection walkthrough.
+        // Vertex identifiers are kept as "v1"–"v18" so they align directly with
+        // the formal notation used throughout the paper.
+        // ─────────────────────────────────────────────────────────────────────────────
+
+                var nodes = new List<Node>
+        {
+            // Level 0 — no prerequisites
+            new Node { Id = "v1",  Title = "Binary and Number Systems",
+                        Description = "Representation of data in binary, decimal and hexadecimal; "  +
+                                      "bitwise operations and their role in low-level data processing." },
+            new Node { Id = "v2",  Title = "Computer Hardware Basics",
+                        Description = "Physical components of a computer system: CPU, memory, storage " +
+                                      "devices, buses and their interactions." },
+
+            // Level 1
+            new Node { Id = "v3",  Title = "Operating System Concepts",
+                        Description = "Role of the operating system; process and memory management; "  +
+                                      "system calls and the user–kernel boundary." },
+            new Node { Id = "v4",  Title = "Data Representation",
+                        Description = "Encoding of text, images and files in binary form; "            +
+                                      "character sets, compression basics and file formats." },
+
+            // Level 2
+            new Node { Id = "v5",  Title = "Network Fundamentals",
+                        Description = "Core concepts of computer networks: nodes, links, network "     +
+                                      "topologies, bandwidth, latency and the OSI reference model." },
+            new Node { Id = "v6",  Title = "File Systems and I/O",
+                        Description = "Organisation of data on storage devices; file system hierarchies; " +
+                                      "I/O abstractions and buffering strategies." },
+
+            // Level 3
+            new Node { Id = "v7",  Title = "IP Addressing and Subnetting",
+                        Description = "IPv4 and IPv6 address structure; CIDR notation; subnet masks "  +
+                                      "and the division of address space into subnetworks." },
+            new Node { Id = "v8",  Title = "Packet Switching and Routing",
+                        Description = "Principles of packet-switched networks; routing algorithms; "    +
+                                      "forwarding tables and path selection across internetworks." },
+
+            // Level 4
+            new Node { Id = "v9",  Title = "TCP/IP Protocol Stack",
+                        Description = "Layered architecture of TCP/IP; responsibilities of each layer; " +
+                                      "encapsulation, segmentation and reliable delivery via TCP." },
+            new Node { Id = "v10", Title = "DNS — Domain Name System",
+                        Description = "Hierarchical namespace of the Internet; resolution process from " +
+                                      "stub resolver to authoritative server; record types and caching." },
+
+            // Level 5
+            new Node { Id = "v11", Title = "HTTP and HTTPS",
+                        Description = "Hypertext Transfer Protocol: request–response model, methods, "  +
+                                      "status codes, headers and the transition to encrypted HTTPS." },
+            new Node { Id = "v12", Title = "Sockets and Ports",
+                        Description = "Socket abstraction for network communication; port numbers; "    +
+                                      "TCP and UDP socket lifecycles and the Berkeley socket API." },
+
+            // Level 6
+            new Node { Id = "v13", Title = "Web Browsers and the Request–Response Cycle",
+                        Description = "Browser architecture; URL parsing; DNS lookup; TCP handshake; "  +
+                                      "HTTP request dispatch; rendering pipeline overview." },
+            new Node { Id = "v14", Title = "TLS and Certificates",
+                        Description = "Transport Layer Security handshake; symmetric and asymmetric "   +
+                                      "cryptography; X.509 certificates and certificate authorities." },
+            new Node { Id = "v15", Title = "REST APIs",
+                        Description = "Representational State Transfer constraints; resource modelling; " +
+                                      "HTTP verbs as CRUD operations; JSON payloads and status codes." },
+
+            // Level 7
+            new Node { Id = "v16", Title = "Authentication and Session Management",
+                        Description = "Cookie-based and token-based authentication; session lifecycle; " +
+                                      "OAuth 2.0 flows and JWT structure." },
+            new Node { Id = "v17", Title = "Web Application Architecture",
+                        Description = "Client–server separation; MVC and layered patterns; stateless "  +
+                                      "backends; CDN usage and horizontal scalability basics." },
+
+            // Level 8 — target / sink
+            new Node { Id = "v18", Title = "Web Security",
+                        Description = "Common vulnerability classes: XSS, CSRF, SQL injection; "        +
+                                      "HTTPS enforcement; Content Security Policy and secure headers." }
+        };
+
+        // ─────────────────────────────────────────────────────────────────────────────
+        // Edges — directed prerequisite relations (source must be mastered before target)
+        // ─────────────────────────────────────────────────────────────────────────────
+
+            var edges = new List<Edge>
+    {
+        // V1 → dependents
+        new Edge { Id = "e01", Source = "v1",  Target = "v4"  },
+        new Edge { Id = "e02", Source = "v1",  Target = "v3"  },   // V3 also needs V2
+
+        // V2 → dependents
+        new Edge { Id = "e03", Source = "v2",  Target = "v3"  },
+        new Edge { Id = "e04", Source = "v2",  Target = "v5"  },
+
+        // V3 → dependents
+        new Edge { Id = "e05", Source = "v3",  Target = "v5"  },
+        new Edge { Id = "e06", Source = "v3",  Target = "v6"  },
+
+        // V4 → dependents
+        new Edge { Id = "e07", Source = "v4",  Target = "v5"  },
+
+        // V5 → dependents
+        new Edge { Id = "e08", Source = "v5",  Target = "v7"  },
+        new Edge { Id = "e09", Source = "v5",  Target = "v8"  },
+
+        // V6 → dependents
+        new Edge { Id = "e10", Source = "v6",  Target = "v8"  },
+
+        // V7 → dependents
+        new Edge { Id = "e11", Source = "v7",  Target = "v9"  },
+        new Edge { Id = "e12", Source = "v7",  Target = "v10" },
+
+        // V8 → dependents
+        new Edge { Id = "e13", Source = "v8",  Target = "v9"  },
+
+        // V9 → dependents
+        new Edge { Id = "e14", Source = "v9",  Target = "v11" },
+        new Edge { Id = "e15", Source = "v9",  Target = "v12" },
+
+        // V10 → dependents
+        new Edge { Id = "e16", Source = "v10", Target = "v11" },
+
+        // V11 → dependents
+        new Edge { Id = "e17", Source = "v11", Target = "v13" },
+        new Edge { Id = "e18", Source = "v11", Target = "v14" },
+        new Edge { Id = "e19", Source = "v11", Target = "v15" },
+
+        // V12 → dependents
+        new Edge { Id = "e20", Source = "v12", Target = "v15" },
+
+        // V13 → dependents
+        new Edge { Id = "e21", Source = "v13", Target = "v16" },
+        new Edge { Id = "e22", Source = "v13", Target = "v17" },
+
+        // V14 → dependents
+        new Edge { Id = "e23", Source = "v14", Target = "v16" },
+        new Edge { Id = "e24", Source = "v14", Target = "v18" },
+
+        // V15 → dependents
+        new Edge { Id = "e25", Source = "v15", Target = "v17" },
+
+        // V16 → dependents
+        new Edge { Id = "e26", Source = "v16", Target = "v18" },
+
+        // V17 → dependents
+        new Edge { Id = "e27", Source = "v17", Target = "v18" }
+    };
+        var topicsSelector = new BaseTopicQuestionComposer(null, null, null);
+        var config = new RoadmapTestConfigDto
+        {
+            NumberOfQuestions = 10,
+            DifficultyLevel = "medium"
+        };
+        return Ok(await topicsSelector.GenerateRoadmapTestQuestions(nodes, edges, config, ct));
+        //var roadmapId = "ff8f4fbcaa164032afcf7eeea6c2d888";
+        //var topics = await roadmapTestGenerator.SelectTestTopics(roadmapId, questionsLimit: 10, ct);
+        //return Ok(topics);
     }
 }
