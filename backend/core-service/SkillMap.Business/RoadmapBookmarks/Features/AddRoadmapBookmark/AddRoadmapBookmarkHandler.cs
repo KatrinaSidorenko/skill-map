@@ -18,7 +18,7 @@ internal sealed class AddRoadmapBookmarkHandler(IRepository<RoadmapBookmark> rep
         await repository.AddAsync(roadmapBookmark, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
 
-        await eventBus.PublishAsync(RoadmapBookmarkAddedEvent.Create(roadmapBookmark.Id, roadmapBookmark.RoadmapId), cancellationToken);
+        await eventBus.PublishAsync(RoadmapBookmarkAddedEvent.Create(roadmapBookmark.Id, roadmapBookmark.RoadmapId, true), cancellationToken);
         return roadmapBookmark.Id;
     }
 }

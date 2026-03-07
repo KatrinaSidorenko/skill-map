@@ -14,11 +14,11 @@ internal sealed class PersonalRoadmapCreatedEventHandler(IRepository<RoadmapBook
     public async Task Handle(PersonalRoadmapCreatedEvent notification, CancellationToken cancellationToken)
     {
         var roadmapBookmark = new RoadmapBookmark(notification.UserId, notification.RoadmapId);
-        roadmapBookmark.IsAuthorMark();
+        roadmapBookmark.ActivateAuthorMode();
 
         await repository.AddAsync(roadmapBookmark, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
 
-        await eventBus.PublishAsync(RoadmapBookmarkAddedEvent.Create(roadmapBookmark.Id, roadmapBookmark.RoadmapId), cancellationToken);
+        await eventBus.PublishAsync(RoadmapBookmarkAddedEvent.Create(roadmapBookmark.Id, roadmapBookmark.RoadmapId, false), cancellationToken);
     }
 }

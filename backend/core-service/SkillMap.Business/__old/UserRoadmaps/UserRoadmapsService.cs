@@ -28,7 +28,7 @@ public class UserRoadmapsService(IRepository<RoadmapBookmark> userRoadmapsReposi
             UserId = userId,
             RoadmapId = roadmapId,
             IsActive = true,
-            IsAuthor = isOwner
+            IsInAuthorMode = isOwner
         };
 
         await userRoadmapsRepository.AddAsync(userRoadmap, ct);
@@ -77,7 +77,7 @@ public class UserRoadmapsService(IRepository<RoadmapBookmark> userRoadmapsReposi
 
     public async Task<Result<PaginationResult<List<PlainRoadmapDto>>>> GetUserCreatedRoadmaps(long userId, SearchingParams @params, CancellationToken ct)
     {
-        var dbUserRoadmaps = await userRoadmapsRepository.GetAllAsync(ur => ur.UserId == userId && ur.IsAuthor && ur.IsActive, ct: ct);
+        var dbUserRoadmaps = await userRoadmapsRepository.GetAllAsync(ur => ur.UserId == userId && ur.IsInAuthorMode && ur.IsActive, ct: ct);
         var roadmapIds = dbUserRoadmaps.Select(ur => ur.RoadmapId).ToList();
         var plainRoadmapsResult = await roadmapService.GetPlainRoadmapsByIds(roadmapIds, @params, ct, excludePrivate: false);
         if (!plainRoadmapsResult.IsSuccessful)
@@ -107,7 +107,7 @@ public class UserRoadmapsService(IRepository<RoadmapBookmark> userRoadmapsReposi
     }
     public async Task<Result<PlainRoadmapDto>> GetCreatedUserRoadmap(long userId, string roadmapId, CancellationToken ct)
     {
-        var dbUserRoadmap = await userRoadmapsRepository.GetFirstOrDefaultAsync(ur => ur.UserId == userId && ur.RoadmapId == roadmapId && ur.IsAuthor && ur.IsActive, ct: ct);
+        var dbUserRoadmap = await userRoadmapsRepository.GetFirstOrDefaultAsync(ur => ur.UserId == userId && ur.RoadmapId == roadmapId && ur.IsInAuthorMode && ur.IsActive, ct: ct);
         if (dbUserRoadmap is null)
         {
             return ResultType.UserRoadmapNotFound<PlainRoadmapDto>(userId, roadmapId);

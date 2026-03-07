@@ -1,8 +1,8 @@
 ﻿using SkillMap.Shared.EventBus;
 
 namespace SkillMap.Business.RoadmapBookmarks.IntegrationEvents;
-public record RoadmapBookmarkAddedEvent(Guid Id, long UserRoadmapId, string RoadmapId, DateTimeOffset OccurredDateTime) : IIntegrationEvent
+public record RoadmapBookmarkAddedEvent(Guid Id, long BookmarkId, string RoadmapId, bool IsSourceRoadmapAvailable, DateTimeOffset OccurredDateTime) : IIntegrationEvent
 {
-    public static RoadmapBookmarkAddedEvent Create(long userRoadmapId, string roadmapId)
-        => new (Guid.NewGuid(), userRoadmapId, roadmapId, DateTimeOffset.UtcNow);
+    public static RoadmapBookmarkAddedEvent Create(long userRoadmapId, string roadmapId, bool isInAuthorMode)
+        => new (Guid.NewGuid(), userRoadmapId, roadmapId, isInAuthorMode, DateTimeOffset.UtcNow);
 }

@@ -8,7 +8,7 @@ public class RoadmapBookmark : TrackedEntity
     public long UserId { get; set; }
     public string RoadmapId { get; set; }
     public bool IsActive { get; set; }
-    public bool IsAuthor { get; set; }
+    public bool IsInAuthorMode { get; set; }
 
     //public virtual AppUser User { get; set; }
     //public virtual ICollection<PersonalizeRoadmapEvent> RoadmapModifications { get; set; }
@@ -21,7 +21,7 @@ public class RoadmapBookmark : TrackedEntity
         UserId = userId;
         RoadmapId = roadmapId;
         IsActive = true;
-        IsAuthor = false;
+        IsInAuthorMode = false;
     }
 
     public void Deactivate()
@@ -29,8 +29,8 @@ public class RoadmapBookmark : TrackedEntity
         IsActive = false;
     }
 
-    public void IsAuthorMark()
+    public void ActivateAuthorMode()
     {
-        IsAuthor = true;
+        IsInAuthorMode = true;
     }
 }
