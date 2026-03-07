@@ -4,14 +4,14 @@ using LearningPlatform.Roadmap.Business.Contracts.Models;
 using LearningPlatform.RoadmapTests.Contracts;
 using LearningPlatform.RoadmapTests.Contracts.Models;
 
-using SkillMap.Business.Roadmaps;
-using SkillMap.Business.Roadmaps.Models;
+using SkillMap.Business.__old.ModifiedRoadmaps;
+using SkillMap.Business.__old.ModifiedRoadmaps.Models;
+using SkillMap.Business.__old.UserRoadmaps;
+using SkillMap.Business.__old.UserRoadmaps.Models;
 using SkillMap.Business.RoadmapTest.Helpers;
 using SkillMap.Business.RoadmapTest.Models;
 using SkillMap.Business.RoadmapTest.TopicAnalyzers;
 using SkillMap.Business.RoadmapTest.TopicQuestionComposers;
-using SkillMap.Business.UserRoadmaps;
-using SkillMap.Business.UserRoadmaps.Models;
 using SkillMap.Business.UserTest;
 using SkillMap.Core.Constants;
 using SkillMap.Core.Entities.UserRoadmapTest;

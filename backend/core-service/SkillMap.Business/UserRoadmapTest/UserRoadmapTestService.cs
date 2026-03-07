@@ -8,8 +8,8 @@ using SkillMap.Business.RoadmapTest.Helpers;
 using SkillMap.Business.RoadmapTest.Models;
 using SkillMap.Business.UserRoadmapTest.Models;
 using SkillMap.Business.UserTest;
-using SkillMap.Core.Entities;
 using SkillMap.Core.Entities.UserRoadmapTest;
+using SkillMap.Core.RoadmapBookmarks;
 using SkillMap.Shared.Extensions;
 using SkillMap.Shared.Results;
 
@@ -72,7 +72,7 @@ public class UserRoadmapTestService(IUnitOfWork unitOfWork) : IUserRoadmapTestSe
     {
         var testIdL = testId.EnsureParseLong();
         var userRoadmapTestsRepository = unitOfWork.CreateRepository<UserRoadmapTest>();
-        var userRoadmapRepository = unitOfWork.CreateRepository<UserRoadmap>();
+        var userRoadmapRepository = unitOfWork.CreateRepository<RoadmapBookmark>();
         var testEntity = await userRoadmapTestsRepository.GetFirstOrDefaultAsync(x => x.Id == testIdL, ct);
         var userRoadmapResult = await userRoadmapRepository.GetByIdAsync(testEntity.UserRoadmapId, ct);
         var testData = await testEntity.GetRoadmapTest(ct);
@@ -142,7 +142,7 @@ public class UserRoadmapTestService(IUnitOfWork unitOfWork) : IUserRoadmapTestSe
     {
         var roadmapTestsRepository = unitOfWork.CreateRepository<UserRoadmapTest>();
         var testResultsRepository = unitOfWork.CreateRepository<UserTestResult>();
-        var userRoadmapRepository = unitOfWork.CreateRepository<UserRoadmap>();
+        var userRoadmapRepository = unitOfWork.CreateRepository<RoadmapBookmark>();
         var userRoadmap = await userRoadmapRepository.GetFirstOrDefaultAsync(filter: x => x.UserId == userId && x.RoadmapId == roadmapId, ct);
         var roadmapTests = await roadmapTestsRepository.GetAllAsync(filter: x => x.UserRoadmapId == userRoadmap.Id, ct: ct);
         var targetRoadmapTestIds = roadmapTests.Select(x => x.Id).ToHashSet();

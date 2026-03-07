@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <Folder Include="PersonalizedRoadmaps\Features\GetPersonalizedRoadmapSummary\" />
+    <Folder Include="PersonalizedRoadmaps\IntegrationEvents\" />
   </ItemGroup>
 
 </Project>

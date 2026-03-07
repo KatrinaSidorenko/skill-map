@@ -1,4 +1,4 @@
-﻿using SkillMap.Core.Entities;
+﻿using SkillMap.Core.RoadmapBookmarks;
 
 namespace SkillMap.Core.PersonalizedRoadmaps;
 
@@ -8,5 +8,5 @@ public class PersonalizedRoadmapSnapshot : TrackedEntity
     public byte[] Content { get; set; } // gzipped JSON
     public int LatestVersion { get; set; }
 
-    public virtual UserRoadmap UserRoadmap { get; set; }
+    public virtual RoadmapBookmark UserRoadmap { get; set; }
 }
