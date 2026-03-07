@@ -1,4 +1,4 @@
-﻿using SkillMap.Business.PersonalizedRoadmaps.GetPersonalizedRoadmap;
+﻿using SkillMap.Business.PersonalizedRoadmaps.Features.GetPersonalizedRoadmap;
 using SkillMap.Core.Constants;
 using SkillMap.Core.PersonalizedRoadmaps;
 

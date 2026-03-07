@@ -16,6 +16,7 @@ using SkillMap.Business.UserRoadmaps;
 using SkillMap.Business.UserTest;
 using SkillMap.Infrastructure.Account;
 using SkillMap.Infrastructure.Email;
+using SkillMap.Infrastructure.EventBus;
 using SkillMap.Infrastructure.PersonalizedRoadmaps;
 using SkillMap.Infrastructure.RoadmapTest;
 using SkillMap.Persistence;
@@ -53,6 +54,7 @@ public static class LayerRegistration
         services.AddRoadmapTestModule();
         services.AddRoadmapModule();
 
+        services.AddEventBus();
         services.AddPersonalizedRoadmapModule();
 
         // migrations

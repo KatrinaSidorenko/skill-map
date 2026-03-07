@@ -7,7 +7,7 @@ using SkillMap.Core.PersonalizedRoadmaps;
 using SkillMap.Shared.Gzip;
 using SkillMap.Shared.Results;
 
-namespace SkillMap.Business.PersonalizedRoadmaps.GetPersonalizedRoadmap;
+namespace SkillMap.Business.PersonalizedRoadmaps.Features.GetPersonalizedRoadmap;
 
 [UsedImplicitly]
 internal sealed class GetPersonalizedRoadmapHandler(IRepository<PersonalizedRoadmapSnapshot> repository) : IRequestHandler<GetPersonalizedRoadmapQuery, PersonalizedRoadmapDto>
@@ -29,8 +29,4 @@ internal sealed class GetPersonalizedRoadmapHandler(IRepository<PersonalizedRoad
     }
 }
 
-internal static class PersonalizedRoadmapSnapshotExtensions
-{
-    public static async Task<RoadmapSnapshot> GetPersonalizedRoadmapSnapshot(this PersonalizedRoadmapSnapshot snapshot, CancellationToken ct)
-        => await snapshot.Content?.InGzipJsonObjectUtf8<RoadmapSnapshot>(ct);
-}
+

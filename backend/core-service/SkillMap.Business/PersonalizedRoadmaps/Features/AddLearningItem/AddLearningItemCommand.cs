@@ -1,6 +1,6 @@
 ﻿using SkillMap.Core.Constants;
 
-namespace SkillMap.Business.PersonalizedRoadmaps.AddLearningItem;
+namespace SkillMap.Business.PersonalizedRoadmaps.Features.AddLearningItem;
 public record AddLearningItemCommand(long UserRoadmapId, string Title, string Description, string Status) : ICommand
 {
     public EventType EventType => EventType.Create;

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-using SkillMap.Business.PersonalizedRoadmaps.AddLearningItem;
+using SkillMap.Business.PersonalizedRoadmaps.Features.AddLearningItem;
 
 namespace SkillMap.Api.PersonalizedRoadmaps.AddLearningItem;
 

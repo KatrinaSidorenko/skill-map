@@ -1,7 +1,7 @@
 ﻿using SkillMap.Core.Constants;
 using SkillMap.Core.PersonalizedRoadmaps;
 
-namespace SkillMap.Business.PersonalizedRoadmaps.GetPersonalizedRoadmap;
+namespace SkillMap.Business.PersonalizedRoadmaps.Features.GetPersonalizedRoadmap;
 public class PersonalizedRoadmapDto
 {
     public string Id { get; set; }

@@ -5,7 +5,7 @@ using MediatR;
 using SkillMap.Business.Abstractions;
 using SkillMap.Core.PersonalizedRoadmaps;
 
-namespace SkillMap.Business.PersonalizedRoadmaps.AddLearningItem;
+namespace SkillMap.Business.PersonalizedRoadmaps.Features.AddLearningItem;
 
 [UsedImplicitly]
 internal sealed class AddLearningItemCommandHandler(IRepository<PersonalizeRoadmapEvent> repository) : IRequestHandler<AddLearningItemCommand>

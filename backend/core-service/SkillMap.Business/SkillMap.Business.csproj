@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="PersonalizedRoadmaps\GetPersonalizedRoadmapSummary\" />
+    <Folder Include="PersonalizedRoadmaps\Features\GetPersonalizedRoadmapSummary\" />
   </ItemGroup>
 
 </Project>
