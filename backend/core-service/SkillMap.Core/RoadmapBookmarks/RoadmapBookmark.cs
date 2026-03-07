@@ -8,7 +8,7 @@ public class RoadmapBookmark : TrackedEntity
     public long UserId { get; set; }
     public string RoadmapId { get; set; }
     public bool IsActive { get; set; }
-    public bool IsOwner { get; set; }
+    public bool IsAuthor { get; set; }
 
     //public virtual AppUser User { get; set; }
     //public virtual ICollection<PersonalizeRoadmapEvent> RoadmapModifications { get; set; }
@@ -21,11 +21,16 @@ public class RoadmapBookmark : TrackedEntity
         UserId = userId;
         RoadmapId = roadmapId;
         IsActive = true;
-        IsOwner = false;
+        IsAuthor = false;
     }
 
     public void Deactivate()
     {
         IsActive = false;
+    }
+
+    public void IsAuthorMark()
+    {
+        IsAuthor = true;
     }
 }

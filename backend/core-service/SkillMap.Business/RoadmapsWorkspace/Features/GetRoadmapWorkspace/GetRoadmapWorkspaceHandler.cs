@@ -3,6 +3,7 @@
 using MediatR;
 
 using SkillMap.Business.Abstractions;
+using SkillMap.Business.PersonalizedRoadmaps.Common;
 using SkillMap.Core.PersonalizedRoadmaps;
 using SkillMap.Shared.Gzip;
 using SkillMap.Shared.Results;
@@ -10,10 +11,10 @@ using SkillMap.Shared.Results;
 namespace SkillMap.Business.PersonalizedRoadmaps.Features.GetPersonalizedRoadmap;
 
 [UsedImplicitly]
-internal sealed class GetPersonalizedRoadmapHandler(IRepository<RoadmapWorkspaceSnapshot> repository) : IRequestHandler<GetPersonalizedRoadmapQuery, PersonalizedRoadmapDto>
+internal sealed class GetRoadmapWorkspaceHandler(IRepository<RoadmapWorkspaceSnapshot> repository) : IRequestHandler<GetRoadmapWorkspaceQuery, RoadmapWorkspaceDto>
 {
     // when user fork the roadmap should be raised an event for snapshot
-    public async Task<PersonalizedRoadmapDto> Handle(GetPersonalizedRoadmapQuery request, CancellationToken cancellationToken)
+    public async Task<RoadmapWorkspaceDto> Handle(GetRoadmapWorkspaceQuery request, CancellationToken cancellationToken)
     {
         // get the latest snapshot of the roadmap
         // for now we assume that version in WAL is same as the version in snapshot, we will update it later when we have WAL implemented
@@ -25,7 +26,9 @@ internal sealed class GetPersonalizedRoadmapHandler(IRepository<RoadmapWorkspace
 
         var roadmapSnapshot = await snapshot.GetPersonalizedRoadmapSnapshot(cancellationToken)
             ?? throw new ResourceNotFoundException(nameof(RoadmapSnapshot), request.UserRoadmapId.ToString());
-        return PersonalizedRoadmapDto.Create(roadmapSnapshot);
+
+        // get the WAL log after current version and apply it to the snapshot, for now we will skip this step
+        return RoadmapWorkspaceDto.Create(roadmapSnapshot);
     }
 }
 

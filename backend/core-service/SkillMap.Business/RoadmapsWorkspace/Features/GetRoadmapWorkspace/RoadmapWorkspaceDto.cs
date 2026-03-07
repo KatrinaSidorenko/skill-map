@@ -2,7 +2,7 @@
 using SkillMap.Core.PersonalizedRoadmaps;
 
 namespace SkillMap.Business.PersonalizedRoadmaps.Features.GetPersonalizedRoadmap;
-public class PersonalizedRoadmapDto
+public class RoadmapWorkspaceDto
 {
     public string Id { get; set; }
     public string Title { get; set; }
@@ -15,9 +15,9 @@ public class PersonalizedRoadmapDto
     public List<PersonalizedLearningItemDto> LearningItems { get; set; }
     public List<PersonalizedLearningItemsConnectionDto> LearningItemsConnections { get; set; }
 
-    public static PersonalizedRoadmapDto Create(RoadmapSnapshot roadmapSnapshot)
+    public static RoadmapWorkspaceDto Create(RoadmapSnapshot roadmapSnapshot)
     {
-        return new PersonalizedRoadmapDto
+        return new RoadmapWorkspaceDto
         {
             Id = roadmapSnapshot.Id,
             Title = roadmapSnapshot.Title,

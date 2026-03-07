@@ -13,6 +13,7 @@ internal sealed class GetRoadmapBookmarksHandler(IRepository<RoadmapBookmark> re
 {
     public async Task<RoadmapBookmarksDto> Handle(GetRoadmapBookmarksQuery request, CancellationToken cancellationToken)
     {
+        // todo: what to do with autority ??
         var bookmarks = await repository.GetAllAsync(
             x => x.UserId == request.UserId && x.IsActive == request.IsActive, 
             ct: cancellationToken);

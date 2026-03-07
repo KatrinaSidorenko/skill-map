@@ -17,7 +17,7 @@ public class GetPersonalizedRoadmapResponse
     public List<PersonalizedLearningItemResponse> LearningItems { get; set; }
     public List<PersonalizedLearningItemsConnectionResponse> LearningItemsConnections { get; set; }
 
-    public static GetPersonalizedRoadmapResponse Create(PersonalizedRoadmapDto dto)
+    public static GetPersonalizedRoadmapResponse Create(RoadmapWorkspaceDto dto)
     {
         return new GetPersonalizedRoadmapResponse
         {
