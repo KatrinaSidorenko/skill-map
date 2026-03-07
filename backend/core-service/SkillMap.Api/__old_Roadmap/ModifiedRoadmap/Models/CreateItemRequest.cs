@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace SkillMap.Api.ModifiedRoadmap.Models;
+namespace SkillMap.Api.__old_Roadmap.ModifiedRoadmap.Models;
 
 public class CreateNodeRequest
 {
@@ -9,7 +9,7 @@ public class CreateNodeRequest
     [JsonProperty("title")]
     public string Title { get; set; }
     [JsonProperty("description")]
-    public string? Description { get; set; }
+    public string Description { get; set; }
     [JsonProperty("status")]
     public string Status { get; set; }
 }

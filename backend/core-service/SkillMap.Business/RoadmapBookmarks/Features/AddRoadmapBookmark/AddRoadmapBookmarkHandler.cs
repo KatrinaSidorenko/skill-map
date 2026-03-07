@@ -1,4 +1,6 @@
-﻿using MediatR;
+﻿using JetBrains.Annotations;
+
+using MediatR;
 
 using SkillMap.Business.Abstractions;
 using SkillMap.Business.RoadmapBookmarks.IntegrationEvents;
@@ -6,7 +8,9 @@ using SkillMap.Core.RoadmapBookmarks;
 using SkillMap.Shared.EventBus;
 
 namespace SkillMap.Business.RoadmapBookmarks.Features.AddRoadmapBookmark;
-public class AddRoadmapBookmarkHandler(IRepository<RoadmapBookmark> repository, IEventBus eventBus) : IRequestHandler<AddRoadmapBookmarkCommand, long>
+
+[UsedImplicitly]
+internal sealed class AddRoadmapBookmarkHandler(IRepository<RoadmapBookmark> repository, IEventBus eventBus) : IRequestHandler<AddRoadmapBookmarkCommand, long>
 {
     public async Task<long> Handle(AddRoadmapBookmarkCommand request, CancellationToken cancellationToken)
     {

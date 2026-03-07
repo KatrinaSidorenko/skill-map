@@ -3,11 +3,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+using SkillMap.Api.__old_Roadmap.ModifiedRoadmap.Models;
 using SkillMap.Api.Base;
-using SkillMap.Api.ModifiedRoadmap.Models;
+using SkillMap.Api.ModifiedRoadmap;
 using SkillMap.Business.__old.ModifiedRoadmaps;
 
-namespace SkillMap.Api.ModifiedRoadmap;
+namespace SkillMap.Api.__old_Roadmap.ModifiedRoadmap;
 
 [ApiController]
 [Authorize]
