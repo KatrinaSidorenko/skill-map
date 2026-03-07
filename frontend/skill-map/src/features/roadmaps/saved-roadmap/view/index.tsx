@@ -162,7 +162,6 @@ export default function SavedRoadmapView({
             borderRadius="xl"
             overflow="hidden"
             borderWidth="1px"
-            borderColor="border.default"
             bg="bg.page"
           >
             <Image

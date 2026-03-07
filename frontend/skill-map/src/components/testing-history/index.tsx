@@ -146,13 +146,7 @@ export default function TestingHistory({
     <Box>
       <Flex align="center" justify="space-between" mb={4}>
         <HStack gap={3}>
-          <Box
-            w="10px"
-            h="10px"
-            borderRadius="full"
-            bg="bg.primaryAccent"
-            boxShadow="0 0 0 3px rgba(185,255,102,0.35)"
-          />
+          <Box w="10px" h="10px" borderRadius="full" bg="bg.primaryAccent" />
           <Text fontSize="lg" fontWeight="800" color="text.heading">
             {title}
           </Text>
@@ -181,25 +175,13 @@ export default function TestingHistory({
       </Flex>
 
       {isLoading ? (
-        <Box
-          bg="bg.section"
-          borderRadius="2xl"
-          borderWidth="1px"
-          borderColor="border.default"
-          p={5}
-        >
+        <Box bg="bg.section" borderRadius="2xl" borderWidth="1px" p={5}>
           <VStack align="stretch" gap={3}>
             <Spinner />
           </VStack>
         </Box>
       ) : normalized.length === 0 ? (
-        <Box
-          bg="bg.section"
-          borderRadius="2xl"
-          borderWidth="1px"
-          borderColor="border.default"
-          p={6}
-        >
+        <Box bg="bg.section" borderRadius="2xl" borderWidth="1px" p={6}>
           <VStack align="start" gap={2}>
             <Text fontWeight="800" color="text.heading">
               No tests yet
