@@ -5,9 +5,9 @@ using SkillMap.Core.Constants;
 using SkillMap.Core.Entities;
 
 namespace SkillMap.Persistence.EntityConfigurations;
-internal class RoadmapModificationConfiguration : IEntityTypeConfiguration<RoadmapModification>
+internal class RoadmapModificationConfiguration : IEntityTypeConfiguration<PersonalizeRoadmapEvent>
 {
-    public void Configure(EntityTypeBuilder<RoadmapModification> builder)
+    public void Configure(EntityTypeBuilder<PersonalizeRoadmapEvent> builder)
     {
         builder.ToTable("roadmap_modifications");
         builder.HasKey(rm => rm.Id);
@@ -15,16 +15,14 @@ internal class RoadmapModificationConfiguration : IEntityTypeConfiguration<Roadm
         builder.Property(rm => rm.UpdatedAt).IsRequired();
 
         builder.Property(rm => rm.UserRoadmapId).IsRequired();
-        builder.Property(rm => rm.InnerItemId);
-        builder.Property(rm => rm.ExternalItemId);
-        builder.Property(rm => rm.Action)
+        builder.Property(rm => rm.EventType)
             .IsRequired()
             .HasConversion(
                 v => v.ToString(),
-                v => (ModificationAction)Enum.Parse(typeof(ModificationAction), v));
+                v => (EventType)Enum.Parse(typeof(EventType), v));
         builder.HasOne(rm => rm.UserRoadmap)
             .WithMany(ur => ur.RoadmapModifications)
             .HasForeignKey(rm => rm.UserRoadmapId);
-        builder.HasIndex(rm => new { rm.UserRoadmapId, rm.InnerItemId, rm.ExternalItemId });
+        builder.HasIndex(rm => new { rm.UserRoadmapId, rm.EventType });
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace SkillMap.Core.Constants;
 
-public enum ModificationAction
+public enum EventType
 {
     Create = 0,
     Delete = 1,

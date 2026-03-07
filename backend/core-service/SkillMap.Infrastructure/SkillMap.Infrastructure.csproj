@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\shared\LearningPlatform.Shared.Caching\LearningPlatform.Shared.Caching.csproj" />
     <ProjectReference Include="..\SkillMap.Business\SkillMap.Business.csproj" />
+    <ProjectReference Include="..\SkillMap.Persistence\SkillMap.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

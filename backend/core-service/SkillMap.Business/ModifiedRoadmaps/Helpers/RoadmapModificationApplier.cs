@@ -4,7 +4,7 @@ using LearningPlatform.Roadmap.Business.Contracts.Models;
 using SkillMap.Business.Roadmaps.Helpers;
 using SkillMap.Business.Roadmaps.Models;
 using SkillMap.Core.Constants;
-using SkillMap.Core.Entities;
+using SkillMap.Core.PersonalizedRoadmaps;
 
 namespace SkillMap.Business.ModifiedRoadmaps.Helpers;
 
@@ -12,30 +12,30 @@ public static class RoadmapModificationApplier
 {
     public static (List<ModifiedNode> Nodes, List<Edge> Edges) Apply(
         RoadmapDto source,
-        IEnumerable<RoadmapModification> modifications)
+        IEnumerable<PersonalizeRoadmapEvent> modifications)
     {
         var mods = modifications.ToList();
 
         var createdNodes = mods
-            .Where(m => m.Action == ModificationAction.CreateItem)
+            .Where(m => m.EventType == EventType.CreateItem)
             .Select(m => m.MapToModifiedNode())
             .ToList();
         var createdConnections = mods
-            .Where(m => m.Action == ModificationAction.CreateConnection)
+            .Where(m => m.EventType == EventType.CreateConnection)
             .Select(m => m.MapToLearningItemConnection())
             .ToList();
 
         var deletedNodeIds = mods
-            .Where(m => m.Action == ModificationAction.DeleteItem)
+            .Where(m => m.EventType == EventType.DeleteItem)
             .Select(m => m.ExternalItemId)
             .ToHashSet();
         var deletedConnections = mods
-            .Where(m => m.Action == ModificationAction.DeleteConnection)
+            .Where(m => m.EventType == EventType.DeleteConnection)
             .Select(m => m.ExternalItemId.GetConnectionPoints())
             .ToList();
 
         var updatedItems = mods
-            .Where(m => m.Action == ModificationAction.SnapshotUpdate)
+            .Where(m => m.EventType == EventType.SnapshotUpdate)
             .Select(m => m.MapToChange())
             .OrderBy(u => u.CreatedAt)
             .ToList();

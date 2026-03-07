@@ -18,4 +18,12 @@ public static class LearningStatusExtensions
         LearningStatus.Skipped => LearningStatus.Skipped.ToString().ToLower(),
         _ => "unknown"
     };
+
+    public static List<string> GetStatuses()
+    {
+        return Enum.GetValues(typeof(LearningStatus))
+            .Cast<LearningStatus>()
+            .Select(s => s.ToStatusString())
+            .ToList();
+    }
 }

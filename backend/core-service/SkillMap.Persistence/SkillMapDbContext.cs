@@ -15,7 +15,7 @@ public class SkillMapDbContext : DbContext
 
     public DbSet<AppUser> AppUsers { get; set; }
     public DbSet<UserRoadmap> UserRoadmaps { get; set; }
-    public DbSet<RoadmapModification> RoadmapModifications { get; set; }
+    public DbSet<PersonalizeRoadmapEvent> RoadmapModifications { get; set; }
     public DbSet<RoadmapSnapshot> RoadmapSnapshots { get; set; }
     public DbSet<UserRoadmapTest> UserRoadmapTests { get; set; }
     public DbSet<UserTestResult> UserRoadmapTestResults { get; set; }

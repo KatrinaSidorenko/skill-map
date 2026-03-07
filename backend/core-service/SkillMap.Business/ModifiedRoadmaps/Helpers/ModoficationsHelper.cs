@@ -2,14 +2,14 @@
 
 using SkillMap.Business.Roadmaps.Models;
 using SkillMap.Core.Constants;
-using SkillMap.Core.Entities;
+using SkillMap.Core.PersonalizedRoadmaps;
 using SkillMap.Shared.Extensions;
 
 namespace SkillMap.Business.Roadmaps.Helpers;
 
 public static class ModificationsHelper
 {
-    public static ModifiedNode MapToModifiedNode(this RoadmapModification modification)
+    public static ModifiedNode MapToModifiedNode(this PersonalizeRoadmapEvent modification)
     {
         var item = modification?.Metadata.DeserializeOrDefault<LearningItem>();
         return new ModifiedNode
@@ -32,7 +32,7 @@ public static class ModificationsHelper
             Status = LearningStatus.NotStarted.ToString().ToLower(),
         };
     }
-    public static Edge MapToLearningItemConnection(this RoadmapModification modification)
+    public static Edge MapToLearningItemConnection(this PersonalizeRoadmapEvent modification)
     {
         var connection = modification.Metadata.DeserializeOrDefault<LearningItemConnection>();
         return new Edge
@@ -43,7 +43,7 @@ public static class ModificationsHelper
         };
     }
 
-    public static LearningItemChange MapToChange(this RoadmapModification modification)
+    public static LearningItemChange MapToChange(this PersonalizeRoadmapEvent modification)
     {
         var change = modification?.Metadata.DeserializeOrDefault<LearningItemChange>();
         return new LearningItemChange
@@ -56,7 +56,7 @@ public static class ModificationsHelper
         };
     }
 
-    public static DeleteLearningItemChange MapToDeleteChange(this RoadmapModification modification)
+    public static DeleteLearningItemChange MapToDeleteChange(this PersonalizeRoadmapEvent modification)
     {
         var change = modification?.Metadata.DeserializeOrDefault<DeleteLearningItemChange>();
         return new DeleteLearningItemChange
@@ -99,10 +99,10 @@ public static class ModificationsHelper
     //    return createdNodes;
     //}
 
-    public static void ApplyModifications(this Dictionary<string, NodeResponse> nodesDict, Dictionary<ModificationAction, List<RoadmapModification>> modificationsByActions)
+    public static void ApplyModifications(this Dictionary<string, NodeResponse> nodesDict, Dictionary<EventType, List<PersonalizeRoadmapEvent>> modificationsByActions)
     {
         // item to update status
-        var itemsToUpdateStatus = (modificationsByActions.GetOrDefault(ModificationAction.UpdateStatus) ?? new List<RoadmapModification>())
+        var itemsToUpdateStatus = (modificationsByActions.GetOrDefault(EventType.UpdateStatus) ?? new List<PersonalizeRoadmapEvent>())
             .GroupBy(m => m.ExternalItemId)
             .ToDictionary(m => m.Key, m => m.Select(t => new
             {
@@ -115,7 +115,7 @@ public static class ModificationsHelper
         // if at least one children is in progress, set parent to in progress
         // if all children are completed, set parent to completed, progress to 100
         // if all children are not started, set parent to not started, progress to 0
-        var snapshotUpdates = (modificationsByActions.GetOrDefault(ModificationAction.SnapshotUpdate) ?? new List<RoadmapModification>())
+        var snapshotUpdates = (modificationsByActions.GetOrDefault(EventType.SnapshotUpdate) ?? new List<PersonalizeRoadmapEvent>())
             .Select(m => new
             {
                 m.UpdatedAt,

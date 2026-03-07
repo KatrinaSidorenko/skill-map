@@ -1,23 +1,23 @@
 ﻿using SkillMap.Business.Roadmaps.Helpers;
 using SkillMap.Business.Roadmaps.Models;
 using SkillMap.Core.Constants;
-using SkillMap.Core.Entities;
+using SkillMap.Core.PersonalizedRoadmaps;
 
 namespace SkillMap.Business.ModifiedRoadmaps.Helpers;
 
 public static class RoadmapProgressCalculator
 {
     public static (double Progress, string Status) Calculate(
-        IEnumerable<RoadmapModification> modifications,
+        IEnumerable<PersonalizeRoadmapEvent> modifications,
         int totalTopics)
     {
         var mods = modifications.ToList();
         var createNodes = mods
-            .Where(m => m.Action == ModificationAction.CreateItem)
+            .Where(m => m.EventType == EventType.CreateItem)
             .Select(m => m.MapToModifiedNode())
             .ToList();
         var deletedNodeIds = mods
-            .Where(m => m.Action == ModificationAction.DeleteItem)
+            .Where(m => m.EventType == EventType.DeleteItem)
             .Select(m => m.ExternalItemId)
             .ToHashSet();
 
@@ -30,7 +30,7 @@ public static class RoadmapProgressCalculator
             return (0, LearningStatus.NotStarted.ToStatusString());
 
         var updatedItems = mods
-            .Where(m => m.Action == ModificationAction.SnapshotUpdate)
+            .Where(m => m.EventType == EventType.SnapshotUpdate)
             .Select(m => m.MapToChange())
             .DistinctBy(u => u.Id)
             .ToList();

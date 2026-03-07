@@ -1,14 +1,24 @@
-﻿using LearningPlatform.RoadmapTests.Contracts;
+﻿using FluentValidation;
+
+using LearningPlatform.Roadmap.Business;
+using LearningPlatform.RoadmapTests.Contracts;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
+using SkillMap.Application.Services;
 using SkillMap.Business.Abstractions;
+using SkillMap.Business.Account;
+using SkillMap.Business.Roadmaps;
 using SkillMap.Business.RoadmapTest;
+using SkillMap.Business.UserRoadmaps;
+using SkillMap.Business.UserTest;
 using SkillMap.Infrastructure.Account;
 using SkillMap.Infrastructure.Email;
+using SkillMap.Infrastructure.PersonalizedRoadmaps;
 using SkillMap.Infrastructure.RoadmapTest;
+using SkillMap.Persistence;
 using SkillMap.Shared.Options;
 
 namespace SkillMap.Infrastructure;
@@ -34,6 +44,19 @@ public static class LayerRegistration
                 client.BaseAddress = new Uri(options.Value.BaseUrl);
                 client.Timeout = TimeSpan.FromSeconds(60 * 2);
             });
+
+        services.AddScoped<IAccountService, AccountService>();
+        services.AddValidatorsFromAssemblies([typeof(IAccountService).Assembly]);
+        services.AddScoped<IUserRoadmapsService, UserRoadmapsService>();
+        services.AddScoped<ICustomizedRoadmapsService, CustomizedRoadmapsService>();
+        services.AddScoped<IUserRoadmapTestService, UserRoadmapTestService>();
+        services.AddRoadmapTestModule();
+        services.AddRoadmapModule();
+
+        services.AddPersonalizedRoadmapModule();
+
+        // migrations
+        services.AddPersistenceLayer(configuration);
 
         return services;
     }
