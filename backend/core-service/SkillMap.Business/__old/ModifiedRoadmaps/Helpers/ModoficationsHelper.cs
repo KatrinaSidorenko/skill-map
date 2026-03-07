@@ -9,7 +9,7 @@ namespace SkillMap.Business.__old.ModifiedRoadmaps.Helpers;
 
 public static class ModificationsHelper
 {
-    public static ModifiedNode MapToModifiedNode(this PersonalizeRoadmapEvent modification)
+    public static ModifiedNode MapToModifiedNode(this RoadmapWorkspaceEvent modification)
     {
         var item = modification?.Metadata.DeserializeOrDefault<LearningItem>();
         return new ModifiedNode
@@ -32,7 +32,7 @@ public static class ModificationsHelper
             Status = LearningStatus.NotStarted.ToString().ToLower(),
         };
     }
-    public static Edge MapToLearningItemConnection(this PersonalizeRoadmapEvent modification)
+    public static Edge MapToLearningItemConnection(this RoadmapWorkspaceEvent modification)
     {
         var connection = modification.Metadata.DeserializeOrDefault<LearningItemConnection>();
         return new Edge
@@ -43,7 +43,7 @@ public static class ModificationsHelper
         };
     }
 
-    public static LearningItemChange MapToChange(this PersonalizeRoadmapEvent modification)
+    public static LearningItemChange MapToChange(this RoadmapWorkspaceEvent modification)
     {
         var change = modification?.Metadata.DeserializeOrDefault<LearningItemChange>();
         return new LearningItemChange
@@ -56,7 +56,7 @@ public static class ModificationsHelper
         };
     }
 
-    public static DeleteLearningItemChange MapToDeleteChange(this PersonalizeRoadmapEvent modification)
+    public static DeleteLearningItemChange MapToDeleteChange(this RoadmapWorkspaceEvent modification)
     {
         var change = modification?.Metadata.DeserializeOrDefault<DeleteLearningItemChange>();
         return new DeleteLearningItemChange
@@ -99,10 +99,10 @@ public static class ModificationsHelper
     //    return createdNodes;
     //}
 
-    public static void ApplyModifications(this Dictionary<string, NodeResponse> nodesDict, Dictionary<EventType, List<PersonalizeRoadmapEvent>> modificationsByActions)
+    public static void ApplyModifications(this Dictionary<string, NodeResponse> nodesDict, Dictionary<EventType, List<RoadmapWorkspaceEvent>> modificationsByActions)
     {
         // item to update status
-        var itemsToUpdateStatus = (modificationsByActions.GetOrDefault(EventType.UpdateStatus) ?? new List<PersonalizeRoadmapEvent>())
+        var itemsToUpdateStatus = (modificationsByActions.GetOrDefault(EventType.UpdateStatus) ?? new List<RoadmapWorkspaceEvent>())
             .GroupBy(m => m.ExternalItemId)
             .ToDictionary(m => m.Key, m => m.Select(t => new
             {
@@ -115,7 +115,7 @@ public static class ModificationsHelper
         // if at least one children is in progress, set parent to in progress
         // if all children are completed, set parent to completed, progress to 100
         // if all children are not started, set parent to not started, progress to 0
-        var snapshotUpdates = (modificationsByActions.GetOrDefault(EventType.SnapshotUpdate) ?? new List<PersonalizeRoadmapEvent>())
+        var snapshotUpdates = (modificationsByActions.GetOrDefault(EventType.SnapshotUpdate) ?? new List<RoadmapWorkspaceEvent>())
             .Select(m => new
             {
                 m.UpdatedAt,

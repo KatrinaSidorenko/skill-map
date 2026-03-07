@@ -10,7 +10,7 @@ using SkillMap.Shared.Results;
 namespace SkillMap.Business.PersonalizedRoadmaps.Features.GetPersonalizedRoadmap;
 
 [UsedImplicitly]
-internal sealed class GetPersonalizedRoadmapHandler(IRepository<PersonalizedRoadmapSnapshot> repository) : IRequestHandler<GetPersonalizedRoadmapQuery, PersonalizedRoadmapDto>
+internal sealed class GetPersonalizedRoadmapHandler(IRepository<RoadmapWorkspaceSnapshot> repository) : IRequestHandler<GetPersonalizedRoadmapQuery, PersonalizedRoadmapDto>
 {
     // when user fork the roadmap should be raised an event for snapshot
     public async Task<PersonalizedRoadmapDto> Handle(GetPersonalizedRoadmapQuery request, CancellationToken cancellationToken)
@@ -19,7 +19,7 @@ internal sealed class GetPersonalizedRoadmapHandler(IRepository<PersonalizedRoad
         // for now we assume that version in WAL is same as the version in snapshot, we will update it later when we have WAL implemented
         //throw new NotImplementedException();
         var snapshot = await repository.GetFirstOrDefaultAsync(rs => rs.UserRoadmapId == request.UserRoadmapId, cancellationToken)
-            ?? throw new ResourceNotFoundException(nameof(PersonalizedRoadmapSnapshot), request.UserRoadmapId.ToString());
+            ?? throw new ResourceNotFoundException(nameof(RoadmapWorkspaceSnapshot), request.UserRoadmapId.ToString());
 
         // some bullshit with versions stuff
 

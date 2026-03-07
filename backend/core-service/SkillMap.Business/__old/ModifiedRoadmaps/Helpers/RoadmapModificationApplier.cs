@@ -11,7 +11,7 @@ public static class RoadmapModificationApplier
 {
     public static (List<ModifiedNode> Nodes, List<Edge> Edges) Apply(
         RoadmapDto source,
-        IEnumerable<PersonalizeRoadmapEvent> modifications)
+        IEnumerable<RoadmapWorkspaceEvent> modifications)
     {
         var mods = modifications.ToList();
 

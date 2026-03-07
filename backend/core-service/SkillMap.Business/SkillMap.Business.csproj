@@ -19,9 +19,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="PersonalRoadmaps\Features\CreatePersonalRoadmap\" />
+    <Folder Include="PersonalRoadmaps\Features\GetPersonalRoadmaps\" />
     <Folder Include="RoadmapBlueprints\" />
-    <Folder Include="PersonalizedRoadmaps\Features\GetPersonalizedRoadmapSummary\" />
-    <Folder Include="PersonalizedRoadmaps\IntegrationEvents\" />
+    <Folder Include="RoadmapsWorkspace\Features\GetPersonalizedRoadmapSummary\" />
+    <Folder Include="RoadmapsWorkspace\IntegrationEvents\" />
   </ItemGroup>
 
 </Project>

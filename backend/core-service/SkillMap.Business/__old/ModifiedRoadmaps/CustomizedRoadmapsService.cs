@@ -21,7 +21,7 @@ namespace SkillMap.Business.__old.ModifiedRoadmaps;
 public class CustomizedRoadmapsService(
     IRoadmapService roadmapService,
     IUserRoadmapsService userRoadmapsService,
-    IRepository<PersonalizeRoadmapEvent> modificationsRepository) : ICustomizedRoadmapsService
+    IRepository<RoadmapWorkspaceEvent> modificationsRepository) : ICustomizedRoadmapsService
 {
     private const int MaxModificationsCount = 5;
 
@@ -59,7 +59,7 @@ public class CustomizedRoadmapsService(
 
         var allUserRoadmapIds = userRoadmaps.Select(ur => ur.Id).ToList();
         var allModifications = await modificationsRepository.GetAllAsync(
-            m => allUserRoadmapIds.Contains(m.UserRoadmapId), ct: ct) ?? Enumerable.Empty<PersonalizeRoadmapEvent>();
+            m => allUserRoadmapIds.Contains(m.UserRoadmapId), ct: ct) ?? Enumerable.Empty<RoadmapWorkspaceEvent>();
 
         var modificationsByUserRoadmap = allModifications
             .GroupBy(m => m.UserRoadmapId)
@@ -69,7 +69,7 @@ public class CustomizedRoadmapsService(
         {
             var userRoadmap = userRoadmaps.FirstOrDefault(ur => ur.RoadmapId == dto.Id);
             if (userRoadmap == null) continue;
-            var modifications = modificationsByUserRoadmap.GetOrDefault(userRoadmap.Id) ?? new List<PersonalizeRoadmapEvent>();
+            var modifications = modificationsByUserRoadmap.GetOrDefault(userRoadmap.Id) ?? new List<RoadmapWorkspaceEvent>();
             var (progress, status) = RoadmapProgressCalculator.Calculate(modifications, dto.TotalTopics);
             dto.Progress = progress;
             dto.Status = status;
@@ -93,7 +93,7 @@ public class CustomizedRoadmapsService(
             return ResultType.RoadmapNotFound<PlainRoadmapWithDetailsDto>(roadmapId);
 
         var roadmap = roadmapResult.Data.Result.First();
-        var modifications = (await modificationsRepository.GetAllAsync(m => m.UserRoadmapId == userRoadmap.Id, ct: ct))?.ToList() ?? new List<PersonalizeRoadmapEvent>();
+        var modifications = (await modificationsRepository.GetAllAsync(m => m.UserRoadmapId == userRoadmap.Id, ct: ct))?.ToList() ?? new List<RoadmapWorkspaceEvent>();
 
         var (progress, status) = RoadmapProgressCalculator.Calculate(modifications, roadmap.TotalTopics);
         var dto = roadmap.ToPlainRoadmapWithDetailsDto();
@@ -122,7 +122,7 @@ public class CustomizedRoadmapsService(
 
         var source = sourceRoadmapResult.Data;
         var modifications = (await modificationsRepository.GetAllAsync(
-            m => m.UserRoadmapId == userRoadmap.Id, ct: ct))?.ToList() ?? new List<PersonalizeRoadmapEvent>();
+            m => m.UserRoadmapId == userRoadmap.Id, ct: ct))?.ToList() ?? new List<RoadmapWorkspaceEvent>();
 
         var modifiedRoadmap = RoadmapModificationApplier.Apply(source, modifications);
 
@@ -138,7 +138,7 @@ public class CustomizedRoadmapsService(
         });
     }
 
-    private async Task<Result<bool>> SaveModification(long userId, string roadmapId, PersonalizeRoadmapEvent modification, CancellationToken ct)
+    private async Task<Result<bool>> SaveModification(long userId, string roadmapId, RoadmapWorkspaceEvent modification, CancellationToken ct)
     {
         var userRoadmapResult = await userRoadmapsService.GetUserRoadmap(userId, roadmapId, ct);
         if (!userRoadmapResult.IsSuccessful)
@@ -152,7 +152,7 @@ public class CustomizedRoadmapsService(
         return !saveResult ? ResultType.FailedToApplyModifications<bool>(userId, roadmapId) : Result.Success(true);
     }
 
-    private async Task<Result<bool>> SaveModifications(long userId, string roadmapId, List<PersonalizeRoadmapEvent> modifications, CancellationToken ct)
+    private async Task<Result<bool>> SaveModifications(long userId, string roadmapId, List<RoadmapWorkspaceEvent> modifications, CancellationToken ct)
     {
         var userRoadmapResult = await userRoadmapsService.GetUserRoadmap(userId, roadmapId, ct);
         if (!userRoadmapResult.IsSuccessful)
@@ -171,7 +171,7 @@ public class CustomizedRoadmapsService(
 
     public async Task<Result<bool>> SaveLearningItemChange(long userId, string roadmapId, LearningItemChange item, CancellationToken ct)
     {
-        var action = new PersonalizeRoadmapEvent
+        var action = new RoadmapWorkspaceEvent
         {
             ExternalItemId = item.Id,
             Metadata = item.SerializeOrDefault(),
@@ -182,7 +182,7 @@ public class CustomizedRoadmapsService(
     }
     public async Task<Result<bool>> SaveLearningItemsChanges(long userId, string roadmapId, List<LearningItemChange> items, CancellationToken ct)
     {
-        var actions = items.Select(item => new PersonalizeRoadmapEvent
+        var actions = items.Select(item => new RoadmapWorkspaceEvent
         {
             ExternalItemId = item.Id,
             Metadata = item.SerializeOrDefault(),
@@ -200,7 +200,7 @@ public class CustomizedRoadmapsService(
     public async Task<Result<bool>> SaveDeleteItemChange(long userId, string roadmapId, DeleteLearningItemChange itemChange, CancellationToken ct)
     {
         var action = itemChange.Type.ToLower() == CommonHelpers.Node ? EventType.DeleteItem : EventType.DeleteConnection;
-        var modification = new PersonalizeRoadmapEvent
+        var modification = new RoadmapWorkspaceEvent
         {
             ExternalItemId = itemChange.Id,
             EventType = action,
@@ -212,7 +212,7 @@ public class CustomizedRoadmapsService(
 
     public async Task<Result<bool>> CreateLearningItem(long userId, string roadmapId, LearningItem learningItem, CancellationToken ct)
     {
-        var action = new PersonalizeRoadmapEvent
+        var action = new RoadmapWorkspaceEvent
         {
             ExternalItemId = learningItem.Id,
             Metadata = learningItem.SerializeOrDefault(),
@@ -224,7 +224,7 @@ public class CustomizedRoadmapsService(
 
     public async Task<Result<bool>> CreateLearningItemsConnection(long userId, string roadmapId, LearningItemConnection connection, CancellationToken ct)
     {
-        var action = new PersonalizeRoadmapEvent
+        var action = new RoadmapWorkspaceEvent
         {
             ExternalItemId = Guid.NewGuid().ToStringWithoutHyphens(),
             Metadata = connection.SerializeOrDefault(),

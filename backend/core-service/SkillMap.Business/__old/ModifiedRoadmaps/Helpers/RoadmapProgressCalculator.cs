@@ -7,7 +7,7 @@ namespace SkillMap.Business.__old.ModifiedRoadmaps.Helpers;
 public static class RoadmapProgressCalculator
 {
     public static (double Progress, string Status) Calculate(
-        IEnumerable<PersonalizeRoadmapEvent> modifications,
+        IEnumerable<RoadmapWorkspaceEvent> modifications,
         int totalTopics)
     {
         var mods = modifications.ToList();

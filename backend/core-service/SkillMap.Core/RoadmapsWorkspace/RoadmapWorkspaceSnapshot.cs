@@ -2,7 +2,7 @@
 
 namespace SkillMap.Core.PersonalizedRoadmaps;
 
-public class PersonalizedRoadmapSnapshot : TrackedEntity
+public class RoadmapWorkspaceSnapshot : TrackedEntity
 {
     public long UserRoadmapId { get; set; }
     public byte[] Content { get; set; } // gzipped JSON

@@ -8,7 +8,7 @@ public partial class RuleName
     private const string Prefix = "PRE_";
     public const string PersonalizeRoadmapEventMetadataCannotBeNull = $"{Prefix}001";
 }
-public class PersonalizeRoadmapEvent : TrackedEntity
+public class RoadmapWorkspaceEvent : TrackedEntity
 {
     public long UserRoadmapId { get; set; }
     public EventType EventType { get; set; }
@@ -16,8 +16,8 @@ public class PersonalizeRoadmapEvent : TrackedEntity
     public int Version { get; set; } // can we do it self-incremented in db?
 
     public virtual RoadmapBookmark UserRoadmap { get; set; }
-    public PersonalizeRoadmapEvent() { }
-    public PersonalizeRoadmapEvent(long userRoadmapId, EventType eventType, object metadata)
+    public RoadmapWorkspaceEvent() { }
+    public RoadmapWorkspaceEvent(long userRoadmapId, EventType eventType, object metadata)
     {
         if (metadata == null)
         {
