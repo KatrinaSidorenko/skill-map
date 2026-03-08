@@ -4,7 +4,7 @@
 
 namespace SkillMap.Shared.Models;
 
-public record PaginationParams(int pageNumber, int pageSize)
+public record PaginationParams(int PageNumber, int PageSize)
 {
-    public int Skip => (this.pageNumber - 1) * this.pageSize;
+    public int Skip => (this.PageNumber - 1) * this.PageSize;
 }

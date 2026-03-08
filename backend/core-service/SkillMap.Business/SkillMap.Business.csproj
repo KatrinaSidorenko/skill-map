@@ -19,10 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="PersonalRoadmaps\Features\GetPersonalRoadmaps\" />
     <Folder Include="PersonalRoadmaps\Features\SuppressPersonalRoadmap\" />
     <Folder Include="RoadmapBlueprints\" />
-    <Folder Include="RoadmapsWorkspace\Features\GetRoadmapWorkspacesSummary\" />
     <Folder Include="PersonalRoadmaps\Features\PublishPersonalRoadmap\" />
   </ItemGroup>
 

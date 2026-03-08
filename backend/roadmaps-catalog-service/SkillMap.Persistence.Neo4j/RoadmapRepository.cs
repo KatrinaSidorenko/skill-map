@@ -213,7 +213,7 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
                 {
                     ids = roadmapIds,
                     skip = @params.paginationParams.Skip,
-                    limit = @params.paginationParams.pageSize,
+                    limit = @params.paginationParams.PageSize,
                     searchTerm = @params.searchTermByName
                 });
 
