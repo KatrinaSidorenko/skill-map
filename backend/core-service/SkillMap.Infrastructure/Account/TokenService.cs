@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 using SkillMap.Business.Abstractions;
-using SkillMap.Core.Entities;
+using SkillMap.Core.User;
 using SkillMap.Shared.Options;
 
 namespace SkillMap.Infrastructure.Account;

@@ -1,7 +1,7 @@
 ﻿using Riok.Mapperly.Abstractions;
 
 using SkillMap.Business.Account.Models;
-using SkillMap.Core.Entities;
+using SkillMap.Core.User;
 
 namespace SkillMap.Business.Account;
 

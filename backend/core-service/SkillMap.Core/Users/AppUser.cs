@@ -1,7 +1,6 @@
-﻿
-using SkillMap.Core.RoadmapBookmarks;
+﻿using SkillMap.Core.RoadmapBookmarks;
 
-namespace SkillMap.Core.Entities;
+namespace SkillMap.Core.User;
 
 public class AppUser : TrackedEntity
 {
@@ -9,5 +8,5 @@ public class AppUser : TrackedEntity
     public string Email { get; set; }
     public string PasswordHash { get; set; }
     public string Role { get; set; }
-    public virtual ICollection<RoadmapBookmark> UserRoadmaps { get; set; }
+    public virtual ICollection<RoadmapFork> RoadmapForks { get; set; }
 }

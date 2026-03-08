@@ -19,7 +19,7 @@ internal sealed class GetRoadmapWorkspaceHandler(IRepository<RoadmapWorkspaceSna
         // get the latest snapshot of the roadmap
         // for now we assume that version in WAL is same as the version in snapshot, we will update it later when we have WAL implemented
         //throw new NotImplementedException();
-        var snapshot = await repository.GetFirstOrDefaultAsync(rs => rs.BookmarkId == request.UserRoadmapId, cancellationToken)
+        var snapshot = await repository.GetFirstOrDefaultAsync(rs => rs.RoadmapForkId == request.UserRoadmapId, cancellationToken)
             ?? throw new ResourceNotFoundException(nameof(RoadmapWorkspaceSnapshot), request.UserRoadmapId.ToString());
 
         // some bullshit with versions stuff

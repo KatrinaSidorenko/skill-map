@@ -1,6 +1,4 @@
-﻿using SkillMap.Core.Entities.UserRoadmapTest;
-
-namespace SkillMap.Business.Abstractions;
+﻿namespace SkillMap.Business.Abstractions;
 
 public interface IUnitOfWork : IDisposable
 {

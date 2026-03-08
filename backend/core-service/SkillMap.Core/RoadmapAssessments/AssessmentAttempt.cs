@@ -1,12 +1,13 @@
-﻿namespace SkillMap.Core.Entities.UserRoadmapTest;
+﻿namespace SkillMap.Core.RoadmapAssessments;
 
-public class UserTestResult : TrackedEntity
+public class AssessmentAttempt : TrackedEntity
 {
-    public long UserRoadmapTestId { get; set; }
+    public long AssessmentId { get; set; }
     public double MaxPoints { get; set; }
     public double ScoredPoints { get; set; }
     public byte[] ResultData { get; set; }
     public DateTime StartedAt { get; set; }
     public DateTime? CompletedAt { get; set; }
-    public virtual UserRoadmapTest UserRoadmapTest { get; set; }
+
+    public virtual RoadmapAssessment RoadmapAssessment { get; set; }
 }

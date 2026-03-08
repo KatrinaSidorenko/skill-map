@@ -3,7 +3,7 @@
 using Microsoft.AspNetCore.Http;
 
 using SkillMap.Business.Abstractions;
-using SkillMap.Core.Entities;
+using SkillMap.Core.User;
 using SkillMap.Shared.Extensions;
 
 namespace SkillMap.Infrastructure.Account;

@@ -1,6 +1,6 @@
-﻿namespace SkillMap.Core.Entities.UserRoadmapTest;
+﻿namespace SkillMap.Core.RoadmapAssessments;
 
-public class RoadmapTest
+public class RoadmapAssessmentContent
 {
     public RoadmapTestConfig Config { get; set; }
     public Dictionary<string, TopicQuestionsSetting> TopicSettings { get; set; }

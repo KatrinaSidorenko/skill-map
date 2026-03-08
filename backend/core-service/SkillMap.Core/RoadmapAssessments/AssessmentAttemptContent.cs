@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace SkillMap.Core.Entities.UserRoadmapTest;
+namespace SkillMap.Core.RoadmapAssessments;
 
-public class RoadmapTestResult
+public class AssessmentAttemptContent
 {
     public Dictionary<string, TopicAnswersAnalysis> TopicsAnalysis { get; set; }
 

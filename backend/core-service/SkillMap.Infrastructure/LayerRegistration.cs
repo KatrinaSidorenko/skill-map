@@ -20,6 +20,7 @@ using SkillMap.Infrastructure.EventBus;
 using SkillMap.Infrastructure.PersonalizedRoadmaps;
 using SkillMap.Infrastructure.RoadmapTest;
 using SkillMap.Persistence;
+using SkillMap.Persistence.Neo4j;
 using SkillMap.Shared.Options;
 
 namespace SkillMap.Infrastructure;
@@ -58,6 +59,9 @@ public static class LayerRegistration
         services.AddPersonalizedRoadmapModule();
 
         // migrations
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddNeo4jPersistence(configuration);
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddPersistenceLayer(configuration);
 
         return services;

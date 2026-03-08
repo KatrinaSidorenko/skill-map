@@ -1,17 +1,17 @@
 ﻿using SkillMap.Core.RoadmapBookmarks;
 
 namespace SkillMap.Business.RoadmapBookmarks.Features.GetRoadmapBookmarks;
-public record RoadmapBookmarksDto(IReadOnlyList<RoadmapBookmarkDto> Bookmarks)
+public record RoadmapForksDto(IReadOnlyList<RoadmapBookmarkDto> Bookmarks)
 {
-    public static RoadmapBookmarksDto Create(IEnumerable<RoadmapBookmark> roadmapBookmarks)
+    public static RoadmapForksDto Create(IEnumerable<RoadmapFork> roadmapBookmarks)
     {
         var bookmarkDtos = roadmapBookmarks.Select(RoadmapBookmarkDto.Create).ToList();
-        return new RoadmapBookmarksDto(bookmarkDtos);
+        return new RoadmapForksDto(bookmarkDtos);
     }
 }
 public record RoadmapBookmarkDto(long BookmarkId, string RoadmapId, bool IsActive, DateTime BookmarkedAt)
 {
-    public static RoadmapBookmarkDto Create(RoadmapBookmark roadmapBookmark)
+    public static RoadmapBookmarkDto Create(RoadmapFork roadmapBookmark)
     {
         return new RoadmapBookmarkDto(
             roadmapBookmark.Id,

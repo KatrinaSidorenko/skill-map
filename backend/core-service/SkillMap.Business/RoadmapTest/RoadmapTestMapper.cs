@@ -4,7 +4,7 @@ using LearningPlatform.RoadmapTests.Contracts.Models;
 using SkillMap.Business.RoadmapTest.Helpers;
 using SkillMap.Business.RoadmapTest.Models;
 using SkillMap.Core.Constants;
-using SkillMap.Core.Entities.UserRoadmapTest;
+using SkillMap.Core.RoadmapAssessments;
 using SkillMap.Shared.Results;
 
 using SingleAnswerQuestionAnalysisResultDto = SkillMap.Business.RoadmapTest.Models.SingleAnswerQuestionAnalysisResultDto;
@@ -56,17 +56,17 @@ public static class RoadmapTestMapper
         };
     }
 
-    public static Core.Entities.UserRoadmapTest.RoadmapTest ToEntityModel(this RoadmapTestDao dao)
-    {
-        return new Core.Entities.UserRoadmapTest.RoadmapTest
-        {
-            Config = dao.TestConfig?.ToEntityConfig(),
-            TopicSettings = dao.TopicSettings?.ToDictionary(
-                kvp => kvp.Key,
-                kvp => kvp.Value.ToEntitySetting()),
-            TopicQuestions = dao.TopicQuestions?.Select(q => q.ToEntityTopic()).ToList()
-        };
-    }
+    //public static RoadmapAssessmentContent ToEntityModel(this RoadmapTestDao dao)
+    //{
+    //    return new Core.Entities.UserRoadmapTest.RoadmapTest
+    //    {
+    //        Config = dao.TestConfig?.ToEntityConfig(),
+    //        TopicSettings = dao.TopicSettings?.ToDictionary(
+    //            kvp => kvp.Key,
+    //            kvp => kvp.Value.ToEntitySetting()),
+    //        TopicQuestions = dao.TopicQuestions?.Select(q => q.ToEntityTopic()).ToList()
+    //    };
+    //}
 
     public static RoadmapTestConfig ToEntityConfig(this RoadmapTestConfigDto dto) => new()
     {
@@ -104,7 +104,7 @@ public static class RoadmapTestMapper
     };
 
     // --- To DAO Model ---
-    public static RoadmapTestDao ToDaoModel(this Core.Entities.UserRoadmapTest.RoadmapTest entity, string testType, string userRoadmapId, long userTestId, string roadmapId)
+    public static RoadmapTestDao ToDaoModel(this RoadmapAssessmentContent entity, string testType, string userRoadmapId, long userTestId, string roadmapId)
     {
         return new RoadmapTestDao
         {
@@ -156,30 +156,30 @@ public static class RoadmapTestMapper
     };
 
     // --- Result Conversion ---
-    public static SkillMap.Core.Entities.UserRoadmapTest.RoadmapTestResult ToDomainTestResult(this RoadmapTestResultsDto dto)
-    {
-        // Basic example — adapt to your DTOs
-        return new SkillMap.Core.Entities.UserRoadmapTest.RoadmapTestResult
-        {
-            TopicsAnalysis = dto.TopicsAnalysis?.ToDictionary(
-                kvp => kvp.Key,
-                kvp => new TopicAnswersAnalysis
-                {
-                    QuestionsAnalysis = kvp.Value.QuestionsAnalysis?.ToDictionary(
-                        q => q.Key,
-                        q => new QuestionAnalysisResult
-                        {
-                            AchievedPoints = q.Value.AchievedPoints,
-                            TotalPossiblePoints = q.Value.TotalPossiblePoints,
-                            QuestionType = q.Value.QuestionType.ToQuestionTypeString(),
-                            SelectedAnswerId = q.Value.SelectedAnswerId,
-                            CorrectAnswerId = q.Value.CorrectAnswerId
-                        })
-                })
-        };
-    }
+    //public static AssessmentAttemptContent ToDomainTestResult(this RoadmapTestResultsDto dto)
+    //{
+    //    // Basic example — adapt to your DTOs
+    //    return new SkillMap.Core.Entities.UserRoadmapTest.RoadmapTestResult
+    //    {
+    //        TopicsAnalysis = dto.TopicsAnalysis?.ToDictionary(
+    //            kvp => kvp.Key,
+    //            kvp => new TopicAnswersAnalysis
+    //            {
+    //                QuestionsAnalysis = kvp.Value.QuestionsAnalysis?.ToDictionary(
+    //                    q => q.Key,
+    //                    q => new QuestionAnalysisResult
+    //                    {
+    //                        AchievedPoints = q.Value.AchievedPoints,
+    //                        TotalPossiblePoints = q.Value.TotalPossiblePoints,
+    //                        QuestionType = q.Value.QuestionType.ToQuestionTypeString(),
+    //                        SelectedAnswerId = q.Value.SelectedAnswerId,
+    //                        CorrectAnswerId = q.Value.CorrectAnswerId
+    //                    })
+    //            })
+    //    };
+    //}
 
-    public static RoadmapTestResultsDto ToDaoResult(this RoadmapTestResult entity)
+    public static RoadmapTestResultsDto ToDaoResult(this AssessmentAttemptContent entity)
     {
         return new RoadmapTestResultsDto(entity.TopicsAnalysis?.ToDictionary(
                 kvp => kvp.Key,

@@ -1,8 +1,8 @@
-﻿using SkillMap.Core.Entities.UserRoadmapTest;
+﻿using SkillMap.Core.RoadmapAssessments;
 using SkillMap.Shared.Gzip;
 
-using RoadmapTestDao = SkillMap.Core.Entities.UserRoadmapTest.RoadmapTest;
-using UserRoadmpTestDao = SkillMap.Core.Entities.UserRoadmapTest.UserRoadmapTest;
+using RoadmapTestDao = SkillMap.Core.RoadmapAssessments.RoadmapAssessmentContent;
+using UserRoadmpTestDao = SkillMap.Core.RoadmapAssessments.RoadmapAssessment;
 
 namespace SkillMap.Business.RoadmapTest.Helpers;
 
@@ -27,16 +27,16 @@ public static class RoadmapTestExtensions
         userRoadmapTest.TestData = await roadmapTest.GzipJsonObjectUtf8(ct);
     }
 
-    public static async Task<RoadmapTestResult> GetTestResults(this UserTestResult userTestResult, CancellationToken ct)
+    public static async Task<AssessmentAttemptContent> GetTestResults(this AssessmentAttempt userTestResult, CancellationToken ct)
     {
         if (userTestResult.ResultData == null || userTestResult.ResultData.Length == 0)
         {
             throw new InvalidOperationException("ResultData is null or empty.");
         }
-        return await userTestResult.ResultData.InGzipJsonObjectUtf8<RoadmapTestResult>(ct);
+        return await userTestResult.ResultData.InGzipJsonObjectUtf8<AssessmentAttemptContent>(ct);
     }
 
-    public static async Task SetTestResults(this UserTestResult userTestResult, RoadmapTestResult testResult, CancellationToken ct)
+    public static async Task SetTestResults(this AssessmentAttempt userTestResult, AssessmentAttemptContent testResult, CancellationToken ct)
     {
         if (testResult == null)
         {

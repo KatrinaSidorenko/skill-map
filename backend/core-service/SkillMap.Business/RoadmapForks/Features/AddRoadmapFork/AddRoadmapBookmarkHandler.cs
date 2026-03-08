@@ -10,11 +10,11 @@ using SkillMap.Shared.EventBus;
 namespace SkillMap.Business.RoadmapBookmarks.Features.AddRoadmapBookmark;
 
 [UsedImplicitly]
-internal sealed class AddRoadmapBookmarkHandler(IRepository<RoadmapBookmark> repository, IEventBus eventBus) : IRequestHandler<AddRoadmapBookmarkCommand, long>
+internal sealed class AddRoadmapBookmarkHandler(IRepository<RoadmapFork> repository, IEventBus eventBus) : IRequestHandler<AddRoadmapBookmarkCommand, long>
 {
     public async Task<long> Handle(AddRoadmapBookmarkCommand request, CancellationToken cancellationToken)
     {
-        var roadmapBookmark = new RoadmapBookmark(request.UserId, request.RoadmapId);
+        var roadmapBookmark = new RoadmapFork(request.UserId, request.RoadmapId);
         await repository.AddAsync(roadmapBookmark, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
 

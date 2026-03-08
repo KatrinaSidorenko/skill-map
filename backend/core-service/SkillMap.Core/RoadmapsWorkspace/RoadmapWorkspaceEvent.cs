@@ -10,12 +10,12 @@ public partial class RuleName
 }
 public class RoadmapWorkspaceEvent : TrackedEntity
 {
-    public long UserRoadmapId { get; set; }
-    public EventType EventType { get; set; }
-    public string? Metadata { get; set; }
-    public int Version { get; set; } // can we do it self-incremented in db?
+    public long RoadmapForkId { get; private set; }
+    public EventType EventType { get; private set; }
+    public string? Metadata { get; private set; }
+    public int Version { get; private set; } // can we do it self-incremented in db?
 
-    public virtual RoadmapBookmark UserRoadmap { get; set; }
+    public virtual RoadmapFork RoadmapFork { get; set; }
     public RoadmapWorkspaceEvent() { }
     public RoadmapWorkspaceEvent(long userRoadmapId, EventType eventType, object metadata)
     {
@@ -24,7 +24,7 @@ public class RoadmapWorkspaceEvent : TrackedEntity
             throw new BusinessRuleException(RuleName.PersonalizeRoadmapEventMetadataCannotBeNull);
         }
 
-        UserRoadmapId = userRoadmapId;
+        RoadmapForkId = userRoadmapId;
         EventType = eventType;
         Metadata = System.Text.Json.JsonSerializer.Serialize(metadata);
     }

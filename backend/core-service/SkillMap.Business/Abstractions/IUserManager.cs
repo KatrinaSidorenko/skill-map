@@ -1,4 +1,4 @@
-﻿using SkillMap.Core.Entities;
+﻿using SkillMap.Core.User;
 
 namespace SkillMap.Business.Abstractions;
 

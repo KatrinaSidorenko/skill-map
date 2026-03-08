@@ -1,0 +1,11 @@
+﻿using SkillMap.Core.RoadmapBookmarks;
+
+namespace SkillMap.Core.RoadmapAssessments;
+
+public class RoadmapAssessment : TrackedEntity
+{
+    public long RoadmapForkId { get; set; }
+    public string TestType { get; set; }
+    public byte[] TestData { get; set; }
+    public virtual RoadmapFork RoadmapFork { get; set; }
+}

@@ -4,7 +4,7 @@ using SkillMap.Core.PersonalizedRoadmaps;
 
 namespace SkillMap.Api.PersonalizedRoadmaps.GetPersonalizedRoadmap;
 
-public class GetPersonalizedRoadmapResponse
+public class GetRoadmapWorkspaceResponse
 {
     public string Id { get; set; }
     public string Title { get; set; }
@@ -17,9 +17,9 @@ public class GetPersonalizedRoadmapResponse
     public List<PersonalizedLearningItemResponse> LearningItems { get; set; }
     public List<PersonalizedLearningItemsConnectionResponse> LearningItemsConnections { get; set; }
 
-    public static GetPersonalizedRoadmapResponse Create(RoadmapWorkspaceDto dto)
+    public static GetRoadmapWorkspaceResponse Create(RoadmapWorkspaceDto dto)
     {
-        return new GetPersonalizedRoadmapResponse
+        return new GetRoadmapWorkspaceResponse
         {
             Id = dto.Id,
             Title = dto.Title,
