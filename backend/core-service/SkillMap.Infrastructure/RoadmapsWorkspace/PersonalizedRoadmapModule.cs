@@ -5,7 +5,7 @@ using SkillMap.Business;
 using SkillMap.Business.PersonalizedRoadmaps;
 
 namespace SkillMap.Infrastructure.PersonalizedRoadmaps;
-internal sealed class PersonalizedRoadmapModule(ISender mediator) : IPersonalizedRoadmapModule
+internal sealed class PersonalizedRoadmapModule(ISender mediator) : IRoadmapWorkspaceModule
 {
     public Task ExecuteCommandAsync(ICommand command, CancellationToken cancellationToken = default)
         => mediator.Send(command, cancellationToken);

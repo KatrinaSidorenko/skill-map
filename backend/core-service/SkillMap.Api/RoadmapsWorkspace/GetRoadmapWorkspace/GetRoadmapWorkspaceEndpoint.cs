@@ -6,11 +6,11 @@ namespace SkillMap.Api.PersonalizedRoadmaps.GetPersonalizedRoadmap;
 
 internal static class GetRoadmapWorkspaceEndpoint
 {
-    internal static void MapGetPersonalizedRoadmap(this IEndpointRouteBuilder app) => app.MapGet(PersonalizedRoadmapsApiPaths.GetPersonalizedRoadmap, async (
+    internal static void MapGetRoadmapWorkspace(this IEndpointRouteBuilder app) => app.MapGet(RoadmapsWorkspaceApiPaths.GetRoadmapWorkspace, async (
             long userRoadmapId,
-            IPersonalizedRoadmapModule personalizedRoadmapsModule, CancellationToken cancellationToken) =>
+            IRoadmapWorkspaceModule roadmapWprkspaceModule, CancellationToken cancellationToken) =>
     {
-        var result = await personalizedRoadmapsModule.ExecuteCommandAsync(new GetRoadmapWorkspaceQuery(userRoadmapId), cancellationToken);
+        var result = await roadmapWprkspaceModule.ExecuteCommandAsync(new GetRoadmapWorkspaceQuery(userRoadmapId), cancellationToken);
         return Results.Ok(GetRoadmapWorkspaceResponse.Create(result));
     })
         .Produces<GetRoadmapWorkspaceResponse>(StatusCodes.Status200OK)

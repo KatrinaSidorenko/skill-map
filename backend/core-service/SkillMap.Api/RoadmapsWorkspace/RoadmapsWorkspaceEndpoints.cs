@@ -2,7 +2,7 @@
 
 namespace SkillMap.Api.Roadmap;
 
-internal static class PersonalizedRoadmapsEndpoints
+internal static class RoadmapsWorkspaceEndpoints
 {
     internal static void MapPersonalizedRoadmaps(this WebApplication app)
     {

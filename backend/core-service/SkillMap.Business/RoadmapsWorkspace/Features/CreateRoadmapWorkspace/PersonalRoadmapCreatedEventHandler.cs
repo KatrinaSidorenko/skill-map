@@ -2,11 +2,11 @@
 
 using SkillMap.Business.Abstractions;
 using SkillMap.Business.PersonalRoadmaps.IntegrationEvents;
-using SkillMap.Business.RoadmapBookmarks.IntegrationEvents;
+using SkillMap.Business.RoadmapsWorkspace.IntegrationEvents;
 using SkillMap.Core.RoadmapsWorkspace;
 using SkillMap.Shared.EventBus;
 
-namespace SkillMap.Business.RoadmapBookmarks.Features.PersonalRoadmapCreated;
+namespace SkillMap.Business.RoadmapsWorkspace.Features.CreateRoadmapWorkspace;
 
 [UsedImplicitly]
 internal sealed class PersonalRoadmapCreatedEventHandler(IRepository<RoadmapWorkspace> repository, IEventBus eventBus) : IIntegrationEventHandler<PersonalRoadmapCreatedEvent>
@@ -19,6 +19,6 @@ internal sealed class PersonalRoadmapCreatedEventHandler(IRepository<RoadmapWork
         await repository.AddAsync(roadmapBookmark, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
 
-        await eventBus.PublishAsync(RoadmapBookmarkAddedEvent.Create(roadmapBookmark.Id, roadmapBookmark.RoadmapId, false), cancellationToken);
+        await eventBus.PublishAsync(RoadmapWorkspaceCreatedEvent.Create(roadmapBookmark.Id, roadmapBookmark.RoadmapId, isInAuthorMode: true), cancellationToken);
     }
 }

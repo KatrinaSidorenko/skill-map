@@ -6,7 +6,7 @@ using SkillMap.Shared;
 
 namespace SkillMap.Api.Roadmaps;
 
-public static class PersonalizedRoadmapsModule
+public static class RoadmapsWorkspaceModule
 {
     private static Assembly CurrentModule => typeof(AddLearningItemRequest).Assembly;
     public static void RegisterPersonalizedRoadmaps(this WebApplication app, string module)

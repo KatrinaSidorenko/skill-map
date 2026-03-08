@@ -6,10 +6,10 @@ namespace SkillMap.Api.PersonalizedRoadmaps.AddLearningItem;
 
 internal static class AddLearningItemEndpoint
 {
-    internal static void MapAddLearningItem(this IEndpointRouteBuilder app) => app.MapPost(PersonalizedRoadmapsApiPaths.AddLearningItem, async (
+    internal static void MapAddLearningItem(this IEndpointRouteBuilder app) => app.MapPost(RoadmapsWorkspaceApiPaths.AddLearningItem, async (
             long userRoadmapId,
             AddLearningItemRequest request,
-            IPersonalizedRoadmapModule personalizedRoadmapsModule, CancellationToken cancellationToken) =>
+            IRoadmapWorkspaceModule personalizedRoadmapsModule, CancellationToken cancellationToken) =>
     {
         var command = request.ToCommand(userRoadmapId);
         await personalizedRoadmapsModule.ExecuteCommandAsync(command, cancellationToken);

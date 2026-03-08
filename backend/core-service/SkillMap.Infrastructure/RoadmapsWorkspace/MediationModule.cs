@@ -7,11 +7,11 @@ internal static class MediationModule
 {
     internal static IServiceCollection AddPersonalizedRoadmapModule(this IServiceCollection services)
     {
-        var commandsHandlersAssembly = typeof(IPersonalizedRoadmapModule).Assembly;
+        var commandsHandlersAssembly = typeof(IRoadmapWorkspaceModule).Assembly;
 
         services.AddMediatR(configuration => configuration.RegisterServicesFromAssemblies(commandsHandlersAssembly));
 
-        services.AddScoped<IPersonalizedRoadmapModule, PersonalizedRoadmapModule>();
+        services.AddScoped<IRoadmapWorkspaceModule, PersonalizedRoadmapModule>();
 
         return services;
     }

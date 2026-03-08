@@ -1,5 +1,5 @@
 ﻿namespace SkillMap.Business.PersonalizedRoadmaps;
-public interface IPersonalizedRoadmapModule
+public interface IRoadmapWorkspaceModule
 {
     Task ExecuteCommandAsync(ICommand command, CancellationToken cancellationToken = default);
 
