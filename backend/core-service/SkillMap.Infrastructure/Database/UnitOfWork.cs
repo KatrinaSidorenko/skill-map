@@ -1,7 +1,7 @@
 ﻿using SkillMap.Business.Abstractions;
+using SkillMap.Persistence;
 
-namespace SkillMap.Persistence;
-
+namespace SkillMap.Infrastructure;
 public class UnitOfWork(SkillMapDbContext context) : IUnitOfWork
 {
     public async Task<int> SaveChangesAsync(CancellationToken ct = default)

@@ -7,9 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-using SkillMap.Application.Services;
-using SkillMap.Business.__old.ModifiedRoadmaps;
-using SkillMap.Business.__old.UserRoadmaps;
+//using SkillMap.Application.Services;
+//using SkillMap.Business.__old.ModifiedRoadmaps;
+//using SkillMap.Business.__old.UserRoadmaps;
 using SkillMap.Business.Abstractions;
 using SkillMap.Business.Account;
 using SkillMap.Business.RoadmapTest;
@@ -48,9 +48,9 @@ public static class LayerRegistration
 
         services.AddScoped<IAccountService, AccountService>();
         services.AddValidatorsFromAssemblies([typeof(IAccountService).Assembly]);
-        services.AddScoped<IUserRoadmapsService, UserRoadmapsService>();
-        services.AddScoped<ICustomizedRoadmapsService, CustomizedRoadmapsService>();
-        services.AddScoped<IUserRoadmapTestService, UserRoadmapTestService>();
+        //services.AddScoped<IUserRoadmapsService, UserRoadmapsService>();
+        //services.AddScoped<ICustomizedRoadmapsService, CustomizedRoadmapsService>();
+        //services.AddScoped<IUserRoadmapTestService, UserRoadmapTestService>();
         services.AddRoadmapTestModule();
         services.AddRoadmapModule();
 

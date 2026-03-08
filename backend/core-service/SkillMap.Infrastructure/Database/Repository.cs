@@ -3,8 +3,9 @@
 using Microsoft.EntityFrameworkCore;
 
 using SkillMap.Business.Abstractions;
+using SkillMap.Persistence;
 
-namespace SkillMap.Persistence;
+namespace SkillMap.Infrastructure;
 
 internal class Repository<TEntity> : IRepository<TEntity>
  where TEntity : class
