@@ -18,7 +18,7 @@ internal class RoadmapWorkspaceEventConfiguration : IEntityTypeConfiguration<Roa
         builder.Property(rm => rm.CreatedAt).HasColumnName("created_at").IsRequired();
         builder.Property(rm => rm.UpdatedAt).HasColumnName("updated_at").IsRequired();
 
-        builder.Property(rm => rm.RoadmapForkId).HasColumnName("roadmap_fork_id").IsRequired();
+        builder.Property(rm => rm.RoadmapWorkspaceId).HasColumnName("roadmap_workspace_id").IsRequired();
         builder.Property(rm => rm.EventType)
             .HasColumnName("event_type")
             .IsRequired()
@@ -27,13 +27,13 @@ internal class RoadmapWorkspaceEventConfiguration : IEntityTypeConfiguration<Roa
                 v => (EventType)Enum.Parse(typeof(EventType), v));
 
         builder.Property(ws => ws.Version).HasColumnName("version").IsRequired();
-        builder.HasIndex(rm => new { rm.RoadmapForkId, rm.Version }).IsUnique();
+        builder.HasIndex(rm => new { rm.RoadmapWorkspaceId, rm.Version }).IsUnique();
 
         builder.Property(ws => ws.Metadata).HasColumnName("metadata");
         builder.HasOne(rm => rm.RoadmapFork)
             .WithMany(ur => ur.WorkspaceEvents)
-            .HasForeignKey(rm => rm.RoadmapForkId);
+            .HasForeignKey(rm => rm.RoadmapWorkspaceId);
 
-        builder.HasIndex(rm => new { rm.RoadmapForkId, rm.EventType });
+        builder.HasIndex(rm => new { rm.RoadmapWorkspaceId, rm.EventType });
     }
 }

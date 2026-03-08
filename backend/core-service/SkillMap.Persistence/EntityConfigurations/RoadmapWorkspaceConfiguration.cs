@@ -16,7 +16,7 @@ public class RoadmapWorkspaceConfiguration : IEntityTypeConfiguration<RoadmapWor
         builder.Property(rm => rm.UpdatedAt).HasColumnName("updated_at").IsRequired();
 
         builder.Property(ur => ur.AuthorId).HasColumnName("author_id").IsRequired();
-        builder.Property(ur => ur.RoadmapId).HasColumnName("roadmap_id").IsRequired();
+        builder.Property(ur => ur.RoadmapId).HasColumnName("roadmap_id");
         builder.Property(ur => ur.IsActive).HasColumnName("is_active").IsRequired().HasDefaultValue(true);
         builder.Property(ur => ur.IsInAuthorMode).HasColumnName("is_in_author_mode").IsRequired().HasDefaultValue(false);
         builder.Property(ur => ur.PersonalRoadmapId).HasColumnName("personal_roadmap_id");
@@ -27,11 +27,11 @@ public class RoadmapWorkspaceConfiguration : IEntityTypeConfiguration<RoadmapWor
 
         builder.HasMany(ur => ur.WorkspaceEvents)
             .WithOne(rm => rm.RoadmapFork)
-            .HasForeignKey(rm => rm.RoadmapForkId);
+            .HasForeignKey(rm => rm.RoadmapWorkspaceId);
 
         builder.HasMany(ur => ur.Snapshots)
             .WithOne(rm => rm.RoadmapFork)
-            .HasForeignKey(rm => rm.RoadmapForkId);
+            .HasForeignKey(rm => rm.RoadmapWorkspaceId);
 
         builder.HasOne(ur => ur.PersonalRoadmap)
             .WithOne(pr => pr.RoadmapWorkspace)

@@ -17,7 +17,7 @@ internal class RoadmapAssessmentConfiguration : IEntityTypeConfiguration<Roadmap
         builder.Property(urt => urt.CreatedAt).HasColumnName("created_at").IsRequired();
         builder.Property(urt => urt.UpdatedAt).HasColumnName("updated_at");
 
-        builder.Property(urt => urt.RoadmapForkId).HasColumnName("roadmap_fork_id").IsRequired();
+        builder.Property(urt => urt.RoadmapWorkspaceId).HasColumnName("roadmap_workspace_id").IsRequired();
 
         builder.Property(urt => urt.TestType)
             .HasColumnName("test_type")
@@ -26,9 +26,9 @@ internal class RoadmapAssessmentConfiguration : IEntityTypeConfiguration<Roadmap
         builder.Property(urt => urt.TestData).HasColumnName("test_data").IsRequired();
         builder.HasOne(urt => urt.RoadmapFork)
             .WithMany(ur => ur.Assessments)
-            .HasForeignKey(urt => urt.RoadmapForkId)
+            .HasForeignKey(urt => urt.RoadmapWorkspaceId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasIndex(urt => new { urt.RoadmapForkId, urt.TestType });
+        builder.HasIndex(urt => new { urt.RoadmapWorkspaceId, urt.TestType });
     }
 }

@@ -10,7 +10,7 @@ public partial class RuleName
 }
 public class RoadmapWorkspaceEvent : TrackedEntity
 {
-    public long RoadmapForkId { get; private set; }
+    public long RoadmapWorkspaceId { get; private set; }
     public EventType EventType { get; private set; }
     public string? Metadata { get; private set; }
     public int Version { get; private set; } // can we do it self-incremented in db?
@@ -24,7 +24,7 @@ public class RoadmapWorkspaceEvent : TrackedEntity
             throw new BusinessRuleException(RuleName.PersonalizeRoadmapEventMetadataCannotBeNull);
         }
 
-        RoadmapForkId = userRoadmapId;
+        RoadmapWorkspaceId = userRoadmapId;
         EventType = eventType;
         Metadata = System.Text.Json.JsonSerializer.Serialize(metadata);
     }

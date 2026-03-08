@@ -47,9 +47,9 @@ namespace SkillMap.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("metadata");
 
-                    b.Property<long>("RoadmapForkId")
+                    b.Property<long>("RoadmapWorkspaceId")
                         .HasColumnType("bigint")
-                        .HasColumnName("roadmap_fork_id");
+                        .HasColumnName("roadmap_workspace_id");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -61,9 +61,9 @@ namespace SkillMap.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoadmapForkId", "EventType");
+                    b.HasIndex("RoadmapWorkspaceId", "EventType");
 
-                    b.HasIndex("RoadmapForkId", "Version")
+                    b.HasIndex("RoadmapWorkspaceId", "Version")
                         .IsUnique();
 
                     b.ToTable("workspace_event", (string)null);
@@ -90,9 +90,9 @@ namespace SkillMap.Persistence.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("latest_version");
 
-                    b.Property<long>("RoadmapForkId")
+                    b.Property<long>("RoadmapWorkspaceId")
                         .HasColumnType("bigint")
-                        .HasColumnName("roadmap_fork_id");
+                        .HasColumnName("roadmap_workspace_id");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -100,7 +100,7 @@ namespace SkillMap.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoadmapForkId", "CreatedAt");
+                    b.HasIndex("RoadmapWorkspaceId", "CreatedAt");
 
                     b.ToTable("workspace_snapshot", (string)null);
                 });
@@ -166,9 +166,9 @@ namespace SkillMap.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<long>("RoadmapForkId")
+                    b.Property<long>("RoadmapWorkspaceId")
                         .HasColumnType("bigint")
-                        .HasColumnName("roadmap_fork_id");
+                        .HasColumnName("roadmap_workspace_id");
 
                     b.Property<byte[]>("TestData")
                         .IsRequired()
@@ -187,7 +187,7 @@ namespace SkillMap.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoadmapForkId", "TestType");
+                    b.HasIndex("RoadmapWorkspaceId", "TestType");
 
                     b.ToTable("roadmap_assessment", (string)null);
                 });
@@ -233,9 +233,6 @@ namespace SkillMap.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.Property<long>("WorkspaceId")
-                        .HasColumnType("bigint");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
@@ -277,7 +274,6 @@ namespace SkillMap.Persistence.Migrations
                         .HasColumnName("personal_roadmap_id");
 
                     b.Property<string>("RoadmapId")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("roadmap_id");
 
@@ -347,7 +343,7 @@ namespace SkillMap.Persistence.Migrations
                 {
                     b.HasOne("SkillMap.Core.RoadmapsWorkspace.RoadmapWorkspace", "RoadmapFork")
                         .WithMany("WorkspaceEvents")
-                        .HasForeignKey("RoadmapForkId")
+                        .HasForeignKey("RoadmapWorkspaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -358,7 +354,7 @@ namespace SkillMap.Persistence.Migrations
                 {
                     b.HasOne("SkillMap.Core.RoadmapsWorkspace.RoadmapWorkspace", "RoadmapFork")
                         .WithMany("Snapshots")
-                        .HasForeignKey("RoadmapForkId")
+                        .HasForeignKey("RoadmapWorkspaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -380,7 +376,7 @@ namespace SkillMap.Persistence.Migrations
                 {
                     b.HasOne("SkillMap.Core.RoadmapsWorkspace.RoadmapWorkspace", "RoadmapFork")
                         .WithMany("Assessments")
-                        .HasForeignKey("RoadmapForkId")
+                        .HasForeignKey("RoadmapWorkspaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

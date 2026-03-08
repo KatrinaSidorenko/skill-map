@@ -37,7 +37,6 @@ namespace SkillMap.Persistence.Migrations
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     author_id = table.Column<long>(type: "bigint", nullable: false),
-                    WorkspaceId = table.Column<long>(type: "bigint", nullable: false),
                     title = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
                     image_url = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
@@ -63,7 +62,7 @@ namespace SkillMap.Persistence.Migrations
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     author_id = table.Column<long>(type: "bigint", nullable: false),
-                    roadmap_id = table.Column<string>(type: "text", nullable: false),
+                    roadmap_id = table.Column<string>(type: "text", nullable: true),
                     personal_roadmap_id = table.Column<long>(type: "bigint", nullable: true),
                     is_active = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
                     is_in_author_mode = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
@@ -93,7 +92,7 @@ namespace SkillMap.Persistence.Migrations
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    roadmap_fork_id = table.Column<long>(type: "bigint", nullable: false),
+                    roadmap_workspace_id = table.Column<long>(type: "bigint", nullable: false),
                     test_type = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     test_data = table.Column<byte[]>(type: "bytea", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -103,8 +102,8 @@ namespace SkillMap.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_roadmap_assessment", x => x.id);
                     table.ForeignKey(
-                        name: "FK_roadmap_assessment_roadmap_workspace_roadmap_fork_id",
-                        column: x => x.roadmap_fork_id,
+                        name: "FK_roadmap_assessment_roadmap_workspace_roadmap_workspace_id",
+                        column: x => x.roadmap_workspace_id,
                         principalTable: "roadmap_workspace",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -116,7 +115,7 @@ namespace SkillMap.Persistence.Migrations
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    roadmap_fork_id = table.Column<long>(type: "bigint", nullable: false),
+                    roadmap_workspace_id = table.Column<long>(type: "bigint", nullable: false),
                     event_type = table.Column<string>(type: "text", nullable: false),
                     metadata = table.Column<string>(type: "text", nullable: true),
                     version = table.Column<int>(type: "integer", nullable: false),
@@ -127,8 +126,8 @@ namespace SkillMap.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_workspace_event", x => x.id);
                     table.ForeignKey(
-                        name: "FK_workspace_event_roadmap_workspace_roadmap_fork_id",
-                        column: x => x.roadmap_fork_id,
+                        name: "FK_workspace_event_roadmap_workspace_roadmap_workspace_id",
+                        column: x => x.roadmap_workspace_id,
                         principalTable: "roadmap_workspace",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -140,7 +139,7 @@ namespace SkillMap.Persistence.Migrations
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    roadmap_fork_id = table.Column<long>(type: "bigint", nullable: false),
+                    roadmap_workspace_id = table.Column<long>(type: "bigint", nullable: false),
                     content = table.Column<byte[]>(type: "bytea", nullable: true),
                     latest_version = table.Column<int>(type: "integer", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -150,8 +149,8 @@ namespace SkillMap.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_workspace_snapshot", x => x.id);
                     table.ForeignKey(
-                        name: "FK_workspace_snapshot_roadmap_workspace_roadmap_fork_id",
-                        column: x => x.roadmap_fork_id,
+                        name: "FK_workspace_snapshot_roadmap_workspace_roadmap_workspace_id",
+                        column: x => x.roadmap_workspace_id,
                         principalTable: "roadmap_workspace",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -194,9 +193,9 @@ namespace SkillMap.Persistence.Migrations
                 column: "author_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_roadmap_assessment_roadmap_fork_id_test_type",
+                name: "IX_roadmap_assessment_roadmap_workspace_id_test_type",
                 table: "roadmap_assessment",
-                columns: new[] { "roadmap_fork_id", "test_type" });
+                columns: new[] { "roadmap_workspace_id", "test_type" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_roadmap_workspace_author_id_roadmap_id",
@@ -216,20 +215,20 @@ namespace SkillMap.Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_workspace_event_roadmap_fork_id_event_type",
+                name: "IX_workspace_event_roadmap_workspace_id_event_type",
                 table: "workspace_event",
-                columns: new[] { "roadmap_fork_id", "event_type" });
+                columns: new[] { "roadmap_workspace_id", "event_type" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_workspace_event_roadmap_fork_id_version",
+                name: "IX_workspace_event_roadmap_workspace_id_version",
                 table: "workspace_event",
-                columns: new[] { "roadmap_fork_id", "version" },
+                columns: new[] { "roadmap_workspace_id", "version" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_workspace_snapshot_roadmap_fork_id_created_at",
+                name: "IX_workspace_snapshot_roadmap_workspace_id_created_at",
                 table: "workspace_snapshot",
-                columns: new[] { "roadmap_fork_id", "created_at" });
+                columns: new[] { "roadmap_workspace_id", "created_at" });
         }
 
         /// <inheritdoc />

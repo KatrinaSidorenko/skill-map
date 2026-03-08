@@ -14,14 +14,14 @@ public class RoadmapWorkspaceSnapshotConfiguration : IEntityTypeConfiguration<Ro
         builder.Property(rs => rs.Id).HasColumnName("id").ValueGeneratedOnAdd();
         builder.Property(rs => rs.CreatedAt).HasColumnName("created_at").IsRequired();
         builder.Property(rs => rs.UpdatedAt).HasColumnName("updated_at").IsRequired(false);
-        builder.Property(rs => rs.RoadmapForkId).HasColumnName("roadmap_fork_id").IsRequired();
+        builder.Property(rs => rs.RoadmapWorkspaceId).HasColumnName("roadmap_workspace_id").IsRequired();
         builder.Property(rs => rs.LatestVersion).HasColumnName("latest_version").IsRequired();
         builder.Property(rs => rs.Content).HasColumnName("content");
 
         builder.HasOne(rs => rs.RoadmapFork)
             .WithMany(ur => ur.Snapshots)
-            .HasForeignKey(rs => rs.RoadmapForkId);
+            .HasForeignKey(rs => rs.RoadmapWorkspaceId);
 
-        builder.HasIndex(rs => new { rs.RoadmapForkId, rs.CreatedAt });
+        builder.HasIndex(rs => new { rs.RoadmapWorkspaceId, rs.CreatedAt });
     }
 }

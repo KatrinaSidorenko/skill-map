@@ -4,7 +4,7 @@ namespace SkillMap.Core.PersonalizedRoadmaps;
 
 public class RoadmapWorkspaceSnapshot : TrackedEntity
 {
-    public long RoadmapForkId { get; private set; }
+    public long RoadmapWorkspaceId { get; private set; }
     public byte[]? Content { get; private set; } // gzipped JSON
     public int LatestVersion { get; private set; }
 
@@ -12,7 +12,7 @@ public class RoadmapWorkspaceSnapshot : TrackedEntity
     public RoadmapWorkspaceSnapshot() { }
     public RoadmapWorkspaceSnapshot(long userRoadmapId, byte[]? content, int latestVersion)
     {
-        RoadmapForkId = userRoadmapId;
+        RoadmapWorkspaceId = userRoadmapId;
         Content = content;
         LatestVersion = latestVersion;
     }
