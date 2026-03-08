@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Data;
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using SkillMap.Core.Constants;
@@ -23,7 +26,10 @@ internal class RoadmapWorkspaceEventConfiguration : IEntityTypeConfiguration<Roa
                 v => v.ToString(),
                 v => (EventType)Enum.Parse(typeof(EventType), v));
 
-        builder.Property(ws => ws.Version).HasColumnName("version").IsRequired().ValueGeneratedOnAdd();
+        builder.Property(ws => ws.Version).HasColumnName("version").IsRequired();
+        builder.HasIndex(rm => new { rm.RoadmapForkId, rm.Version }).IsUnique();
+
+        builder.Property(ws => ws.Metadata).HasColumnName("metadata");
         builder.HasOne(rm => rm.RoadmapFork)
             .WithMany(ur => ur.WorkspaceEvents)
             .HasForeignKey(rm => rm.RoadmapForkId);

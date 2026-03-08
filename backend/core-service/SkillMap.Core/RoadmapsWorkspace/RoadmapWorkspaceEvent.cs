@@ -1,5 +1,5 @@
 ﻿using SkillMap.Core.Constants;
-using SkillMap.Core.RoadmapBookmarks;
+using SkillMap.Core.RoadmapsWorkspace;
 
 namespace SkillMap.Core.PersonalizedRoadmaps;
 
@@ -15,7 +15,7 @@ public class RoadmapWorkspaceEvent : TrackedEntity
     public string? Metadata { get; private set; }
     public int Version { get; private set; } // can we do it self-incremented in db?
 
-    public virtual RoadmapFork RoadmapFork { get; set; }
+    public virtual RoadmapWorkspace RoadmapFork { get; set; }
     public RoadmapWorkspaceEvent() { }
     public RoadmapWorkspaceEvent(long userRoadmapId, EventType eventType, object metadata)
     {

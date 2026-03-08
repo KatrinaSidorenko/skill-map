@@ -3,18 +3,18 @@
 using MediatR;
 
 using SkillMap.Business.Abstractions;
-using SkillMap.Core.RoadmapBookmarks;
+using SkillMap.Core.RoadmapsWorkspace;
 using SkillMap.Shared.Results;
 
 namespace SkillMap.Business.RoadmapBookmarks.Features.DeleteRoadmapBookmark;
 
 [UsedImplicitly]
-internal sealed class DeleteRoadmapBookmarkHandler(IRepository<RoadmapFork> repository) : IRequestHandler<DeleteRoadmapBookmarkCommand>
+internal sealed class DeleteRoadmapBookmarkHandler(IRepository<RoadmapWorkspace> repository) : IRequestHandler<DeleteRoadmapBookmarkCommand>
 {
     public async Task Handle(DeleteRoadmapBookmarkCommand request, CancellationToken cancellationToken)
     {
         var bookmark = await repository.GetByIdAsync(request.BookmarkId, cancellationToken)
-            ?? throw new ResourceNotFoundException(nameof(RoadmapFork), request.BookmarkId.ToString());
+            ?? throw new ResourceNotFoundException(nameof(RoadmapWorkspace), request.BookmarkId.ToString());
 
         bookmark.Deactivate();
         await repository.UpdateAsync(bookmark, cancellationToken);

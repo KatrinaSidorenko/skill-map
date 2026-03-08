@@ -4,12 +4,12 @@ using JetBrains.Annotations;
 using MediatR;
 
 using SkillMap.Business.Abstractions;
-using SkillMap.Core.RoadmapBookmarks;
+using SkillMap.Core.RoadmapsWorkspace;
 
 namespace SkillMap.Business.RoadmapBookmarks.Features.GetRoadmapBookmarks;
 
 [UsedImplicitly]
-internal sealed class GetRoadmapForksHandler(IRepository<RoadmapFork> repository) : IRequestHandler<GetRoadmapForksQuery, RoadmapForksDto>
+internal sealed class GetRoadmapForksHandler(IRepository<RoadmapWorkspace> repository) : IRequestHandler<GetRoadmapForksQuery, RoadmapForksDto>
 {
     public async Task<RoadmapForksDto> Handle(GetRoadmapForksQuery request, CancellationToken cancellationToken)
     {

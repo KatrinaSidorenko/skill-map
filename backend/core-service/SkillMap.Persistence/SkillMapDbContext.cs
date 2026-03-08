@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+
 using SkillMap.Core;
 using SkillMap.Core.PersonalizedRoadmaps;
 using SkillMap.Core.RoadmapAssessments;
-using SkillMap.Core.RoadmapBookmarks;
+using SkillMap.Core.RoadmapsWorkspace;
 using SkillMap.Core.User;
 
 namespace SkillMap.Persistence;
@@ -12,7 +13,7 @@ public class SkillMapDbContext : DbContext
     public SkillMapDbContext(DbContextOptions<SkillMapDbContext> options) : base(options) { }
 
     public DbSet<AppUser> AppUsers { get; set; }
-    public DbSet<RoadmapFork> RoadmapForks { get; set; }
+    public DbSet<RoadmapWorkspace> RoadmapForks { get; set; }
     public DbSet<RoadmapWorkspaceEvent> RoadmapWorkspaceEvents { get; set; }
     public DbSet<RoadmapWorkspaceSnapshot> RoadmapWorkspaceSnapshots { get; set; }
     public DbSet<RoadmapAssessment> RoadmapAssessments { get; set; }

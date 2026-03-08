@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using SkillMap.Core.Roadmaps;
+using SkillMap.Core.RoadmapsWorkspace;
 
 namespace SkillMap.Persistence.EntityConfigurations;
 public class PersonalRoadmapConfiguration : IEntityTypeConfiguration<PersonalRoadmap>
@@ -22,6 +23,11 @@ public class PersonalRoadmapConfiguration : IEntityTypeConfiguration<PersonalRoa
         builder.HasOne(x => x.Author)
             .WithMany()
             .HasForeignKey(x => x.AuthorId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(x => x.RoadmapWorkspace)
+            .WithOne(w => w.PersonalRoadmap) 
+            .HasForeignKey<RoadmapWorkspace>(w => w.PersonalRoadmapId) 
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
