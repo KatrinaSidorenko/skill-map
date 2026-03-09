@@ -2,6 +2,7 @@
 
 using SkillMap.Business.PersonalizedRoadmaps;
 using SkillMap.Business.PersonalRoadmaps;
+using SkillMap.Infrastructure.RoadmapsWorkspace;
 
 namespace SkillMap.Infrastructure.PersonalizedRoadmaps;
 public static class PersonalRoadmapMediationModule
@@ -12,6 +13,7 @@ public static class PersonalRoadmapMediationModule
         services.AddMediatR(configuration => configuration.RegisterServicesFromAssemblies(commandsHandlersAssembly));
 
         services.AddScoped<IPersonalRoadmapModule, PersonalRoadmapModule>();
+        services.AddHostedService<BuildRoadmapWorkspaceSnapshotWorker>();
 
         return services;
     }

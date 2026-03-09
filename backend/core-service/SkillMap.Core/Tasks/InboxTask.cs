@@ -18,7 +18,7 @@ public class InboxTask : TrackedEntity
     public string Input { get; set; }
     public TaskType TaskType { get; set; }
     public TaskStatus Status { get; set; }
-    public long? WorkerId { get; set; }
+    public Guid? WorkerId { get; set; }
     public string? Output { get; set; }
 
     public InboxTask() { }

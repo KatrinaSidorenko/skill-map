@@ -5,4 +5,4 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SkillMap.Business.RoadmapsWorkspace.Features.CreateWorkspaceSnapshot;
-public record BuildWorkspaceSnapshotCommand(long WorkspaceId, string RoadmapId) : ICommand<long>;
+public record BuildAuthorWorkspaceSnapshotCommand(long WorkspaceId, string RoadmapId) : ICommand<long>;

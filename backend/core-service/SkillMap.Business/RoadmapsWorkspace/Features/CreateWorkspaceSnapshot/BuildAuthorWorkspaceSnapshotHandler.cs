@@ -13,9 +13,9 @@ namespace SkillMap.Business.RoadmapsWorkspace.Features.CreateWorkspaceSnapshot;
 [UsedImplicitly]
 internal sealed class BuildAuthorWorkspaceSnapshotHandler(
     IRepository<RoadmapWorkspaceEvent> repository, 
-    ILogger<BuildAuthorWorkspaceSnapshotHandler> logger) : IRequestHandler<BuildWorkspaceSnapshotCommand, long>
+    ILogger<BuildAuthorWorkspaceSnapshotHandler> logger) : IRequestHandler<BuildAuthorWorkspaceSnapshotCommand, long>
 {
-    public async Task<long> Handle(BuildWorkspaceSnapshotCommand request, CancellationToken cancellationToken)
+    public async Task<long> Handle(BuildAuthorWorkspaceSnapshotCommand request, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
