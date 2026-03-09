@@ -56,7 +56,6 @@ public static class LayerRegistration
         services.AddRoadmapModule();
 
         services.AddEventBus();
-        services.AddPersonalizedRoadmapModule();
 
         // migrations
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));

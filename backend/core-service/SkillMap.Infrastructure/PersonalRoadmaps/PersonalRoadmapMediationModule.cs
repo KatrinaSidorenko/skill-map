@@ -2,16 +2,15 @@
 
 using SkillMap.Business.PersonalizedRoadmaps;
 
-namespace SkillMap.Infrastructure.PersonalizedRoadmaps;
-internal static class MediationModule
+namespace SkillMap.Infrastructure.PersonalRoadmaps;
+public static class PersonalRoadmapMediationModule
 {
-    internal static IServiceCollection AddPersonalizedRoadmapModule(this IServiceCollection services)
+    public static IServiceCollection AddPersonalRoadmapsInfrastructure(this IServiceCollection services)
     {
         var commandsHandlersAssembly = typeof(IRoadmapWorkspaceModule).Assembly;
-
         services.AddMediatR(configuration => configuration.RegisterServicesFromAssemblies(commandsHandlersAssembly));
 
-        services.AddScoped<IRoadmapWorkspaceModule, PersonalizedRoadmapModule>();
+        services.AddScoped<IRoadmapWorkspaceModule, PersonalRoadmapModule>();
 
         return services;
     }

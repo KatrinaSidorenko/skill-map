@@ -5,4 +5,5 @@ namespace SkillMap.Business.Abstractions;
 public interface IUserManager
 {
     AppUser GetCurrentUser();
+    long GetCurrentUserId();
 }

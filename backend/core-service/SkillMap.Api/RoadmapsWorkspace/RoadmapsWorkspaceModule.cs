@@ -2,6 +2,7 @@
 
 using SkillMap.Api.PersonalizedRoadmaps.AddLearningItem;
 using SkillMap.Api.Roadmap;
+using SkillMap.Infrastructure.PersonalizedRoadmaps;
 using SkillMap.Shared;
 
 namespace SkillMap.Api.Roadmaps;
@@ -16,11 +17,11 @@ public static class RoadmapsWorkspaceModule
         //    return;
         //}
 
-        app.UsePersonalizedRoadmaps();
-        app.MapPersonalizedRoadmaps();
+        app.UseRoadmapsWorkspace();
+        app.MapRoadmapsWorkspace();
     }
 
-    public static IServiceCollection AddPersonalizedRoadmaps(this IServiceCollection services,
+    public static IServiceCollection AddRoadmapsWorkspace(this IServiceCollection services,
         string module, IConfiguration configuration)
     {
         //if (!configuration.IsModuleEnabled(module))
@@ -29,15 +30,11 @@ public static class RoadmapsWorkspaceModule
         //}
 
         services.AddRequestsValidations(CurrentModule);
-        //services.AddInfrastructure(configuration);
+        services.AddRoadmapsWorkspaceInfrastructure();
 
         return services;
     }
 
-    private static IApplicationBuilder UsePersonalizedRoadmaps(this IApplicationBuilder applicationBuilder)
-    {
-        //applicationBuilder.UseInfrastructure();
-
-        return applicationBuilder;
-    }
+    private static IApplicationBuilder UseRoadmapsWorkspace(this IApplicationBuilder applicationBuilder)
+        => applicationBuilder;
 }

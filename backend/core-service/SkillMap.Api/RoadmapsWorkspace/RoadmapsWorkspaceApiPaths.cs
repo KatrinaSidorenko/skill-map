@@ -4,9 +4,8 @@ namespace SkillMap.Api.Roadmaps;
 
 internal static class RoadmapsWorkspaceApiPaths
 {
-    private const string PersonalizedRoadmapsRootApi = $"{ApiPaths.Root}/personalized-roadmaps";
+    private const string RoadmapsWorkspaceRootApi = $"{ApiPaths.Root}/roadmaps-workspace";
 
-    public const string AddLearningItem = $"{PersonalizedRoadmapsRootApi}/{{userRoadmapId}}";
-    public const string GetRoadmapWorkspace = $"{PersonalizedRoadmapsRootApi}/{{userRoadmapId}}";
-
+    public const string AddLearningItem = $"{RoadmapsWorkspaceRootApi}/{{userRoadmapId}}";
+    public const string GetRoadmapWorkspace = $"{RoadmapsWorkspaceRootApi}/{{userRoadmapId}}";
 }

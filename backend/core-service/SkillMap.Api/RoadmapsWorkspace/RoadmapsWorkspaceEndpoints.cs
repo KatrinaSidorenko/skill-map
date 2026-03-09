@@ -4,7 +4,7 @@ namespace SkillMap.Api.Roadmap;
 
 internal static class RoadmapsWorkspaceEndpoints
 {
-    internal static void MapPersonalizedRoadmaps(this WebApplication app)
+    internal static void MapRoadmapsWorkspace(this WebApplication app)
     {
         app.MapAddLearningItem();
     }

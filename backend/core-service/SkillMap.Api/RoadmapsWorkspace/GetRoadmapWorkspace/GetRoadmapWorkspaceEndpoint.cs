@@ -8,9 +8,9 @@ internal static class GetRoadmapWorkspaceEndpoint
 {
     internal static void MapGetRoadmapWorkspace(this IEndpointRouteBuilder app) => app.MapGet(RoadmapsWorkspaceApiPaths.GetRoadmapWorkspace, async (
             long userRoadmapId,
-            IRoadmapWorkspaceModule roadmapWprkspaceModule, CancellationToken cancellationToken) =>
+            IRoadmapWorkspaceModule roadmapWorkspaceModule, CancellationToken cancellationToken) =>
     {
-        var result = await roadmapWprkspaceModule.ExecuteCommandAsync(new GetRoadmapWorkspaceQuery(userRoadmapId), cancellationToken);
+        var result = await roadmapWorkspaceModule.ExecuteCommandAsync(new GetRoadmapWorkspaceQuery(userRoadmapId), cancellationToken);
         return Results.Ok(GetRoadmapWorkspaceResponse.Create(result));
     })
         .Produces<GetRoadmapWorkspaceResponse>(StatusCodes.Status200OK)

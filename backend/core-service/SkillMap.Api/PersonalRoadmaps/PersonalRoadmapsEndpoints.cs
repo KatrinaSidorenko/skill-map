@@ -1,5 +1,10 @@
-﻿namespace SkillMap.Api.PersonalRoadmaps;
+﻿using SkillMap.Api.PersonalizedRoadmaps.AddLearningItem;
 
-public class PersonalRoadmapsEndpoints
+namespace SkillMap.Api.PersonalRoadmaps;
+
+internal static class PersonalRoadmapsEndpoints
 {
+    internal static void MapPersonalRoadmaps(this WebApplication app)
+    {
+    }
 }

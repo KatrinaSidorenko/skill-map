@@ -43,4 +43,7 @@ public class UserManager : IUserManager
             Role = role
         };
     }
+
+    public long GetCurrentUserId()
+        => GetCurrentUser()?.Id ?? throw new ArgumentNullException("User claims are not valid");
 }
