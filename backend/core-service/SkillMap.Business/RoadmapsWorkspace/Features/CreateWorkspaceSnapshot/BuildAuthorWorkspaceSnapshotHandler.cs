@@ -50,7 +50,6 @@ internal sealed class BuildAuthorWorkspaceSnapshotHandler(
         var snapshotContent = await latestSnapshot.GetRoadmapSnapshot(cancellationToken);
 
         // maybe here is the pattern to witch i can give the roadmap and feed the events and it will iteratevly apply them??
-
         var newSnapshot = new RoadmapWorkspaceSnapshot(request.WorkspaceId);
         newSnapshot.IncrementVersion(latestSnapshot.Version);
         newSnapshot.SetRoadmapSnapshot(null, cancellationToken);
