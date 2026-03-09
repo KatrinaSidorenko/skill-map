@@ -1,7 +1,7 @@
 ﻿using SkillMap.Core.Constants;
 
 namespace SkillMap.Business.PersonalizedRoadmaps.Features.AddLearningItem;
-public record AddLearningItemCommand(long UserRoadmapId, string Title, string Description, string Status) : ICommand
+public record AddLearningItemCommand(long UserRoadmapId, string Title, string Description, string Status, int ClientWorkspaceVersion) : ICommand
 {
     public EventType EventType => EventType.Create;
     public object GetMetadata()
@@ -10,7 +10,8 @@ public record AddLearningItemCommand(long UserRoadmapId, string Title, string De
         {
             Title,
             Description,
-            Status
+            Status,
+            ClientWorkspaceVersion,
         };
     }
 }

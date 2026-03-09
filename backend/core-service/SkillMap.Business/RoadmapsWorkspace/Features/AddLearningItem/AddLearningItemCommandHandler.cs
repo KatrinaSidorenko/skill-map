@@ -12,6 +12,9 @@ internal sealed class AddLearningItemCommandHandler(IRepository<RoadmapWorkspace
 {
     public async Task Handle(AddLearningItemCommand command, CancellationToken cancellationToken)
     {
+        // todo: we need to check versions before adding events
+        // if client state is less than current last version , we should reject the command and ask client to sync first
+        // else save event and increase version by 1
         var addEvent = new RoadmapWorkspaceEvent(command.UserRoadmapId, command.EventType, command.GetMetadata());
         await repository.AddAsync(addEvent, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);

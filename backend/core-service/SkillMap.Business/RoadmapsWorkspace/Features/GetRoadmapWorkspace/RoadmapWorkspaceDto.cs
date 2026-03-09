@@ -5,7 +5,8 @@ namespace SkillMap.Business.PersonalizedRoadmaps.Features.GetPersonalizedRoadmap
 public class RoadmapWorkspaceDto
 {
     public string Id { get; set; }
-    public double Progress { get; set; }
+    public int Version { get; set; }
+    public double? Progress { get; set; }
 
     public List<PersonalizedLearningItemDto> LearningItems { get; set; }
     public List<PersonalizedLearningItemsConnectionDto> LearningItemsConnections { get; set; }

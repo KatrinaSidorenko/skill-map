@@ -12,8 +12,10 @@ public class AddLearningItemRequest
     public string? Description { get; set; }
     [JsonProperty("status")]
     public string Status { get; set; }
+    [JsonProperty("clientWorkspaceVersion")]
+    public int ClientWorkspaceVersion { get; set; }
 
     public AddLearningItemCommand ToCommand(long userRoadmapId)
-        => new AddLearningItemCommand(userRoadmapId, Title, Description ?? string.Empty, Status);
+        => new (userRoadmapId, Title, Description, Status, ClientWorkspaceVersion);
 }
 

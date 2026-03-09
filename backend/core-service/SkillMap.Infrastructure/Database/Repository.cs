@@ -7,6 +7,7 @@ using SkillMap.Persistence;
 
 namespace SkillMap.Infrastructure;
 
+// todo: as no tracking question??
 internal class Repository<TEntity> : IRepository<TEntity>
  where TEntity : class
 {
@@ -38,10 +39,10 @@ internal class Repository<TEntity> : IRepository<TEntity>
     }
 
     public async Task<IEnumerable<TEntity>> GetAllAsync(
-    Expression<Func<TEntity, bool>>? filter = null,
-    Expression<Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>>? orderBy = null,
-    int? pageNum = null, int? count = null,
-    CancellationToken ct = default)
+        Expression<Func<TEntity, bool>>? filter = null,
+        Expression<Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>>? orderBy = null,
+        int? pageNum = null, int? count = null,
+        CancellationToken ct = default)
     {
         IQueryable<TEntity> query = _dbSet;
 
@@ -57,7 +58,7 @@ internal class Repository<TEntity> : IRepository<TEntity>
         if (count.HasValue && !pageNum.HasValue)
             query = query.Take(count.Value);
 
-        var result = await query.ToListAsync(ct);
+        var result = await query.AsNoTracking().ToListAsync(ct);
         return result;
     }
 

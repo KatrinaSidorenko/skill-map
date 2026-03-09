@@ -24,7 +24,7 @@ internal sealed class GetRoadmapWorkspaceHandler(IRepository<RoadmapWorkspaceSna
 
         // some bullshit with versions stuff
 
-        var roadmapSnapshot = await snapshot.GetPersonalizedRoadmapSnapshot(cancellationToken)
+        var roadmapSnapshot = await snapshot.GetRoadmapSnapshot(cancellationToken)
             ?? throw new ResourceNotFoundException(nameof(RoadmapSnapshot), request.UserRoadmapId.ToString());
 
         // get the WAL log after current version and apply it to the snapshot, for now we will skip this step
