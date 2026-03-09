@@ -1,12 +1,14 @@
 ﻿using System.Text.Json.Serialization;
 
+using Newtonsoft.Json;
+
 namespace SkillMap.Core.Tasks.Input;
 public class BuildWorkspaceSnapshotInput
 {
-    [JsonPropertyName("workspaceId")]
+    [JsonProperty("workspaceId")]
     public long WorkspaceId { get; set; }
-    [JsonPropertyName("roadmapId")]
+    [JsonProperty("roadmapId")]
     public string RoadmapId { get; set; }
-    [JsonPropertyName("isInAuthorMode")]
+    [JsonProperty("isInAuthorMode")]
     public bool IsInAuthorMode { get; set; }
 }

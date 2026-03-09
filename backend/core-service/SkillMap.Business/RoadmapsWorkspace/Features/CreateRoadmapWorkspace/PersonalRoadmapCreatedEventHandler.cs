@@ -19,6 +19,6 @@ internal sealed class PersonalRoadmapCreatedEventHandler(IRepository<RoadmapWork
         await repository.AddAsync(roadmapBookmark, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
 
-        await eventBus.PublishAsync(RoadmapWorkspaceCreatedEvent.Create(roadmapBookmark.Id, roadmapBookmark.RoadmapId, isInAuthorMode: true), cancellationToken);
+        await eventBus.PublishAsync(RoadmapWorkspaceCreatedEvent.Create(roadmapBookmark.Id, roadmapBookmark.PersonalRoadmapId.ToString(), isInAuthorMode: true), cancellationToken);
     }
 }
