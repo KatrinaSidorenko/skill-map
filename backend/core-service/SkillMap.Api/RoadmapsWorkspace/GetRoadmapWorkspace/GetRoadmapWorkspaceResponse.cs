@@ -7,12 +7,6 @@ namespace SkillMap.Api.PersonalizedRoadmaps.GetPersonalizedRoadmap;
 public class GetRoadmapWorkspaceResponse
 {
     public string Id { get; set; }
-    public string Title { get; set; }
-    public string Description { get; set; }
-    public string ImageUrl { get; set; }
-    public double Progress { get; set; }
-    public DateTime SavedAt { get; set; }
-    public string Status { get; set; }
 
     public List<PersonalizedLearningItemResponse> LearningItems { get; set; }
     public List<PersonalizedLearningItemsConnectionResponse> LearningItemsConnections { get; set; }
@@ -22,12 +16,6 @@ public class GetRoadmapWorkspaceResponse
         return new GetRoadmapWorkspaceResponse
         {
             Id = dto.Id,
-            Title = dto.Title,
-            Description = dto.Description,
-            ImageUrl = dto.ImageUrl,
-            Progress = dto.Progress,
-            SavedAt = dto.SavedAt,
-            Status = dto.Status,
             LearningItems = dto.LearningItems.Select(li => new PersonalizedLearningItemResponse(li.Id, li.Title, li.Description, li.Status.ToStatusString())).ToList(),
             LearningItemsConnections = dto.LearningItemsConnections.Select(conn => new PersonalizedLearningItemsConnectionResponse(conn.Id, conn.FromId, conn.ToId)).ToList()
         };

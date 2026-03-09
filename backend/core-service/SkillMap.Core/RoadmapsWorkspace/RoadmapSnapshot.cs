@@ -12,13 +12,7 @@ namespace SkillMap.Core.PersonalizedRoadmaps;
 public class RoadmapSnapshot
 {
     public string Id { get; set; }
-    public string Title { get; set; }
-    public string Description { get; set; }
-    public string ImageUrl { get; set; }
     public double Progress { get; set; }
-    public DateTime SavedAt { get; set; }
-    public string Status { get; set; }
-
     public List<LearningItemSnapshot> LearningItems { get; set; }
     public List<LearningItemsConnectionSnapshot> LearningItemsConnections { get; set; }
 
