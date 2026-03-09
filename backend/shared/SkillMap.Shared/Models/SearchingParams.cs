@@ -8,5 +8,5 @@ public record SearchingParams(string searchTermByName, PaginationParams paginati
 
 public static class DefaultParams
 {
-    public static readonly SearchingParams SearchingParams = new (string.Empty, new PaginationParams(1, 10));
+    public static readonly SearchingParams SearchingParams = new (string.Empty, new PaginationParams { PageNumber = 1, PageSize = 10});
 }
