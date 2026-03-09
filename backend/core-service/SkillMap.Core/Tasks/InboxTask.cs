@@ -20,4 +20,14 @@ public class InboxTask : TrackedEntity
     public TaskStatus Status { get; set; }
     public long? WorkerId { get; set; }
     public string? Output { get; set; }
+
+    public InboxTask() { }
+    public InboxTask(string input, TaskType taskType)
+    {
+        Input = input;
+        TaskType = taskType;
+        Status = TaskStatus.Pending;
+        WorkerId = null;
+        Output = null;
+    }
 }
