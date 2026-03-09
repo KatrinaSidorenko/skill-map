@@ -14,5 +14,5 @@ public class CreatePersonalRoadmapRequest
     public string? ImageUrl { get; set; }
 
     public CreatePersonalRoadmapCommand ToCommand(long userId)
-        => new CreatePersonalRoadmapCommand(userId, Title, Description ?? string.Empty, ImageUrl ?? string.Empty);
+        => new (userId, Title, Description, ImageUrl);
 }

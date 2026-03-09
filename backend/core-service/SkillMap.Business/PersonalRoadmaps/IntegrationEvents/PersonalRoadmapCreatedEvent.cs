@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using SkillMap.Shared.EventBus;
 
 namespace SkillMap.Business.PersonalRoadmaps.IntegrationEvents;
-public record PersonalRoadmapCreatedEvent(Guid Id, long UserId, string RoadmapId, DateTimeOffset OccurredDateTime) : IIntegrationEvent
+public record PersonalRoadmapCreatedEvent(Guid Id, long UserId, long RoadmapId, DateTimeOffset OccurredDateTime) : IIntegrationEvent
 {
     public static PersonalRoadmapCreatedEvent Create(long userId, long roadmapId)
-        => new (Guid.NewGuid(), userId, roadmapId.ToString(), DateTimeOffset.UtcNow);
+        => new (Guid.NewGuid(), userId, roadmapId, DateTimeOffset.UtcNow);
 }

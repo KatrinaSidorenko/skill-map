@@ -21,6 +21,7 @@ internal sealed class CreatePersonalRoadmapHandler(IRepository<PersonalRoadmap> 
             request.Description,
             request.ImageUrl);
         await repository.AddAsync(personalRoadmap, cancellationToken);
+        await repository.SaveChangesAsync(cancellationToken);
         await eventBus.PublishAsync(PersonalRoadmapCreatedEvent.Create(personalRoadmap.AuthorId, personalRoadmap.Id), cancellationToken);
 
         return personalRoadmap.Id;

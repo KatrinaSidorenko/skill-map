@@ -13,7 +13,7 @@ internal sealed class PersonalRoadmapCreatedEventHandler(IRepository<RoadmapWork
 {
     public async Task Handle(PersonalRoadmapCreatedEvent notification, CancellationToken cancellationToken)
     {
-        var roadmapBookmark = new RoadmapWorkspace(notification.UserId, notification.RoadmapId);
+        var roadmapBookmark = new RoadmapWorkspace(notification.UserId, null, notification.RoadmapId);
         roadmapBookmark.ActivateAuthorMode();
 
         await repository.AddAsync(roadmapBookmark, cancellationToken);

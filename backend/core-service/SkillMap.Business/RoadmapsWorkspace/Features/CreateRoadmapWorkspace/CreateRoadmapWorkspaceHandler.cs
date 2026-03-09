@@ -14,7 +14,7 @@ internal sealed class CreateRoadmapWorkspaceHandler(IRepository<RoadmapWorkspace
 {
     public async Task<long> Handle(CreateRoadmapWorkspaceCommand request, CancellationToken cancellationToken)
     {
-        var roadmapBookmark = new RoadmapWorkspace(request.UserId, request.RoadmapId);
+        var roadmapBookmark = new RoadmapWorkspace(request.UserId, request.RoadmapId, null);
         await repository.AddAsync(roadmapBookmark, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
 

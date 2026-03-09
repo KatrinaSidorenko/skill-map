@@ -21,10 +21,11 @@ public class RoadmapWorkspace : TrackedEntity
 
 
     public RoadmapWorkspace() { }
-    public RoadmapWorkspace(long userId, string roadmapId)
+    public RoadmapWorkspace(long userId, string? roadmapId, long? personalRoadmapId)
     {
         AuthorId = userId;
         RoadmapId = roadmapId;
+        PersonalRoadmapId = personalRoadmapId;
         IsActive = true;
         IsInAuthorMode = false;
     }
