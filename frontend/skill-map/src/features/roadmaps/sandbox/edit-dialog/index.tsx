@@ -138,7 +138,7 @@ export const RoadmapDialog = (props) => {
                   />
                 </Box>
 
-                <Checkbox.Root
+                {/* <Checkbox.Root
                   checked={isPublic}
                   onCheckedChange={(e) => setIsPublic(!!e.checked)}
                 >
@@ -147,12 +147,12 @@ export const RoadmapDialog = (props) => {
                   <Checkbox.Label>
                     {getEditorTranslations('isPublic')}
                   </Checkbox.Label>
-                </Checkbox.Root>
-                <Text fontSize="xs" color="gray.500" ml="6">
+                </Checkbox.Root> */}
+                {/* <Text fontSize="xs" color="gray.500" ml="6">
                   {isPublic
                     ? getEditorTranslations('roadmapIsPublicHelp')
                     : getEditorTranslations('roadmapIsPrivateHelp')}
-                </Text>
+                </Text> */}
               </VStack>
             </Dialog.Body>
 

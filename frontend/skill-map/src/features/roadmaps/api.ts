@@ -105,7 +105,7 @@ export const roadmapApi = createApi({
     }),
     createRoadmap: builder.mutation<{ id: string }, CreateDraftRoadmapPayload>({
       query: (payload) => ({
-        url: 'userroadmaps',
+        url: 'personal-roadmaps',
         method: 'POST',
         body: payload,
       }),

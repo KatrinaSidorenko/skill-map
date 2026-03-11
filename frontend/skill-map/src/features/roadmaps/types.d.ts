@@ -83,7 +83,7 @@ interface CreateDraftRoadmapPayload {
   title: string;
   description: string;
   imageUrl?: string;
-  isPublic: boolean;
+  isPublic?: boolean;
 }
 
 interface UpdateUserRoadmapRequest {
