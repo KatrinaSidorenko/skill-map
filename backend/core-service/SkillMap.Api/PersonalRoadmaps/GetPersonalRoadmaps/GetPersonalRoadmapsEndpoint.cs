@@ -11,11 +11,11 @@ namespace SkillMap.Api.PersonalRoadmaps.GetPersonalRoadmaps;
 internal static class GetPersonalRoadmapsEndpoint
 {
     internal static void MapGetPersonalRoadmaps(this IEndpointRouteBuilder app) => app.MapGet(PersonalRoadmapsApiPaths.GetPersonalRoadmaps, async (
-            [AsParameters] PaginationRequest paginationRequest,
-            IPersonalRoadmapModule personalRoadmapModule, 
-            IUserManager userManager, CancellationToken cancellationToken) =>
+        [AsParameters] FilteringRequest filteringRequest,
+        IPersonalRoadmapModule personalRoadmapModule,
+        IUserManager userManager, CancellationToken cancellationToken) =>
     {
-        var query = new GetPersonalRoadmapsQuery(userManager.GetCurrentUserId(), paginationRequest.ToParams());
+        var query = new GetPersonalRoadmapsQuery(userManager.GetCurrentUserId(), filteringRequest.ToParams());
         var result = await personalRoadmapModule.ExecuteCommandAsync(query, cancellationToken);
         return Results.Ok(GetPersonalRoadmapsResponse.CreatePaginationResult(result));
     })

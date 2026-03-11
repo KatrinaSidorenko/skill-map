@@ -115,7 +115,7 @@ export const roadmapApi = createApi({
       SearchConfig
     >({
       query: ({ pageSize, pageNumber, query }) => ({
-        url: 'userroadmaps',
+        url: 'personal-roadmaps',
         method: 'GET',
         params: { pageSize, pageNumber, query },
       }),

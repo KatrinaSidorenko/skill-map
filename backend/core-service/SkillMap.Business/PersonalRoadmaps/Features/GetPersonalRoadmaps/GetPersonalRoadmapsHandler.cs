@@ -15,8 +15,8 @@ internal sealed class GetPersonalRoadmapsHandler(IRepository<PersonalRoadmap> re
     {
         var personalRoadmaps = await repository.GetAllAsync(
             filter: pr => pr.AuthorId == request.UserId,
-            pageNum: request.PaginationParams.PageNumber,
-            count: request.PaginationParams.PageSize,
+            pageNum: request.FilteringParams.PaginationParams.PageNumber,
+            count: request.FilteringParams.PaginationParams.PageSize,
             ct: cancellationToken);
 
         //var totalCount = await repository.(pr => pr.AuthorId == request.UserId, cancellationToken);
