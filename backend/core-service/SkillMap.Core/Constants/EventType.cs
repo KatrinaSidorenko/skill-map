@@ -11,7 +11,7 @@ public enum EventType
     UpdateOrder = 6,
     SnapshotUpdate = 7,
     CreateConnection = 8,
-    CreateItem = 9,
+    CreateLearningItem = 9,
     DeleteConnection = 10,
     DeleteItem = 11
 }
