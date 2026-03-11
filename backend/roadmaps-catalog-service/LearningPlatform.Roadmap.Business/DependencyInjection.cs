@@ -9,7 +9,7 @@ public static class DependencyInjection
     public static IServiceCollection AddRoadmapModule(this IServiceCollection services)
     {
         services.AddTransient<IRetriever, RoadmapRetriever>();
-        services.AddScoped<IRoadmapService, RoadmapService>();
+        services.AddScoped<IRoadmapBlueprintRepository, RoadmapBlueprintRepository>();
         return services;
     }
 }

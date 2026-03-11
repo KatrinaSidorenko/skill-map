@@ -9,9 +9,9 @@ using SkillMap.Shared.Models;
 namespace SkillMap.Business.PersonalRoadmaps.Features.GetPersonalRoadmaps;
 
 [UsedImplicitly]
-internal sealed class GetPersonalRoadmapsHandler(IRepository<PersonalRoadmap> repository) : IRequestHandler<GetPersonalRoadmapsQuery, PaginationResult<PersonalRoadmapsDto>>
+internal sealed class GetPersonalRoadmapsHandler(IRepository<PersonalRoadmap> repository) : IRequestHandler<GetPersonalRoadmapsQuery, PaginationResult<PersonalRoadmapDto>>
 {
-    public async Task<PaginationResult<PersonalRoadmapsDto>> Handle(GetPersonalRoadmapsQuery request, CancellationToken cancellationToken)
+    public async Task<PaginationResult<PersonalRoadmapDto>> Handle(GetPersonalRoadmapsQuery request, CancellationToken cancellationToken)
     {
         var personalRoadmaps = await repository.GetAllAsync(
             filter: pr => pr.AuthorId == request.UserId,
@@ -20,9 +20,9 @@ internal sealed class GetPersonalRoadmapsHandler(IRepository<PersonalRoadmap> re
             ct: cancellationToken);
 
         //var totalCount = await repository.(pr => pr.AuthorId == request.UserId, cancellationToken);
-        return new PaginationResult<PersonalRoadmapsDto>()
+        return new PaginationResult<PersonalRoadmapDto>()
         {
-            Result = PersonalRoadmapsDto.Create(personalRoadmaps),
+            Result = personalRoadmaps.Select(p => PersonalRoadmapDto.Create(p)).ToList(),
             //TotalCount = personalRoadmaps.Count
         };
     }

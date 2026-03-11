@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 
 using SkillMap.Api.PersonalRoadmaps;
+using SkillMap.Api.RoadmapBlueprints;
 using SkillMap.Api.Roadmaps;
 
 namespace SkillMap.Api;
@@ -11,11 +12,13 @@ internal static class ModulesRegistry
     {
         services.AddRoadmapsWorkspace(Module.RoadmapsWorkspace, configuration);
         services.AddPersonalRoadmaps(Module.PersonalRoadmaps, configuration);
+        services.AddRoadmapBlueprints(Module.RoadmapBlueprints, configuration);
     }
 
     internal static void RegisterModules(this WebApplication app)
     {
         app.RegisterPersonalizedRoadmaps(Module.RoadmapsWorkspace);
         app.RegisterPersonalRoadmaps(Module.PersonalRoadmaps);
+        app.RegisterRoadmapBlueprints(Module.RoadmapBlueprints);
     }
 }

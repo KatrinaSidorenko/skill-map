@@ -173,9 +173,9 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
         return Result.Success((nodesList, edgesList));
     }
 
-    public async Task<Result<PaginationResult<List<NodeDto>>>> GetPublicPlainRoadmapsByIds(
+    public async Task<Result<PaginationResult<NodeDto>>> GetPublicPlainRoadmapsByIds(
         List<string> roadmapIds,
-        SearchingParams @params,
+        FilteringParams @params,
         CancellationToken ct,
         bool excludePrivate = true)
     {
@@ -246,7 +246,7 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
 
             await session.CloseAsync();
 
-            return Result.Success(new PaginationResult<List<NodeDto>>
+            return Result.Success(new PaginationResult<NodeDto>
             {
                 Result = response,
                 TotalCount = totalCount
@@ -255,7 +255,7 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to get roadmaps by ids");
-            return ResultType.FailedToGetRoadmap<PaginationResult<List<NodeDto>>>(ex.Message);
+            return ResultType.FailedToGetRoadmap<PaginationResult<NodeDto>>(ex.Message);
         }
     }
 

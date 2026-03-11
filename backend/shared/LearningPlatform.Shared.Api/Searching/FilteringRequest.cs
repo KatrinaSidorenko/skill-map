@@ -4,10 +4,10 @@ using SkillMap.Shared.Models;
 
 namespace LearningPlatform.Shared.Api.Searching;
 
-public class SearchingRequest : PaginationRequest
+public class FilteringRequest : PaginationRequest
 {
     [JsonProperty("query")]
     public string? Query { get; set; }
 
-    public new SearchingParams ToParams() => new SearchingParams(Query, new PaginationParams(PageNumber, PageSize));
+    public new FilteringParams ToParams() => new FilteringParams(Query, new PaginationParams(PageNumber, PageSize));
 }

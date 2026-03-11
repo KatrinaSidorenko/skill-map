@@ -22,8 +22,4 @@
     <ProjectReference Include="..\SkillMap.Infrastructure\SkillMap.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="RoadmapBlueprints\" />
-  </ItemGroup>
-
 </Project>

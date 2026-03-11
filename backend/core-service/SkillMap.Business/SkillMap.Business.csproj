@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <Folder Include="PersonalRoadmaps\Features\SuppressPersonalRoadmap\" />
-    <Folder Include="RoadmapBlueprints\" />
     <Folder Include="PersonalRoadmaps\Features\PublishPersonalRoadmap\" />
   </ItemGroup>
 

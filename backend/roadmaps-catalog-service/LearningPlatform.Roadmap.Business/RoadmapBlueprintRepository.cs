@@ -11,20 +11,20 @@ using SkillMap.Shared.Results;
 
 namespace LearningPlatform.Roadmap.Business;
 
-public class RoadmapService(
+public class RoadmapBlueprintRepository(
     IRoadmapRepository roadmapRepository,
-    ILogger<IRoadmapService> logger) : IRoadmapService
+    ILogger<IRoadmapBlueprintRepository> logger) : IRoadmapBlueprintRepository
 {
-    public async Task<Result<PaginationResult<List<PlainRoadmapDto>>>> GetPlainRoadmaps(SearchingParams @params, CancellationToken ct)
+    public async Task<Result<PaginationResult<PlainRoadmapDto>>> GetPlainRoadmaps(FilteringParams @params, CancellationToken ct)
     {
         var paginatedResult = await roadmapRepository.GetPublicPlainRoadmapsByIds([], @params, ct);
         if (!paginatedResult.IsSuccessful)
         {
             logger.LogError("Failed to get plain roadmaps: {Error}", paginatedResult.Message);
-            return ResultType.FailedToGetRoadmaps<PaginationResult<List<PlainRoadmapDto>>>();
+            return ResultType.FailedToGetRoadmaps<PaginationResult<PlainRoadmapDto>>();
         }
 
-        return Result.Success(new PaginationResult<List<PlainRoadmapDto>>
+        return Result.Success(new PaginationResult<PlainRoadmapDto>
         {
             Result = paginatedResult.Data.Result?.ToPlainRoadmaps() ?? [],
             TotalCount = paginatedResult.Data.TotalCount
@@ -69,11 +69,11 @@ public class RoadmapService(
             Edges = targetEdges.ToEdges()
         });
     }
-    public async Task<Result<PaginationResult<List<PlainRoadmapDto>>>> GetPlainRoadmapsByIds(List<string> roadmapIds, SearchingParams @params, CancellationToken ct, bool excludePrivate = true)
+    public async Task<Result<PaginationResult<PlainRoadmapDto>>> GetPlainRoadmapsByIds(List<string> roadmapIds, FilteringParams @params, CancellationToken ct, bool excludePrivate = true)
     {
         if ((roadmapIds ?? []).Count <= 0)
         {
-            return Result.Success(new PaginationResult<List<PlainRoadmapDto>>
+            return Result.Success(new PaginationResult<PlainRoadmapDto>
             {
                 TotalCount = 0,
                 Result = [],
@@ -83,7 +83,7 @@ public class RoadmapService(
         if (!paginatedResult.IsSuccessful)
         {
             logger.LogError("Failed to get plain roadmaps by IDs: {Error}", paginatedResult.Message);
-            return ResultType.FailedToGetRoadmaps<PaginationResult<List<PlainRoadmapDto>>>();
+            return ResultType.FailedToGetRoadmaps<PaginationResult<PlainRoadmapDto>>();
         }
 
         var plainRoadmaps = paginatedResult.Data.Result?.ToPlainRoadmaps() ?? [];
@@ -94,7 +94,7 @@ public class RoadmapService(
             roadmap.TotalTopics = count;
         }
 
-        return Result.Success(new PaginationResult<List<PlainRoadmapDto>>
+        return Result.Success(new PaginationResult<PlainRoadmapDto>
         {
             Result = plainRoadmaps,
             TotalCount = paginatedResult.Data.TotalCount

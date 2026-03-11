@@ -7,14 +7,14 @@ export const roadmapApi = createApi({
   endpoints: (builder) => ({
     getRoadmaps: builder.query<PaginationResponse<PlainRoadmap>, SearchConfig>({
       query: ({ pageSize, pageNumber, query }) => ({
-        url: 'roadmaps',
+        url: 'roadmap-blueprints',
         method: 'GET',
         params: { pageSize, pageNumber, query },
       }),
     }),
     getRoadmapById: builder.query<RoadmapResponse, string>({
       query: (id) => ({
-        url: `roadmaps/${id}`,
+        url: `roadmap-blueprints/${id}`,
         method: 'GET',
       }),
     }),
