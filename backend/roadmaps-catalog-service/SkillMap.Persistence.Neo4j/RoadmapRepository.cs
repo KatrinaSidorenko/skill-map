@@ -212,9 +212,9 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
                 var result = await tx.RunAsync(query, new
                 {
                     ids = roadmapIds,
-                    skip = @params.paginationParams.Skip,
-                    limit = @params.paginationParams.PageSize,
-                    searchTerm = @params.searchTermByName
+                    skip = @params.PaginationParams.Skip,
+                    limit = @params.PaginationParams.PageSize,
+                    searchTerm = @params.SearchTerm
                 });
 
                 var nodes = new List<NodeDto>();
@@ -238,7 +238,7 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
                 var result = await tx.RunAsync(countQuery, new
                 {
                     ids = roadmapIds,
-                    searchTerm = @params.searchTermByName
+                    searchTerm = @params.SearchTerm
                 });
                 await result.FetchAsync();
                 return result.Current["total"].As<int>();

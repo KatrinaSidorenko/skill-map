@@ -4,7 +4,7 @@
 
 namespace SkillMap.Shared.Models;
 
-public record FilteringParams(string searchTermByName, PaginationParams paginationParams);
+public record FilteringParams(string SearchTerm, PaginationParams PaginationParams);
 
 public static class DefaultParams
 {
