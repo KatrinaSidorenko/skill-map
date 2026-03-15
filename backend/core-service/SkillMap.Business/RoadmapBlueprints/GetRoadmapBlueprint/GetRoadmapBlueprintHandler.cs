@@ -13,10 +13,9 @@ internal sealed class GetRoadmapBlueprintHandler(IRoadmapBlueprintRepository rep
     public async Task<RoadmapBlueprintDto> Handle(GetRoadmapBlueprintQuery request, CancellationToken cancellationToken)
     {
         var result = await repository.GetRoadmapById(request.RoadmapId, cancellationToken);
-
         if (result.IsFailed)
         {
-            throw new InvalidOperationException($"Failed to get roadmap: {result.Message}");
+            throw new KeyNotFoundException($"Failed to get roadmap: {result.Message}");
         }
 
         return RoadmapBlueprintDto.Create(result.Data);

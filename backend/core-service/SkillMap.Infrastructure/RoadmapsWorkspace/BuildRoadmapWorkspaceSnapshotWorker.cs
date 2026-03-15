@@ -6,6 +6,8 @@ using Microsoft.Extensions.Logging;
 
 using SkillMap.Business.Abstractions;
 using SkillMap.Business.RoadmapsWorkspace.Features.CreateWorkspaceSnapshot;
+using SkillMap.Business.RoadmapsWorkspace.Features.CreateWorkspaceSnapshot.Author;
+using SkillMap.Business.RoadmapsWorkspace.Features.CreateWorkspaceSnapshot.Blueprint;
 using SkillMap.Core.Tasks;
 using SkillMap.Core.Tasks.Input;
 using SkillMap.Shared.Extensions;
