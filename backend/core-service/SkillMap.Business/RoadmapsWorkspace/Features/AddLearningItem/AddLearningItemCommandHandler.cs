@@ -12,11 +12,17 @@ internal sealed class AddLearningItemCommandHandler(IRepository<RoadmapWorkspace
 {
     public async Task Handle(AddLearningItemCommand command, CancellationToken cancellationToken)
     {
-        // todo: we need to check versions before adding events
-        // if client state is less than current last version , we should reject the command and ask client to sync first
-        // else save event and increase version by 1
-        var addEvent = new RoadmapWorkspaceEvent(command.UserRoadmapId, command.EventType, command.GetMetadataJson());
+        var lastEvent = await repository.GetAllAsync(
+            filter: e => e.RoadmapWorkspaceId == command.UserRoadmapId,
+            orderBy: q => q.OrderByDescending(e => e.CreatedAt).OrderByDescending(e => e.Version),
+            count: 1,
+            ct: cancellationToken); // todo: it can be optimized
+
+        var lastVersion = lastEvent.FirstOrDefault()?.Version ?? 0;
+        var addEvent = new RoadmapWorkspaceEvent(command.UserRoadmapId, command.EventType, command.GetMetadataJson(), lastVersion);
         await repository.AddAsync(addEvent, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
+
+        // todo: publish event to bus
     }
 }
