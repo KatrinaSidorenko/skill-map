@@ -9,4 +9,5 @@ internal static class RoadmapsWorkspaceApiPaths
     public const string GetRoadmapWorkspaces = $"{RoadmapsWorkspaceRootApi}";
     public const string AddLearningItem = $"{RoadmapsWorkspaceRootApi}/{{userRoadmapId}}";
     public const string GetRoadmapWorkspace = $"{RoadmapsWorkspaceRootApi}/{{userRoadmapId}}";
+    public const string CreateRoadmapWorkspace = $"{RoadmapsWorkspaceRootApi}";
 }

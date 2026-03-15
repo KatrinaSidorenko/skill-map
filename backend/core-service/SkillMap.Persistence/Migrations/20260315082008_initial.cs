@@ -13,6 +13,25 @@ namespace SkillMap.Persistence.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "inbox_task",
+                columns: table => new
+                {
+                    id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    input = table.Column<string>(type: "jsonb", nullable: false),
+                    task_type = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    status = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    worker_id = table.Column<Guid>(type: "uuid", nullable: true),
+                    output = table.Column<string>(type: "jsonb", nullable: true),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_inbox_task", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "user",
                 columns: table => new
                 {
@@ -117,7 +136,7 @@ namespace SkillMap.Persistence.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     roadmap_workspace_id = table.Column<long>(type: "bigint", nullable: false),
                     event_type = table.Column<string>(type: "text", nullable: false),
-                    metadata = table.Column<string>(type: "text", nullable: true),
+                    metadata = table.Column<string>(type: "jsonb", nullable: true),
                     version = table.Column<int>(type: "integer", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
@@ -141,7 +160,8 @@ namespace SkillMap.Persistence.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     roadmap_workspace_id = table.Column<long>(type: "bigint", nullable: false),
                     content = table.Column<byte[]>(type: "bytea", nullable: true),
-                    latest_version = table.Column<int>(type: "integer", nullable: false),
+                    metadata = table.Column<string>(type: "jsonb", maxLength: 2048, nullable: true),
+                    version = table.Column<int>(type: "integer", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
@@ -188,6 +208,11 @@ namespace SkillMap.Persistence.Migrations
                 columns: new[] { "assessment_id", "completed_at" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_inbox_task_status",
+                table: "inbox_task",
+                column: "status");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_personal_roadmap_author_id",
                 table: "personal_roadmap",
                 column: "author_id");
@@ -229,6 +254,12 @@ namespace SkillMap.Persistence.Migrations
                 name: "IX_workspace_snapshot_roadmap_workspace_id_created_at",
                 table: "workspace_snapshot",
                 columns: new[] { "roadmap_workspace_id", "created_at" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_workspace_snapshot_roadmap_workspace_id_version",
+                table: "workspace_snapshot",
+                columns: new[] { "roadmap_workspace_id", "version" },
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -236,6 +267,9 @@ namespace SkillMap.Persistence.Migrations
         {
             migrationBuilder.DropTable(
                 name: "assessment_attempt");
+
+            migrationBuilder.DropTable(
+                name: "inbox_task");
 
             migrationBuilder.DropTable(
                 name: "workspace_event");

@@ -26,7 +26,7 @@ export const roadmapApi = createApi({
     }),
     saveRoadmap: builder.mutation<void, { id: string }>({
       query: ({ id }) => ({
-        url: `userroadmaps/save`,
+        url: `roadmaps-workspace`,
         method: 'POST',
         params: { roadmapId: id },
       }),
@@ -42,14 +42,14 @@ export const roadmapApi = createApi({
       SearchConfig
     >({
       query: ({ pageSize, pageNumber, query }) => ({
-        url: 'modifiedroadmaps',
+        url: 'roadmaps-workspace',
         method: 'GET',
         params: { pageSize, pageNumber, query },
       }),
     }),
     getSavedRoadmap: builder.query<SavedRoadmap, string>({
       query: (id) => ({
-        url: `modifiedroadmaps/${id}`,
+        url: `roadmaps-workspace/${id}`,
         method: 'GET',
       }),
     }),

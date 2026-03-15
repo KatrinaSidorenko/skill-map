@@ -44,7 +44,7 @@ namespace SkillMap.Persistence.Migrations
                         .HasColumnName("event_type");
 
                     b.Property<string>("Metadata")
-                        .HasColumnType("text")
+                        .HasColumnType("jsonb")
                         .HasColumnName("metadata");
 
                     b.Property<long>("RoadmapWorkspaceId")
@@ -67,42 +67,6 @@ namespace SkillMap.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("workspace_event", (string)null);
-                });
-
-            modelBuilder.Entity("SkillMap.Core.PersonalizedRoadmaps.RoadmapWorkspaceSnapshot", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<byte[]>("Content")
-                        .HasColumnType("bytea")
-                        .HasColumnName("content");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<long>("RoadmapWorkspaceId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("roadmap_workspace_id");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<int>("Version")
-                        .HasColumnType("integer")
-                        .HasColumnName("version");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoadmapWorkspaceId", "CreatedAt");
-
-                    b.ToTable("workspace_snapshot", (string)null);
                 });
 
             modelBuilder.Entity("SkillMap.Core.RoadmapAssessments.AssessmentAttempt", b =>
@@ -238,6 +202,50 @@ namespace SkillMap.Persistence.Migrations
                     b.HasIndex("AuthorId");
 
                     b.ToTable("personal_roadmap", (string)null);
+                });
+
+            modelBuilder.Entity("SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots.RoadmapWorkspaceSnapshot", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<byte[]>("Content")
+                        .HasColumnType("bytea")
+                        .HasColumnName("content");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Metadata")
+                        .HasMaxLength(2048)
+                        .HasColumnType("jsonb")
+                        .HasColumnName("metadata");
+
+                    b.Property<long>("RoadmapWorkspaceId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("roadmap_workspace_id");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("integer")
+                        .HasColumnName("version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoadmapWorkspaceId", "CreatedAt");
+
+                    b.HasIndex("RoadmapWorkspaceId", "Version")
+                        .IsUnique();
+
+                    b.ToTable("workspace_snapshot", (string)null);
                 });
 
             modelBuilder.Entity("SkillMap.Core.RoadmapsWorkspace.RoadmapWorkspace", b =>
@@ -391,19 +399,8 @@ namespace SkillMap.Persistence.Migrations
 
             modelBuilder.Entity("SkillMap.Core.PersonalizedRoadmaps.RoadmapWorkspaceEvent", b =>
                 {
-                    b.HasOne("SkillMap.Core.RoadmapsWorkspace.RoadmapWorkspace", "RoadmapFork")
-                        .WithMany("WorkspaceEvents")
-                        .HasForeignKey("RoadmapWorkspaceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("RoadmapFork");
-                });
-
-            modelBuilder.Entity("SkillMap.Core.PersonalizedRoadmaps.RoadmapWorkspaceSnapshot", b =>
-                {
                     b.HasOne("SkillMap.Core.RoadmapsWorkspace.RoadmapWorkspace", "RoadmapWorkspace")
-                        .WithMany("Snapshots")
+                        .WithMany("WorkspaceEvents")
                         .HasForeignKey("RoadmapWorkspaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -442,6 +439,17 @@ namespace SkillMap.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots.RoadmapWorkspaceSnapshot", b =>
+                {
+                    b.HasOne("SkillMap.Core.RoadmapsWorkspace.RoadmapWorkspace", "RoadmapWorkspace")
+                        .WithMany("Snapshots")
+                        .HasForeignKey("RoadmapWorkspaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RoadmapWorkspace");
                 });
 
             modelBuilder.Entity("SkillMap.Core.RoadmapsWorkspace.RoadmapWorkspace", b =>

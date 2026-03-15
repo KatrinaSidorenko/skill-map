@@ -1,4 +1,6 @@
-﻿namespace SkillMap.Core.Tasks;
+﻿using Newtonsoft.Json;
+
+namespace SkillMap.Core.Tasks;
 
 public enum TaskStatus
 {
@@ -11,6 +13,16 @@ public enum TaskStatus
 public enum TaskType
 {
     BuildWorkspaceSnapshot = 0,
+}
+
+public class InboxTaskOutput
+{
+    [JsonProperty("isSuccess")]
+    public bool IsSuccess { get; set; }
+    [JsonProperty("result")]
+    public string? Result { get; set; }
+    [JsonProperty("errorMessage")]
+    public string? ErrorMessage { get; set; }
 }
 
 public class InboxTask : TrackedEntity

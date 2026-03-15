@@ -11,7 +11,7 @@ using SkillMap.Core.PersonalizedRoadmaps;
 using SkillMap.Core.RoadmapsWorkspace.Events;
 using SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots;
 
-namespace SkillMap.Business.RoadmapsWorkspace.Features.CreateWorkspaceSnapshot;
+namespace SkillMap.Business.RoadmapsWorkspace.Features.CreateWorkspaceSnapshot.Author;
 
 [UsedImplicitly]
 internal sealed class BuildAuthorWorkspaceSnapshotHandler(
@@ -22,6 +22,7 @@ internal sealed class BuildAuthorWorkspaceSnapshotHandler(
     private const int _initialVersion = 0;
     public async Task<long> Handle(BuildAuthorWorkspaceSnapshotCommand request, CancellationToken cancellationToken)
     {
+        // todo: add matadat info fill
         var latestSnapshots = await snapshotsRepository.GetAllAsync(
             filter: s => s.RoadmapWorkspaceId == request.WorkspaceId,
             orderBy: q => q.OrderByDescending(s => s.CreatedAt).ThenByDescending(s => s.UpdatedAt),

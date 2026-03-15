@@ -60,11 +60,16 @@ internal sealed class BuildRoadmapWorkspaceSnapshotWorker : BackgroundService
                 }
                 else
                 {
-                    // For now, we only have author mode, but in the future we can add more modes and handle them here
+                   var command = new BuildBlueprintWorkspaceSnapshotCommand(input.WorkspaceId, input.RoadmapId);
+                   result = await mediator.Send(command, stoppingToken);
                 }
 
                 task.Status = Core.Tasks.TaskStatus.Completed;
-                task.Output = result.ToString();
+                task.Output = new InboxTaskOutput
+                {
+                    Result = result?.ToString(),
+                    IsSuccess = true
+                }.JsonSerializeOrDefault();
                 await inboxRepository.UpdateAsync(task, stoppingToken);
                 await inboxRepository.SaveChangesAsync(stoppingToken);
                 _logger.LogInformation("Successfully completed task with id {TaskId} for {WorkerName} with id {WorkerId}", task.Id, nameof(BuildRoadmapWorkspaceSnapshotWorker), _workerId);
@@ -75,7 +80,11 @@ internal sealed class BuildRoadmapWorkspaceSnapshotWorker : BackgroundService
                 if (task != null)
                 {
                     task.Status = Core.Tasks.TaskStatus.Error;
-                    task.Output = ex.ToString();
+                    task.Output = new InboxTaskOutput
+                    {
+                        IsSuccess = false,
+                        ErrorMessage = ex.Message
+                    }.JsonSerializeOrDefault();
                     await inboxRepository.UpdateAsync(task, stoppingToken);
                     await inboxRepository.SaveChangesAsync(stoppingToken);
                 }
