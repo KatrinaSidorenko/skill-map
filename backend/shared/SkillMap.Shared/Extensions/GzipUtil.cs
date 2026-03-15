@@ -49,7 +49,7 @@ public static class GzipUtils
 
     public static async Task<byte[]> GzipJsonObjectUtf8(this object o, CancellationToken ct)
     {
-        var json = o.SerializeOrDefault();
+        var json = o.JsonSerializeOrDefault();
         var bytes = Encoding.UTF8.GetBytes(json);
         return await bytes.Compress(ct);
     }
@@ -58,6 +58,6 @@ public static class GzipUtils
     {
         var decompressed = await gzipped.Decompress(ct);
         var json = Encoding.UTF8.GetString(decompressed);
-        return json.DeserializeOrDefault<T>();
+        return json.JsonDeserializeOrDefault<T>();
     }
 }

@@ -18,16 +18,16 @@ public record RoadmapWorkspaceSummaryDto(
         string description, 
         string imageUrl,
         DateTime savedAt,
-        LearningStatus status, 
-        double progress)
+        LearningStatus? status, 
+        double? progress)
     {
         return new RoadmapWorkspaceSummaryDto(
             workspaceId.ToString(),
             title,
             description,
             imageUrl,
-            progress,
+            progress ?? 0.0,
             savedAt,
-            status);
+            status ?? LearningStatus.NotStarted);
     }
 }

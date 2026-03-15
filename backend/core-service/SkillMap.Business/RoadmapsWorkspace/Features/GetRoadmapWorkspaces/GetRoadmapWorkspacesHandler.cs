@@ -5,6 +5,7 @@ using LearningPlatform.Roadmap.Business.Contracts;
 using MediatR;
 
 using SkillMap.Business.Abstractions;
+using SkillMap.Business.PersonalizedRoadmaps.Common;
 using SkillMap.Core.Constants;
 using SkillMap.Core.RoadmapsWorkspace;
 using SkillMap.Shared.Models;
@@ -12,9 +13,8 @@ using SkillMap.Shared.Models;
 namespace SkillMap.Business.RoadmapsWorkspace.Features.GetRoadmapWorkspaces;
 
 [UsedImplicitly]
-internal sealed class GetRoadmapWorkspacesHandler(
-    IRepository<RoadmapWorkspace> repository,
-    IRoadmapBlueprintRepository roadmapBlueprintRepository) : IRequestHandler<GetRoadmapWorkspacesQuery, PaginationResult<RoadmapWorkspaceSummaryDto>>
+internal sealed class GetRoadmapWorkspacesHandler(IRepository<RoadmapWorkspace> repository) 
+    : IRequestHandler<GetRoadmapWorkspacesQuery, PaginationResult<RoadmapWorkspaceSummaryDto>>
 {
     public async Task<PaginationResult<RoadmapWorkspaceSummaryDto>> Handle(GetRoadmapWorkspacesQuery request, CancellationToken cancellationToken)
     {
@@ -24,15 +24,21 @@ internal sealed class GetRoadmapWorkspacesHandler(
             count: request.FilteringParams.PaginationParams.PageSize,
             ct: cancellationToken);
 
-        // TODO: Calculate actual progress from the latest snapshot
-        var progress = 0.0; // Mock value
-
-        // TODO: Calculate actual status from the latest snapshot learning items
-        var status = LearningStatus.NotStarted; // Mock value
-
-        // for personal roadmps we want to get data by navigational properties.
-        // for roadmaps with externalid we want to search for latest snapshot and get all data from it + in future there fill be the progress ans status
-        // but for now it mock
+        // todo: it is not best solution to use latest snapshot, but wor now it is an optimal one. Than we need to add checks on new events
+        var result = new List<RoadmapWorkspaceSummaryDto>();
+        foreach (var workspace in userWorkspaces)
+        {
+            var latestSnapshot = workspace.Snapshots.OrderByDescending(s => s.CreatedAt).FirstOrDefault();
+            var snapshotMetadata = latestSnapshot.ParseMetadata();
+            result.Add(RoadmapWorkspaceSummaryDto.Create(
+                workspace.Id,
+                snapshotMetadata?.Title ?? string.Empty,
+                snapshotMetadata?.Description ?? string.Empty,
+                snapshotMetadata?.ImageUrl ?? string.Empty,
+                latestSnapshot.CreatedAt,
+                snapshotMetadata?.Status,
+                snapshotMetadata?.Progress));
+        }
 
         return new PaginationResult<RoadmapWorkspaceSummaryDto>
         {

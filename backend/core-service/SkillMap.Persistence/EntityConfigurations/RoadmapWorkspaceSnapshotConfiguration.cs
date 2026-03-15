@@ -17,6 +17,7 @@ public class RoadmapWorkspaceSnapshotConfiguration : IEntityTypeConfiguration<Ro
         builder.Property(rs => rs.RoadmapWorkspaceId).HasColumnName("roadmap_workspace_id").IsRequired();
         builder.Property(rs => rs.Version).HasColumnName("version").IsRequired();
         builder.Property(rs => rs.Content).HasColumnName("content");
+        builder.Property(rs => rs.Metadata).HasColumnName("metadata").HasColumnType("jsonb").HasMaxLength(2048);
         builder.HasIndex(rm => new { rm.RoadmapWorkspaceId, rm.Version }).IsUnique();
 
         builder.HasOne(rs => rs.RoadmapWorkspace)

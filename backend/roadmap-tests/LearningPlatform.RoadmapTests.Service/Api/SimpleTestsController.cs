@@ -134,7 +134,7 @@ public class SimpleTestsController : ControllerBase
                         Text = "To optimize for speed by avoiding interfaces",
                         IsCorrect = false
                     }
-                }.SerializeOrDefault()
+                }.JsonSerializeOrDefault()
             },
             new QuestionEntity
             {
@@ -163,7 +163,7 @@ public class SimpleTestsController : ControllerBase
                         Text = "Direct instantiation with new inside the consumer",
                         IsCorrect = false
                     }
-                }.SerializeOrDefault()
+                }.JsonSerializeOrDefault()
             }
         };
         await _topicQuestionsRepository.InsertQuestionsAsync(topicId, questions, ct);
@@ -198,7 +198,7 @@ public class SimpleTestsController : ControllerBase
             Id = q.Id.ToString(),
             Text = q.Text,
             Type = q.Type.FromQuestionTypeString(),
-            Answers = q.Answers.DeserializeOrDefault<List<AnswerDto>>() ?? new List<AnswerDto>()
+            Answers = q.Answers.JsonDeserializeOrDefault<List<AnswerDto>>() ?? new List<AnswerDto>()
         }).ToList();
 
         return Ok(questionsDto);
@@ -337,7 +337,7 @@ public class SimpleTestsController : ControllerBase
             Text = q.Text,
             Difficulty = difficultyLevel,
             Type = q.Type.ToQuestionTypeString(),
-            Answers = q.Answers.SerializeOrDefault(),
+            Answers = q.Answers.JsonSerializeOrDefault(),
         });
 
         var topicId = await _topicQuestionsRepository.InsertTopicWithQuestions(topicEntity, questionEntities, ct);

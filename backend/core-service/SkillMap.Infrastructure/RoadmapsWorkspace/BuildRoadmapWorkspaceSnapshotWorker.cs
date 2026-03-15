@@ -51,7 +51,7 @@ internal sealed class BuildRoadmapWorkspaceSnapshotWorker : BackgroundService
                 await inboxRepository.UpdateAsync(task, stoppingToken);
                 await inboxRepository.SaveChangesAsync(stoppingToken);
 
-                var input = task.Input.DeserializeOrDefault<BuildWorkspaceSnapshotInput>();
+                var input = task.Input.JsonDeserializeOrDefault<BuildWorkspaceSnapshotInput>();
                 var result = (long?)null;
                 if (input.IsInAuthorMode)
                 {
