@@ -55,9 +55,9 @@ public class RoadmapWorkspaceSnapshot : TrackedEntity
         Content = content;
     }
 
-    public void IncrementVersion(int latestVersion)
+    public void SetVersion(int version)
     {
-        Version = ++latestVersion;
+        Version = version;
     }
 
     // todo: logic of serialization and desiralization seems like to be logical here

@@ -6,7 +6,6 @@ public class RoadmapWorkspaceDto
 {
     public string Id { get; set; }
     public int Version { get; set; }
-    public double? Progress { get; set; }
 
     public List<PersonalizedLearningItemDto> LearningItems { get; set; }
     public List<PersonalizedLearningItemsConnectionDto> LearningItemsConnections { get; set; }
@@ -16,7 +15,6 @@ public class RoadmapWorkspaceDto
         return new RoadmapWorkspaceDto
         {
             Id = roadmapSnapshot.Id,
-            Progress = roadmapSnapshot.Progress,
             LearningItems = roadmapSnapshot.LearningItems.Select(li => new PersonalizedLearningItemDto(li.Id, li.Title, li.Description, li.Status)).ToList(),
             LearningItemsConnections = roadmapSnapshot.LearningItemsConnections.Select(conn => new PersonalizedLearningItemsConnectionDto(conn.Id, conn.FromId, conn.ToId)).ToList()
         };

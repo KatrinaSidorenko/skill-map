@@ -36,27 +36,34 @@ internal sealed class BuildAuthorWorkspaceSnapshotHandler(
         }
 
         var events = await eventsRepository.GetAllAsync(
-            filter: e => e.RoadmapWorkspaceId == request.WorkspaceId && e.Version > latestSnapshot.Version, // todo: be carefull
-            orderBy: q => q.OrderBy(e => e.CreatedAt),
+            filter: e => e.RoadmapWorkspaceId == request.WorkspaceId && e.Version > latestSnapshot.Version,
             ct: cancellationToken);
-        if (events.Count() == 0)
+        var eventsList = events.ToList();
+        if (eventsList.Count <= 0)
         {
             logger.LogInformation("No new events found for workspace {WorkspaceId} since last snapshot version {Version}. Returning existing snapshot.", request.WorkspaceId, latestSnapshot.Version);
             return latestSnapshot.Id;
         }
 
-        // i need to merge the obtained from snapshot roadmap with the events
-        // venets can be of diffrent types and it should be clear to apply to the roadmap
         var snapshotContent = await latestSnapshot.GetRoadmapSnapshot(cancellationToken);
+        var newRoadmapSnapshot = await ApplyEventsToSnapshot(snapshotContent, eventsList, cancellationToken);
+
+        var newSnapshot = new RoadmapWorkspaceSnapshot(request.WorkspaceId);
+        newSnapshot.SetVersion(eventsList.OrderByDescending(e => e.Version).Single().Version);
+        await newSnapshot.SetRoadmapSnapshot(newRoadmapSnapshot, cancellationToken);
+        await snapshotsRepository.AddAsync(newSnapshot, cancellationToken);
+        await snapshotsRepository.SaveChangesAsync(cancellationToken);
+        return newSnapshot.Id;
+    }
+
+    private async Task<RoadmapSnapshot> ApplyEventsToSnapshot(RoadmapSnapshot snapshot, List<RoadmapWorkspaceEvent> events, CancellationToken cancellationToken)
+    {
 
         // maybe here is the pattern to witch i can give the roadmap and feed the events and it will iteratevly apply them??
         // create parser based on type to the Ievenets
         // create aggregator
-        var newSnapshot = new RoadmapWorkspaceSnapshot(request.WorkspaceId);
-        newSnapshot.IncrementVersion(latestSnapshot.Version);
-        newSnapshot.SetRoadmapSnapshot(null, cancellationToken);
-        await snapshotsRepository.AddAsync(newSnapshot, cancellationToken);
-        await snapshotsRepository.SaveChangesAsync(cancellationToken);
-        return newSnapshot.Id;
+        // here we need to apply the events to the snapshot and return the new snapshot
+        // for now we will just return the same snapshot, but in the future we will implement the logic to apply events to the snapshot
+        return await Task.FromResult(snapshot);
     }
 }

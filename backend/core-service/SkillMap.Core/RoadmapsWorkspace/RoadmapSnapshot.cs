@@ -14,8 +14,6 @@ public class RoadmapSnapshot
 {
     [JsonProperty("id")]
     public string Id { get; set; }
-    [JsonProperty("progress")]
-    public double? Progress { get; set; }
     [JsonProperty("items")]
     public List<LearningItemSnapshot> LearningItems { get; set; }
     [JsonProperty("connections")]

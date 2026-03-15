@@ -13,11 +13,11 @@ public class RoadmapWorkspaceEvent : TrackedEntity
     public long RoadmapWorkspaceId { get; private set; }
     public EventType EventType { get; private set; }
     public string? Metadata { get; private set; }
-    public int Version { get; private set; } // can we do it self-incremented in db?
+    public int Version { get; private set; }
 
     public virtual RoadmapWorkspace RoadmapFork { get; set; }
     public RoadmapWorkspaceEvent() { }
-    public RoadmapWorkspaceEvent(long userRoadmapId, EventType eventType, object metadata)
+    public RoadmapWorkspaceEvent(long userRoadmapId, EventType eventType, string metadata, int version)
     {
         if (metadata == null)
         {
@@ -26,6 +26,7 @@ public class RoadmapWorkspaceEvent : TrackedEntity
 
         RoadmapWorkspaceId = userRoadmapId;
         EventType = eventType;
-        Metadata = System.Text.Json.JsonSerializer.Serialize(metadata);
+        Metadata = metadata;
+        Version = version;
     }
 }
