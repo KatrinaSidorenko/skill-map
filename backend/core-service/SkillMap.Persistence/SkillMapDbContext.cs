@@ -4,6 +4,7 @@ using SkillMap.Core;
 using SkillMap.Core.PersonalizedRoadmaps;
 using SkillMap.Core.RoadmapAssessments;
 using SkillMap.Core.RoadmapsWorkspace;
+using SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots;
 using SkillMap.Core.User;
 
 namespace SkillMap.Persistence;

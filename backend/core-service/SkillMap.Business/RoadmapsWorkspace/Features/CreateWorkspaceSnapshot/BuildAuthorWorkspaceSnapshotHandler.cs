@@ -8,13 +8,15 @@ using Microsoft.Extensions.Logging;
 using SkillMap.Business.Abstractions;
 using SkillMap.Business.PersonalizedRoadmaps.Common;
 using SkillMap.Core.PersonalizedRoadmaps;
+using SkillMap.Core.RoadmapsWorkspace.Events;
+using SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots;
 
 namespace SkillMap.Business.RoadmapsWorkspace.Features.CreateWorkspaceSnapshot;
 
 [UsedImplicitly]
 internal sealed class BuildAuthorWorkspaceSnapshotHandler(
     IRepository<RoadmapWorkspaceSnapshot> snapshotsRepository,
-    IRepository<RoadmapWorkspaceEvent> eventsRepository, 
+    IRepository<RoadmapWorkspaceEvent> eventsRepository,
     ILogger<BuildAuthorWorkspaceSnapshotHandler> logger) : IRequestHandler<BuildAuthorWorkspaceSnapshotCommand, long>
 {
     private const int _initialVersion = 0;
@@ -56,14 +58,24 @@ internal sealed class BuildAuthorWorkspaceSnapshotHandler(
         return newSnapshot.Id;
     }
 
-    private async Task<RoadmapSnapshot> ApplyEventsToSnapshot(RoadmapSnapshot snapshot, List<RoadmapWorkspaceEvent> events, CancellationToken cancellationToken)
+    private async Task<RoadmapSnapshot> ApplyEventsToSnapshot(
+        RoadmapSnapshot snapshot,
+        List<RoadmapWorkspaceEvent> events,
+        CancellationToken cancellationToken)
     {
+        var orderedEvents = events.OrderBy(e => e.CreatedAt).ThenBy(e => e.Version);
+        var aggregator = new RoadmapSnapshotAggregator(snapshot);
+        foreach (var rawEvent in orderedEvents)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
 
-        // maybe here is the pattern to witch i can give the roadmap and feed the events and it will iteratevly apply them??
-        // create parser based on type to the Ievenets
-        // create aggregator
-        // here we need to apply the events to the snapshot and return the new snapshot
-        // for now we will just return the same snapshot, but in the future we will implement the logic to apply events to the snapshot
-        return await Task.FromResult(snapshot);
+            var parsedEvent = WorkspaceEventMapper.Map(rawEvent);
+            if (parsedEvent != null)
+            {
+                aggregator.Apply(parsedEvent);
+            }
+        }
+
+        return aggregator.Build();
     }
 }

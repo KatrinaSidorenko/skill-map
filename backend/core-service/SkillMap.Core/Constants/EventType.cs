@@ -13,5 +13,6 @@ public enum EventType
     CreateConnection = 8,
     CreateLearningItem = 9,
     DeleteConnection = 10,
-    DeleteItem = 11
+    DeleteItem = 11,
+    UpdateLearningItem = 12
 }

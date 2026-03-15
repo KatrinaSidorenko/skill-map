@@ -30,7 +30,7 @@ internal class RoadmapWorkspaceEventConfiguration : IEntityTypeConfiguration<Roa
         builder.HasIndex(rm => new { rm.RoadmapWorkspaceId, rm.Version }).IsUnique();
 
         builder.Property(ws => ws.Metadata).HasColumnType("jsonb").HasColumnName("metadata");
-        builder.HasOne(rm => rm.RoadmapFork)
+        builder.HasOne(rm => rm.RoadmapWorkspace)
             .WithMany(ur => ur.WorkspaceEvents)
             .HasForeignKey(rm => rm.RoadmapWorkspaceId);
 

@@ -1,4 +1,4 @@
-﻿using SkillMap.Core.PersonalizedRoadmaps;
+﻿using SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots;
 using SkillMap.Shared.Extensions;
 using SkillMap.Shared.Gzip;
 

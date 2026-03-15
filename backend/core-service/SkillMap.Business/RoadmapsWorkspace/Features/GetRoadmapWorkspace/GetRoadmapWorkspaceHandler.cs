@@ -4,7 +4,7 @@ using MediatR;
 
 using SkillMap.Business.Abstractions;
 using SkillMap.Business.PersonalizedRoadmaps.Common;
-using SkillMap.Core.PersonalizedRoadmaps;
+using SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots;
 using SkillMap.Shared.Gzip;
 using SkillMap.Shared.Results;
 

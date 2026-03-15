@@ -1,6 +1,7 @@
 ﻿using SkillMap.Core.PersonalizedRoadmaps;
 using SkillMap.Core.RoadmapAssessments;
 using SkillMap.Core.Roadmaps;
+using SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots;
 using SkillMap.Core.User;
 
 namespace SkillMap.Core.RoadmapsWorkspace;

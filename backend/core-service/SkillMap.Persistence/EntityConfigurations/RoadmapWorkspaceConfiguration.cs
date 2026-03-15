@@ -26,7 +26,7 @@ public class RoadmapWorkspaceConfiguration : IEntityTypeConfiguration<RoadmapWor
             .HasForeignKey(ur => ur.AuthorId);
 
         builder.HasMany(ur => ur.WorkspaceEvents)
-            .WithOne(rm => rm.RoadmapFork)
+            .WithOne(rm => rm.RoadmapWorkspace)
             .HasForeignKey(rm => rm.RoadmapWorkspaceId);
 
         builder.HasMany(ur => ur.Snapshots)

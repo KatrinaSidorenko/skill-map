@@ -15,7 +15,7 @@ public class RoadmapWorkspaceEvent : TrackedEntity
     public string? Metadata { get; private set; }
     public int Version { get; private set; }
 
-    public virtual RoadmapWorkspace RoadmapFork { get; set; }
+    public virtual RoadmapWorkspace RoadmapWorkspace { get; set; }
     public RoadmapWorkspaceEvent() { }
     public RoadmapWorkspaceEvent(long userRoadmapId, EventType eventType, string metadata, int version)
     {

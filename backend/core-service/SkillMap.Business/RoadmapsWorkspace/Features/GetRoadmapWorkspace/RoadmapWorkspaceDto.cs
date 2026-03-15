@@ -1,5 +1,5 @@
 ﻿using SkillMap.Core.Constants;
-using SkillMap.Core.PersonalizedRoadmaps;
+using SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots;
 
 namespace SkillMap.Business.PersonalizedRoadmaps.Features.GetPersonalizedRoadmap;
 public class RoadmapWorkspaceDto

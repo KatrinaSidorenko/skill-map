@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-using SkillMap.Core.PersonalizedRoadmaps;
+using SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots;
 
 namespace SkillMap.Persistence.EntityConfigurations;
 

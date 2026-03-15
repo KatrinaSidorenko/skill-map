@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using SkillMap.Core.Constants;
 using SkillMap.Core.RoadmapsWorkspace;
 
-namespace SkillMap.Core.PersonalizedRoadmaps;
+namespace SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots;
 
 public class RoadmapSnapshotMetadata
 {
