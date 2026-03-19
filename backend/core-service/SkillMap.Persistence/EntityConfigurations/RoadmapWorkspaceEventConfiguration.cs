@@ -24,7 +24,7 @@ internal class RoadmapWorkspaceEventConfiguration : IEntityTypeConfiguration<Roa
             .IsRequired()
             .HasConversion(
                 v => v.ToString(),
-                v => (EventType)Enum.Parse(typeof(EventType), v));
+                v => (WorkspaceEventType)Enum.Parse(typeof(WorkspaceEventType), v));
 
         builder.Property(ws => ws.Version).HasColumnName("version").IsRequired();
         builder.HasIndex(rm => new { rm.RoadmapWorkspaceId, rm.Version }).IsUnique();

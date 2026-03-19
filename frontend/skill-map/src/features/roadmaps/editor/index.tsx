@@ -31,6 +31,8 @@ import {
 } from './store';
 import { useCreateEdgeMutation } from '../api';
 import { StatusNode } from './status-node';
+import { generateEdgeId, generateNodeId } from '@/features/roadmaps/helpers';
+import { toaster } from '@/components/ui/toaster';
 
 const nodeTypes: NodeTypes = {
   statusNode: StatusNode,
@@ -45,7 +47,6 @@ function RoadmapEditorContainer({ children }: { children: React.ReactNode }) {
 }
 
 function RoadmapEditorHeader() {
-  const roadmap = useAppSelector(selectPlainRoadmap);
   const router = useRouter();
   return (
     <Flex
@@ -112,16 +113,23 @@ function RoadmapEditor({
 
   const onConnect = useCallback(
     (connection: Connection) => {
-      dispatch(setEdge(connection));
+      const edgeId = generateEdgeId(connection.source, connection.target);
       if (!roadmapId) return;
+      dispatch(setEdge({ connection, id: edgeId }));
       createEdge({
         roadmapId: roadmapId,
         edge: {
-          sourceId: connection.source!,
-          targetId: connection.target!,
+          id: edgeId,
+          source: connection.source!,
+          target: connection.target!,
         },
       }).catch((err) => {
-        console.error('Failed to create edge:', err);
+        toaster.create({
+          type: 'error',
+          closable: true,
+          title: 'Failed to connect',
+          // title: getEditorTranslations('failedToSaveChanges'),
+        });
       });
     },
     [roadmapId],

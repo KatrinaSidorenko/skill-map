@@ -46,10 +46,12 @@ const roadmapEditorSlice = createSlice({
       }>,
     ) => {
       if (state.editorConfig.useStatus === false) {
+        console.log(action.payload.edges);
         const { nodes, edges } = mapRoadmapToReactFlow({
           items: action.payload.nodes.map((n) => n as RoadmapNode),
           connections: action.payload.edges,
         } as Roadmap);
+        console.log('flow', nodes, edges);
         state.nodes = nodes;
         state.edges = edges;
         return;
@@ -99,9 +101,15 @@ const roadmapEditorSlice = createSlice({
         n.id === action.payload.id ? action.payload : n,
       );
     },
-    setEdge: (state, action: PayloadAction<Connection>) => {
-      const connection = action.payload;
-      state.edges = addEdge({ ...connection, animated: false }, state.edges);
+    setEdge: (
+      state,
+      action: PayloadAction<{ connection: Connection; id: string }>,
+    ) => {
+      const { connection, id } = action.payload;
+      state.edges = addEdge(
+        { ...connection, id: id, animated: false },
+        state.edges,
+      );
     },
     setEditorConfig: (state, action: PayloadAction<EditorConfig>) => {
       state.editorConfig = action.payload;

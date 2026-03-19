@@ -20,14 +20,17 @@ import {
 } from '../store';
 import StatusSelect from './status-select';
 import useLocalization from '@/i18n/useLocalization';
-import { useSaveLearningItemChangesMutation } from '../../api';
+import {
+  useSaveLearningItemChangesMutation,
+  useUpdateLearningItemInUserRoadmapMutation,
+} from '../../api';
 import { toaster } from '@/components/ui/toaster';
 import MaterialsContainer from './materials';
 
 interface NodeSidebarProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  saveChange: ReturnType<typeof useSaveLearningItemChangesMutation>[0];
+  saveChange: ReturnType<typeof useUpdateLearningItemInUserRoadmapMutation>[0];
 }
 
 export default function NodeSidebar({
@@ -59,15 +62,11 @@ export default function NodeSidebar({
     try {
       await saveChange({
         roadmapId,
-        changes: {
-          changes: [
-            {
-              id: node.id,
-              title: label,
-              description,
-              status: (status[0] || 'notstarted') as LearningStatus,
-            },
-          ],
+        change: {
+          id: node.id,
+          title: label,
+          description,
+          status: (status[0] || 'notstarted') as LearningStatus,
         },
       }).unwrap();
 

@@ -1,6 +1,6 @@
 ﻿namespace SkillMap.Core.Constants;
 
-public enum EventType
+public enum WorkspaceEventType
 {
     Create = 0,
     Delete = 1,
@@ -14,5 +14,6 @@ public enum EventType
     CreateLearningItem = 9,
     DeleteConnection = 10,
     DeleteItem = 11,
-    UpdateLearningItem = 12
+    UpdateLearningItem = 12,
+    DeleteLearningItem = 13,
 }

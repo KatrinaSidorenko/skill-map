@@ -7,7 +7,9 @@ const getNodePosition = (index: number): { x: number; y: number } => ({
   y: index * 150, // space nodes 150px apart vertically
 });
 
-export const generateId = () => uuidv4().replaceAll('-', '');
+export const generateNodeId = () => uuidv4().replaceAll('-', '');
+export const generateEdgeId = (fromId: string, toId: string) =>
+  `${fromId}-${toId}`;
 
 const nodeWidth = 180;
 const nodeHeight = 100;
@@ -59,7 +61,7 @@ export function mapRoadmapToReactFlow(roadmap: Roadmap): {
   }));
 
   const edges: Edge[] = roadmap.connections.map((e) => ({
-    id: `${e.source}-${e.target}`,
+    id: generateEdgeId(e.source, e.target),
     source: String(e.source),
     target: String(e.target),
   }));
@@ -83,7 +85,7 @@ export function mapRoadmapToReactFlowForSaved(roadmap: SavedRoadmap): {
   }));
 
   const edges: Edge[] = roadmap.edges.map((e) => ({
-    id: `${e.source}-${e.target}`,
+    id: generateEdgeId(e.source, e.target),
     source: String(e.source),
     target: String(e.target),
   }));

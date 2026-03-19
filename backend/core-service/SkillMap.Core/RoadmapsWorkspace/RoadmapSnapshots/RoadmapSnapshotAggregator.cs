@@ -69,8 +69,8 @@ public class RoadmapSnapshotAggregator
         return new RoadmapSnapshot
         {
             Id = _snapshotId,
-            LearningItems = _items,
-            LearningItemsConnections = _connections
+            LearningItems = _items.DistinctBy(i => i.Id).ToList(),
+            LearningItemsConnections = _connections.DistinctBy(c => c.Id).ToList(),
         };
     }
 }

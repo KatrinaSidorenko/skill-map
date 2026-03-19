@@ -27,7 +27,39 @@ public class GetRoadmapWorkspaceResponse
     }
 }
 
-public record PersonalizedLearningItemResponse(string Id, string Title, string Description, string Status);
-public record PersonalizedLearningItemsConnectionResponse(string Id, string FromId, string ToId);
+public class PersonalizedLearningItemResponse
+{
+    [JsonPropertyName("id")]
+    public string Id { get; set; }
+    [JsonPropertyName("title")]
+    public string Title { get; set; }
+    [JsonPropertyName("description")]
+    public string Description { get; set; }
+    [JsonPropertyName("status")]
+    public string Status { get; set; }
+    public PersonalizedLearningItemResponse(string id, string title, string description, string status)
+    {
+        Id = id;
+        Title = title;
+        Description = description;
+        Status = status;
+    }
+}
+
+public class PersonalizedLearningItemsConnectionResponse
+{
+    [JsonPropertyName("id")]
+    public string Id { get; set; }
+    [JsonPropertyName("source")]
+    public string FromId { get; set; }
+    [JsonPropertyName("target")]
+    public string ToId { get; set; }
+    public PersonalizedLearningItemsConnectionResponse(string id, string fromId, string toId)
+    {
+        Id = id;
+        FromId = fromId;
+        ToId = toId;
+    }
+}
 
 

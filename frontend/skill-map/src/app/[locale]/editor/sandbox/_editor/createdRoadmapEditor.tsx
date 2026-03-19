@@ -64,6 +64,7 @@ export default function CreatedRoadmapEditorPage({
           imageUrl: '',
         } as SavedPlainRoadmap),
       );
+      console.log('roamdp connectios', roadmap.connections);
       dispatch(
         setRoadmap({
           nodes: roadmap.items.map((n) => n as ModifiedNode),

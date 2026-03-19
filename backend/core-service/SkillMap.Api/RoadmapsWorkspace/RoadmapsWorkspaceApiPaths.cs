@@ -8,6 +8,10 @@ internal static class RoadmapsWorkspaceApiPaths
 
     public const string GetRoadmapWorkspaces = $"{RoadmapsWorkspaceRootApi}";
     public const string AddLearningItem = $"{RoadmapsWorkspaceRootApi}/create-item/{{userRoadmapId}}";
+    public const string UpdateLearningItem = $"{RoadmapsWorkspaceRootApi}/update-item/{{userRoadmapId}}";
+    public const string DeleteLearningItem = $"{RoadmapsWorkspaceRootApi}/delete-item/{{userRoadmapId}}";
+    public const string CreateLearningItemConnection = $"{RoadmapsWorkspaceRootApi}/create-connection/{{userRoadmapId}}";
+    public const string DeleteLearningItemConnection = $"{RoadmapsWorkspaceRootApi}/delete-connection/{{userRoadmapId}}";
     public const string GetRoadmapWorkspace = $"{RoadmapsWorkspaceRootApi}/{{userRoadmapId}}";
     public const string CreateRoadmapWorkspace = $"{RoadmapsWorkspaceRootApi}";
 }

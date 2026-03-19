@@ -1,11 +1,11 @@
 'use client';
 import SpinnerScreen from '@/components/base/spinner';
 import {
-  useCreateEdgeMutation,
-  useCreateNodeMutation,
-  useDeleteLearningItemMutation,
+  useCreateConnectionInUserRoadmapMutation,
+  useCreateItemInUserRoadmapMutation,
+  useDeleteLearningItemFromUserRoadmapMutation,
   useGetSavedRoadmapQuery,
-  useSaveLearningItemChangesMutation,
+  useUpdateLearningItemInUserRoadmapMutation,
 } from '@/features/roadmaps/api';
 import RoadmapEditor from '@/features/roadmaps/editor';
 import { Flex } from '@chakra-ui/react';
@@ -35,10 +35,10 @@ export default function SavedRoadmapEditorPage({
   );
   const roadmap = data;
   const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const [createEdge] = useCreateEdgeMutation();
-  const [deleteItem] = useDeleteLearningItemMutation();
-  const [createNode] = useCreateNodeMutation();
-  const [saveChange] = useSaveLearningItemChangesMutation();
+  const [createEdge] = useCreateConnectionInUserRoadmapMutation();
+  const [deleteItem] = useDeleteLearningItemFromUserRoadmapMutation();
+  const [createNode] = useCreateItemInUserRoadmapMutation();
+  const [saveChange] = useUpdateLearningItemInUserRoadmapMutation();
 
   const handleToggleSidebar = useCallback(() => {
     setSidebarOpen((prev) => !prev);

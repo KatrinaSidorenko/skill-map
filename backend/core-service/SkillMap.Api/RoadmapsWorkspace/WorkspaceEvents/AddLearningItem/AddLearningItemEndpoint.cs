@@ -2,7 +2,7 @@
 using SkillMap.Business.PersonalizedRoadmaps;
 using LearningPlatform.Shared.Api;
 
-namespace SkillMap.Api.PersonalizedRoadmaps.AddLearningItem;
+namespace SkillMap.Api.RoadmapsWorkspace.WorkspaceEvents.AddLearningItem;
 
 internal static class AddLearningItemEndpoint
 {

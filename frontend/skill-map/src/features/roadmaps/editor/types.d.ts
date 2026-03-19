@@ -26,8 +26,9 @@ interface CreateNodeRequest {
 }
 
 interface CreateEdgeRequest {
-  sourceId: string;
-  targetId: string;
+  id: string;
+  source: string;
+  target: string;
 }
 
 interface EditorConfig {

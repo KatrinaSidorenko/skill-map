@@ -21,7 +21,7 @@ import {
   useCreateNodeMutation,
   useDeleteLearningItemMutation,
 } from '../../api';
-import { generateId } from '../../helpers';
+import { generateNodeId } from '../../helpers';
 import createNodeDialog from './create-node';
 
 interface ToolboxProps {
@@ -84,7 +84,7 @@ export default function Toolbox({
         y: -y / zoom + window.innerHeight / 2 / zoom,
       };
       const newNode: Node = {
-        id: generateId(),
+        id: generateNodeId(),
         position: viewportCenter,
         data: {
           label: data.label || 'Untitled Node',
@@ -93,7 +93,6 @@ export default function Toolbox({
         },
       };
 
-      console.log(workspaceId, newNode);
       if (workspaceId) {
         createNode({
           workspaceId: workspaceId,

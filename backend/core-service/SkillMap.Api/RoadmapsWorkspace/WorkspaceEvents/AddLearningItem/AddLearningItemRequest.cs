@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 
-using SkillMap.Business.PersonalizedRoadmaps.Features.AddLearningItem;
+using SkillMap.Business.RoadmapsWorkspace.Features.WorkspaceEvents.AddLearningItem;
 
-namespace SkillMap.Api.PersonalizedRoadmaps.AddLearningItem;
+namespace SkillMap.Api.RoadmapsWorkspace.WorkspaceEvents.AddLearningItem;
 
 public class AddLearningItemRequest
 {
@@ -12,7 +12,7 @@ public class AddLearningItemRequest
     [JsonProperty("title")]
     public string Title { get; set; }
     [JsonProperty("description")]
-    public string? Description { get; set; }
+    public string Description { get; set; }
     [JsonProperty("status")]
     public string Status { get; set; }
     [JsonProperty("clientWorkspaceVersion")]

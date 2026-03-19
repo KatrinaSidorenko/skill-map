@@ -13,18 +13,17 @@ public static class WorkspaceEventMapper
 
         return rawEvent.EventType switch
         {
-            EventType.CreateLearningItem => JsonConvert.DeserializeObject<LearningItemCreatedEvent>(rawEvent.Metadata),
+            WorkspaceEventType.CreateLearningItem => JsonConvert.DeserializeObject<LearningItemCreatedEvent>(rawEvent.Metadata),
 
-            EventType.UpdateTitle or
-            EventType.UpdateDescription or
-            EventType.UpdatePriority or
-            EventType.UpdateStatus or
-            EventType.UpdateLearningItem => JsonConvert.DeserializeObject<LearningItemUpdatedEvent>(rawEvent.Metadata),
-            EventType.DeleteItem => JsonConvert.DeserializeObject<LearningItemDeletedEvent>(rawEvent.Metadata),
+            WorkspaceEventType.UpdateTitle or
+            WorkspaceEventType.UpdateDescription or
+            WorkspaceEventType.UpdatePriority or
+            WorkspaceEventType.UpdateStatus or
+            WorkspaceEventType.UpdateLearningItem => JsonConvert.DeserializeObject<LearningItemUpdatedEvent>(rawEvent.Metadata),
+            WorkspaceEventType.DeleteLearningItem => JsonConvert.DeserializeObject<LearningItemDeletedEvent>(rawEvent.Metadata),
 
-            EventType.CreateConnection => JsonConvert.DeserializeObject<LearningItemConnectionCreatedEvent>(rawEvent.Metadata),
-
-            EventType.DeleteConnection => JsonConvert.DeserializeObject<LearningItemConnectionDeletedEvent>(rawEvent.Metadata),
+            WorkspaceEventType.CreateConnection => JsonConvert.DeserializeObject<LearningItemConnectionCreatedEvent>(rawEvent.Metadata),
+            WorkspaceEventType.DeleteConnection => JsonConvert.DeserializeObject<LearningItemConnectionDeletedEvent>(rawEvent.Metadata),
 
             _ => null
         };

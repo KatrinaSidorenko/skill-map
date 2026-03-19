@@ -53,46 +53,7 @@ export const roadmapApi = createApi({
         method: 'GET',
       }),
     }),
-    saveLearningItemChanges: builder.mutation<
-      void,
-      { roadmapId: string; changes: LearningItemsChangesRequest }
-    >({
-      query: ({ roadmapId, changes }) => ({
-        url: `modifiedroadmaps/save-change/${roadmapId}`,
-        method: 'POST',
-        body: changes,
-      }),
-    }),
-    deleteLearningItem: builder.mutation<
-      void,
-      { roadmapId: string; item: DeleteLearningItemRequest }
-    >({
-      query: ({ roadmapId, item }) => ({
-        url: `modifiedroadmaps/delete/${roadmapId}`,
-        method: 'POST',
-        body: item,
-      }),
-    }),
-    createNode: builder.mutation<
-      void,
-      { workspaceId: string; node: CreateNodeRequest }
-    >({
-      query: ({ workspaceId, node }) => ({
-        url: `modifiedroadmaps/create-item/${workspaceId}`,
-        method: 'POST',
-        body: node,
-      }),
-    }),
-    createEdge: builder.mutation<
-      void,
-      { roadmapId: string; edge: CreateEdgeRequest }
-    >({
-      query: ({ roadmapId, edge }) => ({
-        url: `modifiedroadmaps/create-connection/${roadmapId}`,
-        method: 'POST',
-        body: edge,
-      }),
-    }),
+
     getLearningItemMaterials: builder.query<
       LearningItemMaterial[],
       { roadmapId: string; itemId: string }
@@ -135,7 +96,7 @@ export const roadmapApi = createApi({
       { roadmapId: string; edge: CreateEdgeRequest }
     >({
       query: ({ roadmapId, edge }) => ({
-        url: `userroadmaps/create-connection/${roadmapId}`,
+        url: `roadmaps-workspace/create-connection/${roadmapId}`,
         method: 'POST',
         body: edge,
       }),
@@ -145,7 +106,10 @@ export const roadmapApi = createApi({
       { roadmapId: string; item: DeleteLearningItemRequest }
     >({
       query: ({ roadmapId, item }) => ({
-        url: `userroadmaps/delete-item/${roadmapId}`,
+        url:
+          item.type == 'node'
+            ? `roadmaps-workspace/delete-item/${roadmapId}`
+            : `roadmaps-workspace/delete-connection/${roadmapId}`,
         method: 'POST',
         body: item,
       }),
@@ -155,7 +119,7 @@ export const roadmapApi = createApi({
       { roadmapId: string; change: LearningItemChangeRequest }
     >({
       query: ({ roadmapId, change }) => ({
-        url: `userroadmaps/update-item/${roadmapId}`,
+        url: `roadmaps-workspace/update-item/${roadmapId}`,
         method: 'POST',
         body: change,
       }),
@@ -210,10 +174,6 @@ export const {
   useLazyGetRoadmapsQuery,
   useSaveRoadmapMutation,
   useGetSavedRoadmapQuery,
-  useSaveLearningItemChangesMutation,
-  useDeleteLearningItemMutation,
-  useCreateNodeMutation,
-  useCreateEdgeMutation,
   useDeleteRoadmapMutation,
   useLazyGetLearningItemMaterialsQuery,
   useCreateRoadmapMutation,

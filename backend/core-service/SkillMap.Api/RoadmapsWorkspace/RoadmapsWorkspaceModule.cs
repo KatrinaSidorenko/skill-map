@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 
-using SkillMap.Api.PersonalizedRoadmaps.AddLearningItem;
 using SkillMap.Api.Roadmap;
+using SkillMap.Api.RoadmapsWorkspace.WorkspaceEvents.AddLearningItem;
 using SkillMap.Infrastructure.PersonalizedRoadmaps;
 using SkillMap.Shared;
 

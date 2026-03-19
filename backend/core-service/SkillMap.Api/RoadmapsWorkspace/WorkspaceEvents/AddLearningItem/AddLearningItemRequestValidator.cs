@@ -2,7 +2,7 @@
 
 using SkillMap.Core.Constants;
 
-namespace SkillMap.Api.PersonalizedRoadmaps.AddLearningItem;
+namespace SkillMap.Api.RoadmapsWorkspace.WorkspaceEvents.AddLearningItem;
 
 internal sealed class AddLearningItemRequestValidator : AbstractValidator<AddLearningItemRequest>
 {
