@@ -3,7 +3,6 @@
 using Newtonsoft.Json;
 
 using SkillMap.Core.Constants;
-using SkillMap.Core.Entities;
 
 namespace SkillMap.Api.Account.Models;
 

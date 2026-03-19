@@ -49,7 +49,7 @@ public class DatabaseQuestionSource(ITopicQuestionsRepository topicQuestionsRepo
                     Id = q.Id.ToString(),
                     Text = q.Text,
                     Type = q.Type.FromQuestionTypeString(),
-                    Answers = q.Answers.DeserializeOrDefault<List<AnswerDto>>() ?? new List<AnswerDto>()
+                    Answers = q.Answers.JsonDeserializeOrDefault<List<AnswerDto>>() ?? new List<AnswerDto>()
                 }));
             }
 

@@ -7,14 +7,14 @@ export const roadmapApi = createApi({
   endpoints: (builder) => ({
     getRoadmaps: builder.query<PaginationResponse<PlainRoadmap>, SearchConfig>({
       query: ({ pageSize, pageNumber, query }) => ({
-        url: 'roadmaps',
+        url: 'roadmap-blueprints',
         method: 'GET',
         params: { pageSize, pageNumber, query },
       }),
     }),
     getRoadmapById: builder.query<RoadmapResponse, string>({
       query: (id) => ({
-        url: `roadmaps/${id}`,
+        url: `roadmap-blueprints/${id}`,
         method: 'GET',
       }),
     }),
@@ -26,7 +26,7 @@ export const roadmapApi = createApi({
     }),
     saveRoadmap: builder.mutation<void, { id: string }>({
       query: ({ id }) => ({
-        url: `userroadmaps/save`,
+        url: `roadmaps-workspace`,
         method: 'POST',
         params: { roadmapId: id },
       }),
@@ -42,14 +42,14 @@ export const roadmapApi = createApi({
       SearchConfig
     >({
       query: ({ pageSize, pageNumber, query }) => ({
-        url: 'modifiedroadmaps',
+        url: 'roadmaps-workspace',
         method: 'GET',
         params: { pageSize, pageNumber, query },
       }),
     }),
     getSavedRoadmap: builder.query<SavedRoadmap, string>({
       query: (id) => ({
-        url: `modifiedroadmaps/${id}`,
+        url: `roadmaps-workspace/${id}`,
         method: 'GET',
       }),
     }),
@@ -75,10 +75,10 @@ export const roadmapApi = createApi({
     }),
     createNode: builder.mutation<
       void,
-      { roadmapId: string; node: CreateNodeRequest }
+      { workspaceId: string; node: CreateNodeRequest }
     >({
-      query: ({ roadmapId, node }) => ({
-        url: `modifiedroadmaps/create-item/${roadmapId}`,
+      query: ({ workspaceId, node }) => ({
+        url: `modifiedroadmaps/create-item/${workspaceId}`,
         method: 'POST',
         body: node,
       }),
@@ -105,7 +105,7 @@ export const roadmapApi = createApi({
     }),
     createRoadmap: builder.mutation<{ id: string }, CreateDraftRoadmapPayload>({
       query: (payload) => ({
-        url: 'userroadmaps',
+        url: 'personal-roadmaps',
         method: 'POST',
         body: payload,
       }),
@@ -115,17 +115,17 @@ export const roadmapApi = createApi({
       SearchConfig
     >({
       query: ({ pageSize, pageNumber, query }) => ({
-        url: 'userroadmaps',
+        url: 'personal-roadmaps',
         method: 'GET',
         params: { pageSize, pageNumber, query },
       }),
     }),
     createItemInUserRoadmap: builder.mutation<
       void,
-      { roadmapId: string; node: CreateNodeRequest }
+      { workspaceId: string; node: CreateNodeRequest }
     >({
-      query: ({ roadmapId, node }) => ({
-        url: `userroadmaps/create-item/${roadmapId}`,
+      query: ({ workspaceId, node }) => ({
+        url: `roadmaps-workspace/create-item/${workspaceId}`,
         method: 'POST',
         body: node,
       }),
@@ -160,9 +160,9 @@ export const roadmapApi = createApi({
         body: change,
       }),
     }),
-    getUserCreatedRoadmap: builder.query<RoadmapResponse, string>({
+    getUserCreatedRoadmap: builder.query<Roadmap, string>({
       query: (id) => ({
-        url: `userroadmaps/${id}`,
+        url: `roadmaps-workspace/${id}`,
         method: 'GET',
       }),
     }),
@@ -184,7 +184,7 @@ export const roadmapApi = createApi({
     }),
     getPlainUserCreatedRoadmap: builder.query<PlainRoadmap, string>({
       query: (id) => ({
-        url: `userroadmaps/plain/${id}`,
+        url: `personal-roadmaps/${id}`,
         method: 'GET',
       }),
     }),

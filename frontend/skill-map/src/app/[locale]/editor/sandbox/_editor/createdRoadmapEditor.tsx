@@ -5,6 +5,7 @@ import {
   useCreateItemInUserRoadmapMutation,
   useDeleteLearningItemFromUserRoadmapMutation,
   useGetUserCreatedRoadmapQuery,
+  useLazyGetPlainUserCreatedRoadmapQuery,
   useUpdateLearningItemInUserRoadmapMutation,
 } from '@/features/roadmaps/api';
 import RoadmapEditor from '@/features/roadmaps/editor';
@@ -14,9 +15,8 @@ import Container from '@/components/container/container';
 import ErrorScreen from '@/components/base/error';
 import {
   clearEditor,
-  setActiveRoadmapId,
   setEditorConfig,
-  setPlainRiadmap,
+  setWorkspaceRoadmap,
   setRoadmap,
 } from '@/features/roadmaps/editor/store';
 import { useCallback, useEffect, useState } from 'react';
@@ -25,18 +25,17 @@ import NodeSidebar from '@/features/roadmaps/editor/sidebar';
 import { useAppDispatch } from '@/store/hooks';
 
 export default function CreatedRoadmapEditorPage({
-  roadmapId,
+  workspaceId,
 }: {
-  roadmapId: string;
+  workspaceId: string;
 }) {
   const dispatch = useAppDispatch();
 
   // todo: don't use cache for sandbox editor
   const { data, error, isLoading, isFetching } = useGetUserCreatedRoadmapQuery(
-    roadmapId ?? '',
+    workspaceId ?? '',
   );
 
-  const roadmap = data?.roadmap;
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [createEdge] = useCreateConnectionInUserRoadmapMutation();
   const [deleteItem] = useDeleteLearningItemFromUserRoadmapMutation();
@@ -48,13 +47,15 @@ export default function CreatedRoadmapEditorPage({
   }, []);
 
   useEffect(() => {
-    if (roadmap) {
-      dispatch(setActiveRoadmapId(roadmap.id));
+    console.log('roadmap', data);
+    if (data) {
+      const roadmap = data;
       dispatch(clearEditor());
       dispatch(setEditorConfig({ useStatus: false }));
       dispatch(
-        setPlainRiadmap({
+        setWorkspaceRoadmap({
           id: roadmap.id,
+          workspaceId: roadmap.workspaceId ?? roadmap.id,
           title: roadmap.title,
           description: roadmap.description,
           progress: 0,
@@ -65,14 +66,15 @@ export default function CreatedRoadmapEditorPage({
       );
       dispatch(
         setRoadmap({
-          nodes: roadmap.nodes.map((n) => n as ModifiedNode),
-          edges: roadmap.edges,
+          nodes: roadmap.items.map((n) => n as ModifiedNode),
+          edges: roadmap.connections,
         }),
       );
+      console.log('Loaded roadmap into editor:', roadmap);
     }
-  }, [roadmap, roadmapId, isFetching, isLoading, dispatch]);
+  }, [data, workspaceId, isFetching, isLoading]);
 
-  if (error && roadmapId) {
+  if (error && workspaceId) {
     return <ErrorScreen />;
   }
 
@@ -80,7 +82,7 @@ export default function CreatedRoadmapEditorPage({
   return (
     <Flex width="100vw" height="100vh" direction="column">
       <Container isSection={false}>
-        {(isLoading || isFetching) && roadmapId ? (
+        {(isLoading || isFetching) && workspaceId ? (
           <SpinnerScreen />
         ) : (
           <ReactFlowProvider>

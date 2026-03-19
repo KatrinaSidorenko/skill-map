@@ -1,24 +1,24 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-using SkillMap.Business.Abstractions;
 using SkillMap.Core;
-using SkillMap.Core.Entities;
-using SkillMap.Core.Entities.UserRoadmapTest;
+using SkillMap.Core.PersonalizedRoadmaps;
+using SkillMap.Core.RoadmapAssessments;
+using SkillMap.Core.RoadmapsWorkspace;
+using SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots;
+using SkillMap.Core.User;
 
 namespace SkillMap.Persistence;
 
 public class SkillMapDbContext : DbContext
 {
-    public SkillMapDbContext(DbContextOptions<SkillMapDbContext> options) : base(options)
-    {
-    }
+    public SkillMapDbContext(DbContextOptions<SkillMapDbContext> options) : base(options) { }
 
     public DbSet<AppUser> AppUsers { get; set; }
-    public DbSet<UserRoadmap> UserRoadmaps { get; set; }
-    public DbSet<PersonalizeRoadmapEvent> RoadmapModifications { get; set; }
-    public DbSet<RoadmapSnapshot> RoadmapSnapshots { get; set; }
-    public DbSet<UserRoadmapTest> UserRoadmapTests { get; set; }
-    public DbSet<UserTestResult> UserRoadmapTestResults { get; set; }
+    public DbSet<RoadmapWorkspace> RoadmapForks { get; set; }
+    public DbSet<RoadmapWorkspaceEvent> RoadmapWorkspaceEvents { get; set; }
+    public DbSet<RoadmapWorkspaceSnapshot> RoadmapWorkspaceSnapshots { get; set; }
+    public DbSet<RoadmapAssessment> RoadmapAssessments { get; set; }
+    public DbSet<AssessmentAttempt> AssessmentAttempts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

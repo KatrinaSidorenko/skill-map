@@ -13,7 +13,7 @@ import {
   addNode,
   deleteEdge,
   deleteNode,
-  selectRoadmapId,
+  selectWorkspaceId,
   selectSelectedElement,
   setSelectedElement,
 } from '../store';
@@ -36,24 +36,24 @@ export default function Toolbox({
 }: ToolboxProps) {
   const dispatch = useAppDispatch();
   const selected = useAppSelector(selectSelectedElement);
-  const roadmapId = useAppSelector(selectRoadmapId);
+  const workspaceId = useAppSelector(selectWorkspaceId);
   const hasSelection = !!selected;
   const isNode = selected ? !('source' in selected) : false;
 
   const reactFlowInstance = useReactFlow();
 
   const onRemoveSelected = async () => {
-    if (!selected || !roadmapId) return;
+    if (!selected || !workspaceId) return;
     try {
       if ('source' in selected && 'target' in selected) {
         await deleteItem({
-          roadmapId,
+          roadmapId: workspaceId,
           item: { id: selected.id, type: 'edge' },
         }).unwrap();
         dispatch(deleteEdge(selected.id));
       } else {
         await deleteItem({
-          roadmapId,
+          roadmapId: workspaceId,
           item: { id: selected.id, type: 'node' },
         }).unwrap();
         dispatch(deleteNode(selected.id));
@@ -93,11 +93,10 @@ export default function Toolbox({
         },
       };
 
-      dispatch(addNode(newNode));
-
-      if (roadmapId) {
+      console.log(workspaceId, newNode);
+      if (workspaceId) {
         createNode({
-          roadmapId,
+          workspaceId: workspaceId,
           node: {
             id: newNode.id,
             title: data.label || 'Untitled Node',
@@ -110,8 +109,9 @@ export default function Toolbox({
             console.error('Failed to create node:', error);
           });
       }
+      dispatch(addNode(newNode));
     },
-    [roadmapId],
+    [workspaceId],
   );
 
   return (

@@ -1,0 +1,2 @@
+﻿namespace SkillMap.Business.PersonalRoadmaps.Features.CreatePersonalRoadmap;
+public record CreatePersonalRoadmapCommand(long UserId, string Title, string Description, string ImageUrl) : ICommand<long>;

@@ -25,288 +25,469 @@ namespace SkillMap.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("SkillMap.Core.Entities.AppUser", b =>
+            modelBuilder.Entity("SkillMap.Core.PersonalizedRoadmaps.RoadmapWorkspaceEvent", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("event_type");
+
+                    b.Property<string>("Metadata")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("metadata");
+
+                    b.Property<long>("RoadmapWorkspaceId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("roadmap_workspace_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("integer")
+                        .HasColumnName("version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoadmapWorkspaceId", "EventType");
+
+                    b.HasIndex("RoadmapWorkspaceId", "Version")
+                        .IsUnique();
+
+                    b.ToTable("workspace_event", (string)null);
+                });
+
+            modelBuilder.Entity("SkillMap.Core.RoadmapAssessments.AssessmentAttempt", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("AssessmentId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("assessment_id");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("completed_at");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<double>("MaxPoints")
+                        .HasColumnType("double precision")
+                        .HasColumnName("max_points");
+
+                    b.Property<byte[]>("ResultData")
+                        .HasColumnType("bytea")
+                        .HasColumnName("result_data");
+
+                    b.Property<double>("ScoredPoints")
+                        .HasColumnType("double precision")
+                        .HasColumnName("scored_points");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("started_at");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssessmentId", "CompletedAt");
+
+                    b.ToTable("assessment_attempt", (string)null);
+                });
+
+            modelBuilder.Entity("SkillMap.Core.RoadmapAssessments.RoadmapAssessment", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long>("RoadmapWorkspaceId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("roadmap_workspace_id");
+
+                    b.Property<byte[]>("TestData")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("test_data");
+
+                    b.Property<string>("TestType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("test_type");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoadmapWorkspaceId", "TestType");
+
+                    b.ToTable("roadmap_assessment", (string)null);
+                });
+
+            modelBuilder.Entity("SkillMap.Core.Roadmaps.PersonalRoadmap", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("AuthorId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("author_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("image_url");
+
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_public");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("title");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.ToTable("personal_roadmap", (string)null);
+                });
+
+            modelBuilder.Entity("SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots.RoadmapWorkspaceSnapshot", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<byte[]>("Content")
+                        .HasColumnType("bytea")
+                        .HasColumnName("content");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Metadata")
+                        .HasMaxLength(2048)
+                        .HasColumnType("jsonb")
+                        .HasColumnName("metadata");
+
+                    b.Property<long>("RoadmapWorkspaceId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("roadmap_workspace_id");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("integer")
+                        .HasColumnName("version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoadmapWorkspaceId", "CreatedAt");
+
+                    b.HasIndex("RoadmapWorkspaceId", "Version")
+                        .IsUnique();
+
+                    b.ToTable("workspace_snapshot", (string)null);
+                });
+
+            modelBuilder.Entity("SkillMap.Core.RoadmapsWorkspace.RoadmapWorkspace", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("AuthorId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("author_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<bool>("IsInAuthorMode")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_in_author_mode");
+
+                    b.Property<long?>("PersonalRoadmapId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("personal_roadmap_id");
+
+                    b.Property<string>("RoadmapId")
+                        .HasColumnType("text")
+                        .HasColumnName("roadmap_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PersonalRoadmapId")
+                        .IsUnique();
+
+                    b.HasIndex("AuthorId", "RoadmapId");
+
+                    b.ToTable("roadmap_workspace", (string)null);
+                });
+
+            modelBuilder.Entity("SkillMap.Core.Tasks.InboxTask", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Input")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("input");
+
+                    b.Property<string>("Output")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("output");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("TaskType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("task_type");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("WorkerId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("worker_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_inbox_task_status");
+
+                    b.ToTable("inbox_task", (string)null);
+                });
+
+            modelBuilder.Entity("SkillMap.Core.User.AppUser", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("email");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("password_hash");
 
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("role");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("user_name");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("users", (string)null);
+                    b.ToTable("user", (string)null);
                 });
 
-            modelBuilder.Entity("SkillMap.Core.Entities.RoadmapModification", b =>
+            modelBuilder.Entity("SkillMap.Core.PersonalizedRoadmaps.RoadmapWorkspaceEvent", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Action")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ExternalItemId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("InnerItemId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Metadata")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("UserRoadmapId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserRoadmapId", "InnerItemId", "ExternalItemId");
-
-                    b.ToTable("roadmap_modifications", (string)null);
-                });
-
-            modelBuilder.Entity("SkillMap.Core.Entities.RoadmapSnapshot", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<byte[]>("Content")
-                        .IsRequired()
-                        .HasColumnType("bytea");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("UserRoadmapId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserRoadmapId", "CreatedAt");
-
-                    b.ToTable("roadmap_snapshots", (string)null);
-                });
-
-            modelBuilder.Entity("SkillMap.Core.Entities.UserRoadmap", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true);
-
-                    b.Property<bool>("IsOwner")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("RoadmapId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId", "RoadmapId");
-
-                    b.ToTable("user_roadmaps", (string)null);
-                });
-
-            modelBuilder.Entity("SkillMap.Core.Entities.UserRoadmapTest.UserRoadmapTest", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<byte[]>("TestData")
-                        .IsRequired()
-                        .HasColumnType("bytea");
-
-                    b.Property<string>("TestType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("UserRoadmapId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserRoadmapId", "TestType");
-
-                    b.ToTable("user_roadmap_tests", (string)null);
-                });
-
-            modelBuilder.Entity("SkillMap.Core.Entities.UserRoadmapTest.UserTestResult", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime?>("CompletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<double>("MaxPoints")
-                        .HasColumnType("double precision");
-
-                    b.Property<byte[]>("ResultData")
-                        .HasColumnType("bytea");
-
-                    b.Property<double>("ScoredPoints")
-                        .HasColumnType("double precision");
-
-                    b.Property<DateTime>("StartedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("UserRoadmapTestId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserRoadmapTestId", "CompletedAt");
-
-                    b.ToTable("user_test_results", (string)null);
-                });
-
-            modelBuilder.Entity("SkillMap.Core.Entities.RoadmapModification", b =>
-                {
-                    b.HasOne("SkillMap.Core.Entities.UserRoadmap", "UserRoadmap")
-                        .WithMany("RoadmapModifications")
-                        .HasForeignKey("UserRoadmapId")
+                    b.HasOne("SkillMap.Core.RoadmapsWorkspace.RoadmapWorkspace", "RoadmapWorkspace")
+                        .WithMany("WorkspaceEvents")
+                        .HasForeignKey("RoadmapWorkspaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("UserRoadmap");
+                    b.Navigation("RoadmapWorkspace");
                 });
 
-            modelBuilder.Entity("SkillMap.Core.Entities.RoadmapSnapshot", b =>
+            modelBuilder.Entity("SkillMap.Core.RoadmapAssessments.AssessmentAttempt", b =>
                 {
-                    b.HasOne("SkillMap.Core.Entities.UserRoadmap", "UserRoadmap")
-                        .WithMany("RoadmapSnapshots")
-                        .HasForeignKey("UserRoadmapId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("UserRoadmap");
-                });
-
-            modelBuilder.Entity("SkillMap.Core.Entities.UserRoadmap", b =>
-                {
-                    b.HasOne("SkillMap.Core.Entities.AppUser", "User")
-                        .WithMany("UserRoadmaps")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("SkillMap.Core.Entities.UserRoadmapTest.UserRoadmapTest", b =>
-                {
-                    b.HasOne("SkillMap.Core.Entities.UserRoadmap", "UserRoadmap")
-                        .WithMany("UserRoadmapTests")
-                        .HasForeignKey("UserRoadmapId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("UserRoadmap");
-                });
-
-            modelBuilder.Entity("SkillMap.Core.Entities.UserRoadmapTest.UserTestResult", b =>
-                {
-                    b.HasOne("SkillMap.Core.Entities.UserRoadmapTest.UserRoadmapTest", "UserRoadmapTest")
+                    b.HasOne("SkillMap.Core.RoadmapAssessments.RoadmapAssessment", "RoadmapAssessment")
                         .WithMany()
-                        .HasForeignKey("UserRoadmapTestId")
+                        .HasForeignKey("AssessmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("UserRoadmapTest");
+                    b.Navigation("RoadmapAssessment");
                 });
 
-            modelBuilder.Entity("SkillMap.Core.Entities.AppUser", b =>
+            modelBuilder.Entity("SkillMap.Core.RoadmapAssessments.RoadmapAssessment", b =>
                 {
-                    b.Navigation("UserRoadmaps");
+                    b.HasOne("SkillMap.Core.RoadmapsWorkspace.RoadmapWorkspace", "RoadmapFork")
+                        .WithMany("Assessments")
+                        .HasForeignKey("RoadmapWorkspaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RoadmapFork");
                 });
 
-            modelBuilder.Entity("SkillMap.Core.Entities.UserRoadmap", b =>
+            modelBuilder.Entity("SkillMap.Core.Roadmaps.PersonalRoadmap", b =>
                 {
-                    b.Navigation("RoadmapModifications");
+                    b.HasOne("SkillMap.Core.User.AppUser", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("RoadmapSnapshots");
+                    b.Navigation("Author");
+                });
 
-                    b.Navigation("UserRoadmapTests");
+            modelBuilder.Entity("SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots.RoadmapWorkspaceSnapshot", b =>
+                {
+                    b.HasOne("SkillMap.Core.RoadmapsWorkspace.RoadmapWorkspace", "RoadmapWorkspace")
+                        .WithMany("Snapshots")
+                        .HasForeignKey("RoadmapWorkspaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RoadmapWorkspace");
+                });
+
+            modelBuilder.Entity("SkillMap.Core.RoadmapsWorkspace.RoadmapWorkspace", b =>
+                {
+                    b.HasOne("SkillMap.Core.User.AppUser", "Author")
+                        .WithMany("RoadmapForks")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SkillMap.Core.Roadmaps.PersonalRoadmap", "PersonalRoadmap")
+                        .WithOne("RoadmapWorkspace")
+                        .HasForeignKey("SkillMap.Core.RoadmapsWorkspace.RoadmapWorkspace", "PersonalRoadmapId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Author");
+
+                    b.Navigation("PersonalRoadmap");
+                });
+
+            modelBuilder.Entity("SkillMap.Core.Roadmaps.PersonalRoadmap", b =>
+                {
+                    b.Navigation("RoadmapWorkspace")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SkillMap.Core.RoadmapsWorkspace.RoadmapWorkspace", b =>
+                {
+                    b.Navigation("Assessments");
+
+                    b.Navigation("Snapshots");
+
+                    b.Navigation("WorkspaceEvents");
+                });
+
+            modelBuilder.Entity("SkillMap.Core.User.AppUser", b =>
+                {
+                    b.Navigation("RoadmapForks");
                 });
 #pragma warning restore 612, 618
         }

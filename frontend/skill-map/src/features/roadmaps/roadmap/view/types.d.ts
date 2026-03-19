@@ -1,5 +1,6 @@
 interface PlainRoadmapView {
   id: string;
+  workspaceId: string;
   title: string;
   description: string;
   isSaved: boolean;

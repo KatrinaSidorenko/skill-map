@@ -7,9 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-using SkillMap.Application.Services;
-using SkillMap.Business.__old.ModifiedRoadmaps;
-using SkillMap.Business.__old.UserRoadmaps;
+//using SkillMap.Application.Services;
+//using SkillMap.Business.__old.ModifiedRoadmaps;
+//using SkillMap.Business.__old.UserRoadmaps;
 using SkillMap.Business.Abstractions;
 using SkillMap.Business.Account;
 using SkillMap.Business.RoadmapTest;
@@ -20,6 +20,7 @@ using SkillMap.Infrastructure.EventBus;
 using SkillMap.Infrastructure.PersonalizedRoadmaps;
 using SkillMap.Infrastructure.RoadmapTest;
 using SkillMap.Persistence;
+using SkillMap.Persistence.Neo4j;
 using SkillMap.Shared.Options;
 
 namespace SkillMap.Infrastructure;
@@ -48,16 +49,18 @@ public static class LayerRegistration
 
         services.AddScoped<IAccountService, AccountService>();
         services.AddValidatorsFromAssemblies([typeof(IAccountService).Assembly]);
-        services.AddScoped<IUserRoadmapsService, UserRoadmapsService>();
-        services.AddScoped<ICustomizedRoadmapsService, CustomizedRoadmapsService>();
-        services.AddScoped<IUserRoadmapTestService, UserRoadmapTestService>();
+        //services.AddScoped<IUserRoadmapsService, UserRoadmapsService>();
+        //services.AddScoped<ICustomizedRoadmapsService, CustomizedRoadmapsService>();
+        //services.AddScoped<IUserRoadmapTestService, UserRoadmapTestService>();
         services.AddRoadmapTestModule();
         services.AddRoadmapModule();
 
         services.AddEventBus();
-        services.AddPersonalizedRoadmapModule();
 
         // migrations
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddNeo4jPersistence(configuration);
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddPersistenceLayer(configuration);
 
         return services;

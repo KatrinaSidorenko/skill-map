@@ -23,7 +23,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   selectPlainRoadmap,
   selectRoadmap,
-  selectRoadmapId,
+  selectWorkspaceId,
   setEdge,
   setEdgeChnages,
   setNodeChanges,
@@ -79,7 +79,7 @@ function RoadmapEditor({
   setSidebarOpen,
 }: RoadmapEditorProps) {
   const dispatch = useAppDispatch();
-  const roadmapId = useAppSelector(selectRoadmapId);
+  const roadmapId = useAppSelector(selectWorkspaceId);
   const { nodes, edges } = useAppSelector(selectRoadmap);
 
   const handleNodeDoubleClick: NodeMouseHandler = useCallback(

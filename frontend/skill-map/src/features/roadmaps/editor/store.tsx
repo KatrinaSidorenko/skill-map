@@ -16,7 +16,7 @@ import {
 
 type InitialState = {
   plainRoadmap: SavedPlainRoadmap | null;
-  roadmapId: string | null;
+  workspaceId: string | null;
   nodes: Node[];
   edges: Edge[];
   selectedElement: Node | Edge | null;
@@ -25,7 +25,7 @@ type InitialState = {
 
 const initialState: InitialState = {
   plainRoadmap: null,
-  roadmapId: null,
+  workspaceId: null,
   nodes: [],
   edges: [],
   selectedElement: null,
@@ -38,9 +38,6 @@ const roadmapEditorSlice = createSlice({
   name: 'roadmapEditor',
   initialState,
   reducers: {
-    setActiveRoadmapId: (state, action: PayloadAction<string>) => {
-      state.roadmapId = action.payload;
-    },
     setRoadmap: (
       state,
       action: PayloadAction<{
@@ -50,8 +47,8 @@ const roadmapEditorSlice = createSlice({
     ) => {
       if (state.editorConfig.useStatus === false) {
         const { nodes, edges } = mapRoadmapToReactFlow({
-          nodes: action.payload.nodes.map((n) => n as RoadmapNode),
-          edges: action.payload.edges,
+          items: action.payload.nodes.map((n) => n as RoadmapNode),
+          connections: action.payload.edges,
         } as Roadmap);
         state.nodes = nodes;
         state.edges = edges;
@@ -64,9 +61,9 @@ const roadmapEditorSlice = createSlice({
       state.nodes = nodes;
       state.edges = edges;
     },
-    setPlainRiadmap: (state, action: PayloadAction<SavedPlainRoadmap>) => {
+    setWorkspaceRoadmap: (state, action: PayloadAction<SavedPlainRoadmap>) => {
       state.plainRoadmap = action.payload;
-      state.roadmapId = action.payload.id;
+      state.workspaceId = action.payload.workspaceId;
     },
     setSelectedElement: (state, action: PayloadAction<Node | Edge | null>) => {
       state.selectedElement = action.payload;
@@ -111,7 +108,7 @@ const roadmapEditorSlice = createSlice({
     },
     clearEditor: (state) => {
       state.plainRoadmap = null;
-      state.roadmapId = null;
+      state.workspaceId = null;
       state.nodes = [];
       state.edges = [];
       state.selectedElement = null;
@@ -132,8 +129,7 @@ export const {
   deleteNode,
   updateNode,
   setEdge,
-  setPlainRiadmap,
-  setActiveRoadmapId,
+  setWorkspaceRoadmap,
   setEditorConfig,
   clearEditor,
 } = roadmapEditorSlice.actions;
@@ -148,8 +144,8 @@ export const selectSelectedElement = (state: { roadmapEditor: InitialState }) =>
   state.roadmapEditor.selectedElement;
 export const selectPlainRoadmap = (state: { roadmapEditor: InitialState }) =>
   state.roadmapEditor.plainRoadmap;
-export const selectRoadmapId = (state: { roadmapEditor: InitialState }) =>
-  state.roadmapEditor.roadmapId;
+export const selectWorkspaceId = (state: { roadmapEditor: InitialState }) =>
+  state.roadmapEditor.workspaceId;
 export const selectEditorConfig = (state: { roadmapEditor: InitialState }) =>
   state.roadmapEditor.editorConfig;
 

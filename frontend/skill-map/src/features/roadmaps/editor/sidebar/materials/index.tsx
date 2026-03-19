@@ -1,5 +1,5 @@
 import { useAppSelector } from '@/store/hooks';
-import { selectRoadmapId, selectSelectedElement } from '../../store';
+import { selectWorkspaceId, selectSelectedElement } from '../../store';
 import { useLazyGetLearningItemMaterialsQuery } from '@/features/roadmaps/api';
 import { useEffect } from 'react';
 import {
@@ -22,7 +22,7 @@ import useLocalization from '@/i18n/useLocalization';
 export default function MaterialsContainer() {
   const { getEditorTranslations } = useLocalization();
   const selectedElement = useAppSelector(selectSelectedElement);
-  const roadmapId = useAppSelector(selectRoadmapId);
+  const roadmapId = useAppSelector(selectWorkspaceId);
 
   const [triggerGetMaterials, { data, isLoading, isFetching }] =
     useLazyGetLearningItemMaterialsQuery();

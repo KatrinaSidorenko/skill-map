@@ -173,9 +173,9 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
         return Result.Success((nodesList, edgesList));
     }
 
-    public async Task<Result<PaginationResult<List<NodeDto>>>> GetPublicPlainRoadmapsByIds(
+    public async Task<Result<PaginationResult<NodeDto>>> GetPublicPlainRoadmapsByIds(
         List<string> roadmapIds,
-        SearchingParams @params,
+        FilteringParams @params,
         CancellationToken ct,
         bool excludePrivate = true)
     {
@@ -212,9 +212,9 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
                 var result = await tx.RunAsync(query, new
                 {
                     ids = roadmapIds,
-                    skip = @params.paginationParams.Skip,
-                    limit = @params.paginationParams.pageSize,
-                    searchTerm = @params.searchTermByName
+                    skip = @params.PaginationParams.Skip,
+                    limit = @params.PaginationParams.PageSize,
+                    searchTerm = @params.SearchTerm
                 });
 
                 var nodes = new List<NodeDto>();
@@ -238,7 +238,7 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
                 var result = await tx.RunAsync(countQuery, new
                 {
                     ids = roadmapIds,
-                    searchTerm = @params.searchTermByName
+                    searchTerm = @params.SearchTerm
                 });
                 await result.FetchAsync();
                 return result.Current["total"].As<int>();
@@ -246,7 +246,7 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
 
             await session.CloseAsync();
 
-            return Result.Success(new PaginationResult<List<NodeDto>>
+            return Result.Success(new PaginationResult<NodeDto>
             {
                 Result = response,
                 TotalCount = totalCount
@@ -255,7 +255,7 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to get roadmaps by ids");
-            return ResultType.FailedToGetRoadmap<PaginationResult<List<NodeDto>>>(ex.Message);
+            return ResultType.FailedToGetRoadmap<PaginationResult<NodeDto>>(ex.Message);
         }
     }
 

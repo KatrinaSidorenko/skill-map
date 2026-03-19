@@ -7,7 +7,7 @@ type InitialState = {
 };
 
 const initialState: InitialState = {
-  roadmapId: null,
+  workspaceId: null,
   roadmapView: null,
 };
 
@@ -27,8 +27,9 @@ const savedRoadmapsSlice = createSlice({
 export const { setRoadmapView, setActiveSavedRoadmapViewId } =
   savedRoadmapsSlice.actions;
 
-export const selectRoadmapView = (state: { savedRoadmapsSlice: InitialState }) =>
-  state.savedRoadmapsSlice.roadmapView;
+export const selectRoadmapView = (state: {
+  savedRoadmapsSlice: InitialState;
+}) => state.savedRoadmapsSlice.roadmapView;
 export const selectRoadmapViewId = (state: {
   savedRoadmapsSlice: InitialState;
 }) => state.savedRoadmapsSlice.roadmapId;

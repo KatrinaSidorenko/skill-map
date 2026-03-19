@@ -7,5 +7,5 @@ export default async function Page({
 }) {
   const { roadmapId } = await params;
 
-  return <CreatedRoadmapEditorPage roadmapId={roadmapId} />;
+  return <CreatedRoadmapEditorPage workspaceId={roadmapId} />;
 }

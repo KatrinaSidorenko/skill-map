@@ -87,7 +87,7 @@ public sealed class TopicQuestionsProvider : ITopicQuestionsProvider
             Text = q.Text,
             Difficulty = difficultyLevel,
             Type = q.Type.ToQuestionTypeString(),
-            Answers = q.Answers.SerializeOrDefault(),
+            Answers = q.Answers.JsonSerializeOrDefault(),
         });
         if (!questionEntities.Any()) { return (null, null); }
 

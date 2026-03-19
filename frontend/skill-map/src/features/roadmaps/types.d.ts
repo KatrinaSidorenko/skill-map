@@ -2,6 +2,7 @@ type LearningStatus = 'notstarted' | 'inprogress' | 'completed';
 
 interface PlainRoadmap {
   id: string;
+  workspaceId: string;
   title: string;
   description: string;
   imageUrl: string;
@@ -30,11 +31,12 @@ interface RoadmapEdge {
 
 interface Roadmap {
   id: string;
+  workspaceId: string;
   title: string;
   description: string;
   isSaved?: boolean;
-  nodes: RoadmapNode[];
-  edges: RoadmapEdge[];
+  items: RoadmapNode[];
+  connections: RoadmapEdge[];
 }
 
 interface SavedRoadmap {
@@ -83,7 +85,7 @@ interface CreateDraftRoadmapPayload {
   title: string;
   description: string;
   imageUrl?: string;
-  isPublic: boolean;
+  isPublic?: boolean;
 }
 
 interface UpdateUserRoadmapRequest {

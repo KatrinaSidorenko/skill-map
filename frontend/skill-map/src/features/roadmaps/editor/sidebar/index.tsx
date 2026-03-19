@@ -14,7 +14,7 @@ import type { Node } from '@xyflow/react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   selectEditorConfig,
-  selectRoadmapId,
+  selectWorkspaceId,
   selectSelectedElement,
   updateNode,
 } from '../store';
@@ -36,7 +36,7 @@ export default function NodeSidebar({
   saveChange,
 }: NodeSidebarProps) {
   const dispatch = useAppDispatch();
-  const roadmapId = useAppSelector(selectRoadmapId);
+  const roadmapId = useAppSelector(selectWorkspaceId);
   const node = useAppSelector(selectSelectedElement);
   const editorConfig = useAppSelector(selectEditorConfig);
   const { getEditorTranslations } = useLocalization();
