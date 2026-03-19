@@ -3,6 +3,7 @@
 using MediatR;
 
 using SkillMap.Business.Abstractions;
+using SkillMap.Business.RoadmapsWorkspace.Common;
 using SkillMap.Core.PersonalizedRoadmaps;
 
 namespace SkillMap.Business.PersonalizedRoadmaps.Features.AddLearningItem;
@@ -12,13 +13,15 @@ internal sealed class AddLearningItemCommandHandler(IRepository<RoadmapWorkspace
 {
     public async Task Handle(AddLearningItemCommand command, CancellationToken cancellationToken)
     {
+        // todo: extract this logic
         var lastEvent = await repository.GetAllAsync(
             filter: e => e.RoadmapWorkspaceId == command.UserRoadmapId,
             orderBy: q => q.OrderByDescending(e => e.CreatedAt).OrderByDescending(e => e.Version),
             count: 1,
             ct: cancellationToken); // todo: it can be optimized
 
-        var lastVersion = (lastEvent.FirstOrDefault()?.Version ?? 0) + 1;
+
+        var lastVersion = (lastEvent.FirstOrDefault()?.Version ?? RoadmapWorkspaceConstants.InitialVersion) + 1;
         var addEvent = new RoadmapWorkspaceEvent(command.UserRoadmapId, command.EventType, command.GetMetadataJson(), lastVersion);
         await repository.AddAsync(addEvent, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);

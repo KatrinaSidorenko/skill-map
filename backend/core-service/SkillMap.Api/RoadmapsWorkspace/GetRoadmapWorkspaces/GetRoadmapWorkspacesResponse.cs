@@ -49,9 +49,6 @@ public class GetRoadmapWorkspacesResponseItem
         return new GetRoadmapWorkspacesResponseItem
         {
             Id = workspace.Id,
-            Title = workspace.Title,
-            Description = workspace.Description,
-            ImageUrl = workspace.ImageUrl,
             Progress = workspace.Progress,
             SavedAt = workspace.SavedAt,
             Status = workspace.Status.ToStatusString()

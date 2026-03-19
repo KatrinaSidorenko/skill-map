@@ -74,39 +74,39 @@ export default function CreatedRoadmapEditorPage({
     }
   }, [data, workspaceId, isFetching, isLoading]);
 
-  if (error && workspaceId) {
-    return <ErrorScreen />;
-  }
-
   // todo: extract to separate component
   return (
     <Flex width="100vw" height="100vh" direction="column">
-      <Container isSection={false}>
-        {(isLoading || isFetching) && workspaceId ? (
-          <SpinnerScreen />
-        ) : (
-          <ReactFlowProvider>
-            <RoadmapEditor.Container>
-              <RoadmapEditor.Header />
-              <RoadmapEditor
-                createEdge={createEdge}
-                setSidebarOpen={setSidebarOpen}
-              >
-                <Toolbox
-                  onToggleSidebar={handleToggleSidebar}
-                  createNode={createNode}
-                  deleteItem={deleteItem}
-                />
-                <NodeSidebar
-                  open={isSidebarOpen}
-                  onOpenChange={setSidebarOpen}
-                  saveChange={saveChange}
-                />
-              </RoadmapEditor>
-            </RoadmapEditor.Container>
-          </ReactFlowProvider>
-        )}
-      </Container>
+      {error && workspaceId ? (
+        <ErrorScreen />
+      ) : (
+        <Container isSection={false}>
+          {(isLoading || isFetching) && workspaceId ? (
+            <SpinnerScreen />
+          ) : (
+            <ReactFlowProvider>
+              <RoadmapEditor.Container>
+                <RoadmapEditor.Header />
+                <RoadmapEditor
+                  createEdge={createEdge}
+                  setSidebarOpen={setSidebarOpen}
+                >
+                  <Toolbox
+                    onToggleSidebar={handleToggleSidebar}
+                    createNode={createNode}
+                    deleteItem={deleteItem}
+                  />
+                  <NodeSidebar
+                    open={isSidebarOpen}
+                    onOpenChange={setSidebarOpen}
+                    saveChange={saveChange}
+                  />
+                </RoadmapEditor>
+              </RoadmapEditor.Container>
+            </ReactFlowProvider>
+          )}
+        </Container>
+      )}
     </Flex>
   );
 }

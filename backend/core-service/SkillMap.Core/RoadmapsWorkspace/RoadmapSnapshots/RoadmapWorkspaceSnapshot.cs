@@ -9,24 +9,15 @@ namespace SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots;
 
 public class RoadmapSnapshotMetadata
 {
-    [JsonProperty("title")]
-    public string Title { get; private set; }
-    [JsonProperty("description")]
-    public string Description { get; private set; }
-    [JsonProperty("imageUrl")]
-    public string ImageUrl { get; private set; }
     [JsonProperty("progress")]
     public double Progress { get; private set; }
     [JsonProperty("status")]
     public LearningStatus Status { get; private set; }
 
-    public RoadmapSnapshotMetadata(double progress, LearningStatus status, string title, string description, string imageUrl)
+    public RoadmapSnapshotMetadata(double progress, LearningStatus status)
     {
         Progress = progress;
         Status = status;
-        Title = title;
-        Description = description;
-        ImageUrl = imageUrl;
     }
 }
 
@@ -61,8 +52,8 @@ public class RoadmapWorkspaceSnapshot : TrackedEntity
     }
 
     // todo: logic of serialization and desiralization seems like to be logical here
-    public void SetMetadata(string metadata)
+    public void SetMetadata(RoadmapSnapshotMetadata metadata)
     {
-        Metadata = metadata;
+        Metadata = JsonConvert.SerializeObject(metadata);
     }
 }

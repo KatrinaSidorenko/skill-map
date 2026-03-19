@@ -32,9 +32,6 @@ internal sealed class GetRoadmapWorkspacesHandler(IRepository<RoadmapWorkspace> 
             var snapshotMetadata = latestSnapshot.ParseMetadata();
             result.Add(RoadmapWorkspaceSummaryDto.Create(
                 workspace.Id,
-                snapshotMetadata?.Title ?? string.Empty,
-                snapshotMetadata?.Description ?? string.Empty,
-                snapshotMetadata?.ImageUrl ?? string.Empty,
                 latestSnapshot.CreatedAt,
                 snapshotMetadata?.Status,
                 snapshotMetadata?.Progress));

@@ -40,4 +40,6 @@ public class RoadmapWorkspace : TrackedEntity
     {
         IsInAuthorMode = true;
     }
+
+    public string ActualRoadmapId => IsInAuthorMode ? PersonalRoadmapId.ToString() ?? throw new ArgumentException("Something went wrong with roadmap id") : RoadmapId;
 }

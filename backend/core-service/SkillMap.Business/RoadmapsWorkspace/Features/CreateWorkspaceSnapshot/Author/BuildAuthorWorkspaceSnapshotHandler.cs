@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 
 using SkillMap.Business.Abstractions;
 using SkillMap.Business.PersonalizedRoadmaps.Common;
+using SkillMap.Business.RoadmapsWorkspace.Common;
 using SkillMap.Core.PersonalizedRoadmaps;
 using SkillMap.Core.RoadmapsWorkspace.Events;
 using SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots;
@@ -19,10 +20,9 @@ internal sealed class BuildAuthorWorkspaceSnapshotHandler(
     IRepository<RoadmapWorkspaceEvent> eventsRepository,
     ILogger<BuildAuthorWorkspaceSnapshotHandler> logger) : IRequestHandler<BuildAuthorWorkspaceSnapshotCommand, long>
 {
-    private const int _initialVersion = 0;
+    private const int _initialVersion = RoadmapWorkspaceConstants.InitialVersion;
     public async Task<long> Handle(BuildAuthorWorkspaceSnapshotCommand request, CancellationToken cancellationToken)
     {
-        // todo: add matadat info fill
         var latestSnapshots = await snapshotsRepository.GetAllAsync(
             filter: s => s.RoadmapWorkspaceId == request.WorkspaceId,
             orderBy: q => q.OrderByDescending(s => s.CreatedAt).ThenByDescending(s => s.UpdatedAt),
@@ -49,34 +49,15 @@ internal sealed class BuildAuthorWorkspaceSnapshotHandler(
         }
 
         var snapshotContent = await latestSnapshot.GetRoadmapSnapshot(cancellationToken);
-        var newRoadmapSnapshot = await ApplyEventsToSnapshot(snapshotContent, eventsList, cancellationToken);
+        var newRoadmapSnapshot = await snapshotContent.ApplyEventsToSnapshot(eventsList, cancellationToken);
 
         var newSnapshot = new RoadmapWorkspaceSnapshot(request.WorkspaceId);
         newSnapshot.SetVersion(eventsList.OrderByDescending(e => e.Version).Single().Version);
+        // todo: calculate progress and status
+        newSnapshot.SetMetadata(new RoadmapSnapshotMetadata(0.1, Core.Constants.LearningStatus.InProgress)); 
         await newSnapshot.SetRoadmapSnapshot(newRoadmapSnapshot, cancellationToken);
         await snapshotsRepository.AddAsync(newSnapshot, cancellationToken);
         await snapshotsRepository.SaveChangesAsync(cancellationToken);
         return newSnapshot.Id;
-    }
-
-    private async Task<RoadmapSnapshot> ApplyEventsToSnapshot(
-        RoadmapSnapshot snapshot,
-        List<RoadmapWorkspaceEvent> events,
-        CancellationToken cancellationToken)
-    {
-        var orderedEvents = events.OrderBy(e => e.CreatedAt).ThenBy(e => e.Version);
-        var aggregator = new RoadmapSnapshotAggregator(snapshot);
-        foreach (var rawEvent in orderedEvents)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var parsedEvent = WorkspaceEventMapper.Map(rawEvent);
-            if (parsedEvent != null)
-            {
-                aggregator.Apply(parsedEvent);
-            }
-        }
-
-        return aggregator.Build();
     }
 }

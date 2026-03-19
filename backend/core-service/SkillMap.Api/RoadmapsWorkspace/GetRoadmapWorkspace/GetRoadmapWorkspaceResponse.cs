@@ -10,8 +10,6 @@ public class GetRoadmapWorkspaceResponse
 {
     [JsonPropertyName("workspaceId")]
     public string Id { get; set; }
-    [JsonPropertyName("title")]
-    public string Title { get; set; }
 
     [JsonPropertyName("items")]
     public List<PersonalizedLearningItemResponse> LearningItems { get; set; }
@@ -23,7 +21,6 @@ public class GetRoadmapWorkspaceResponse
         return new GetRoadmapWorkspaceResponse
         {
             Id = dto.Id,
-            Title = dto.Title,
             LearningItems = dto.LearningItems.Select(li => new PersonalizedLearningItemResponse(li.Id, li.Title, li.Description, li.Status.ToStatusString())).ToList(),
             LearningItemsConnections = dto.LearningItemsConnections.Select(conn => new PersonalizedLearningItemsConnectionResponse(conn.Id, conn.FromId, conn.ToId)).ToList()
         };

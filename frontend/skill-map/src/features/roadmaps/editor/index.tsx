@@ -60,9 +60,9 @@ function RoadmapEditorHeader() {
         <IoChevronBackOutline size="24" />
       </Button>
 
-      <Text fontSize="xl" fontWeight="semibold" pr={2}>
-        {roadmap?.title || 'Untitled Roadmap'}
-      </Text>
+      {/*<Text fontSize="xl" fontWeight="semibold" pr={2}>*/}
+      {/*  {roadmap?.title || 'Untitled Roadmap'}*/}
+      {/*</Text>*/}
     </Flex>
   );
 }
