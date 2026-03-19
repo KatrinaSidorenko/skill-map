@@ -17,6 +17,7 @@ public class RoadmapWorkspaceConfiguration : IEntityTypeConfiguration<RoadmapWor
 
         builder.Property(ur => ur.AuthorId).HasColumnName("author_id").IsRequired();
         builder.Property(ur => ur.RoadmapId).HasColumnName("roadmap_id");
+        builder.Property(ur => ur.MetadataJson).HasColumnName("metadata").HasColumnType("jsonb");
         builder.Property(ur => ur.IsActive).HasColumnName("is_active").IsRequired().HasDefaultValue(true);
         builder.Property(ur => ur.IsInAuthorMode).HasColumnName("is_in_author_mode").IsRequired().HasDefaultValue(false);
         builder.Property(ur => ur.PersonalRoadmapId).HasColumnName("personal_roadmap_id");

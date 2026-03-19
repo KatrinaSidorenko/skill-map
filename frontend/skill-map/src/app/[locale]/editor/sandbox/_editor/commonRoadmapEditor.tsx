@@ -24,7 +24,7 @@ import Toolbox from '@/features/roadmaps/editor/toolbox';
 import NodeSidebar from '@/features/roadmaps/editor/sidebar';
 import { useAppDispatch } from '@/store/hooks';
 
-export default function CreatedRoadmapEditorPage({
+export default function RoadmapWorkspacePage({
   workspaceId,
 }: {
   workspaceId: string;
@@ -51,7 +51,7 @@ export default function CreatedRoadmapEditorPage({
     if (data) {
       const roadmap = data;
       dispatch(clearEditor());
-      dispatch(setEditorConfig({ useStatus: false }));
+      dispatch(setEditorConfig({ useStatus: true }));
       dispatch(
         setWorkspaceRoadmap({
           id: roadmap.id,

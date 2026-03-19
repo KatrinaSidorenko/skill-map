@@ -94,7 +94,7 @@ export default function SavedRoadmapView({
       });
   }, [roadmap.id, getRoadmapTestingHistory]);
   const handleOpenEditor = () => {
-    router.push(`/editor/sandbox/saved/${roadmap.id}`);
+    router.push(`/editor/sandbox/${roadmap.id}`);
   };
 
   const onOpenAttempt = ({

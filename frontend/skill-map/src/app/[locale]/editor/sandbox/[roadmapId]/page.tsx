@@ -1,4 +1,4 @@
-import CreatedRoadmapEditorPage from '../_editor/createdRoadmapEditor';
+import RoadmapWorkspacePage from '../_editor/commonRoadmapEditor';
 
 export default async function Page({
   params,
@@ -7,5 +7,5 @@ export default async function Page({
 }) {
   const { roadmapId } = await params;
 
-  return <CreatedRoadmapEditorPage workspaceId={roadmapId} />;
+  return <RoadmapWorkspacePage workspaceId={roadmapId} />;
 }

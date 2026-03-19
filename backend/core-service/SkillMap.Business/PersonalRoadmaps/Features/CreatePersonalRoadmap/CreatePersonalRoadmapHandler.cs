@@ -22,7 +22,12 @@ internal sealed class CreatePersonalRoadmapHandler(IRepository<PersonalRoadmap> 
             request.ImageUrl);
         await repository.AddAsync(personalRoadmap, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
-        await eventBus.PublishAsync(PersonalRoadmapCreatedEvent.Create(personalRoadmap.AuthorId, personalRoadmap.Id), cancellationToken);
+        await eventBus.PublishAsync(PersonalRoadmapCreatedEvent.Create(
+            personalRoadmap.AuthorId, 
+            personalRoadmap.Id,
+            request.Title,
+            request.Description,
+            request.ImageUrl), cancellationToken);
 
         return personalRoadmap.Id;
     }

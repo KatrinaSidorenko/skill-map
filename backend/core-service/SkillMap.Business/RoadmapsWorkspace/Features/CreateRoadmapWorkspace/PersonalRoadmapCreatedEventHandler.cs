@@ -15,6 +15,7 @@ internal sealed class PersonalRoadmapCreatedEventHandler(IRepository<RoadmapWork
     {
         var roadmapBookmark = new RoadmapWorkspace(notification.UserId, null, notification.RoadmapId);
         roadmapBookmark.ActivateAuthorMode();
+        roadmapBookmark.SetMetadata(new RoadmapWorkspaceMetadata(notification.Title, notification.Description, notification.ImageUrl));
 
         await repository.AddAsync(roadmapBookmark, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
