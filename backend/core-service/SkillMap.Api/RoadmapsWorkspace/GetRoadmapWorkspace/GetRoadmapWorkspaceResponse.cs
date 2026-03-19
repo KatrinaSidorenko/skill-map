@@ -1,4 +1,6 @@
-﻿using SkillMap.Business.PersonalizedRoadmaps.Features.GetPersonalizedRoadmap;
+﻿using System.Text.Json.Serialization;
+
+using SkillMap.Business.PersonalizedRoadmaps.Features.GetPersonalizedRoadmap;
 using SkillMap.Core.Constants;
 using SkillMap.Core.PersonalizedRoadmaps;
 
@@ -6,9 +8,12 @@ namespace SkillMap.Api.PersonalizedRoadmaps.GetPersonalizedRoadmap;
 
 public class GetRoadmapWorkspaceResponse
 {
+    [JsonPropertyName("workspaceId")]
     public string Id { get; set; }
 
+    [JsonPropertyName("items")]
     public List<PersonalizedLearningItemResponse> LearningItems { get; set; }
+    [JsonPropertyName("connections")]
     public List<PersonalizedLearningItemsConnectionResponse> LearningItemsConnections { get; set; }
 
     public static GetRoadmapWorkspaceResponse Create(RoadmapWorkspaceDto dto)

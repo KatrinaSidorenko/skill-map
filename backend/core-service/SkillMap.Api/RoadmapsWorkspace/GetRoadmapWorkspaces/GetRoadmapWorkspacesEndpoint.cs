@@ -12,14 +12,14 @@ internal static class GetRoadmapWorkspacesEndpoint
     internal static void MapGetRoadmapWorkspaces(this IEndpointRouteBuilder app) => app.MapGet(RoadmapsWorkspaceApiPaths.GetRoadmapWorkspaces, async (
             [AsParameters] FilteringRequest filteringRequest,
             IRoadmapWorkspaceModule roadmapWorkspaceModule,
-   IUserManager userManager,
-         CancellationToken cancellationToken) =>
+            IUserManager userManager,
+            CancellationToken cancellationToken) =>
     {
         var query = new GetRoadmapWorkspacesQuery(userManager.GetCurrentUserId(), filteringRequest.ToParams());
         var result = await roadmapWorkspaceModule.ExecuteCommandAsync(query, cancellationToken);
-  return Results.Ok(GetRoadmapWorkspacesResponse.CreatePaginationResult(result));
+        return Results.Ok(GetRoadmapWorkspacesResponse.CreatePaginationResult(result));
     })
-   .Produces<GetRoadmapWorkspacesResponse>(StatusCodes.Status200OK)
+        .Produces<GetRoadmapWorkspacesResponse>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status404NotFound)
         .Produces(StatusCodes.Status500InternalServerError);
 }

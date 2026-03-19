@@ -55,7 +55,7 @@ export const mockRoadmaps: Roadmap[] = [
     id: 1,
     title: 'Frontend Developer',
     description: 'Learn the skills required to become a frontend engineer.',
-    nodes: [
+    items: [
       {
         id: 1,
         title: 'HTML & CSS',
@@ -87,7 +87,7 @@ export const mockRoadmaps: Roadmap[] = [
         // nextNodeIds: [],
       },
     ],
-    edges: [
+    connections: [
       { source: 1, target: 2 },
       { source: 2, target: 3 },
       { source: 2, target: 4 },
@@ -99,7 +99,7 @@ export const mockRoadmaps: Roadmap[] = [
     id: 2,
     title: 'Backend Developer',
     description: 'Skills and technologies for backend engineering.',
-    nodes: [
+    items: [
       {
         id: 1,
         title: 'Programming Basics',
@@ -131,7 +131,7 @@ export const mockRoadmaps: Roadmap[] = [
         // nextNodeIds: [],
       },
     ],
-    edges: [
+    connections: [
       { source: 1, target: 2 },
       { source: 2, target: 3 },
       { source: 3, target: 4 },
@@ -143,7 +143,7 @@ export const mockRoadmaps: Roadmap[] = [
     title: 'Fullstack Developer',
     description:
       'Combine frontend and backend skills into fullstack expertise.',
-    nodes: [
+    items: [
       {
         id: 1,
         title: 'Frontend Foundations',
@@ -175,7 +175,7 @@ export const mockRoadmaps: Roadmap[] = [
         // nextNodeIds: [],
       },
     ],
-    edges: [
+    connections: [
       { source: 1, target: 2 },
       { source: 2, target: 3 },
       { source: 3, target: 4 },

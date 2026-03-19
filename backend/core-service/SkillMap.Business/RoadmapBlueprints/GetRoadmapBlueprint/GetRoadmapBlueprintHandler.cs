@@ -4,6 +4,8 @@ using LearningPlatform.Roadmap.Business.Contracts;
 
 using MediatR;
 
+using SkillMap.Shared.Results;
+
 namespace SkillMap.Business.RoadmapBlueprints.GetRoadmapBlueprint;
 
 [UsedImplicitly]
@@ -15,7 +17,7 @@ internal sealed class GetRoadmapBlueprintHandler(IRoadmapBlueprintRepository rep
         var result = await repository.GetRoadmapById(request.RoadmapId, cancellationToken);
         if (result.IsFailed)
         {
-            throw new KeyNotFoundException($"Failed to get roadmap: {result.Message}");
+            throw new ResourceNotFoundException(nameof(RoadmapBlueprintDto), request.RoadmapId.ToString());
         }
 
         return RoadmapBlueprintDto.Create(result.Data);

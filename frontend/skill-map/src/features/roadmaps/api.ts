@@ -75,10 +75,10 @@ export const roadmapApi = createApi({
     }),
     createNode: builder.mutation<
       void,
-      { roadmapId: string; node: CreateNodeRequest }
+      { workspaceId: string; node: CreateNodeRequest }
     >({
-      query: ({ roadmapId, node }) => ({
-        url: `modifiedroadmaps/create-item/${roadmapId}`,
+      query: ({ workspaceId, node }) => ({
+        url: `modifiedroadmaps/create-item/${workspaceId}`,
         method: 'POST',
         body: node,
       }),
@@ -122,10 +122,10 @@ export const roadmapApi = createApi({
     }),
     createItemInUserRoadmap: builder.mutation<
       void,
-      { roadmapId: string; node: CreateNodeRequest }
+      { workspaceId: string; node: CreateNodeRequest }
     >({
-      query: ({ roadmapId, node }) => ({
-        url: `userroadmaps/create-item/${roadmapId}`,
+      query: ({ workspaceId, node }) => ({
+        url: `roadmaps-workspace/create-item/${workspaceId}`,
         method: 'POST',
         body: node,
       }),
@@ -160,9 +160,9 @@ export const roadmapApi = createApi({
         body: change,
       }),
     }),
-    getUserCreatedRoadmap: builder.query<RoadmapResponse, string>({
+    getUserCreatedRoadmap: builder.query<Roadmap, string>({
       query: (id) => ({
-        url: `userroadmaps/${id}`,
+        url: `roadmaps-workspace/${id}`,
         method: 'GET',
       }),
     }),

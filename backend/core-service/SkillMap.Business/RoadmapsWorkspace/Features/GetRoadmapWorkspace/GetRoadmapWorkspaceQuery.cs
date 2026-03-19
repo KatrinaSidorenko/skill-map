@@ -1,2 +1,2 @@
 ﻿namespace SkillMap.Business.PersonalizedRoadmaps.Features.GetPersonalizedRoadmap;
-public record GetRoadmapWorkspaceQuery(long UserRoadmapId) : ICommand<RoadmapWorkspaceDto>;
+public record GetRoadmapWorkspaceQuery(long WorkspaceId) : ICommand<RoadmapWorkspaceDto>;

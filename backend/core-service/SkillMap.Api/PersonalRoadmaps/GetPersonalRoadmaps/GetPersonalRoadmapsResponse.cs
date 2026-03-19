@@ -22,7 +22,7 @@ public class GetPersonalRoadmapsResponse
 
 public class GetPersonalRoadmapsResponseItem
 {
-    [JsonProperty("id")]
+    [JsonProperty("roadmapId")]
     public string Id { get; set; }
     [JsonProperty("title")]
     public string Title { get; set; }

@@ -15,8 +15,8 @@ import ErrorScreen from '@/components/base/error';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   clearEditor,
-  selectRoadmapId,
-  setPlainRiadmap,
+  selectWorkspaceId,
+  setWorkspaceRoadmap,
   setRoadmap,
 } from '@/features/roadmaps/editor/store';
 import { useCallback, useEffect, useState } from 'react';
@@ -48,7 +48,7 @@ export default function SavedRoadmapEditorPage({
     if (!roadmap || !roadmapId) return;
     dispatch(clearEditor());
     dispatch(
-      setPlainRiadmap({
+      setWorkspaceRoadmap({
         id: roadmap.id,
         title: roadmap.title,
         description: roadmap.description,

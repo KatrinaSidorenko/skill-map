@@ -18,7 +18,7 @@ internal sealed class AddLearningItemCommandHandler(IRepository<RoadmapWorkspace
             count: 1,
             ct: cancellationToken); // todo: it can be optimized
 
-        var lastVersion = lastEvent.FirstOrDefault()?.Version + 1 ?? 0;
+        var lastVersion = (lastEvent.FirstOrDefault()?.Version ?? 0) + 1;
         var addEvent = new RoadmapWorkspaceEvent(command.UserRoadmapId, command.EventType, command.GetMetadataJson(), lastVersion);
         await repository.AddAsync(addEvent, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);

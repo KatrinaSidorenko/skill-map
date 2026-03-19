@@ -6,8 +6,10 @@ namespace SkillMap.Api.PersonalRoadmaps.GetPersonalRoadmap;
 
 public class GetPersonalRoadmapSummaryResponse
 {
-    [JsonProperty("id")]
+    [JsonProperty("roadmapId")]
     public string Id { get; set; }
+    [JsonProperty("workspaceId")]
+    public string WorkspaceId { get; set; }
 
     [JsonProperty("title")]
     public string Title { get; set; }
@@ -23,6 +25,7 @@ public class GetPersonalRoadmapSummaryResponse
         return new GetPersonalRoadmapSummaryResponse
         {
             Id = blueprint.Id,
+            WorkspaceId = blueprint.WorkspaceId,
             Title = blueprint.Title,
             Description = blueprint.Description,
             ImageUrl = blueprint.ImageUrl
