@@ -35,8 +35,9 @@ internal sealed class GetRoadmapWorkspaceHandler(IRepository<RoadmapWorkspace> r
         var latestSnapshot = workspace.Snapshots.OrderByDescending(s => s.CreatedAt).FirstOrDefault()
             ?? throw new ResourceNotFoundException(nameof(RoadmapWorkspaceSnapshot), $"No snapshots found for workspace {request.WorkspaceId}");
 
+        var metadata = latestSnapshot.ParseMetadata();
         var snapshotContent = await latestSnapshot.GetRoadmapSnapshot(cancellationToken);
-        return RoadmapWorkspaceDto.Create(workspace.Id, snapshotContent, latestSnapshot.Version);
+        return RoadmapWorkspaceDto.Create(workspace.Id, snapshotContent, latestSnapshot.Version, metadata?.Title);
     }
 }
 

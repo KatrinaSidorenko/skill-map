@@ -5,6 +5,7 @@ import {
   useCreateItemInUserRoadmapMutation,
   useDeleteLearningItemFromUserRoadmapMutation,
   useGetUserCreatedRoadmapQuery,
+  useLazyGetPlainUserCreatedRoadmapQuery,
   useUpdateLearningItemInUserRoadmapMutation,
 } from '@/features/roadmaps/api';
 import RoadmapEditor from '@/features/roadmaps/editor';
