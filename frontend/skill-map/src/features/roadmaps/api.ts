@@ -154,7 +154,7 @@ export const roadmapApi = createApi({
     }),
     getPlainUserSavedRoadmap: builder.query<SavedPlainRoadmap, string>({
       query: (id) => ({
-        url: `modifiedroadmaps/plain/${id}`,
+        url: `roadmaps-workspace/${id}/summary`,
         method: 'GET',
       }),
     }),

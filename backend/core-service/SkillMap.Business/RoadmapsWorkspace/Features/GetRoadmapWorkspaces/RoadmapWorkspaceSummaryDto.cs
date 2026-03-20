@@ -14,18 +14,18 @@ public record RoadmapWorkspaceSummaryDto(
 {
     public static RoadmapWorkspaceSummaryDto Create(
         long workspaceId, 
-        string Title,
-        string Description,
-        string ImageUrl,
+        string title,
+        string description,
+        string imageUrl,
         DateTime savedAt,
         LearningStatus? status, 
         double? progress)
     {
         return new RoadmapWorkspaceSummaryDto(
             workspaceId.ToString(),
-            Title,
-            Description,
-            ImageUrl,
+            title,
+            description,
+            imageUrl,
             progress ?? 0.0,
             savedAt,
             status ?? LearningStatus.NotStarted);
