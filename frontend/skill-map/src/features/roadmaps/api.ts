@@ -18,12 +18,6 @@ export const roadmapApi = createApi({
         method: 'GET',
       }),
     }),
-    getRebuildRoadmapById: builder.query<RoadmapResponse, string>({
-      query: (id) => ({
-        url: `roadmaptest/rebuild/${id}`,
-        method: 'GET',
-      }),
-    }),
     saveRoadmap: builder.mutation<void, { id: string }>({
       query: ({ id }) => ({
         url: `roadmaps-workspace`,
@@ -188,6 +182,5 @@ export const {
   useLazyGetPlainUserCreatedRoadmapQuery,
   useLazyGetPlainUserSavedRoadmapQuery,
   useGetPlainUserSavedRoadmapQuery,
-  useGetRebuildRoadmapByIdQuery,
   useLazyGetRoadmapTestingHistoryQuery,
 } = roadmapApi;

@@ -1,2 +1,2 @@
 ﻿namespace SkillMap.Business.RoadmapsWorkspace.Features.DeleteRoadmapFork;
-public record DeleteWorkspaceCommand(string RoadmapId, long UserId) : ICommand { }
+public record DeleteWorkspaceCommand(long WorkspaceId) : ICommand { }

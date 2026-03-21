@@ -8,12 +8,11 @@ namespace SkillMap.Api.RoadmapsWorkspace.DeleteRoadmapWorkspace;
 internal static class DeleteRoadmapWorkspaceEndpoint
 {
     internal static void MapDeleteRoadmapWorkspace(this IEndpointRouteBuilder app) => app.MapDelete(RoadmapsWorkspaceApiPaths.DeleteRoadmapWorkspace, async (
-        string roadmapId,
-        IUserManager userManager,
+        long userRoadmapId,
         IRoadmapWorkspaceModule roadmapWorkspaceModule,
         CancellationToken cancellationToken) =>
     {
-        await roadmapWorkspaceModule.ExecuteCommandAsync(new DeleteWorkspaceCommand(roadmapId, userManager.GetCurrentUserId()), cancellationToken);
+        await roadmapWorkspaceModule.ExecuteCommandAsync(new DeleteWorkspaceCommand(userRoadmapId), cancellationToken);
         return Results.NoContent();
     })
         .Produces(StatusCodes.Status204NoContent)
