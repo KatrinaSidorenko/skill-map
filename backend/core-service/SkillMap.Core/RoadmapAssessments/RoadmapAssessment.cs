@@ -8,4 +8,5 @@ public class RoadmapAssessment : TrackedEntity
     public string TestType { get; set; }
     public byte[] TestData { get; set; }
     public virtual RoadmapWorkspace RoadmapFork { get; set; }
+    public virtual ICollection<AssessmentAttempt> Attempts { get; set; }
 }

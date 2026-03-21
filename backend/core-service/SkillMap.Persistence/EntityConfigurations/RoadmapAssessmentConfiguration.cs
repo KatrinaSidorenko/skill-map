@@ -28,6 +28,10 @@ internal class RoadmapAssessmentConfiguration : IEntityTypeConfiguration<Roadmap
             .WithMany(ur => ur.Assessments)
             .HasForeignKey(urt => urt.RoadmapWorkspaceId)
             .OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(urt => urt.Attempts)
+            .WithOne(aa => aa.RoadmapAssessment)
+            .HasForeignKey(aa => aa.AssessmentId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(urt => new { urt.RoadmapWorkspaceId, urt.TestType });
     }

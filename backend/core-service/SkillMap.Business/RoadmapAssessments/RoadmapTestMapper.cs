@@ -56,17 +56,17 @@ public static class RoadmapTestMapper
         };
     }
 
-    //public static RoadmapAssessmentContent ToEntityModel(this RoadmapTestDao dao)
-    //{
-    //    return new Core.Entities.UserRoadmapTest.RoadmapTest
-    //    {
-    //        Config = dao.TestConfig?.ToEntityConfig(),
-    //        TopicSettings = dao.TopicSettings?.ToDictionary(
-    //            kvp => kvp.Key,
-    //            kvp => kvp.Value.ToEntitySetting()),
-    //        TopicQuestions = dao.TopicQuestions?.Select(q => q.ToEntityTopic()).ToList()
-    //    };
-    //}
+    public static RoadmapAssessmentContent ToEntityModel(this RoadmapTestDao dao)
+    {
+        return new RoadmapAssessmentContent
+        {
+            Config = dao.TestConfig?.ToEntityConfig(),
+            TopicSettings = dao.TopicSettings?.ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value.ToEntitySetting()),
+            TopicQuestions = dao.TopicQuestions?.Select(q => q.ToEntityTopic()).ToList()
+        };
+    }
 
     public static RoadmapTestConfig ToEntityConfig(this RoadmapTestConfigDto dto) => new()
     {
@@ -156,28 +156,27 @@ public static class RoadmapTestMapper
     };
 
     // --- Result Conversion ---
-    //public static AssessmentAttemptContent ToDomainTestResult(this RoadmapTestResultsDto dto)
-    //{
-    //    // Basic example — adapt to your DTOs
-    //    return new SkillMap.Core.Entities.UserRoadmapTest.RoadmapTestResult
-    //    {
-    //        TopicsAnalysis = dto.TopicsAnalysis?.ToDictionary(
-    //            kvp => kvp.Key,
-    //            kvp => new TopicAnswersAnalysis
-    //            {
-    //                QuestionsAnalysis = kvp.Value.QuestionsAnalysis?.ToDictionary(
-    //                    q => q.Key,
-    //                    q => new QuestionAnalysisResult
-    //                    {
-    //                        AchievedPoints = q.Value.AchievedPoints,
-    //                        TotalPossiblePoints = q.Value.TotalPossiblePoints,
-    //                        QuestionType = q.Value.QuestionType.ToQuestionTypeString(),
-    //                        SelectedAnswerId = q.Value.SelectedAnswerId,
-    //                        CorrectAnswerId = q.Value.CorrectAnswerId
-    //                    })
-    //            })
-    //    };
-    //}
+    public static AssessmentAttemptContent ToDomainTestResult(this RoadmapTestResultsDto dto)
+    {
+        return new AssessmentAttemptContent
+        {
+            TopicsAnalysis = dto.TopicsAnalysis?.ToDictionary(
+                kvp => kvp.Key,
+                kvp => new TopicAnswersAnalysis
+                {
+                    QuestionsAnalysis = kvp.Value.QuestionsAnalysis?.ToDictionary(
+                        q => q.Key,
+                        q => new QuestionAnalysisResult
+                        {
+                            AchievedPoints = q.Value.AchievedPoints,
+                            TotalPossiblePoints = q.Value.TotalPossiblePoints,
+                            QuestionType = q.Value.QuestionType.ToQuestionTypeString(),
+                            SelectedAnswerId = q.Value.SelectedAnswerId,
+                            CorrectAnswerId = q.Value.CorrectAnswerId
+                        })
+                })
+        };
+    }
 
     public static RoadmapTestResultsDto ToDaoResult(this AssessmentAttemptContent entity)
     {

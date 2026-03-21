@@ -31,7 +31,7 @@ internal class AssessmentAttemptConfiguration : IEntityTypeConfiguration<Assessm
 
         builder.Property(utr => utr.ResultData).HasColumnName("result_data").IsRequired(false);
         builder.HasOne(utr => utr.RoadmapAssessment)
-            .WithMany()
+            .WithMany(ra => ra.Attempts)
             .HasForeignKey(utr => utr.AssessmentId)
             .OnDelete(DeleteBehavior.Cascade);
 

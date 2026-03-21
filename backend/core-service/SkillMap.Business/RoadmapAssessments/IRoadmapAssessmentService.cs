@@ -6,7 +6,7 @@ using SkillMap.Shared.Results;
 
 namespace SkillMap.Business.RoadmapTest;
 
-public interface IRoadmapTestService
+public interface IRoadmapAssessmentService
 {
     Task<Result<RoadmapTestResultDto>> CreateInitialRoadmapTest(long userId, string roadmapId, RoadmapTestConfigDto config, CancellationToken ct);
     Task<string> EstimateRoadmapTest(string roadmapTestId, RoadmapTestAnswers userAnswers, CancellationToken ct);
