@@ -6,7 +6,6 @@ import {
   VStack,
   HStack,
   Text,
-  Image,
   Button,
   Badge,
   Separator,
@@ -34,10 +33,10 @@ import { toaster } from '@/components/ui/toaster';
 import useLocalization from '@/i18n/useLocalization';
 import { selectRoadmapView, setRoadmapView, updateRoadmapView } from './store';
 import { updateRoadmapDialog } from '../../sandbox/edit-dialog';
-import { MOCK_IMAGE_URL } from '@/store/mock';
 import ContentNotFoundScreen from '@/components/base/notfound';
 import SpinnerScreen from '@/components/base/spinner';
 import { useEffect, useState } from 'react';
+import ImageWrapper from '@/components/ui/imageWrapper';
 
 export function RoadmapViewWrapper({ roadmapId }: { roadmapId: string }) {
   const dispatch = useAppDispatch();
@@ -160,9 +159,9 @@ export function RoadmapView() {
       >
         <Flex gap={0} flexWrap="wrap">
           {/* Cover image */}
-          <Image
-            src={roadmapView.imageUrl ?? MOCK_IMAGE_URL}
-            alt={roadmapView.title}
+          <ImageWrapper
+            imageUrl={roadmapView.imageUrl}
+            title={roadmapView.title}
             w={{ base: 'full', sm: '260px' }}
             h={{ base: '180px', sm: 'auto' }}
             minH="200px"
@@ -181,7 +180,10 @@ export function RoadmapView() {
               colorScheme={roadmapView.isPublic ? 'green' : 'gray'}
             >
               <HStack gap={1}>
-                <Icon as={roadmapView.isPublic ? FiGlobe : FiLock} boxSize={3} />
+                <Icon
+                  as={roadmapView.isPublic ? FiGlobe : FiLock}
+                  boxSize={3}
+                />
                 <Text>
                   {roadmapView.isPublic
                     ? getEditorTranslations('public')

@@ -6,7 +6,6 @@ import {
   VStack,
   HStack,
   Text,
-  Image,
   Button,
   Separator,
   Progress,
@@ -16,7 +15,6 @@ import {
 import { FiArrowRight, FiTrash2 } from 'react-icons/fi';
 import { useRouter } from 'next/navigation';
 import useLocalization from '@/i18n/useLocalization';
-import { MOCK_IMAGE_URL } from '@/store/mock';
 import { formatDistanceToNow } from 'date-fns';
 import { getProgressInPercentage, getStatusColor } from '../../helpers';
 import ContentNotFoundScreen from '@/components/base/notfound';
@@ -35,6 +33,7 @@ import {
 } from '@/features/assessment/api';
 import { DEFAULT_GENERATE_TEST_CONFIG } from '@/features/assessment/helper';
 import TestingHistory from '@/components/testing-history';
+import ImageWrapper from '@/components/ui/imageWrapper';
 
 export default function SavedRoadmapView({
   roadmap,
@@ -51,7 +50,7 @@ export default function SavedRoadmapView({
   ] = useGenerateIntermediateRoadmapTestMutation();
   const [deleteRoadmap, { isLoading: isDeletingRoadmap }] =
     useDeleteRoadmapMutation();
-  const [startNewAttempt, { isLoading: isStartingNewAttempt }] =
+  const [startNewAttempt] =
     useCreateStartTestTakeAttemptMutation();
   const takeTest = async () => {
     try {
@@ -122,7 +121,6 @@ export default function SavedRoadmapView({
 
   const onContinueAttempt = ({
     testId,
-    resultId,
   }: {
     testId: string;
     resultId: string;
@@ -134,7 +132,7 @@ export default function SavedRoadmapView({
     try {
       await deleteRoadmap({ id: roadmap.id }).unwrap();
       router.push('/saved');
-    } catch (error) {
+    } catch {
       toaster.error({
         title: 'Failed to delete the saved roadmap. Please try again later.',
       });
@@ -164,9 +162,9 @@ export default function SavedRoadmapView({
             borderWidth="1px"
             bg="bg.page"
           >
-            <Image
-              src={roadmap.imageUrl ?? MOCK_IMAGE_URL}
-              alt={roadmap.title}
+            <ImageWrapper
+              imageUrl={roadmap.imageUrl}
+              title={roadmap.title}
               w="full"
               h="full"
               objectFit="cover"
