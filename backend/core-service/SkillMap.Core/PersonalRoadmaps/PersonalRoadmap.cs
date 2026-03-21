@@ -24,4 +24,9 @@ public class PersonalRoadmap : TrackedEntity
         ImageUrl = imageUrl;
         IsPublic = false;
     }
+
+    public void Publish()
+    {
+        IsPublic = true;
+    }
 }

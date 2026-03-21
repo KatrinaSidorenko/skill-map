@@ -235,4 +235,20 @@ public class RoadmapBlueprintRepository(
             throw new Exception(errorMessage);
         }
     }
+
+    public async Task<string> CreateFullRoadmap(CreateRoadmapDto createRoadmapDto, CancellationToken ct)
+    {
+        if (createRoadmapDto == null)
+            throw new ArgumentNullException(nameof(createRoadmapDto));
+
+        var result = await roadmapRepository.CreateFullRoadmap(createRoadmapDto, ct);
+        if (!result.IsSuccessful)
+        {
+            var errorMessage = $"Failed to create full roadmap '{createRoadmapDto.SourceId}': {result.Message}";
+            logger.LogError(errorMessage);
+            throw new Exception(errorMessage);
+        }
+
+        return result.Data;
+    }
 }

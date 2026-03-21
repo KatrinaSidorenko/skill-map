@@ -92,7 +92,10 @@ interface UpdateUserRoadmapRequest {
   title?: string;
   description?: string;
   imageUrl?: string;
-  isPublic?: boolean;
+}
+
+interface PublishRoadmapRequest {
+  isPublic: boolean;
 }
 
 interface CreatedUserRoadmap {

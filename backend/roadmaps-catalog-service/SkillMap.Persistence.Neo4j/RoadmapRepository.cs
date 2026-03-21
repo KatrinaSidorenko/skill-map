@@ -512,4 +512,81 @@ RETURN roadmapId, count(DISTINCT n) AS totalTopicsAndSubtopics;
             return ResultType.FailedToGetRoadmap<bool>(ex.Message);
         }
     }
+
+    public async Task<Result<string>> CreateFullRoadmap(CreateRoadmapDto createRoadmapDto, CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+
+        try
+        {
+            // Build root ROADMAP node from the DTO metadata
+            var roadmapNode = new NodeDto
+            {
+                ExternalId = createRoadmapDto.SourceId,
+                Title = createRoadmapDto.Title,
+                Description = createRoadmapDto.Description ?? string.Empty,
+                Type = NodeType.Roadmap,
+                AdditionalProps = new Dictionary<string, string>
+                {
+                    { NodeProps.ImageUrl, createRoadmapDto.ImageUrl ?? string.Empty },
+                    { NodeProps.OwnerId, createRoadmapDto.OwnerId ?? string.Empty },
+                    { NodeProps.RoadmapId, createRoadmapDto.SourceId ?? string.Empty },
+                    { NodeProps.SourceVersion, createRoadmapDto.SourceVersion.ToString() },
+                    { NodeProps.SourceId, createRoadmapDto.SourceId ?? string.Empty }
+                }
+            }.GenerateInnerId();
+
+            // Nodes: roadmap root + all topic/subtopic nodes with generated inner ids
+            var allNodes = createRoadmapDto.Nodes
+                .Select(n => n.GenerateInnerId())
+                .Prepend(roadmapNode)
+                .ToList();
+
+            var nodesByExternalId = allNodes.ToDictionary(n => n.ExternalId, n => n);
+
+            // create adge between roadmap root and top level topics
+            var nodeWithoutIncomingEdges = allNodes.Where(n => !createRoadmapDto.Edges.Any(e => e.Target.Id == n.ExternalId)).ToList();
+            var edgesToRoot = nodeWithoutIncomingEdges
+                .Where(n => n.ExternalId != roadmapNode.ExternalId)
+                .Select(n => new EdgeDto
+                {
+                    Source = roadmapNode,
+                    Target = n,
+                }.GenerateInnerId())
+                .ToList();
+            var allEdges = createRoadmapDto.Edges
+                .Select(e => e.GenerateInnerId())
+                .ToList().Concat(edgesToRoot).ToList();
+
+            var nodeCommands = allNodes
+                .Select(n => n.CreateNodeCommand())
+                .ToList();
+
+            var edgeCommands = allEdges
+                .Select(e => e.CreateEdgeCommand(nodesByExternalId))
+                .ToList();
+
+            var allCommands = nodeCommands.Concat(edgeCommands).ToList();
+
+            using var session = Driver.AsyncSession(s => s.WithDatabase(DbSettings.Name));
+            using var transaction = await session.BeginTransactionAsync();
+
+            var result = await ExecuteCommands(transaction, allCommands, ct);
+            if (!result.IsSuccessful)
+            {
+                await transaction.RollbackAsync();
+                return Result.Failure<string>(result.Code, result.Message);
+            }
+
+            await transaction.CommitAsync();
+            await session.CloseAsync();
+
+            return Result.Success(createRoadmapDto.SourceId);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to create full roadmap {RoadmapId}", createRoadmapDto.SourceId);
+            return ResultType.FailedToSave<string>(ex.Message);
+        }
+    }
 }

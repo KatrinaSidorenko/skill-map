@@ -11,7 +11,6 @@ import {
   Portal,
   Dialog,
   Spinner,
-  Checkbox,
   createOverlay,
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
@@ -30,7 +29,6 @@ export const RoadmapDialog = (props) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
-  const [isPublic, setIsPublic] = useState(false);
 
   const [createRoadmap, { isLoading: isCreating }] = useCreateRoadmapMutation();
   const [updateRoadmap, { isLoading: isUpdating }] =
@@ -41,7 +39,6 @@ export const RoadmapDialog = (props) => {
       setTitle(roadmap.title ?? '');
       setDescription(roadmap.description ?? '');
       setImageUrl(roadmap.imageUrl ?? '');
-      setIsPublic(roadmap.isPublic ?? false);
     }
   }, [mode, roadmap]);
 
@@ -60,7 +57,6 @@ export const RoadmapDialog = (props) => {
       title,
       description,
       imageUrl: imageUrl || undefined,
-      isPublic, // ✅ properly passed
     };
 
     try {
@@ -75,7 +71,7 @@ export const RoadmapDialog = (props) => {
 
       rest.onOpenChange?.({ open: false });
       onSuccess?.(payload);
-    } catch (error) {
+    } catch {
       toaster.create({
         title:
           mode === 'edit'
@@ -126,36 +122,6 @@ export const RoadmapDialog = (props) => {
                     placeholder={getEditorTranslations('enterNodeDescription')}
                   />
                 </Box>
-
-                {/*<Box>*/}
-                {/*  <Text fontSize="sm" mb={1}>*/}
-                {/*    {getEditorTranslations('imageUrl')}*/}
-                {/*  </Text>*/}
-                {/*  <Input*/}
-                {/*    value={imageUrl}*/}
-                {/*    onChange={(e) => setImageUrl(e.target.value)}*/}
-                {/*    placeholder="https://example.com/image.jpg"*/}
-                {/*  />*/}
-                {/*</Box>*/}
-                {mode === 'edit' && (
-                  <VStack align="stretch">
-                    <Checkbox.Root
-                      checked={isPublic}
-                      onCheckedChange={(e) => setIsPublic(!!e.checked)}
-                    >
-                      <Checkbox.HiddenInput />
-                      <Checkbox.Control />
-                      <Checkbox.Label>
-                        {getEditorTranslations('isPublic')}
-                      </Checkbox.Label>
-                    </Checkbox.Root>
-                    <Text fontSize="xs" color="gray.500" ml="6">
-                      {isPublic
-                        ? getEditorTranslations('roadmapIsPublicHelp')
-                        : getEditorTranslations('roadmapIsPrivateHelp')}
-                    </Text>
-                  </VStack>
-                )}
               </VStack>
             </Dialog.Body>
 

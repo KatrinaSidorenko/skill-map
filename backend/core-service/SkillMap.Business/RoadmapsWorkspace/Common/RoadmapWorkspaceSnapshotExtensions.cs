@@ -1,5 +1,7 @@
 ﻿using System.Threading;
 
+using LearningPlatform.Roadmap.Business.Contracts;
+using LearningPlatform.Roadmap.Business.Contracts.Constants;
 using LearningPlatform.Roadmap.Business.Contracts.Models;
 
 using MediatR;
@@ -67,7 +69,7 @@ internal static class RoadmapWorkspaceSnapshotExtensions
 
         var totalItems = snapshot.LearningItems.DistinctBy(li => li.Id).Count();
         var completedItems = snapshot.LearningItems.Count(i => i.Status == Core.Constants.LearningStatus.Completed);
-        var progress = (int)((double)completedItems / totalItems);
+        var progress = ((double)completedItems / totalItems);
         var status = completedItems <= 0 ? Core.Constants.LearningStatus.NotStarted :
                      completedItems >= totalItems ? Core.Constants.LearningStatus.Completed :
                      Core.Constants.LearningStatus.InProgress;
@@ -89,5 +91,38 @@ internal static class RoadmapWorkspaceSnapshotExtensions
         newSnapshot.SetMetadata(newRoadmapSnapshot.CalculateSnapshotMetadata());
         await newSnapshot.SetRoadmapSnapshot(newRoadmapSnapshot, ct);
         return newSnapshot;
+    }
+
+    public static CreateRoadmapDto ToCreateBlueprint(this 
+        RoadmapSnapshot roadmapSnapshot,
+        string title,
+        string description,
+        string imageUrl,
+        long authorId, int version)
+    {
+        var nodes = roadmapSnapshot.LearningItems.Select(li => new NodeDto
+        {
+            Id = li.Id,
+            Title = li.Title,
+            Description = li.Description,
+            Type = NodeType.Topic,
+        }).DistinctBy(li => li.Id).ToDictionary(li => li.Id, li => li);
+
+        return new CreateRoadmapDto
+        {
+            SourceId = roadmapSnapshot.Id,
+            OwnerId = authorId.ToString(),
+            SourceVersion = version,
+            Title = title,
+            Description = description,
+            ImageUrl = imageUrl,
+            Nodes = nodes.Values.ToList(),
+            Edges = roadmapSnapshot.LearningItemsConnections.Select(lc => new EdgeDto
+            {
+                Id = lc.Id,
+                Source = nodes.GetOrDefault(lc.FromId),
+                Target = nodes.GetOrDefault(lc.ToId),
+            }).ToList(),
+        };
     }
 }

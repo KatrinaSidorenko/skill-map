@@ -126,7 +126,7 @@ export const roadmapApi = createApi({
     }),
     deleteUserRoadmap: builder.mutation<void, { id: string }>({
       query: ({ id }) => ({
-        url: `userroadmaps/${id}`,
+        url: `personal-roadmaps/${id}`,
         method: 'DELETE',
       }),
     }),
@@ -135,8 +135,18 @@ export const roadmapApi = createApi({
       { id: string; payload: UpdateUserRoadmapRequest }
     >({
       query: ({ id, payload }) => ({
-        url: `userroadmaps/${id}`,
+        url: `personal-roadmaps/${id}`,
         method: 'PUT',
+        body: payload,
+      }),
+    }),
+    publishPersonalRoadmap: builder.mutation<
+      void,
+      { id: string; payload: PublishRoadmapRequest }
+    >({
+      query: ({ id, payload }) => ({
+        url: `personal-roadmaps/${id}/publish`,
+        method: 'POST',
         body: payload,
       }),
     }),
@@ -179,6 +189,7 @@ export const {
   useGetUserCreatedRoadmapQuery,
   useDeleteUserRoadmapMutation,
   useUpdateUserRoadmapMutation,
+  usePublishPersonalRoadmapMutation,
   useLazyGetPlainUserCreatedRoadmapQuery,
   useLazyGetPlainUserSavedRoadmapQuery,
   useGetPlainUserSavedRoadmapQuery,

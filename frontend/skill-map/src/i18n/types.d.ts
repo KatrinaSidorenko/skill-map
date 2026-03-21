@@ -83,6 +83,13 @@ interface ILocalization {
     roadmapIsPublicHelp: string;
     roadmapIsPrivateHelp: string;
     isPublic: string;
+    publish: string;
+    unpublish: string;
+    publishSuccess: string;
+    unpublishSuccess: string;
+    publishError: string;
+    confirmDelete: string;
+    createdAt: string;
   };
   roadmaps: {
     search: string;

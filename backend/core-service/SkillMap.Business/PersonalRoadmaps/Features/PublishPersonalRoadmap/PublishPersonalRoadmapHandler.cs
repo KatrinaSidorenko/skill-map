@@ -1,5 +1,4 @@
-﻿
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 
 using MediatR;
 
@@ -21,7 +20,7 @@ internal sealed class PublishPersonalRoadmapHandler(IRepository<PersonalRoadmap>
             roadmap => roadmap.Id == request.PersonalRoadmapId,
             ct: cancellationToken) ?? throw new InvalidOperationException($"Personal roadmap with id {request.PersonalRoadmapId} not found.");
 
-        personalRoadmap.IsPublic = true;
+        personalRoadmap.Publish();
         await repository.UpdateAsync(personalRoadmap, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
 

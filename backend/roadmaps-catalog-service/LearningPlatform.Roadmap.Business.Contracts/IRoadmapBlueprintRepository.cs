@@ -15,4 +15,5 @@ public interface IRoadmapBlueprintRepository
     Task UpdateNode(NodeDto node, CancellationToken ct);
     Task DeleteRoadmap(string roadmapId, CancellationToken ct);
     Task DeleteRoadmapElement(string roadmapId, string itemId, string deleteItemType, CancellationToken ct);
+    Task<string> CreateFullRoadmap(CreateRoadmapDto createRoadmapDto, CancellationToken ct);
 }

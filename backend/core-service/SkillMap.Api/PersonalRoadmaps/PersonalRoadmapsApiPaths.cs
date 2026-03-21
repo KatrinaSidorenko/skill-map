@@ -9,4 +9,6 @@ internal static class PersonalRoadmapsApiPaths
     public const string CreatePersonalRoadmap = $"{PersonalRoadmapsRootApi}";
     public const string GetPersonalRoadmap = $"{PersonalRoadmapsRootApi}/{{personalRoadmapId}}";
     public const string GetPersonalRoadmaps = $"{PersonalRoadmapsRootApi}";
+    public const string UpdatePersonalRoadmap = $"{PersonalRoadmapsRootApi}/{{personalRoadmapId}}";
+    public const string PublishPersonalRoadmap = $"{PersonalRoadmapsRootApi}/{{personalRoadmapId}}/publish";
 }

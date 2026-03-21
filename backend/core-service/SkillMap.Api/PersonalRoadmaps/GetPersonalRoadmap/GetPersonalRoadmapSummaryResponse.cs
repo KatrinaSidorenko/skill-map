@@ -19,12 +19,15 @@ public class GetPersonalRoadmapSummaryResponse
 
     [JsonProperty("imageUrl")]
     public string ImageUrl { get; set; }
+    [JsonProperty("isPublic")]
+    public bool IsPublic { get; set; }
 
     public static GetPersonalRoadmapSummaryResponse Create(PersonalRoadmapSummaryDto blueprint)
     {
         return new GetPersonalRoadmapSummaryResponse
         {
             Id = blueprint.Id,
+            IsPublic = blueprint.IsPublic,
             WorkspaceId = blueprint.WorkspaceId,
             Title = blueprint.Title,
             Description = blueprint.Description,

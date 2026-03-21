@@ -29,7 +29,8 @@ internal sealed class GetRoadmapWorkspacesHandler(IRepository<RoadmapWorkspace> 
         foreach (var workspace in userWorkspaces)
         {
             var latestSnapshot = workspace.Snapshots.OrderByDescending(s => s.CreatedAt).FirstOrDefault();
-            var snapshotMetadata = latestSnapshot.ParseMetadata();
+            var snapshotMetadata = latestSnapshot?.ParseMetadata();
+            if (snapshotMetadata == null) { continue; }
 
             //todo: how i can get plain info of roadmap like title, description and image url??
             result.Add(RoadmapWorkspaceSummaryDto.Create(

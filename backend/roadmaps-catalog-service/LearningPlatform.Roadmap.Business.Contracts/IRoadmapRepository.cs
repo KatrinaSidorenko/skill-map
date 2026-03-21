@@ -19,4 +19,5 @@ public interface IRoadmapRepository
     Task<Result<bool>> UpdateNodes(List<NodeDto> nodes, CancellationToken ct = default);
     Task<Result<bool>> DeleteRoadmap(string roadmapId, CancellationToken ct);
     Task<Result<bool>> DeleteEdge(string sourceId, string targetId, CancellationToken ct);
+    Task<Result<string>> CreateFullRoadmap(CreateRoadmapDto createRoadmapDto, CancellationToken ct);
 }
