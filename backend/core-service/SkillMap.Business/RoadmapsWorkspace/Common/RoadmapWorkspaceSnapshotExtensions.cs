@@ -1,4 +1,6 @@
-﻿using SkillMap.Core.PersonalizedRoadmaps;
+﻿using LearningPlatform.Roadmap.Business.Contracts.Models;
+
+using SkillMap.Core.PersonalizedRoadmaps;
 using SkillMap.Core.RoadmapsWorkspace.Events;
 using SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots;
 using SkillMap.Shared.Extensions;
@@ -43,4 +45,14 @@ internal static class RoadmapWorkspaceSnapshotExtensions
             LearningItems = new List<LearningItemSnapshot>(),
             LearningItemsConnections = new List<LearningItemsConnectionSnapshot>()
         };
+
+    public static RoadmapSnapshot MakeRoadmapSnapshot(this RoadmapDto roadmapDto)
+    {
+        return new RoadmapSnapshot()
+        {
+            Id = roadmapDto.Id,
+            LearningItems = roadmapDto.Nodes?.Select(n => new LearningItemSnapshot(n.Id, n.Title, n.Description, Core.Constants.LearningStatus.NotStarted)).ToList() ?? new List<LearningItemSnapshot>(),
+            LearningItemsConnections = roadmapDto.Edges?.Select(e => new LearningItemsConnectionSnapshot(e.Id, e.Source, e.Target)).ToList() ?? new List<LearningItemsConnectionSnapshot>()
+        };
+    }
 }
