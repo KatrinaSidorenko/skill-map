@@ -13,11 +13,11 @@ internal sealed class DeleteRoadmapWorkspaceHandler(IRepository<RoadmapWorkspace
 {
     public async Task Handle(DeleteWorkspaceCommand request, CancellationToken cancellationToken)
     {
-        var bookmark = await repository.GetByIdAsync(request.WorkspaceId, cancellationToken)
-            ?? throw new ResourceNotFoundException(nameof(RoadmapWorkspace), request.WorkspaceId.ToString());
+        var workspace = await repository.GetFirstOrDefaultAsync(w => w.RoadmapId == request.RoadmapId && w.AuthorId == request.UserId, cancellationToken)
+            ?? throw new KeyNotFoundException("Roadmap workspace not found.");
 
-        bookmark.Deactivate();
-        await repository.UpdateAsync(bookmark, cancellationToken);
+        workspace.Deactivate();
+        await repository.UpdateAsync(workspace, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
     }
 }
