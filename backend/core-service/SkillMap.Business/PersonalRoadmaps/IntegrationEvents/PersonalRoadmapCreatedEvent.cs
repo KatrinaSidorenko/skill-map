@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using SkillMap.Shared.EventBus;
+﻿using SkillMap.Shared.EventBus;
 
 namespace SkillMap.Business.PersonalRoadmaps.IntegrationEvents;
 public record PersonalRoadmapCreatedEvent(Guid Id, long UserId, long RoadmapId, string Title, string Description, string ImageUrl, DateTimeOffset OccurredDateTime) : IIntegrationEvent

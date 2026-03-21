@@ -37,7 +37,6 @@ internal static class RoadmapWorkspaceSnapshotExtensions
 
         return aggregator.Build();
     }
-
     public static RoadmapSnapshot EmptyOnNull(this RoadmapSnapshot snapshot, string roadmapId)
         => snapshot ?? new RoadmapSnapshot()
         {
@@ -45,7 +44,6 @@ internal static class RoadmapWorkspaceSnapshotExtensions
             LearningItems = new List<LearningItemSnapshot>(),
             LearningItemsConnections = new List<LearningItemsConnectionSnapshot>()
         };
-
     public static RoadmapSnapshot MakeRoadmapSnapshot(this RoadmapDto roadmapDto)
     {
         return new RoadmapSnapshot()
@@ -54,5 +52,22 @@ internal static class RoadmapWorkspaceSnapshotExtensions
             LearningItems = roadmapDto.Nodes?.Select(n => new LearningItemSnapshot(n.Id, n.Title, n.Description, Core.Constants.LearningStatus.NotStarted)).ToList() ?? new List<LearningItemSnapshot>(),
             LearningItemsConnections = roadmapDto.Edges?.Select(e => new LearningItemsConnectionSnapshot(e.Id, e.Source, e.Target)).ToList() ?? new List<LearningItemsConnectionSnapshot>()
         };
+    }
+
+    public static RoadmapSnapshotMetadata CalculateSnapshotMetadata(this RoadmapSnapshot snapshot)
+    {
+        if (snapshot == null || snapshot.LearningItems.Count == 0)
+        {
+            return new RoadmapSnapshotMetadata(0.0, Core.Constants.LearningStatus.NotStarted);
+        }
+
+        var totalItems = snapshot.LearningItems.DistinctBy(li => li.Id).Count();
+        var completedItems = snapshot.LearningItems.Count(i => i.Status == Core.Constants.LearningStatus.Completed);
+        var progress = (int)((double)completedItems / totalItems);
+        var status = completedItems <= 0 ? Core.Constants.LearningStatus.NotStarted :
+                     completedItems >= totalItems ? Core.Constants.LearningStatus.Completed :
+                     Core.Constants.LearningStatus.InProgress;
+
+        return new RoadmapSnapshotMetadata(progress, status);
     }
 }

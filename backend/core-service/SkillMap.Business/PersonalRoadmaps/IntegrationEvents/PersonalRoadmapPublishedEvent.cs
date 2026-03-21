@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SkillMap.Shared.EventBus;
 
 namespace SkillMap.Business.PersonalRoadmaps.IntegrationEvents;
-internal class PersonalRoadmapPublishedEvent
+public record PersonalRoadmapPublishedEvent(Guid Id, long WorkspaceId, long AuthorId, DateTimeOffset OccurredDateTime) : IIntegrationEvent
 {
+    public static PersonalRoadmapPublishedEvent Create(long workspaceId, long authorId)
+        => new(Guid.NewGuid(), workspaceId, authorId, DateTimeOffset.UtcNow);
 }

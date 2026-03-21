@@ -4,7 +4,6 @@ using MediatR;
 
 using SkillMap.Business.Abstractions;
 using SkillMap.Core.Roadmaps;
-using SkillMap.Shared.Results;
 
 namespace SkillMap.Business.PersonalRoadmaps.Features.GetPersonalRoadmap;
 

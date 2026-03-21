@@ -52,9 +52,8 @@ internal sealed class BuildAuthorWorkspaceSnapshotHandler(
         var newRoadmapSnapshot = await snapshotContent.ApplyEventsToSnapshot(eventsList, cancellationToken);
 
         var newSnapshot = new RoadmapWorkspaceSnapshot(request.WorkspaceId);
-        newSnapshot.SetVersion(eventsList.OrderByDescending(e => e.Version).Single().Version);
-        // todo: calculate progress and status
-        newSnapshot.SetMetadata(new RoadmapSnapshotMetadata(0.1, Core.Constants.LearningStatus.InProgress)); 
+        newSnapshot.SetVersion(eventsList.OrderByDescending(e => e.Version).First().Version);
+        newSnapshot.SetMetadata(newRoadmapSnapshot.CalculateSnapshotMetadata()); 
         await newSnapshot.SetRoadmapSnapshot(newRoadmapSnapshot, cancellationToken);
         await snapshotsRepository.AddAsync(newSnapshot, cancellationToken);
         await snapshotsRepository.SaveChangesAsync(cancellationToken);

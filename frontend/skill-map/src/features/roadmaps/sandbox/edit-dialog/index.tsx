@@ -127,32 +127,35 @@ export const RoadmapDialog = (props) => {
                   />
                 </Box>
 
-                <Box>
-                  <Text fontSize="sm" mb={1}>
-                    {getEditorTranslations('imageUrl')}
-                  </Text>
-                  <Input
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    placeholder="https://example.com/image.jpg"
-                  />
-                </Box>
-
-                {/* <Checkbox.Root
-                  checked={isPublic}
-                  onCheckedChange={(e) => setIsPublic(!!e.checked)}
-                >
-                  <Checkbox.HiddenInput />
-                  <Checkbox.Control />
-                  <Checkbox.Label>
-                    {getEditorTranslations('isPublic')}
-                  </Checkbox.Label>
-                </Checkbox.Root> */}
-                {/* <Text fontSize="xs" color="gray.500" ml="6">
-                  {isPublic
-                    ? getEditorTranslations('roadmapIsPublicHelp')
-                    : getEditorTranslations('roadmapIsPrivateHelp')}
-                </Text> */}
+                {/*<Box>*/}
+                {/*  <Text fontSize="sm" mb={1}>*/}
+                {/*    {getEditorTranslations('imageUrl')}*/}
+                {/*  </Text>*/}
+                {/*  <Input*/}
+                {/*    value={imageUrl}*/}
+                {/*    onChange={(e) => setImageUrl(e.target.value)}*/}
+                {/*    placeholder="https://example.com/image.jpg"*/}
+                {/*  />*/}
+                {/*</Box>*/}
+                {mode === 'edit' && (
+                  <VStack align="stretch">
+                    <Checkbox.Root
+                      checked={isPublic}
+                      onCheckedChange={(e) => setIsPublic(!!e.checked)}
+                    >
+                      <Checkbox.HiddenInput />
+                      <Checkbox.Control />
+                      <Checkbox.Label>
+                        {getEditorTranslations('isPublic')}
+                      </Checkbox.Label>
+                    </Checkbox.Root>
+                    <Text fontSize="xs" color="gray.500" ml="6">
+                      {isPublic
+                        ? getEditorTranslations('roadmapIsPublicHelp')
+                        : getEditorTranslations('roadmapIsPrivateHelp')}
+                    </Text>
+                  </VStack>
+                )}
               </VStack>
             </Dialog.Body>
 
