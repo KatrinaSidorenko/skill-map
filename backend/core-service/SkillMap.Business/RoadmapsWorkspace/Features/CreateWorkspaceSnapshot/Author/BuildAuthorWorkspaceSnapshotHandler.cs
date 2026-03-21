@@ -16,19 +16,14 @@ namespace SkillMap.Business.RoadmapsWorkspace.Features.CreateWorkspaceSnapshot.A
 
 [UsedImplicitly]
 internal sealed class BuildAuthorWorkspaceSnapshotHandler(
-    IRepository<RoadmapWorkspaceSnapshot> snapshotsRepository,
-    IRepository<RoadmapWorkspaceEvent> eventsRepository,
+    IRoadmapWorkspaceSnapshotRepository snapshotsRepository,
+    IRoadmapWorkspaceEventRepository eventsRepository,
     ILogger<BuildAuthorWorkspaceSnapshotHandler> logger) : IRequestHandler<BuildAuthorWorkspaceSnapshotCommand, long>
 {
     private const int _initialVersion = RoadmapWorkspaceConstants.InitialVersion;
     public async Task<long> Handle(BuildAuthorWorkspaceSnapshotCommand request, CancellationToken cancellationToken)
     {
-        var latestSnapshots = await snapshotsRepository.GetAllAsync(
-            filter: s => s.RoadmapWorkspaceId == request.WorkspaceId,
-            orderBy: q => q.OrderByDescending(s => s.CreatedAt).ThenByDescending(s => s.UpdatedAt),
-            count: 1,
-            ct: cancellationToken);
-        var latestSnapshot = latestSnapshots.FirstOrDefault();
+        var latestSnapshot = await snapshotsRepository.GetLatestSnapshot(request.WorkspaceId, cancellationToken);
         if (latestSnapshot == null)
         {
             var initialSnapshot = new RoadmapWorkspaceSnapshot(request.WorkspaceId, null, _initialVersion);
@@ -38,25 +33,20 @@ internal sealed class BuildAuthorWorkspaceSnapshotHandler(
             return initialSnapshot.Id;
         }
 
-        var events = await eventsRepository.GetAllAsync(
-            filter: e => e.RoadmapWorkspaceId == request.WorkspaceId && e.Version > latestSnapshot.Version,
-            ct: cancellationToken);
-        var eventsList = events.ToList();
+        var eventsList = await eventsRepository.GetEventsGreaterThan(request.WorkspaceId, latestSnapshot.Version, cancellationToken);
         if (eventsList.Count <= 0)
         {
             logger.LogInformation("No new events found for workspace {WorkspaceId} since last snapshot version {Version}. Returning existing snapshot.", request.WorkspaceId, latestSnapshot.Version);
             return latestSnapshot.Id;
         }
 
-        var snapshotContent = await latestSnapshot.GetRoadmapSnapshot(cancellationToken);
-        var newRoadmapSnapshot = await snapshotContent.ApplyEventsToSnapshot(eventsList, cancellationToken);
-
-        var newSnapshot = new RoadmapWorkspaceSnapshot(request.WorkspaceId);
-        newSnapshot.SetVersion(eventsList.OrderByDescending(e => e.Version).First().Version);
-        newSnapshot.SetMetadata(newRoadmapSnapshot.CalculateSnapshotMetadata()); 
-        await newSnapshot.SetRoadmapSnapshot(newRoadmapSnapshot, cancellationToken);
-        await snapshotsRepository.AddAsync(newSnapshot, cancellationToken);
+        var newWorkspaceSnapshot = await RoadmapWorkspaceSnapshotExtensions.CreateRoadmapWorkspaceSnapshot(
+            request.WorkspaceId,
+            latestSnapshot,
+            eventsList,
+            cancellationToken);
+        await snapshotsRepository.AddAsync(newWorkspaceSnapshot, cancellationToken);
         await snapshotsRepository.SaveChangesAsync(cancellationToken);
-        return newSnapshot.Id;
+        return newWorkspaceSnapshot.Id;
     }
 }

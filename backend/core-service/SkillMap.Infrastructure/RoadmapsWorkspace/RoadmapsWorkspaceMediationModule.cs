@@ -18,6 +18,7 @@ public static class PersonalRoadmapMediationModule
 
         services.AddScoped<IRoadmapWorkspaceEventRepository, RoadmapWorkspaceEventRepository>();
         services.AddScoped<IRoadmapWorkspaceRepository, RoadmapWorkspaceRepository>();
+        services.AddScoped<IRoadmapWorkspaceSnapshotRepository, RoadmapWorkspaceSnapshotRepository>();
 
         return services;
     }

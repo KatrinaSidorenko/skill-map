@@ -20,4 +20,10 @@ internal class RoadmapWorkspaceEventRepository : Repository<RoadmapWorkspaceEven
 
         return (lastEvent.FirstOrDefault()?.Version ?? RoadmapWorkspaceConstants.InitialVersion) + (withIncrement ? 1 : 0);
     }
+
+    public async Task<List<RoadmapWorkspaceEvent>> GetEventsGreaterThan(long workspaceId, int version, CancellationToken ct)
+        => (await GetAllAsync(
+            filter: e => e.RoadmapWorkspaceId == workspaceId && e.Version > version,
+            orderBy: q => q.OrderBy(e => e.CreatedAt).ThenBy(e => e.Version),
+            ct: ct)).ToList();
 }

@@ -55,6 +55,11 @@ public class RoadmapWorkspace : TrackedEntity
         IsActive = false;
     }
 
+    public void Activate()
+    {
+        IsActive = true;
+    }
+
     public void ActivateAuthorMode()
     {
         IsInAuthorMode = true;

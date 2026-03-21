@@ -1,4 +1,8 @@
-﻿using LearningPlatform.Roadmap.Business.Contracts.Models;
+﻿using System.Threading;
+
+using LearningPlatform.Roadmap.Business.Contracts.Models;
+
+using MediatR;
 
 using SkillMap.Core.PersonalizedRoadmaps;
 using SkillMap.Core.RoadmapsWorkspace.Events;
@@ -69,5 +73,21 @@ internal static class RoadmapWorkspaceSnapshotExtensions
                      Core.Constants.LearningStatus.InProgress;
 
         return new RoadmapSnapshotMetadata(progress, status);
+    }
+
+    public static async Task<RoadmapWorkspaceSnapshot> CreateRoadmapWorkspaceSnapshot(
+        long workspaceId,
+        RoadmapWorkspaceSnapshot latestSnapshot, 
+        List<RoadmapWorkspaceEvent> eventsList, 
+        CancellationToken ct)
+    {
+        var snapshotContent = await latestSnapshot.GetRoadmapSnapshot(ct);
+        var newRoadmapSnapshot = await snapshotContent.ApplyEventsToSnapshot(eventsList, ct);
+
+        var newSnapshot = new RoadmapWorkspaceSnapshot(workspaceId);
+        newSnapshot.SetVersion(eventsList.OrderByDescending(e => e.Version).First().Version);
+        newSnapshot.SetMetadata(newRoadmapSnapshot.CalculateSnapshotMetadata());
+        await newSnapshot.SetRoadmapSnapshot(newRoadmapSnapshot, ct);
+        return newSnapshot;
     }
 }
