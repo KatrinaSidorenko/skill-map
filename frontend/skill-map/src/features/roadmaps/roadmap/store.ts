@@ -39,8 +39,8 @@ const roadmapSlice = createSlice({
       };
       state.roadmapId = action.payload.id;
       const { nodes, edges } = mapRoadmapToReactFlowForSaved({
-        nodes: action.payload.items,
-        edges: action.payload.connections,
+        items: action.payload.items,
+        connections: action.payload.connections,
       } as SavedRoadmap);
       state.nodes = nodes;
       state.edges = edges;

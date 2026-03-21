@@ -44,8 +44,8 @@ interface SavedRoadmap {
   title: string;
   description: string;
   imageUrl: string;
-  nodes: ModifiedNode[];
-  edges: RoadmapEdge[];
+  items: ModifiedNode[];
+  connections: RoadmapEdge[];
   progress: number; // percentage of completion
   savedAt: string; // ISO date string
   status: LearningStatus;

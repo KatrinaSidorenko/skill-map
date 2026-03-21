@@ -18,3 +18,4 @@ internal static class GetRoadmapWorkspaceSummaryEndpoint
         .Produces(StatusCodes.Status404NotFound)
         .Produces(StatusCodes.Status500InternalServerError);
 }
+

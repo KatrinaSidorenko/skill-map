@@ -100,7 +100,7 @@ export function RoadmapView({ roadmapId }: { roadmapId?: string }) {
 
   const handleOpenEditor = () => {
     if (!roadmapView?.workspaceId) return;
-    router.push(`/editor/sandbox/${roadmapView.workspaceId}`);
+    router.push(`/editor/sandbox/author/${roadmapView.workspaceId}`);
   };
 
   if (!roadmapView) {

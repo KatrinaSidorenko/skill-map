@@ -11,8 +11,8 @@ namespace SkillMap.Infrastructure;
 internal class Repository<TEntity> : IRepository<TEntity>
  where TEntity : class
 {
-    private readonly SkillMapDbContext _context;
-    private readonly DbSet<TEntity> _dbSet;
+    protected readonly SkillMapDbContext _context;
+    protected readonly DbSet<TEntity> _dbSet;
 
     public Repository(SkillMapDbContext context)
     {

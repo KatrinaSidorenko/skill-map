@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 
-using SkillMap.Business.Abstractions;
+using SkillMap.Business.RoadmapsWorkspace;
 using SkillMap.Business.RoadmapsWorkspace.Common;
 using SkillMap.Core.PersonalizedRoadmaps;
 using SkillMap.Persistence;

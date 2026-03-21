@@ -2,7 +2,6 @@ using JetBrains.Annotations;
 
 using MediatR;
 
-using SkillMap.Business.Abstractions;
 using SkillMap.Business.RoadmapsWorkspace.IntegrationEvents;
 using SkillMap.Core.PersonalizedRoadmaps;
 using SkillMap.Shared.EventBus;

@@ -33,6 +33,8 @@ public class GetRoadmapBlueprintsSummaryResponseItem
     
     [JsonProperty("imageUrl")]
     public string ImageUrl { get; set; }
+    [JsonProperty("isSaved")]
+    public bool IsSaved { get; set; }
 
     public static GetRoadmapBlueprintsSummaryResponseItem Create(RoadmapBlueprintSummaryDto blueprint)
     {
@@ -41,7 +43,8 @@ public class GetRoadmapBlueprintsSummaryResponseItem
             Id = blueprint.Id,
             Title = blueprint.Title,
             Description = blueprint.Description,
-            ImageUrl = blueprint.ImageUrl
+            ImageUrl = blueprint.ImageUrl,
+            IsSaved = blueprint.IsSaved
         };
     }
 }

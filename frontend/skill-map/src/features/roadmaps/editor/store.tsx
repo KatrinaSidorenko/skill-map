@@ -46,19 +46,17 @@ const roadmapEditorSlice = createSlice({
       }>,
     ) => {
       if (state.editorConfig.useStatus === false) {
-        console.log(action.payload.edges);
         const { nodes, edges } = mapRoadmapToReactFlow({
           items: action.payload.nodes.map((n) => n as RoadmapNode),
           connections: action.payload.edges,
         } as Roadmap);
-        console.log('flow', nodes, edges);
         state.nodes = nodes;
         state.edges = edges;
         return;
       }
       const { nodes, edges } = mapRoadmapToReactFlowForSaved({
-        nodes: action.payload.nodes,
-        edges: action.payload.edges,
+        items: action.payload.nodes,
+        connections: action.payload.edges,
       } as SavedRoadmap);
       state.nodes = nodes;
       state.edges = edges;

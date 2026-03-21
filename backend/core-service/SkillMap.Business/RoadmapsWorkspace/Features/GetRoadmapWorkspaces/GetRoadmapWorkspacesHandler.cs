@@ -19,7 +19,7 @@ internal sealed class GetRoadmapWorkspacesHandler(IRepository<RoadmapWorkspace> 
     public async Task<PaginationResult<RoadmapWorkspaceSummaryDto>> Handle(GetRoadmapWorkspacesQuery request, CancellationToken cancellationToken)
     {
         var userWorkspaces = await repository.GetAllAsync(
-            filter: rw => rw.AuthorId == request.UserId && rw.IsActive,
+            filter: rw => rw.AuthorId == request.UserId && rw.IsActive && !rw.IsInAuthorMode,
             pageNum: request.FilteringParams.PaginationParams.PageNumber,
             count: request.FilteringParams.PaginationParams.PageSize,
             ct: cancellationToken);

@@ -18,22 +18,22 @@ public class RoadmapBlueprintDto
     [JsonProperty("isSaved")]
     public bool IsSaved { get; set; }
 
-    [JsonProperty("nodes")]
-    public List<LearningItemDto> Nodes { get; set; }
+    [JsonProperty("items")]
+    public List<LearningItemDto> Items { get; set; }
 
-    [JsonProperty("edges")]
-    public List<LearningConnectionDto> Edges { get; set; }
+    [JsonProperty("connections")]
+    public List<LearningConnectionDto> Connections { get; set; }
 
-    public static RoadmapBlueprintDto Create(RoadmapDto roadmapDto)
+    public static RoadmapBlueprintDto Create(RoadmapDto roadmapDto, bool isSaved)
     {
         return new RoadmapBlueprintDto
         {
             Id = roadmapDto.Id,
             Title = roadmapDto.Title,
             Description = roadmapDto.Description,
-            IsSaved = roadmapDto.IsSaved,
-            Nodes = roadmapDto.Nodes.Select(LearningItemDto.Create).ToList(),
-            Edges = roadmapDto.Edges.Select(LearningConnectionDto.Create).ToList()
+            IsSaved = isSaved,
+            Items = roadmapDto.Nodes.Select(LearningItemDto.Create).ToList(),
+            Connections = roadmapDto.Edges.Select(LearningConnectionDto.Create).ToList()
         };
     }
 }

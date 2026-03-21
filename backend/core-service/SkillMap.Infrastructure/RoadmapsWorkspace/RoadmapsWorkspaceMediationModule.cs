@@ -2,6 +2,7 @@
 
 using SkillMap.Business.PersonalizedRoadmaps;
 using SkillMap.Business.PersonalRoadmaps;
+using SkillMap.Business.RoadmapsWorkspace;
 using SkillMap.Infrastructure.RoadmapsWorkspace;
 
 namespace SkillMap.Infrastructure.PersonalizedRoadmaps;
@@ -14,6 +15,9 @@ public static class PersonalRoadmapMediationModule
 
         services.AddScoped<IPersonalRoadmapModule, PersonalRoadmapModule>();
         services.AddHostedService<BuildRoadmapWorkspaceSnapshotWorker>();
+
+        services.AddScoped<IRoadmapWorkspaceEventRepository, RoadmapWorkspaceEventRepository>();
+        services.AddScoped<IRoadmapWorkspaceRepository, RoadmapWorkspaceRepository>();
 
         return services;
     }

@@ -10,10 +10,10 @@ public class GetRoadmapBlueprintResponse
     public RoadmapResponse Roadmap { get; set; }
 
     public static GetRoadmapBlueprintResponse Create(RoadmapBlueprintDto roadmapBlueprint)
- {
-      return new GetRoadmapBlueprintResponse
     {
-        Roadmap = RoadmapResponse.Create(roadmapBlueprint)
+        return new GetRoadmapBlueprintResponse
+        {
+            Roadmap = RoadmapResponse.Create(roadmapBlueprint)
         };
     }
 }
@@ -22,44 +22,44 @@ public class RoadmapResponse
 {
     [JsonProperty("id")]
     public string Id { get; set; }
-    
+
     [JsonProperty("title")]
     public string Title { get; set; }
-    
- [JsonProperty("description")]
+
+    [JsonProperty("description")]
     public string Description { get; set; }
-    
+
     [JsonProperty("isSaved")]
     public bool IsSaved { get; set; }
-    
-    [JsonProperty("nodes")]
-    public List<RoadmapNode> Nodes { get; set; }
-    
-    [JsonProperty("edges")]
-    public List<RoadmapEdge> Edges { get; set; }
+
+    [JsonProperty("items")]
+    public List<RoadmapNode> Items { get; set; }
+
+    [JsonProperty("connections")]
+    public List<RoadmapEdge> Connections { get; set; }
 
     public static RoadmapResponse Create(RoadmapBlueprintDto dto)
-  {
+    {
         return new RoadmapResponse
         {
             Id = dto.Id,
             Title = dto.Title,
-        Description = dto.Description,
+            Description = dto.Description,
             IsSaved = dto.IsSaved,
-  Nodes = dto.Nodes.Select(RoadmapNode.Create).ToList(),
-            Edges = dto.Edges.Select(RoadmapEdge.Create).ToList()
+            Items = dto.Items.Select(RoadmapNode.Create).ToList(),
+            Connections = dto.Connections.Select(RoadmapEdge.Create).ToList()
         };
     }
 }
 
 public class RoadmapNode
 {
-  [JsonProperty("id")]
+    [JsonProperty("id")]
     public string Id { get; set; }
-    
+
     [JsonProperty("title")]
     public string Title { get; set; }
-    
+
     [JsonProperty("description")]
     public string Description { get; set; }
 
@@ -69,7 +69,7 @@ public class RoadmapNode
         {
             Id = item.Id,
             Title = item.Title,
-         Description = item.Description
+            Description = item.Description
         };
     }
 }
@@ -78,10 +78,10 @@ public class RoadmapEdge
 {
     [JsonProperty("id")]
     public string Id { get; set; }
- 
+
     [JsonProperty("source")]
     public string? Source { get; set; }
-    
+
     [JsonProperty("target")]
     public string? Target { get; set; }
 
@@ -91,7 +91,7 @@ public class RoadmapEdge
         {
             Id = connection.Id,
             Source = connection.Source,
-     Target = connection.Target
+            Target = connection.Target
         };
-  }
+    }
 }

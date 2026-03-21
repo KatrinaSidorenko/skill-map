@@ -26,8 +26,10 @@ import { useAppDispatch } from '@/store/hooks';
 
 export default function RoadmapWorkspacePage({
   workspaceId,
+  useStatus = true,
 }: {
   workspaceId: string;
+  useStatus?: boolean;
 }) {
   const dispatch = useAppDispatch();
 
@@ -51,7 +53,7 @@ export default function RoadmapWorkspacePage({
     if (data) {
       const roadmap = data;
       dispatch(clearEditor());
-      dispatch(setEditorConfig({ useStatus: true }));
+      dispatch(setEditorConfig({ useStatus: useStatus }));
       dispatch(
         setWorkspaceRoadmap({
           id: roadmap.id,

@@ -73,7 +73,7 @@ export function mapRoadmapToReactFlowForSaved(roadmap: SavedRoadmap): {
   nodes: Node[];
   edges: Edge[];
 } {
-  const nodes: Node[] = roadmap.nodes.map((n, index) => ({
+  const nodes: Node[] = roadmap.items.map((n, index) => ({
     id: String(n.id),
     position: getNodePosition(index),
     data: {
@@ -84,7 +84,7 @@ export function mapRoadmapToReactFlowForSaved(roadmap: SavedRoadmap): {
     type: 'statusNode',
   }));
 
-  const edges: Edge[] = roadmap.edges.map((e) => ({
+  const edges: Edge[] = roadmap.connections.map((e) => ({
     id: generateEdgeId(e.source, e.target),
     source: String(e.source),
     target: String(e.target),

@@ -6,8 +6,9 @@ public record RoadmapBlueprintSummaryDto(
     string Id,
     string Title,
     string Description,
-    string ImageUrl)
+    string ImageUrl,
+    bool IsSaved)
 {
-    public static RoadmapBlueprintSummaryDto Create(PlainRoadmapDto dto)
-        => new (dto.Id, dto.Title, dto.Description, dto.ImageUrl);
+    public static RoadmapBlueprintSummaryDto Create(PlainRoadmapDto dto, bool isSaved)
+        => new (dto.Id, dto.Title, dto.Description, dto.ImageUrl, isSaved);
 }

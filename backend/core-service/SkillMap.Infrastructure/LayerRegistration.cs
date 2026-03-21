@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 //using SkillMap.Business.__old.UserRoadmaps;
 using SkillMap.Business.Abstractions;
 using SkillMap.Business.Account;
+using SkillMap.Business.RoadmapsWorkspace;
 using SkillMap.Business.RoadmapTest;
 using SkillMap.Business.UserTest;
 using SkillMap.Core.PersonalizedRoadmaps;
@@ -61,7 +62,7 @@ public static class LayerRegistration
 
         // migrations
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-        services.AddScoped<IRoadmapWorkspaceEventRepository, RoadmapWorkspaceEventRepository>();
+        
         services.AddNeo4jPersistence(configuration);
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddPersistenceLayer(configuration);
