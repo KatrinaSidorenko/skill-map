@@ -27,6 +27,14 @@ export default function useLocalization() {
     return translation(`general.${key}`);
   };
 
+  const getAssessmentTranslations = (key: keyof ILocalization['assessment']) => {
+    return translation(`assessment.${key}`);
+  };
+
+  const getTestingHistoryTranslations = (key: keyof ILocalization['testingHistory']) => {
+    return translation(`testingHistory.${key}`);
+  };
+
   return {
     getHeaderTranslations,
     getAuthTranslations,
@@ -34,5 +42,7 @@ export default function useLocalization() {
     getRoadmapsTranslations,
     getRoadmapTransaltions,
     getGeneralTranslations,
+    getAssessmentTranslations,
+    getTestingHistoryTranslations,
   };
 }

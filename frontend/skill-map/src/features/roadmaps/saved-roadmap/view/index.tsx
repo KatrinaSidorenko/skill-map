@@ -41,7 +41,7 @@ export default function SavedRoadmapView({
   roadmap: SavedPlainRoadmap;
 }) {
   const router = useRouter();
-  const { getRoadmapTransaltions } = useLocalization();
+  const { getRoadmapTransaltions, getEditorTranslations } = useLocalization();
   const statusColor = getStatusColor(roadmap.status);
   const [generateTest, { isLoading }] = useGenerateRoadmapTestMutation();
   const [
@@ -88,7 +88,7 @@ export default function SavedRoadmapView({
       .unwrap()
       .catch(() => {
         toaster.error({
-          title: 'Failed to load testing history. Please try again later.',
+          title: getRoadmapTransaltions('failedToLoadTestingHistory'),
         });
       });
   }, [roadmap.id, getRoadmapTestingHistory]);
@@ -114,7 +114,7 @@ export default function SavedRoadmapView({
       })
       .catch(() => {
         toaster.error({
-          title: 'Failed to start a new attempt. Please try again later.',
+          title: getRoadmapTransaltions('failedToStartNewAttempt'),
         });
       });
   };
@@ -134,7 +134,7 @@ export default function SavedRoadmapView({
       router.push('/saved');
     } catch {
       toaster.error({
-        title: 'Failed to delete the saved roadmap. Please try again later.',
+        title: getRoadmapTransaltions('failedToDeleteSavedRoadmap'),
       });
     }
   };
@@ -262,7 +262,7 @@ export default function SavedRoadmapView({
               <Button size="sm" onClick={handleOpenEditor}>
                 <HStack gap={2}>
                   <FiArrowRight />
-                  <Span>Open in Editor</Span>
+                  <Span>{getRoadmapTransaltions('openInEditor')}</Span>
                 </HStack>
               </Button>
 
@@ -275,7 +275,7 @@ export default function SavedRoadmapView({
               >
                 <HStack gap={2}>
                   <FiTrash2 />
-                  <Span>Delete Saved</Span>
+                  <Span>{getRoadmapTransaltions('deleteSaved')}</Span>
                 </HStack>
               </Button>
             </HStack>
@@ -306,13 +306,14 @@ export default function SavedRoadmapView({
 export function SavedRoadmapViewWrapper({ roadmapId }: { roadmapId: string }) {
   const [triggerGetRoadmap, { isLoading, data: savedRoadmap }] =
     useLazyGetPlainUserSavedRoadmapQuery();
+  const { getRoadmapTransaltions } = useLocalization();
   useEffect(() => {
     if (roadmapId) {
       triggerGetRoadmap(roadmapId)
         .unwrap()
         .catch(() => {
           toaster.error({
-            title: 'Failed to load the saved roadmap. Please try again later.',
+            title: getRoadmapTransaltions('failedToLoadSavedRoadmap'),
           });
         });
     }

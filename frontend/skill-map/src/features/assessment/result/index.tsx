@@ -14,6 +14,7 @@ import {
 } from '../api';
 import { useSaveLearningItemChangesMutation } from '@/features/roadmaps/api';
 import { toaster } from '@/components/ui/toaster';
+import useLocalization from '@/i18n/useLocalization';
 
 export default function TestResults({
   testId,
@@ -23,6 +24,7 @@ export default function TestResults({
   testResultId?: string;
 }) {
   const router = useRouter();
+  const { getAssessmentTranslations } = useLocalization();
   const checkedQuestionResults = useAppSelector(selectCheckedQuestionResults);
   const [saveRoadmapItemsChanges] = useSaveLearningItemChangesMutation();
 
@@ -46,7 +48,7 @@ export default function TestResults({
           'createRoadmapTestSuggestionsDialog',
           {
             suggestionsDto: data,
-            onApply: async (selectedIds) => {
+            onApply: async (selectedIds: string[]) => {
               await saveRoadmapItemsChanges({
                 roadmapId: checkedQuestionResults?.roadmapId ?? '',
                 changes: {
@@ -54,13 +56,14 @@ export default function TestResults({
                     .filter((s) => selectedIds.includes(s.learningItemId))
                     .map((s) => ({
                       id: s.learningItemId,
-                      // title: s.title,
-                      // description: s.description,
                       status: s.status as LearningStatus,
                     })),
                 },
-              }).catch((e) => {
-                toaster.error({ title: 'Error', description: e.message });
+              }).catch((e: { message: string }) => {
+                toaster.error({
+                  title: getAssessmentTranslations('error'),
+                  description: e.message,
+                });
               });
               router.replace(
                 `/editor/sandbox/saved/${checkedQuestionResults?.roadmapId}`,
@@ -75,7 +78,9 @@ export default function TestResults({
     <>
       <Box width="80%" p={6} borderRadius="md" bg="white" padding={20}>
         <Box mb={6}>
-          <Heading size="lg">Test Results</Heading>
+          <Heading size="lg">
+            {getAssessmentTranslations('testResults')}
+          </Heading>
 
           <HStack mt={3} gap={4} align="center">
             <Text color="gray.600" fontSize="sm">
@@ -95,7 +100,7 @@ export default function TestResults({
         {/* Action Buttons */}
         <HStack mt={8} justify="flex-end" gap={3}>
           <Button size="sm" variant="ghost" onClick={onCancel}>
-            Cancel
+            {getAssessmentTranslations('cancel')}
           </Button>
           <Button
             size="sm"
@@ -103,7 +108,7 @@ export default function TestResults({
             onClick={onViewSuggestions}
             loading={isLoading}
           >
-            View Suggestions
+            {getAssessmentTranslations('viewSuggestions')}
           </Button>
         </HStack>
       </Box>

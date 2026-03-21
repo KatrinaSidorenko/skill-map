@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useMemo } from 'react';
 import {
@@ -15,6 +15,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
+import useLocalization from '@/i18n/useLocalization';
 
 type Props = {
   data?: TestingHistoryDto | null;
@@ -116,8 +117,9 @@ export default function TestingHistory({
   onStartNewAttempt,
   onGenerateInitialTest,
   onGenerateIntermediateTest,
-  title = 'Testing history',
+  title,
 }: Props) {
+  const { getTestingHistoryTranslations } = useLocalization();
   const items = data?.items ?? [];
   const hasInitialTesting = isInitialTestingExist(data);
 
@@ -148,7 +150,7 @@ export default function TestingHistory({
         <HStack gap={3}>
           <Box w="10px" h="10px" borderRadius="full" bg="bg.primaryAccent" />
           <Text fontSize="lg" fontWeight="800" color="text.heading">
-            {title}
+            {title ?? getTestingHistoryTranslations('title')}
           </Text>
         </HStack>
 
@@ -161,14 +163,16 @@ export default function TestingHistory({
               size="sm"
               variant="ghost"
             >
-              Take Intermediate Test
+              {getTestingHistoryTranslations('takeIntermediateTest')}
             </Button>
           )}
           {isLoading ? (
-            <Badge>Loading…</Badge>
+            <Badge>{getTestingHistoryTranslations('loading')}</Badge>
           ) : (
             <Badge>
-              {normalized.length} test{normalized.length === 1 ? '' : 's'}
+              {normalized.length} {normalized.length === 1
+                ? getTestingHistoryTranslations('attempt')
+                : getTestingHistoryTranslations('attempts')}
             </Badge>
           )}
         </HStack>
@@ -184,11 +188,10 @@ export default function TestingHistory({
         <Box bg="bg.section" borderRadius="2xl" borderWidth="1px" p={6}>
           <VStack align="start" gap={2}>
             <Text fontWeight="800" color="text.heading">
-              No tests yet
+              {getTestingHistoryTranslations('noTestsYet')}
             </Text>
             <Text color="text.primary" opacity={0.8}>
-              When you complete a test, it will appear here with all your
-              attempts.
+              {getTestingHistoryTranslations('noTestsDescription')}
             </Text>
             {!hasInitialTesting && onGenerateInitialTest && (
               <Button
@@ -196,7 +199,7 @@ export default function TestingHistory({
                 onClick={() => onGenerateInitialTest()}
                 loading={isInitialTestGenerating}
               >
-                Generate Initial Test
+                {getTestingHistoryTranslations('generateInitialTest')}
               </Button>
             )}
           </VStack>
@@ -213,10 +216,10 @@ export default function TestingHistory({
               const headerBest =
                 typeof t.best === 'number' ? (
                   <Badge {...scoreTone(t.best, t.maxScore)}>
-                    Best: {t.best}/{t.maxScore}
+                    {getTestingHistoryTranslations('best')}: {t.best}/{t.maxScore}
                   </Badge>
                 ) : (
-                  <Badge>Best: —</Badge>
+                  <Badge>{getTestingHistoryTranslations('best')}: —</Badge>
                 );
 
               return (
@@ -263,7 +266,6 @@ export default function TestingHistory({
                             <Text
                               fontWeight="800"
                               color="text.heading"
-                              // noOfLines={1}
                             >
                               {t.type}
                             </Text>
@@ -271,16 +273,16 @@ export default function TestingHistory({
                           </HStack>
 
                           <Stack direction="row" gap={2} mt={1} wrap="wrap">
-                            <Badge>Max: {t.maxScore}</Badge>
-                            <Badge>Attempts: {t.attempts.length}</Badge>
+                            <Badge>{getTestingHistoryTranslations('max')}: {t.maxScore}</Badge>
+                            <Badge>{getTestingHistoryTranslations('attempts')}: {t.attempts.length}</Badge>
                             {t.completedCount > 0 && (
                               <Badge colorPalette="green">
-                                Completed: {t.completedCount}
+                                {getTestingHistoryTranslations('completed')}: {t.completedCount}
                               </Badge>
                             )}
                             {t.inProgressCount > 0 && (
                               <Badge colorPalette="yellow">
-                                In progress: {t.inProgressCount}
+                                {getTestingHistoryTranslations('inProgress')}: {t.inProgressCount}
                               </Badge>
                             )}
                           </Stack>
@@ -305,7 +307,7 @@ export default function TestingHistory({
                               color="text.primary"
                               fontWeight="700"
                             >
-                              Best score
+                              {getTestingHistoryTranslations('bestScore')}
                             </Text>
                             <Text
                               fontSize="sm"
@@ -317,12 +319,6 @@ export default function TestingHistory({
                                 : '—'}
                             </Text>
                           </HStack>
-                          {/* <Progress
-                          value={
-                            
-                          }
-                          borderRadius="full"
-                        /> */}
                           <Badge>
                             {typeof bestPct === 'number'
                               ? clamp(bestPct, 0, 100)
@@ -346,7 +342,7 @@ export default function TestingHistory({
                                     })
                                   }
                                 >
-                                  Continue last
+                                  {getTestingHistoryTranslations('continueLast')}
                                 </Button>
                               )}
 
@@ -357,7 +353,7 @@ export default function TestingHistory({
                                 onStartNewAttempt?.({ testId: t.testId })
                               }
                             >
-                              Start new attempt
+                              {getTestingHistoryTranslations('startNewAttempt')}
                             </Button>
                           </HStack>
 
@@ -367,7 +363,7 @@ export default function TestingHistory({
                               color="text.primary"
                               opacity={0.85}
                             >
-                              Last started: {formatDateTime(t.last.startedAt)}
+                              {getTestingHistoryTranslations('lastStarted')}: {formatDateTime(t.last.startedAt)}
                             </Text>
                           ) : (
                             <Text
@@ -375,7 +371,7 @@ export default function TestingHistory({
                               color="text.primary"
                               opacity={0.7}
                             >
-                              No attempts yet
+                              {getTestingHistoryTranslations('noAttemptsYet')}
                             </Text>
                           )}
                         </HStack>
@@ -421,20 +417,20 @@ export default function TestingHistory({
                                           fontWeight="800"
                                           color="text.heading"
                                         >
-                                          Attempt #{t.attempts.length - idx}
+                                          {getTestingHistoryTranslations('attempt')} #{t.attempts.length - idx}
                                         </Text>
-                                        <Badge>Result: {a.resultId}</Badge>
+                                        <Badge>{getTestingHistoryTranslations('result')}: {a.resultId}</Badge>
 
                                         {status === 'completed' ? (
                                           <Badge colorPalette="green">
-                                            Completed
+                                            {getTestingHistoryTranslations('completed')}
                                           </Badge>
                                         ) : status === 'in_progress' ? (
                                           <Badge colorPalette="yellow">
-                                            In progress
+                                            {getTestingHistoryTranslations('inProgress')}
                                           </Badge>
                                         ) : (
-                                          <Badge>Unknown</Badge>
+                                          <Badge>{getTestingHistoryTranslations('unknown')}</Badge>
                                         )}
                                       </HStack>
 
@@ -449,14 +445,14 @@ export default function TestingHistory({
                                           color="text.primary"
                                           opacity={0.85}
                                         >
-                                          Started: {formatDateTime(a.startedAt)}
+                                          {getTestingHistoryTranslations('started')}: {formatDateTime(a.startedAt)}
                                         </Text>
                                         <Text
                                           fontSize="sm"
                                           color="text.primary"
                                           opacity={0.85}
                                         >
-                                          Completed:{' '}
+                                          {getTestingHistoryTranslations('completedLabel')}:{' '}
                                           {formatDateTime(a.completedAt)}
                                         </Text>
                                         <Text
@@ -464,9 +460,9 @@ export default function TestingHistory({
                                           color="text.primary"
                                           opacity={0.85}
                                         >
-                                          Duration:{' '}
+                                          {getTestingHistoryTranslations('duration')}:{' '}
                                           {duration !== null
-                                            ? `${duration} min`
+                                            ? `${duration} ${getTestingHistoryTranslations('min')}`
                                             : '—'}
                                         </Text>
                                       </Stack>
@@ -487,10 +483,10 @@ export default function TestingHistory({
                                           <Badge
                                             {...scoreTone(a.score, t.maxScore)}
                                           >
-                                            Score: {a.score}/{t.maxScore}
+                                            {getTestingHistoryTranslations('score')}: {a.score}/{t.maxScore}
                                           </Badge>
                                         ) : (
-                                          <Badge>Score: —</Badge>
+                                          <Badge>{getTestingHistoryTranslations('score')}: —</Badge>
                                         )}
 
                                         <Button
@@ -503,7 +499,7 @@ export default function TestingHistory({
                                             })
                                           }
                                         >
-                                          Open
+                                          {getTestingHistoryTranslations('open')}
                                         </Button>
                                       </HStack>
 

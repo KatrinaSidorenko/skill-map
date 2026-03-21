@@ -14,13 +14,15 @@ import {
   createOverlay,
 } from '@chakra-ui/react';
 import { useState } from 'react';
+import useLocalization from '@/i18n/useLocalization';
 
 // @ts-expect-error (chakra-ui-dialog-overlay): No types available
 export const RoadmapTestSuggestionsDialog = (props) => {
   const { suggestionsDto, onApply,  ...rest } = props;
+  const { getAssessmentTranslations } = useLocalization();
 
   const [selectedIds, setSelectedIds] = useState<string[]>(
-    suggestionsDto.suggestions.map((s) => s.learningItemId),
+    suggestionsDto.suggestions.map((s: { learningItemId: string }) => s.learningItemId),
   );
   const [isApplying, setIsApplying] = useState(false);
 
@@ -47,7 +49,7 @@ export const RoadmapTestSuggestionsDialog = (props) => {
         <Dialog.Positioner>
           <Dialog.Content borderRadius="2xl" p={4} maxW="lg">
             <Dialog.Header>
-              <Dialog.Title>Suggestions for Test</Dialog.Title>
+              <Dialog.Title>{getAssessmentTranslations('suggestionsTitle')}</Dialog.Title>
             </Dialog.Header>
 
             <Dialog.Body>
@@ -59,11 +61,11 @@ export const RoadmapTestSuggestionsDialog = (props) => {
                     textAlign="center"
                     py={4}
                   >
-                    No suggestions available.
+                    {getAssessmentTranslations('noSuggestions')}
                   </Text>
                 )}
 
-                {suggestionsDto.suggestions.map((item) => (
+                {suggestionsDto.suggestions.map((item: { learningItemId: string; title: string; status: string }) => (
                   <Box
                     key={item.learningItemId}
                     p={4}
@@ -79,7 +81,6 @@ export const RoadmapTestSuggestionsDialog = (props) => {
                         onCheckedChange={() =>
                           toggleSelection(item.learningItemId)
                         }
-                        // Prevent click bubbling if user clicks exactly on the checkbox
                         onClick={(e) => e.stopPropagation()}
                       >
                         <Checkbox.HiddenInput />
@@ -90,9 +91,6 @@ export const RoadmapTestSuggestionsDialog = (props) => {
                         <Text fontWeight="semibold" lineHeight="short">
                           {item.title}
                         </Text>
-                        {/* <Text fontSize="sm" color="gray.600">
-                          {item.description}
-                        </Text> */}
                         <Badge colorPalette="purple" variant="outline">
                           {item.status}
                         </Badge>
@@ -109,7 +107,7 @@ export const RoadmapTestSuggestionsDialog = (props) => {
                   variant="ghost"
                   onClick={() => rest.onOpenChange?.({ open: false })}
                 >
-                  Cancel
+                  {getAssessmentTranslations('cancel')}
                 </Button>
 
                 <Button
@@ -117,7 +115,7 @@ export const RoadmapTestSuggestionsDialog = (props) => {
                   onClick={handleApply}
                   disabled={selectedIds.length === 0 || isApplying}
                 >
-                  {isApplying ? <Spinner size="sm" /> : 'Apply'}
+                  {isApplying ? <Spinner size="sm" /> : getAssessmentTranslations('apply')}
                 </Button>
               </HStack>
             </Dialog.Footer>
@@ -131,3 +129,4 @@ export const RoadmapTestSuggestionsDialog = (props) => {
 export const createRoadmapTestSuggestionsDialog = createOverlay((props) => (
   <RoadmapTestSuggestionsDialog {...props} />
 ));
+
