@@ -5,8 +5,6 @@ import {
   IconButton,
   Text,
   Avatar,
-  Button,
-  Icon,
   Box,
   HStack,
   Select,
@@ -19,8 +17,6 @@ import { useSidebar } from '@/components/sidebar/sidebar-context';
 import { useAppSelector } from '@/store/hooks';
 import { selectUser } from '@/features/account/store';
 import useLocalization from '@/i18n/useLocalization';
-import { CiLogout } from 'react-icons/ci';
-import { useAuth } from '@/features/account/useAuthContext';
 import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import { routing } from '@/i18n/routing';
@@ -29,7 +25,6 @@ export default function Header() {
   const { setOpen } = useSidebar();
   const user = useAppSelector(selectUser);
   const { getHeaderTranslations } = useLocalization();
-  const { logout } = useAuth();
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
@@ -131,11 +126,6 @@ export default function Header() {
             </Select.Positioner>
           </Portal>
         </Select.Root>
-
-        {/* Logout button */}
-        <Button size="xs" onClick={() => logout()} colorScheme="red">
-          <Icon as={CiLogout} />
-        </Button>
       </HStack>
     </Flex>
   );
