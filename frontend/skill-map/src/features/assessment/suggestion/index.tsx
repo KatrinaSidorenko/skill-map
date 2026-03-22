@@ -18,11 +18,13 @@ import useLocalization from '@/i18n/useLocalization';
 
 // @ts-expect-error (chakra-ui-dialog-overlay): No types available
 export const RoadmapTestSuggestionsDialog = (props) => {
-  const { suggestionsDto, onApply,  ...rest } = props;
+  const { suggestionsDto, onApply, ...rest } = props;
   const { getAssessmentTranslations } = useLocalization();
 
   const [selectedIds, setSelectedIds] = useState<string[]>(
-    suggestionsDto.suggestions.map((s: { learningItemId: string }) => s.learningItemId),
+    suggestionsDto.suggestions.map(
+      (s: { learningItemId: string }) => s.learningItemId,
+    ),
   );
   const [isApplying, setIsApplying] = useState(false);
 
@@ -49,7 +51,9 @@ export const RoadmapTestSuggestionsDialog = (props) => {
         <Dialog.Positioner>
           <Dialog.Content borderRadius="2xl" p={4} maxW="lg">
             <Dialog.Header>
-              <Dialog.Title>{getAssessmentTranslations('suggestionsTitle')}</Dialog.Title>
+              <Dialog.Title>
+                {getAssessmentTranslations('suggestionsTitle')}
+              </Dialog.Title>
             </Dialog.Header>
 
             <Dialog.Body>
@@ -65,39 +69,45 @@ export const RoadmapTestSuggestionsDialog = (props) => {
                   </Text>
                 )}
 
-                {suggestionsDto.suggestions.map((item: { learningItemId: string; title: string; status: string }) => (
-                  <Box
-                    key={item.learningItemId}
-                    p={4}
-                    borderWidth="1px"
-                    borderRadius="md"
-                    _hover={{ bg: 'gray.50/5' }}
-                    cursor="pointer"
-                    onClick={() => toggleSelection(item.learningItemId)}
-                  >
-                    <HStack align="start" gap={3}>
-                      <Checkbox.Root
-                        checked={selectedIds.includes(item.learningItemId)}
-                        onCheckedChange={() =>
-                          toggleSelection(item.learningItemId)
-                        }
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <Checkbox.HiddenInput />
-                        <Checkbox.Control />
-                      </Checkbox.Root>
+                {suggestionsDto.suggestions.map(
+                  (item: {
+                    learningItemId: string;
+                    title: string;
+                    status: string;
+                  }) => (
+                    <Box
+                      key={item.learningItemId}
+                      p={4}
+                      borderWidth="1px"
+                      borderRadius="md"
+                      _hover={{ bg: 'gray.50/5' }}
+                      cursor="pointer"
+                      onClick={() => toggleSelection(item.learningItemId)}
+                    >
+                      <HStack align="start" gap={3}>
+                        <Checkbox.Root
+                          checked={selectedIds.includes(item.learningItemId)}
+                          onCheckedChange={() =>
+                            toggleSelection(item.learningItemId)
+                          }
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Checkbox.HiddenInput />
+                          <Checkbox.Control />
+                        </Checkbox.Root>
 
-                      <VStack align="start" gap={1} flex="1">
-                        <Text fontWeight="semibold" lineHeight="short">
-                          {item.title}
-                        </Text>
-                        <Badge colorPalette="purple" variant="outline">
-                          {item.status}
-                        </Badge>
-                      </VStack>
-                    </HStack>
-                  </Box>
-                ))}
+                        <VStack align="start" gap={1} flex="1">
+                          <Text fontWeight="semibold" lineHeight="short">
+                            {item.title}
+                          </Text>
+                          <Badge colorPalette="purple" variant="outline">
+                            {item.status}
+                          </Badge>
+                        </VStack>
+                      </HStack>
+                    </Box>
+                  ),
+                )}
               </VStack>
             </Dialog.Body>
 
@@ -110,13 +120,19 @@ export const RoadmapTestSuggestionsDialog = (props) => {
                   {getAssessmentTranslations('cancel')}
                 </Button>
 
-                <Button
-                  colorPalette="blue"
-                  onClick={handleApply}
-                  disabled={selectedIds.length === 0 || isApplying}
-                >
-                  {isApplying ? <Spinner size="sm" /> : getAssessmentTranslations('apply')}
-                </Button>
+                {onApply && (
+                  <Button
+                    colorPalette="blue"
+                    onClick={handleApply}
+                    disabled={selectedIds.length === 0 || isApplying}
+                  >
+                    {isApplying ? (
+                      <Spinner size="sm" />
+                    ) : (
+                      getAssessmentTranslations('apply')
+                    )}
+                  </Button>
+                )}
               </HStack>
             </Dialog.Footer>
           </Dialog.Content>
@@ -129,4 +145,3 @@ export const RoadmapTestSuggestionsDialog = (props) => {
 export const createRoadmapTestSuggestionsDialog = createOverlay((props) => (
   <RoadmapTestSuggestionsDialog {...props} />
 ));
-

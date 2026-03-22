@@ -25,14 +25,12 @@ public class RoadmapAssessmentService(
     IRoadmapWorkspaceRepository workspaceRepository,
     IMediator mediator) : IRoadmapAssessmentService
 {
-    private async Task<Result<(long WorkspaceId, List<Node> Nodes, List<Edge> Edges)>> GetUserRoadmapGraph(long userId, string roadmapId, CancellationToken ct)
+    private async Task<Result<(string RoadmapId, List<Node> Nodes, List<Edge> Edges)>> GetUserRoadmapGraph(long workspaceId, CancellationToken ct)
     {
-        var workspace = await workspaceRepository.GetFirstOrDefaultAsync(
-            w => w.AuthorId == userId && w.RoadmapId == roadmapId && w.IsActive && !w.IsInAuthorMode, ct);
-
+        var workspace = await workspaceRepository.GetFirstOrDefaultAsync(w => w.Id == workspaceId && !w.IsInAuthorMode, ct);
         if (workspace == null)
         {
-            return ResultType.NotFound<(long, List<Node>, List<Edge>)>($"Active workspace for user {userId} and roadmap {roadmapId} not found.");
+            return ResultType.NotFound<(string, List<Node>, List<Edge>)>($"Active workspace {workspaceId} not found.");
         }
 
         var workspaceDto = await mediator.Send(new GetRoadmapWorkspaceQuery(workspace.Id), ct);
@@ -51,7 +49,7 @@ public class RoadmapAssessmentService(
             Target = c.ToId,
         }).ToList();
 
-        return Result.Success((workspace.Id, nodes, edges));
+        return Result.Success((workspace.ActualRoadmapId, nodes, edges));
     }
 
     private Result<bool> IsValidRoadmapForTestGeneration((List<Node> Nodes, List<Edge> Edges) roadmap)
@@ -72,14 +70,14 @@ public class RoadmapAssessmentService(
     // 2. test in progress - return existing
     // 3. test completed - create new
 
-    public async Task<Result<RoadmapTestResultDto>> CreateInitialRoadmapTest(long userId, string roadmapId, RoadmapTestConfigDto config, CancellationToken ct)
+    public async Task<Result<RoadmapTestResultDto>> CreateInitialRoadmapTest(long workspaceId, RoadmapTestConfigDto config, CancellationToken ct)
     {
         const RoadmapTestType testType = RoadmapTestType.Initial;
 
-        var roadmapGraphResult = await GetUserRoadmapGraph(userId, roadmapId, ct);
-        if (!roadmapGraphResult.IsSuccessWithData()) { return roadmapGraphResult.Map<RoadmapTestResultDto, (long, List<Node>, List<Edge>)>(); }
+        var roadmapGraphResult = await GetUserRoadmapGraph(workspaceId, ct);
+        if (!roadmapGraphResult.IsSuccessWithData()) { return roadmapGraphResult.Map<RoadmapTestResultDto, (string, List<Node>, List<Edge>)>(); }
 
-        var (workspaceId, nodes, edges) = roadmapGraphResult.Data;
+        var (roadmapId, nodes, edges) = roadmapGraphResult.Data;
         var roadmapGraph = (Nodes: nodes, Edges: edges);
 
         var validationResult = IsValidRoadmapForTestGeneration(roadmapGraph);
@@ -95,23 +93,25 @@ public class RoadmapAssessmentService(
         var roadmapTest = new RoadmapTestDao
         {
             RoadmapId = roadmapId,
+            WorkspaceId = workspaceId.ToString(),
             TopicQuestions = topicsQuestions,
             TopicSettings = topicSettings,
-            TestConfig = config
+            TestConfig = config,
+            Type = testType.ToString()
         };
 
-        var testId = await userRoadmapTestService.SaveUserRoadmapTest(userId, workspaceId, roadmapId, testType, roadmapTest, ct);
+        var testId = await userRoadmapTestService.SaveUserRoadmapTest(workspaceId, roadmapId, testType, roadmapTest, ct);
         return Result.Success(roadmapTest.ToTestResult(testId));
     }
 
-    public async Task<Result<RoadmapTestResultDto>> CreateIntermediateRoadmapTest(long userId, string roadmapId, RoadmapTestConfigDto config, CancellationToken ct)
+    public async Task<Result<RoadmapTestResultDto>> CreateIntermediateRoadmapTest(long workspaceId, RoadmapTestConfigDto config, CancellationToken ct)
     {
         const RoadmapTestType testType = RoadmapTestType.Intermediate;
 
-        var roadmapGraphResult = await GetUserRoadmapGraph(userId, roadmapId, ct);
-        if (!roadmapGraphResult.IsSuccessWithData()) { return roadmapGraphResult.Map<RoadmapTestResultDto, (long, List<Node>, List<Edge>)>(); }
+        var roadmapGraphResult = await GetUserRoadmapGraph(workspaceId, ct);
+        if (!roadmapGraphResult.IsSuccessWithData()) { return roadmapGraphResult.Map<RoadmapTestResultDto, (string, List<Node>, List<Edge>)>(); }
 
-        var (workspaceId, nodes, edges) = roadmapGraphResult.Data;
+        var (roadmapId, nodes, edges) = roadmapGraphResult.Data;
         var roadmapGraph = (Nodes: nodes, Edges: edges);
 
         var validationResult = IsValidRoadmapForTestGeneration(roadmapGraph);
@@ -126,12 +126,14 @@ public class RoadmapAssessmentService(
         var roadmapTest = new RoadmapTestDao
         {
             RoadmapId = roadmapId,
+            WorkspaceId = workspaceId.ToString(),
             TopicQuestions = topicsQuestions,
             TopicSettings = topicSettings,
-            TestConfig = config
+            TestConfig = config,
+            Type = testType.ToString()
         };
 
-        var testId = await userRoadmapTestService.SaveUserRoadmapTest(userId, workspaceId, roadmapId, testType, roadmapTest, ct);
+        var testId = await userRoadmapTestService.SaveUserRoadmapTest(workspaceId, roadmapId, testType, roadmapTest, ct);
         return Result.Success(roadmapTest.ToTestResult(testId));
     }
 
@@ -175,13 +177,18 @@ public class RoadmapAssessmentService(
     public async Task<RoadmapChangesSuggestionsDto> GetRoadmapChangesSuggestions(long userId, string roadmapTestResultId, CancellationToken ct)
     {
         var testAnalysisResult = await userRoadmapTestService.GetRoadmapTestAnalysisResult(roadmapTestResultId, ct);
+        var workspaceId = long.Parse(testAnalysisResult.WorkspaceId);
+        var workspace = await workspaceRepository.GetFirstOrDefaultAsync(
+           w => w.AuthorId == userId && w.Id == workspaceId && w.IsActive && !w.IsInAuthorMode,
+           ct);
+        if (workspace == null) {
+            throw new LearningPlatformException(ErrorCode.NOTFOUND, $"Active workspace for user {userId} and roadmap {testAnalysisResult.WorkspaceId} not found.");
+        }
 
-        var roadmapGraphResult = await GetUserRoadmapGraph(userId, testAnalysisResult.RoadmapId, ct);
+        var roadmapGraphResult = await GetUserRoadmapGraph(workspace.Id, ct);
         var (_, nodes, edges) = roadmapGraphResult.GetDataOrThrowNotFound();
 
-        var workspace = await workspaceRepository.GetFirstOrDefaultAsync(
-            w => w.AuthorId == userId && w.RoadmapId == testAnalysisResult.RoadmapId && w.IsActive && !w.IsInAuthorMode,
-            ct);
+       
         var workspaceDto = await mediator.Send(new GetRoadmapWorkspaceQuery(workspace!.Id), ct);
 
         var pointsByTopics = testAnalysisResult.TopicsAnalysis.ToDictionary(

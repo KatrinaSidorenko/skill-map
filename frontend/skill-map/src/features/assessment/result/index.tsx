@@ -12,7 +12,6 @@ import {
   useLazyGetRoadmapChangesSuggestionQuery,
   useLazyGetRoadmapTestResultQuery,
 } from '../api';
-import { useSaveLearningItemChangesMutation } from '@/features/roadmaps/api';
 import { toaster } from '@/components/ui/toaster';
 import useLocalization from '@/i18n/useLocalization';
 
@@ -26,13 +25,13 @@ export default function TestResults({
   const router = useRouter();
   const { getAssessmentTranslations } = useLocalization();
   const checkedQuestionResults = useAppSelector(selectCheckedQuestionResults);
-  const [saveRoadmapItemsChanges] = useSaveLearningItemChangesMutation();
+  //const [applyRoadmapChanges] = useSaveLearningItemChangesMutation();
 
   const totalAchieved = checkedQuestionResults?.totalAchievedPoints ?? 0;
   const totalPossible = checkedQuestionResults?.totalPossiblePoints ?? 0;
 
   const onCancel = () => {
-    router.replace(`/saved/roadmap/${checkedQuestionResults?.roadmapId}`);
+    router.replace(`/saved/roadmap/${checkedQuestionResults?.workspaceId}`);
   };
 
   const [getRoadmapChangesSuggestion, { data, isLoading }] =
@@ -48,27 +47,27 @@ export default function TestResults({
           'createRoadmapTestSuggestionsDialog',
           {
             suggestionsDto: data,
-            onApply: async (selectedIds: string[]) => {
-              await saveRoadmapItemsChanges({
-                roadmapId: checkedQuestionResults?.roadmapId ?? '',
-                changes: {
-                  changes: data.suggestions
-                    .filter((s) => selectedIds.includes(s.learningItemId))
-                    .map((s) => ({
-                      id: s.learningItemId,
-                      status: s.status as LearningStatus,
-                    })),
-                },
-              }).catch((e: { message: string }) => {
-                toaster.error({
-                  title: getAssessmentTranslations('error'),
-                  description: e.message,
-                });
-              });
-              router.replace(
-                `/editor/sandbox/saved/${checkedQuestionResults?.roadmapId}`,
-              );
-            },
+            // onApply: async (selectedIds: string[]) => {
+            //   await applyRoadmapChanges({
+            //     roadmapId: checkedQuestionResults?.roadmapId ?? '',
+            //     changes: {
+            //       changes: data.suggestions
+            //         .filter((s) => selectedIds.includes(s.learningItemId))
+            //         .map((s) => ({
+            //           id: s.learningItemId,
+            //           status: s.status as LearningStatus,
+            //         })),
+            //     },
+            //   }).catch((e: { message: string }) => {
+            //     toaster.error({
+            //       title: getAssessmentTranslations('error'),
+            //       description: e.message,
+            //     });
+            //   });
+            //   router.replace(
+            //     `/editor/sandbox/saved/${checkedQuestionResults?.roadmapId}`,
+            //   );
+            // },
           },
         );
       });

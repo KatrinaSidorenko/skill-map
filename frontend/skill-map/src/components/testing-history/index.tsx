@@ -170,7 +170,8 @@ export default function TestingHistory({
             <Badge>{getTestingHistoryTranslations('loading')}</Badge>
           ) : (
             <Badge>
-              {normalized.length} {normalized.length === 1
+              {normalized.length}{' '}
+              {normalized.length === 1
                 ? getTestingHistoryTranslations('attempt')
                 : getTestingHistoryTranslations('attempts')}
             </Badge>
@@ -216,7 +217,8 @@ export default function TestingHistory({
               const headerBest =
                 typeof t.best === 'number' ? (
                   <Badge {...scoreTone(t.best, t.maxScore)}>
-                    {getTestingHistoryTranslations('best')}: {t.best}/{t.maxScore}
+                    {getTestingHistoryTranslations('best')}: {t.best}/
+                    {t.maxScore}
                   </Badge>
                 ) : (
                   <Badge>{getTestingHistoryTranslations('best')}: —</Badge>
@@ -263,26 +265,31 @@ export default function TestingHistory({
 
                         <Box minW={0}>
                           <HStack gap={2} wrap="wrap">
-                            <Text
-                              fontWeight="800"
-                              color="text.heading"
-                            >
+                            <Text fontWeight="800" color="text.heading">
                               {t.type}
                             </Text>
-                            <Badge>ID: {t.testId}</Badge>
+                            {/*<Badge>ID: {t.testId}</Badge>*/}
                           </HStack>
 
                           <Stack direction="row" gap={2} mt={1} wrap="wrap">
-                            <Badge>{getTestingHistoryTranslations('max')}: {t.maxScore}</Badge>
-                            <Badge>{getTestingHistoryTranslations('attempts')}: {t.attempts.length}</Badge>
+                            <Badge>
+                              {getTestingHistoryTranslations('max')}:{' '}
+                              {t.maxScore}
+                            </Badge>
+                            <Badge>
+                              {getTestingHistoryTranslations('attempts')}:{' '}
+                              {t.attempts.length}
+                            </Badge>
                             {t.completedCount > 0 && (
                               <Badge colorPalette="green">
-                                {getTestingHistoryTranslations('completed')}: {t.completedCount}
+                                {getTestingHistoryTranslations('completed')}:{' '}
+                                {t.completedCount}
                               </Badge>
                             )}
                             {t.inProgressCount > 0 && (
                               <Badge colorPalette="yellow">
-                                {getTestingHistoryTranslations('inProgress')}: {t.inProgressCount}
+                                {getTestingHistoryTranslations('inProgress')}:{' '}
+                                {t.inProgressCount}
                               </Badge>
                             )}
                           </Stack>
@@ -342,7 +349,9 @@ export default function TestingHistory({
                                     })
                                   }
                                 >
-                                  {getTestingHistoryTranslations('continueLast')}
+                                  {getTestingHistoryTranslations(
+                                    'continueLast',
+                                  )}
                                 </Button>
                               )}
 
@@ -363,7 +372,8 @@ export default function TestingHistory({
                               color="text.primary"
                               opacity={0.85}
                             >
-                              {getTestingHistoryTranslations('lastStarted')}: {formatDateTime(t.last.startedAt)}
+                              {getTestingHistoryTranslations('lastStarted')}:{' '}
+                              {formatDateTime(t.last.startedAt)}
                             </Text>
                           ) : (
                             <Text
@@ -417,20 +427,36 @@ export default function TestingHistory({
                                           fontWeight="800"
                                           color="text.heading"
                                         >
-                                          {getTestingHistoryTranslations('attempt')} #{t.attempts.length - idx}
+                                          {getTestingHistoryTranslations(
+                                            'attempt',
+                                          )}{' '}
+                                          #{t.attempts.length - idx}
                                         </Text>
-                                        <Badge>{getTestingHistoryTranslations('result')}: {a.resultId}</Badge>
+                                        <Badge>
+                                          {getTestingHistoryTranslations(
+                                            'result',
+                                          )}
+                                          : {a.resultId}
+                                        </Badge>
 
                                         {status === 'completed' ? (
                                           <Badge colorPalette="green">
-                                            {getTestingHistoryTranslations('completed')}
+                                            {getTestingHistoryTranslations(
+                                              'completed',
+                                            )}
                                           </Badge>
                                         ) : status === 'in_progress' ? (
                                           <Badge colorPalette="yellow">
-                                            {getTestingHistoryTranslations('inProgress')}
+                                            {getTestingHistoryTranslations(
+                                              'inProgress',
+                                            )}
                                           </Badge>
                                         ) : (
-                                          <Badge>{getTestingHistoryTranslations('unknown')}</Badge>
+                                          <Badge>
+                                            {getTestingHistoryTranslations(
+                                              'unknown',
+                                            )}
+                                          </Badge>
                                         )}
                                       </HStack>
 
@@ -445,22 +471,30 @@ export default function TestingHistory({
                                           color="text.primary"
                                           opacity={0.85}
                                         >
-                                          {getTestingHistoryTranslations('started')}: {formatDateTime(a.startedAt)}
+                                          {getTestingHistoryTranslations(
+                                            'started',
+                                          )}
+                                          : {formatDateTime(a.startedAt)}
                                         </Text>
                                         <Text
                                           fontSize="sm"
                                           color="text.primary"
                                           opacity={0.85}
                                         >
-                                          {getTestingHistoryTranslations('completedLabel')}:{' '}
-                                          {formatDateTime(a.completedAt)}
+                                          {getTestingHistoryTranslations(
+                                            'completedLabel',
+                                          )}
+                                          : {formatDateTime(a.completedAt)}
                                         </Text>
                                         <Text
                                           fontSize="sm"
                                           color="text.primary"
                                           opacity={0.85}
                                         >
-                                          {getTestingHistoryTranslations('duration')}:{' '}
+                                          {getTestingHistoryTranslations(
+                                            'duration',
+                                          )}
+                                          :{' '}
                                           {duration !== null
                                             ? `${duration} ${getTestingHistoryTranslations('min')}`
                                             : '—'}
@@ -483,10 +517,18 @@ export default function TestingHistory({
                                           <Badge
                                             {...scoreTone(a.score, t.maxScore)}
                                           >
-                                            {getTestingHistoryTranslations('score')}: {a.score}/{t.maxScore}
+                                            {getTestingHistoryTranslations(
+                                              'score',
+                                            )}
+                                            : {a.score}/{t.maxScore}
                                           </Badge>
                                         ) : (
-                                          <Badge>{getTestingHistoryTranslations('score')}: —</Badge>
+                                          <Badge>
+                                            {getTestingHistoryTranslations(
+                                              'score',
+                                            )}
+                                            : —
+                                          </Badge>
                                         )}
 
                                         <Button
@@ -499,7 +541,9 @@ export default function TestingHistory({
                                             })
                                           }
                                         >
-                                          {getTestingHistoryTranslations('open')}
+                                          {getTestingHistoryTranslations(
+                                            'open',
+                                          )}
                                         </Button>
                                       </HStack>
 

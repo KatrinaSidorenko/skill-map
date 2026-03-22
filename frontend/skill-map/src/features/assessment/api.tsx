@@ -86,6 +86,8 @@ export const assessmentApi = createApi({
         method: 'GET',
       }),
     }),
+    //
+    // applyRoadmapChangesSuggestion: builder.mutation<void>({}),
   }),
 });
 

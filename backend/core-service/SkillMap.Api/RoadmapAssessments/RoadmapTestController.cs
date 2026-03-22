@@ -22,13 +22,13 @@ public class RoadmapTestController : BaseController
         _userRoadmapTestService = userRoadmapTestService;
     }
 
-    [HttpPost("{roadmapId}/initial")]
-    public async Task<IActionResult> CreateInitialRoadmapTest([FromRoute] string roadmapId, [FromBody] RoadmapTestConfigDto config, CancellationToken ct)
-        => HandleResponse(await _roadmapTestService.CreateInitialRoadmapTest(GetUserId(), roadmapId, config, ct), (r) => Ok(r));
+    [HttpPost("{workspaceId}/initial")]
+    public async Task<IActionResult> CreateInitialRoadmapTest([FromRoute] long workspaceId, [FromBody] RoadmapTestConfigDto config, CancellationToken ct)
+        => HandleResponse(await _roadmapTestService.CreateInitialRoadmapTest(workspaceId, config, ct), (r) => Ok(r.Data));
 
-    [HttpPost("{roadmapId}/intermediate")]
-    public async Task<IActionResult> CreateIntermediateRoadmapTest([FromRoute] string roadmapId, [FromBody] RoadmapTestConfigDto config, CancellationToken ct)
-        => HandleResponse(await _roadmapTestService.CreateIntermediateRoadmapTest(GetUserId(), roadmapId, config, ct), (r) => Ok(r));
+    [HttpPost("{workspaceId}/intermediate")]
+    public async Task<IActionResult> CreateIntermediateRoadmapTest([FromRoute] long workspaceId, [FromBody] RoadmapTestConfigDto config, CancellationToken ct)
+        => HandleResponse(await _roadmapTestService.CreateIntermediateRoadmapTest(workspaceId, config, ct), (r) => Ok(r.Data));
 
     [HttpGet("history/{workspaceId}")]
     public async Task<TestingHistoryDto> GetRoadmapTestingHistory(long workspaceId, CancellationToken ct)

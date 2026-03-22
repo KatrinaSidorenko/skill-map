@@ -18,8 +18,7 @@ namespace SkillMap.Application.AssessmentAttempts;
 public class AssessmentAttemptService(IUnitOfWork unitOfWork) : IAssessmentAttemptService
 {
     public async Task<string> SaveUserRoadmapTest(
-        long userId,
-        long userRoadmapId,
+        long workspaceId,
         string roadmapId,
         RoadmapTestType testType,
         RoadmapTestDao roadmapTest,
@@ -29,7 +28,7 @@ public class AssessmentAttemptService(IUnitOfWork unitOfWork) : IAssessmentAttem
 
         var entity = new RoadmapAssessment
         {
-            RoadmapWorkspaceId = userRoadmapId,
+            RoadmapWorkspaceId = workspaceId,
             TestType = testType.ToFriendlyString(),
         };
         await entity.SetRoadmapTest(roadmapTest.ToEntityModel(), ct);

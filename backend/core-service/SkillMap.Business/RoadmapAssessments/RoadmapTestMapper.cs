@@ -110,7 +110,7 @@ public static class RoadmapTestMapper
         {
             Id = userTestId.ToString(),
             RoadmapId = roadmapId,
-            UserRoadmapId = userRoadmapId,
+            WorkspaceId = userRoadmapId,
             Type = testType,
             TestConfig = entity.Config?.ToDaoConfig(),
             TopicSettings = entity.TopicSettings?.ToDictionary(
@@ -205,7 +205,7 @@ public static class RoadmapTestMapper
             QuestionResults = roadmapTest.TopicQuestions
                 .SelectMany(t => t.Questions)
                 .ToDictionary(q => q.Id, q => BuildQuestionResult(q, analysisByQuestion[q.Id])),
-            RoadmapId = roadmapTest.RoadmapId
+            WorkspaceId = roadmapTest.WorkspaceId,
         };
     }
 

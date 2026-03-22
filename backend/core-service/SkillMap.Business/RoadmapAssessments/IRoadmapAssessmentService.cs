@@ -8,8 +8,8 @@ namespace SkillMap.Business.RoadmapTest;
 
 public interface IRoadmapAssessmentService
 {
-    Task<Result<RoadmapTestResultDto>> CreateInitialRoadmapTest(long userId, string roadmapId, RoadmapTestConfigDto config, CancellationToken ct);
+    Task<Result<RoadmapTestResultDto>> CreateInitialRoadmapTest(long workspaceId, RoadmapTestConfigDto config, CancellationToken ct);
     Task<string> EstimateRoadmapTest(string roadmapTestId, RoadmapTestAnswers userAnswers, CancellationToken ct);
     Task<RoadmapChangesSuggestionsDto> GetRoadmapChangesSuggestions(long userId, string roadmapTestResultId, CancellationToken ct);
-    Task<Result<RoadmapTestResultDto>> CreateIntermediateRoadmapTest(long userId, string roadmapId, RoadmapTestConfigDto config, CancellationToken ct);
+    Task<Result<RoadmapTestResultDto>> CreateIntermediateRoadmapTest(long workspaceId, RoadmapTestConfigDto config, CancellationToken ct);
 }

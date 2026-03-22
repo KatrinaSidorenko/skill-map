@@ -68,7 +68,7 @@ interface TestEstimationResult {
   questionResults: Record<string, TestQuestionResult>;
   totalAchievedPoints: number;
   totalPossiblePoints: number;
-  roadmapId: string;
+  workspaceId: string;
 }
 
 interface TestQuestionResult {
