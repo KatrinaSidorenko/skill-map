@@ -152,5 +152,26 @@
   },
   "general": {
     "notFound": "Не знайдено"
+  },
+  "home": {
+    "greeting": "З поверненням",
+    "savedRoadmaps": "Збережені карти",
+    "testsCompleted": "Тести пройдено",
+    "averageScore": "Сер. бал",
+    "activeRoadmaps": "Активні карти",
+    "inProgressSection": "В процесі",
+    "recentTestsSection": "Останні тести",
+    "quickActionsSection": "Швидкі дії",
+    "exploreAction": "Огляд",
+    "savedAction": "Збережені",
+    "createAction": "Створити",
+    "sandboxAction": "Пісочниця",
+    "noInProgress": "Немає активних дорожніх карт.",
+    "score": "Бали",
+    "completed": "Завершено",
+    "inProgress": "В процесі",
+    "progress": "Прогрес",
+    "viewAll": "Переглянути всі",
+    "percent": "%"
   }
 }

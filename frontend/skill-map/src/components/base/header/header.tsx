@@ -86,9 +86,7 @@ export default function Header() {
           />
         </Avatar.Root>
         <Text fontSize="lg" fontWeight="bold" color="text.heading">
-          {user
-            ? `${getHeaderTranslations('welcome')}, ${user.username}`
-            : getHeaderTranslations('welcome')}
+          {user ? `${user.username}` : getHeaderTranslations('welcome')}
         </Text>
       </Box>
 

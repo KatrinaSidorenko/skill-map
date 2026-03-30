@@ -26,9 +26,9 @@ internal sealed class GetRoadmapWorkspacesHandler(IRepository<RoadmapWorkspace> 
 
         // todo: it is not best solution to use latest snapshot, but wor now it is an optimal one. Than we need to add checks on new events
         var result = new List<RoadmapWorkspaceSummaryDto>();
-        foreach (var workspace in userWorkspaces)
+        foreach (var workspace in userWorkspaces.Where(w => w.Snapshots != null && w.Snapshots.Count > 0))
         {
-            var latestSnapshot = workspace.Snapshots.OrderByDescending(s => s.CreatedAt).FirstOrDefault();
+            var latestSnapshot = workspace.Snapshots?.OrderByDescending(s => s.CreatedAt).FirstOrDefault();
             var snapshotMetadata = latestSnapshot?.ParseMetadata();
             if (workspace.Metadata == null) { continue; }
 
@@ -38,7 +38,7 @@ internal sealed class GetRoadmapWorkspacesHandler(IRepository<RoadmapWorkspace> 
                 title: workspace.Metadata?.Title ?? string.Empty,
                 description: workspace.Metadata?.Description ?? string.Empty,
                 imageUrl: workspace.Metadata?.ImageUrl ?? string.Empty,
-                latestSnapshot.CreatedAt,
+                workspace.CreatedAt,
                 snapshotMetadata?.Status,
                 snapshotMetadata?.Progress));
         }

@@ -158,5 +158,26 @@
   },
   "general": {
     "notFound": "Not Found"
+  },
+  "home": {
+    "greeting": "Welcome back",
+    "savedRoadmaps": "Saved Roadmaps",
+    "testsCompleted": "Tests Completed",
+    "averageScore": "Avg. Score",
+    "activeRoadmaps": "Active Roadmaps",
+    "inProgressSection": "In Progress",
+    "recentTestsSection": "Recent Tests",
+    "quickActionsSection": "Quick Actions",
+    "exploreAction": "Explore",
+    "savedAction": "My Saved",
+    "createAction": "Create",
+    "sandboxAction": "Sandbox",
+    "noInProgress": "No roadmaps in progress yet.",
+    "score": "Score",
+    "completed": "Completed",
+    "inProgress": "In Progress",
+    "progress": "Progress",
+    "viewAll": "View All",
+    "percent": "%"
   }
 }

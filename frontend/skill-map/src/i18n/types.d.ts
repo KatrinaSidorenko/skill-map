@@ -152,4 +152,25 @@ interface ILocalization {
   general: {
     notFound: string;
   };
+  home: {
+    greeting: string;
+    savedRoadmaps: string;
+    testsCompleted: string;
+    averageScore: string;
+    activeRoadmaps: string;
+    inProgressSection: string;
+    recentTestsSection: string;
+    quickActionsSection: string;
+    exploreAction: string;
+    savedAction: string;
+    createAction: string;
+    sandboxAction: string;
+    noInProgress: string;
+    score: string;
+    completed: string;
+    inProgress: string;
+    progress: string;
+    viewAll: string;
+    percent: string;
+  };
 }

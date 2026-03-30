@@ -31,7 +31,7 @@ internal sealed class GetRoadmapWorkspaceSummaryHandler(IRepository<RoadmapWorks
             title: workspace.Metadata?.Title ?? string.Empty,
             description: workspace.Metadata?.Description ?? string.Empty,
             imageUrl: workspace.Metadata?.ImageUrl ?? string.Empty,
-            latestSnapshot.CreatedAt,
+            workspace.CreatedAt,
             snapshotMetadata?.Status,
             snapshotMetadata?.Progress);
     }

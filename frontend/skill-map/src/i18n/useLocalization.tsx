@@ -35,6 +35,10 @@ export default function useLocalization() {
     return translation(`testingHistory.${key}`);
   };
 
+  const getHomeTranslations = (key: keyof ILocalization['home']) => {
+    return translation(`home.${key}`);
+  };
+
   return {
     getHeaderTranslations,
     getAuthTranslations,
@@ -44,5 +48,6 @@ export default function useLocalization() {
     getGeneralTranslations,
     getAssessmentTranslations,
     getTestingHistoryTranslations,
+    getHomeTranslations,
   };
 }
