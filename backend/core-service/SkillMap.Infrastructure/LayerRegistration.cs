@@ -2,6 +2,7 @@
 
 using LearningPlatform.Roadmap.Business;
 using LearningPlatform.RoadmapTests.Contracts;
+using LearningPlatform.Shared.Caching;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -66,6 +67,8 @@ public static class LayerRegistration
         services.AddNeo4jPersistence(configuration);
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddPersistenceLayer(configuration);
+
+        services.AddCaching();
 
         return services;
     }

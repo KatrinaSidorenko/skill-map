@@ -13,7 +13,7 @@ using SkillMap.Shared.Extensions;
 using SkillMap.Shared.Gzip;
 
 namespace SkillMap.Business.PersonalizedRoadmaps.Common;
-internal static class RoadmapWorkspaceSnapshotExtensions
+public static class RoadmapWorkspaceSnapshotExtensions
 {
     public static async Task<RoadmapSnapshot> GetRoadmapSnapshot(this RoadmapWorkspaceSnapshot snapshot, CancellationToken ct)
         => (await snapshot.Content?.InGzipJsonObjectUtf8<RoadmapSnapshot>(ct)).EmptyOnNull(snapshot.RoadmapWorkspace.ActualRoadmapId);

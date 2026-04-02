@@ -1,4 +1,4 @@
-import { Edge, Node } from '@xyflow/react';
+import { Edge, Node, MarkerType } from '@xyflow/react';
 import dagre from '@dagrejs/dagre';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -64,6 +64,7 @@ export function mapRoadmapToReactFlow(roadmap: Roadmap): {
     id: generateEdgeId(e.source, e.target),
     source: String(e.source),
     target: String(e.target),
+    markerEnd: { type: MarkerType.ArrowClosed },
   }));
 
   return getLayoutedElements(nodes, edges, 'TB');
@@ -88,6 +89,7 @@ export function mapRoadmapToReactFlowForSaved(roadmap: SavedRoadmap): {
     id: generateEdgeId(e.source, e.target),
     source: String(e.source),
     target: String(e.target),
+    markerEnd: { type: MarkerType.ArrowClosed },
   }));
 
   return getLayoutedElements(nodes, edges, 'TB');

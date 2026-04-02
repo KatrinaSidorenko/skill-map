@@ -18,7 +18,10 @@ public class AddLearningItemRequest
     [JsonProperty("clientWorkspaceVersion")]
     public int ClientWorkspaceVersion { get; set; }
 
+    [JsonProperty("idempotencyKey")]
+    public string IdempotencyKey { get; set; }
+
     public AddLearningItemCommand ToCommand(long userRoadmapId)
-        => new (userRoadmapId, Id, Title, Description, Status, ClientWorkspaceVersion);
+        => new (userRoadmapId, Id, Title, Description, Status, ClientWorkspaceVersion, IdempotencyKey);
 }
 

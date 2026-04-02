@@ -9,7 +9,7 @@ internal static class UpdatePersonalRoadmapEndpoint
         long personalRoadmapId,
         UpdatePersonalRoadmapRequest request,
         IUserManager userManager,
-        IPersonalRoadmapModule personalRoadmapModule,
+        IRoadmapWorkspaceModule personalRoadmapModule,
         CancellationToken cancellationToken) =>
     {
         var command = request.ToCommand(personalRoadmapId, userManager.GetCurrentUserId());

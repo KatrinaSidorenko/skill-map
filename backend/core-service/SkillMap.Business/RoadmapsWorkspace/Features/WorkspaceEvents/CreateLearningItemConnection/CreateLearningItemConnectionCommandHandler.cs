@@ -14,8 +14,7 @@ internal sealed class CreateLearningItemConnectionCommandHandler(IRoadmapWorkspa
     public async Task Handle(CreateLearningItemConnectionCommand command, CancellationToken cancellationToken)
     {
         var lastVersion = await repository.GetLastAvailableEventVersion(command.WorkspaceId, cancellationToken, withIncrement: true);
-        var connectionEvent = new RoadmapWorkspaceEvent(command.WorkspaceId, command.EventType, command.GetMetadataJson(), lastVersion);
-        await repository.AddAsync(connectionEvent, cancellationToken);
+        await repository.AddAsync(command.ToRoadmapWorkspaceEvent(lastVersion), cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
 
         await eventBus.PublishAsync(RoadmapWorkspaceChangedEvent.Create(command.WorkspaceId, lastVersion, command.EventType), cancellationToken);

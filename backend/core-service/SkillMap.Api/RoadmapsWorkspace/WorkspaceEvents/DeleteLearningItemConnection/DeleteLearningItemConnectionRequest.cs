@@ -12,6 +12,9 @@ public class DeleteLearningItemConnectionRequest
     [JsonProperty("clientWorkspaceVersion")]
     public int ClientWorkspaceVersion { get; set; }
 
+    [JsonProperty("idempotencyKey")]
+    public string IdempotencyKey { get; set; }
+
     public DeleteLearningItemConnectionCommand ToCommand(long userRoadmapId)
-        => new(userRoadmapId, Id, ClientWorkspaceVersion);
+        => new(userRoadmapId, Id, ClientWorkspaceVersion, IdempotencyKey);
 }

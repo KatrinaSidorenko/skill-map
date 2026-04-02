@@ -9,7 +9,7 @@ internal static class CreatePersonalRoadmapEndpoint
     internal static void MapCreatePersonalRoadmap(this IEndpointRouteBuilder app) => app.MapPost(PersonalRoadmapsApiPaths.CreatePersonalRoadmap, async (
             CreatePersonalRoadmapRequest request,
             IUserManager userManager,
-            IPersonalRoadmapModule personalizedRoadmapsModule, CancellationToken cancellationToken) =>
+            IRoadmapWorkspaceModule personalizedRoadmapsModule, CancellationToken cancellationToken) =>
     {
         var command = request.ToCommand(userManager.GetCurrentUserId());
         var roadmapId = await personalizedRoadmapsModule.ExecuteCommandAsync(command, cancellationToken);

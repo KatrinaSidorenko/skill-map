@@ -7,7 +7,7 @@ internal static class PublishPersonalRoadmapEndpoint
 {
     internal static void MapPublishPersonalRoadmap(this IEndpointRouteBuilder app) => app.MapPost(PersonalRoadmapsApiPaths.PublishPersonalRoadmap, async (
            long personalRoadmapId,
-              IPersonalRoadmapModule personalRoadmapModule,
+              IRoadmapWorkspaceModule personalRoadmapModule,
               CancellationToken cancellationToken) =>
       {
           await personalRoadmapModule.ExecuteCommandAsync(new PublishPersonalRoadmapCommand(personalRoadmapId), cancellationToken);

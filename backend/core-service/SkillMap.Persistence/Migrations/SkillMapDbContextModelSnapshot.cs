@@ -38,14 +38,28 @@ namespace SkillMap.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<string>("EventStatus")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("event_status");
+
                     b.Property<string>("EventType")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("event_type");
 
+                    b.Property<string>("IdempotencyKey")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("idempotency_key");
+
                     b.Property<string>("Metadata")
                         .HasColumnType("jsonb")
                         .HasColumnName("metadata");
+
+                    b.Property<string>("RejectionReason")
+                        .HasColumnType("text")
+                        .HasColumnName("rejection_reason");
 
                     b.Property<long>("RoadmapWorkspaceId")
                         .HasColumnType("bigint")
@@ -65,6 +79,8 @@ namespace SkillMap.Persistence.Migrations
 
                     b.HasIndex("RoadmapWorkspaceId", "Version")
                         .IsUnique();
+
+                    b.HasIndex("RoadmapWorkspaceId", "IdempotencyKey", "EventStatus");
 
                     b.ToTable("workspace_event", (string)null);
                 });
@@ -419,7 +435,7 @@ namespace SkillMap.Persistence.Migrations
             modelBuilder.Entity("SkillMap.Core.RoadmapAssessments.AssessmentAttempt", b =>
                 {
                     b.HasOne("SkillMap.Core.RoadmapAssessments.RoadmapAssessment", "RoadmapAssessment")
-                        .WithMany()
+                        .WithMany("Attempts")
                         .HasForeignKey("AssessmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -476,6 +492,11 @@ namespace SkillMap.Persistence.Migrations
                     b.Navigation("Author");
 
                     b.Navigation("PersonalRoadmap");
+                });
+
+            modelBuilder.Entity("SkillMap.Core.RoadmapAssessments.RoadmapAssessment", b =>
+                {
+                    b.Navigation("Attempts");
                 });
 
             modelBuilder.Entity("SkillMap.Core.Roadmaps.PersonalRoadmap", b =>

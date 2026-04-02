@@ -31,7 +31,6 @@ builder.Services.AddCors(options =>
                     .AllowAnyHeader());
 });
 
-builder.Services.AddCaching();
 
 builder.Services.AddInfrastructureLayer(builder.Configuration);
 builder.Services.AddModules(builder.Configuration);

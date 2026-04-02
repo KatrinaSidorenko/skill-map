@@ -12,6 +12,9 @@ public class RoadmapSnapshot
     public List<LearningItemSnapshot> LearningItems { get; set; }
     [JsonProperty("connections")]
     public List<LearningItemsConnectionSnapshot> LearningItemsConnections { get; set; }
+
+    [JsonIgnore]
+    public int Version { get; set; }
 }
 
 public record LearningItemSnapshot(string Id, string Title, string Description, LearningStatus Status);

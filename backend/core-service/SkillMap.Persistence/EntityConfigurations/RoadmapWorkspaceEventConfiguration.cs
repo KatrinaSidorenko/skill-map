@@ -4,8 +4,8 @@ using System.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-using SkillMap.Core.Constants;
 using SkillMap.Core.PersonalizedRoadmaps;
+using SkillMap.Core.RoadmapsWorkspace.Events;
 
 namespace SkillMap.Persistence.EntityConfigurations;
 internal class RoadmapWorkspaceEventConfiguration : IEntityTypeConfiguration<RoadmapWorkspaceEvent>
@@ -19,6 +19,18 @@ internal class RoadmapWorkspaceEventConfiguration : IEntityTypeConfiguration<Roa
         builder.Property(rm => rm.UpdatedAt).HasColumnName("updated_at").IsRequired();
 
         builder.Property(rm => rm.RoadmapWorkspaceId).HasColumnName("roadmap_workspace_id").IsRequired();
+        builder.Property(rm => rm.IdempotencyKey).HasColumnName("idempotency_key").IsRequired();
+        builder.Property(rm => rm.EventStatus)
+            .HasColumnName("event_status")
+            .IsRequired()
+            .HasConversion(
+                v => v.ToString(),
+                v => (WorkspaceEventStatus)Enum.Parse(typeof(WorkspaceEventStatus), v));
+
+        builder.Property(rm => rm.RejectionReason)
+            .HasColumnName("rejection_reason")
+            .IsRequired(false);
+
         builder.Property(rm => rm.EventType)
             .HasColumnName("event_type")
             .IsRequired()
@@ -35,5 +47,6 @@ internal class RoadmapWorkspaceEventConfiguration : IEntityTypeConfiguration<Roa
             .HasForeignKey(rm => rm.RoadmapWorkspaceId);
 
         builder.HasIndex(rm => new { rm.RoadmapWorkspaceId, rm.EventType });
+        builder.HasIndex(rm => new { rm.RoadmapWorkspaceId, rm.IdempotencyKey, rm.EventStatus });
     }
 }

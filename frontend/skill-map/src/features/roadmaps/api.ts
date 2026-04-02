@@ -168,6 +168,18 @@ export const roadmapApi = createApi({
         method: 'GET',
       }),
     }),
+    getWorkspaceEventsStatus: builder.mutation<
+      {
+        events: EventStatusItem[];
+      },
+      { workspaceId: string; keys: string[] }
+    >({
+      query: ({ workspaceId, keys }) => ({
+        url: `roadmaps-workspace/${workspaceId}/events/status`,
+        method: 'POST',
+        body: { keys },
+      }),
+    }),
   }),
 });
 
@@ -194,4 +206,5 @@ export const {
   useLazyGetPlainUserSavedRoadmapQuery,
   useGetPlainUserSavedRoadmapQuery,
   useLazyGetRoadmapTestingHistoryQuery,
+  useGetWorkspaceEventsStatusMutation,
 } = roadmapApi;

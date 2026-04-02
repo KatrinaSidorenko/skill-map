@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 
-using SkillMap.Core.Constants;
 using SkillMap.Core.PersonalizedRoadmaps;
 
 namespace SkillMap.Core.RoadmapsWorkspace.Events;

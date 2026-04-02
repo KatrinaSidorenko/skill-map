@@ -6,6 +6,7 @@ import {
   Connection,
   Edge,
   EdgeChange,
+  MarkerType,
   Node,
   NodeChange,
 } from '@xyflow/react';
@@ -21,6 +22,10 @@ type InitialState = {
   edges: Edge[];
   selectedElement: Node | Edge | null;
   editorConfig: EditorConfig;
+  /** IDs of nodes/edges whose server-side creation/update is still in-flight */
+  pendingIds: string[];
+  /** IDs of nodes/edges that the server has permanently rejected */
+  failedIds: string[];
 };
 
 const initialState: InitialState = {
@@ -32,6 +37,8 @@ const initialState: InitialState = {
   editorConfig: {
     useStatus: true,
   },
+  pendingIds: [],
+  failedIds: [],
 };
 
 const roadmapEditorSlice = createSlice({
@@ -104,13 +111,54 @@ const roadmapEditorSlice = createSlice({
       action: PayloadAction<{ connection: Connection; id: string }>,
     ) => {
       const { connection, id } = action.payload;
+      // New edge starts as pending: animated + dashed until server confirms
       state.edges = addEdge(
-        { ...connection, id: id, animated: false },
+        {
+          ...connection,
+          id,
+          animated: true,
+          markerEnd: { type: MarkerType.ArrowClosed },
+          style: { strokeDasharray: '6 4', opacity: 0.65 },
+        },
         state.edges,
       );
     },
     setEditorConfig: (state, action: PayloadAction<EditorConfig>) => {
       state.editorConfig = action.payload;
+    },
+    markPending: (state, action: PayloadAction<string>) => {
+      if (!state.pendingIds.includes(action.payload)) {
+        state.pendingIds.push(action.payload);
+      }
+    },
+    markConfirmed: (state, action: PayloadAction<string>) => {
+      state.pendingIds = state.pendingIds.filter((id) => id !== action.payload);
+      // Restore edge to solid style with arrow once confirmed
+      const idx = state.edges.findIndex((e) => e.id === action.payload);
+      if (idx !== -1) {
+        state.edges[idx] = {
+          ...state.edges[idx],
+          animated: false,
+          markerEnd: { type: MarkerType.ArrowClosed },
+          style: {},
+        };
+      }
+    },
+    markFailed: (state, action: PayloadAction<string>) => {
+      state.pendingIds = state.pendingIds.filter((id) => id !== action.payload);
+      if (!state.failedIds.includes(action.payload)) {
+        state.failedIds.push(action.payload);
+      }
+      // Color rejected edge red + dashed, keep arrow
+      const idx = state.edges.findIndex((e) => e.id === action.payload);
+      if (idx !== -1) {
+        state.edges[idx] = {
+          ...state.edges[idx],
+          animated: false,
+          markerEnd: { type: MarkerType.ArrowClosed, color: '#E53E3E' },
+          style: { stroke: '#E53E3E', strokeDasharray: '6 3' },
+        };
+      }
     },
     clearEditor: (state) => {
       state.plainRoadmap = null;
@@ -118,6 +166,8 @@ const roadmapEditorSlice = createSlice({
       state.nodes = [];
       state.edges = [];
       state.selectedElement = null;
+      state.pendingIds = [];
+      state.failedIds = [];
       state.editorConfig = {
         useStatus: true,
       };
@@ -137,6 +187,9 @@ export const {
   setEdge,
   setWorkspaceRoadmap,
   setEditorConfig,
+  markPending,
+  markConfirmed,
+  markFailed,
   clearEditor,
 } = roadmapEditorSlice.actions;
 
@@ -154,5 +207,11 @@ export const selectWorkspaceId = (state: { roadmapEditor: InitialState }) =>
   state.roadmapEditor.workspaceId;
 export const selectEditorConfig = (state: { roadmapEditor: InitialState }) =>
   state.roadmapEditor.editorConfig;
+
+export const selectPendingIds = (state: { roadmapEditor: InitialState }) =>
+  state.roadmapEditor.pendingIds;
+
+export const selectFailedIds = (state: { roadmapEditor: InitialState }) =>
+  state.roadmapEditor.failedIds;
 
 export default roadmapEditorSlice;

@@ -1,4 +1,4 @@
-﻿namespace SkillMap.Core.Constants;
+﻿namespace SkillMap.Core.RoadmapsWorkspace.Events;
 
 public enum WorkspaceEventType
 {

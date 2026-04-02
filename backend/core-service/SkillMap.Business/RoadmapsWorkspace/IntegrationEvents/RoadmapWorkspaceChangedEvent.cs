@@ -1,4 +1,4 @@
-﻿using SkillMap.Core.Constants;
+﻿using SkillMap.Core.RoadmapsWorkspace.Events;
 using SkillMap.Shared.EventBus;
 
 namespace SkillMap.Business.RoadmapsWorkspace.IntegrationEvents;

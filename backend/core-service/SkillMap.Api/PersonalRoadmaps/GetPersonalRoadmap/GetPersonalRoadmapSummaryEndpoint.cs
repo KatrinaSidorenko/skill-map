@@ -9,7 +9,7 @@ internal static class GetPersonalRoadmapSummaryEndpoint
     internal static void MapGetPersonalRoadmapSummary(this IEndpointRouteBuilder app) => app.MapGet(PersonalRoadmapsApiPaths.GetPersonalRoadmap, async (
         string personalRoadmapId,
         IUserManager userManager,
-        IPersonalRoadmapModule personalRoadmapModule,
+        IRoadmapWorkspaceModule personalRoadmapModule,
         CancellationToken cancellationToken) =>
     {
         var query = new GetPersonalRoadmapSummaryQuery(personalRoadmapId, userManager.GetCurrentUserId());

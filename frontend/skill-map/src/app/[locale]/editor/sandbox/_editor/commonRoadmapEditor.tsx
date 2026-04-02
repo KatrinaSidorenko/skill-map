@@ -1,13 +1,7 @@
 'use client';
 import SpinnerScreen from '@/components/base/spinner';
-import {
-  useCreateConnectionInUserRoadmapMutation,
-  useCreateItemInUserRoadmapMutation,
-  useDeleteLearningItemFromUserRoadmapMutation,
-  useGetUserCreatedRoadmapQuery,
-  useLazyGetPlainUserCreatedRoadmapQuery,
-  useUpdateLearningItemInUserRoadmapMutation,
-} from '@/features/roadmaps/api';
+import SyncScreen from '@/components/base/spinner/SyncScreen';
+import { useGetUserCreatedRoadmapQuery } from '@/features/roadmaps/api';
 import RoadmapEditor from '@/features/roadmaps/editor';
 import { Flex } from '@chakra-ui/react';
 import { ReactFlowProvider } from '@xyflow/react';
@@ -19,10 +13,16 @@ import {
   setWorkspaceRoadmap,
   setRoadmap,
 } from '@/features/roadmaps/editor/store';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Toolbox from '@/features/roadmaps/editor/toolbox';
 import NodeSidebar from '@/features/roadmaps/editor/sidebar';
 import { useAppDispatch } from '@/store/hooks';
+import useQueuePoller from '@/features/roadmaps/editor/queue/useQueuePoller';
+import useQueueFlush from '@/features/roadmaps/editor/queue/useQueueFlush';
+import { skipToken } from '@reduxjs/toolkit/query/react';
+
+/** Possible phases of the sync-then-load lifecycle */
+type SyncPhase = 'checking' | 'syncing' | 'done';
 
 export default function RoadmapWorkspacePage({
   workspaceId,
@@ -33,23 +33,44 @@ export default function RoadmapWorkspacePage({
 }) {
   const dispatch = useAppDispatch();
 
-  // todo: don't use cache for sandbox editor
+  // Background retry poller (runs after the editor is loaded)
+  useQueuePoller();
+
+  const { flush, hasPending } = useQueueFlush();
+  const [syncPhase, setSyncPhase] = useState<SyncPhase>('checking');
+  // Prevent double-run in React StrictMode
+  const syncStarted = useRef(false);
+
+  useEffect(() => {
+    if (!workspaceId || syncStarted.current) return;
+    syncStarted.current = true;
+
+    (async () => {
+      try {
+        const pending = await hasPending(workspaceId);
+        if (pending) {
+          setSyncPhase('syncing');
+          await flush(workspaceId);
+        }
+      } finally {
+        setSyncPhase('done');
+      }
+    })();
+  }, [workspaceId, flush, hasPending]);
+
+  // Skip the RTK Query until the sync phase is complete so we always
+  // fetch the roadmap with the server's latest state.
   const { data, error, isLoading, isFetching } = useGetUserCreatedRoadmapQuery(
-    workspaceId ?? '',
+    syncPhase === 'done' ? (workspaceId ?? '') : skipToken,
   );
 
   const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const [createEdge] = useCreateConnectionInUserRoadmapMutation();
-  const [deleteItem] = useDeleteLearningItemFromUserRoadmapMutation();
-  const [createNode] = useCreateItemInUserRoadmapMutation();
-  const [saveChange] = useUpdateLearningItemInUserRoadmapMutation();
 
   const handleToggleSidebar = useCallback(() => {
     setSidebarOpen((prev) => !prev);
   }, []);
 
   useEffect(() => {
-    console.log('roadmap', data);
     if (data) {
       const roadmap = data;
       dispatch(clearEditor());
@@ -66,43 +87,43 @@ export default function RoadmapWorkspacePage({
           imageUrl: '',
         } as SavedPlainRoadmap),
       );
-      console.log('roamdp connectios', roadmap.connections);
       dispatch(
         setRoadmap({
           nodes: roadmap.items.map((n) => n as ModifiedNode),
           edges: roadmap.connections,
         }),
       );
-      console.log('Loaded roadmap into editor:', roadmap);
     }
-  }, [data, workspaceId, isFetching, isLoading]);
+  }, [data, workspaceId, isFetching, isLoading, dispatch, useStatus]);
 
-  // todo: extract to separate component
   return (
     <Flex width="100vw" height="100vh" direction="column">
       {error && workspaceId ? (
         <ErrorScreen />
       ) : (
         <Container isSection={false}>
-          {(isLoading || isFetching) && workspaceId ? (
+          {/* Phase 1 – syncing offline changes */}
+          {syncPhase !== 'done' ? (
+            syncPhase === 'syncing' ? (
+              <SyncScreen />
+            ) : (
+              // 'checking' phase is fast (just an IDB read); show nothing or a
+              // minimal spinner so there is no layout flash
+              <SpinnerScreen />
+            )
+          ) : (isLoading || isFetching) && workspaceId ? (
+            /* Phase 2 – loading roadmap from server */
             <SpinnerScreen />
           ) : (
+            /* Phase 3 – editor ready */
             <ReactFlowProvider>
               <RoadmapEditor.Container>
                 <RoadmapEditor.Header />
-                <RoadmapEditor
-                  createEdge={createEdge}
-                  setSidebarOpen={setSidebarOpen}
-                >
-                  <Toolbox
-                    onToggleSidebar={handleToggleSidebar}
-                    createNode={createNode}
-                    deleteItem={deleteItem}
-                  />
+                <RoadmapEditor setSidebarOpen={setSidebarOpen}>
+                  <Toolbox onToggleSidebar={handleToggleSidebar} />
                   <NodeSidebar
                     open={isSidebarOpen}
                     onOpenChange={setSidebarOpen}
-                    saveChange={saveChange}
                   />
                 </RoadmapEditor>
               </RoadmapEditor.Container>
