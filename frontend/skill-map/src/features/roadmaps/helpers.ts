@@ -107,6 +107,13 @@ export function mapRoadmapToReactFlowForSaved(roadmap: SavedRoadmap): {
   return getLayoutedElements(nodes, edges, 'TB');
 }
 
+export function computeTopicStatus(childStatuses: LearningStatus[]): LearningStatus {
+  if (childStatuses.length === 0) return 'notstarted';
+  if (childStatuses.every((s) => s === 'completed')) return 'completed';
+  if (childStatuses.every((s) => s === 'notstarted')) return 'notstarted';
+  return 'inprogress';
+}
+
 export const defaultPagination = {
   pageSize: 12,
   pageNumber: 1,

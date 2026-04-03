@@ -19,6 +19,7 @@ import NodeSidebar from '@/features/roadmaps/editor/sidebar';
 import { useAppDispatch } from '@/store/hooks';
 import useQueuePoller from '@/features/roadmaps/editor/queue/useQueuePoller';
 import useQueueFlush from '@/features/roadmaps/editor/queue/useQueueFlush';
+import useCascadeStatus from '@/features/roadmaps/editor/queue/useCascadeStatus';
 import { skipToken } from '@reduxjs/toolkit/query/react';
 
 /** Possible phases of the sync-then-load lifecycle */
@@ -35,6 +36,8 @@ export default function RoadmapWorkspacePage({
 
   // Background retry poller (runs after the editor is loaded)
   useQueuePoller();
+  // Propagate subtopic status changes up to parent topic nodes
+  useCascadeStatus();
 
   const { flush, hasPending } = useQueueFlush();
   const [syncPhase, setSyncPhase] = useState<SyncPhase>('checking');

@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit';
 import {
   addEdge,
   applyEdgeChanges,
@@ -213,5 +213,33 @@ export const selectPendingIds = (state: { roadmapEditor: InitialState }) =>
 
 export const selectFailedIds = (state: { roadmapEditor: InitialState }) =>
   state.roadmapEditor.failedIds;
+
+export const selectNodes = (state: { roadmapEditor: InitialState }) =>
+  state.roadmapEditor.nodes;
+
+export const selectEdges = (state: { roadmapEditor: InitialState }) =>
+  state.roadmapEditor.edges;
+
+/** parentId → childIds[] — recomputed only when edges change */
+export const selectChildrenMap = createSelector(selectEdges, (edges) => {
+  const map = new Map<string, string[]>();
+  for (const edge of edges) {
+    const list = map.get(edge.source) ?? [];
+    list.push(edge.target);
+    map.set(edge.source, list);
+  }
+  return map;
+});
+
+/** childId → parentIds[] — recomputed only when edges change */
+export const selectParentMap = createSelector(selectEdges, (edges) => {
+  const map = new Map<string, string[]>();
+  for (const edge of edges) {
+    const list = map.get(edge.target) ?? [];
+    list.push(edge.source);
+    map.set(edge.target, list);
+  }
+  return map;
+});
 
 export default roadmapEditorSlice;
