@@ -18,10 +18,12 @@ interface SavedPlainRoadmap extends PlainRoadmap {
   status: LearningStatus;
 }
 
+type LearningItemType = 'topic' | 'subtopic';
 interface RoadmapNode {
   id: string;
   title: string;
   description: string;
+  type: LearningItemType;
 }
 
 interface RoadmapEdge {

@@ -12,6 +12,7 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import StatusSelect from '../../sidebar/status-select';
+import NodeTypeSelect from '../../sidebar/node-type-select';
 import useLocalization from '@/i18n/useLocalization';
 import { useAppSelector } from '@/store/hooks';
 import { selectEditorConfig } from '../../store';
@@ -21,6 +22,7 @@ const createNodeDialog = createOverlay<{
     label: string;
     description: string;
     status: string[];
+    nodeType: LearningItemType;
   }) => void;
 }>((props) => {
   const { onCreate, ...rest } = props;
@@ -28,6 +30,7 @@ const createNodeDialog = createOverlay<{
   const [label, setLabel] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<string[]>(['notstarted']);
+  const [nodeType, setNodeType] = useState<LearningItemType>('topic');
   const { getEditorTranslations } = useLocalization();
 
   return (
@@ -65,6 +68,11 @@ const createNodeDialog = createOverlay<{
                   />
                 </Box>
 
+                <NodeTypeSelect
+                  value={[nodeType]}
+                  onChange={(val) => setNodeType(val[0])}
+                />
+
                 {editorConfig.useStatus && (
                   <StatusSelect value={status} onChange={setStatus} />
                 )}
@@ -82,7 +90,7 @@ const createNodeDialog = createOverlay<{
                 <Button
                   colorScheme="teal"
                   onClick={() => {
-                    onCreate({ label, description, status });
+                    onCreate({ label, description, status, nodeType });
                     rest.onOpenChange?.({ open: false });
                   }}
                 >

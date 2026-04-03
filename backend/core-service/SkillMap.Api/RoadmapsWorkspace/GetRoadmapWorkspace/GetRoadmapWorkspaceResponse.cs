@@ -21,7 +21,7 @@ public class GetRoadmapWorkspaceResponse
         return new GetRoadmapWorkspaceResponse
         {
             Id = dto.Id,
-            LearningItems = dto.LearningItems.Select(li => new PersonalizedLearningItemResponse(li.Id, li.Title, li.Description, li.Status.ToStatusString())).ToList(),
+            LearningItems = dto.LearningItems.Select(li => new PersonalizedLearningItemResponse(li.Id, li.Title, li.Description, li.Status.ToStatusString(), li.Type)).ToList(),
             LearningItemsConnections = dto.LearningItemsConnections.Select(conn => new PersonalizedLearningItemsConnectionResponse(conn.Id, conn.FromId, conn.ToId)).ToList()
         };
     }
@@ -37,12 +37,15 @@ public class PersonalizedLearningItemResponse
     public string Description { get; set; }
     [JsonPropertyName("status")]
     public string Status { get; set; }
-    public PersonalizedLearningItemResponse(string id, string title, string description, string status)
+    [JsonPropertyName("type")]
+    public string Type { get; set; }
+    public PersonalizedLearningItemResponse(string id, string title, string description, string status, string type)
     {
         Id = id;
         Title = title;
         Description = description;
         Status = status;
+        Type = type;
     }
 }
 

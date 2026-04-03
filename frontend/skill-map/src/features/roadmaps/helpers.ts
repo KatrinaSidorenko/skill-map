@@ -46,6 +46,16 @@ export function getLayoutedElements(
   return { nodes: layoutedNodes, edges };
 }
 
+export const getNodeTypeColor = (type: LearningItemType): string => {
+  switch (type) {
+    case 'topic':
+      return 'purple';
+    case 'subtopic':
+    default:
+      return 'teal';
+  }
+};
+
 export function mapRoadmapToReactFlow(roadmap: Roadmap): {
   nodes: Node[];
   edges: Edge[];
@@ -56,6 +66,7 @@ export function mapRoadmapToReactFlow(roadmap: Roadmap): {
     data: {
       label: n.title,
       description: n.description,
+      nodeType: n.type,
     },
     type: 'default',
   }));
@@ -81,6 +92,7 @@ export function mapRoadmapToReactFlowForSaved(roadmap: SavedRoadmap): {
       label: n.title,
       description: n.description,
       status: n.status,
+      nodeType: n.type,
     },
     type: 'statusNode',
   }));

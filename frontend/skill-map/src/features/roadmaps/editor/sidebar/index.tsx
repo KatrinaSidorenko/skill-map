@@ -18,6 +18,7 @@ import {
   selectSelectedElement,
 } from '../store';
 import StatusSelect from './status-select';
+import NodeTypeSelect from './node-type-select';
 import useLocalization from '@/i18n/useLocalization';
 import useEventQueue from '../queue/useEventQueue';
 import { cacheNodeSettings, loadNodeSettings } from '../queue/cacheService';
@@ -38,6 +39,7 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
   const [label, setLabel] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<string[]>([]);
+  const [nodeType, setNodeType] = useState<LearningItemType>('subtopic');
 
   // Load form state: try cache first, fall back to Redux node data
   useEffect(() => {
@@ -49,16 +51,19 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
           setLabel(cached.label);
           setDescription(cached.description);
           setStatus([cached.status]);
+          setNodeType((node.data?.nodeType as LearningItemType) ?? 'subtopic');
         } else {
           setLabel((node.data?.label as string) ?? '');
           setDescription((node.data?.description as string) ?? '');
           setStatus([(node.data?.status as string) ?? 'notstarted']);
+          setNodeType((node.data?.nodeType as LearningItemType) ?? 'subtopic');
         }
       })
       .catch(() => {
         setLabel((node.data?.label as string) ?? '');
         setDescription((node.data?.description as string) ?? '');
         setStatus([(node.data?.status as string) ?? 'notstarted']);
+        setNodeType((node.data?.nodeType as LearningItemType) ?? 'subtopic');
       });
   }, [node]);
 
@@ -89,6 +94,7 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
         label,
         description,
         status: status[0] ?? 'notstarted',
+        nodeType,
       },
     } as Node;
 
@@ -156,6 +162,13 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
             {editorConfig.useStatus && (
               <StatusSelect value={status} onChange={setStatus} />
             )}
+
+            {/* Node type */}
+            <NodeTypeSelect
+              value={[nodeType]}
+              onChange={(val) => setNodeType(val[0])}
+            />
+
             <Separator />
 
             {/* Actions */}

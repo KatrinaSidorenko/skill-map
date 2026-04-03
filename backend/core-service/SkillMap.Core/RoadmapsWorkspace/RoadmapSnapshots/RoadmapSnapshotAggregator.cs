@@ -21,7 +21,7 @@ public class RoadmapSnapshotAggregator
         {
             case LearningItemCreatedEvent e:
                 Enum.TryParse<LearningStatus>(e.Status, true, out var initialStatus);
-                _items.Add(new LearningItemSnapshot(e.Id, e.Title, e.Description, initialStatus));
+                _items.Add(new LearningItemSnapshot(e.Id, e.Title, e.Description, e.Type, initialStatus));
                 break;
 
             case LearningItemUpdatedEvent e:

@@ -17,11 +17,11 @@ public class RoadmapWorkspaceDto
         {
             Id = workspaceId.ToString(),
             Version = version,
-            LearningItems = roadmapSnapshot?.LearningItems?.Select(li => new PersonalizedLearningItemDto(li.Id, li.Title, li.Description, li.Status)).ToList() ?? [],
+            LearningItems = roadmapSnapshot?.LearningItems?.Select(li => new PersonalizedLearningItemDto(li.Id, li.Title, li.Description, li.Status, li.Type)).ToList() ?? [],
             LearningItemsConnections = roadmapSnapshot?.LearningItemsConnections?.Select(conn => new PersonalizedLearningItemsConnectionDto(conn.Id, conn.FromId, conn.ToId)).ToList() ?? []
         };
     }
 }
 
-public record PersonalizedLearningItemDto(string Id, string Title, string Description, LearningStatus Status);
+public record PersonalizedLearningItemDto(string Id, string Title, string Description, LearningStatus Status, string Type);
 public record PersonalizedLearningItemsConnectionDto(string Id, string FromId, string ToId);

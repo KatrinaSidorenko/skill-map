@@ -17,5 +17,5 @@ public class RoadmapSnapshot
     public int Version { get; set; }
 }
 
-public record LearningItemSnapshot(string Id, string Title, string Description, LearningStatus Status);
+public record LearningItemSnapshot(string Id, string Title, string Description, string Type, LearningStatus Status);
 public record LearningItemsConnectionSnapshot(string Id, string FromId, string ToId);

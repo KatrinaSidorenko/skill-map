@@ -47,7 +47,7 @@ export default function Toolbox({ onToggleSidebar }: ToolboxProps) {
   }, [selected, onRemoveSelected]);
 
   const handleCreateNode = useCallback(
-    (data: { label: string; description: string; status: string[] }) => {
+    (data: { label: string; description: string; status: string[]; nodeType: LearningItemType }) => {
       if (!workspaceId) return;
       const { x, y, zoom } = reactFlowInstance.getViewport();
       const viewportCenter = {
@@ -62,6 +62,7 @@ export default function Toolbox({ onToggleSidebar }: ToolboxProps) {
           label: data.label || 'Untitled Node',
           description: data.description,
           status: data.status,
+          nodeType: data.nodeType,
         },
       };
 
@@ -72,6 +73,7 @@ export default function Toolbox({ onToggleSidebar }: ToolboxProps) {
           title: data.label || 'Untitled Node',
           description: data.description,
           status: (data.status[0] || 'notstarted') as LearningStatus,
+          nodeType: data.nodeType,
         },
         reactFlowNode,
       );

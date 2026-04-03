@@ -25,6 +25,7 @@ interface CreateNodeRequest {
   title: string;
   description: string;
   status: LearningStatus;
+  nodeType?: LearningItemType;
   idempotencyKey?: string;
 }
 

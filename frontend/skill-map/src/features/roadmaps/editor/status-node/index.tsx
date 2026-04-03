@@ -1,24 +1,31 @@
-import { Box, Text, HStack } from '@chakra-ui/react';
+import { Box, Text, HStack, Badge } from '@chakra-ui/react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
-import { getStatusColor } from '../../helpers';
+import { getStatusColor, getNodeTypeColor } from '../../helpers';
 import { useAppSelector } from '@/store/hooks';
 import { selectPendingIds, selectFailedIds } from '../store';
 
 export function StatusNode({ id, data, selected }: NodeProps) {
-  const { label, status } = data;
+  const label = data.label as string | undefined;
+  const status = data.status as LearningStatus | undefined;
+  const nodeType = data.nodeType as LearningItemType | undefined;
   const pendingIds = useAppSelector(selectPendingIds);
   const failedIds = useAppSelector(selectFailedIds);
 
   const isPending = pendingIds.includes(id);
   const isFailed = failedIds.includes(id);
 
+  const typeColor = getNodeTypeColor(
+    (nodeType as LearningItemType) ?? 'subtopic',
+  );
+  const topBorderColor = `${typeColor}.400`;
+
   return (
     <Box
       borderRadius="md"
       borderWidth={isFailed ? 2 : 1}
-      borderColor={
-        isFailed ? 'red.400' : selected ? 'brand.200' : 'gray.200'
-      }
+      borderColor={isFailed ? 'red.400' : selected ? 'brand.200' : 'gray.200'}
+      borderTopWidth={3}
+      borderTopColor={isFailed ? 'red.400' : topBorderColor}
       bg={isFailed ? 'red.50' : isPending ? 'gray.100' : 'white'}
       p={3}
       shadow="sm"
@@ -48,13 +55,30 @@ export function StatusNode({ id, data, selected }: NodeProps) {
               ? 'red.500'
               : isPending
                 ? 'gray.400'
-                : getStatusColor(status as LearningStatus)
+                : getStatusColor(status ?? 'notstarted')
           }
         />
-        <Text fontSize="sm" fontWeight="medium" color={isFailed ? 'red.700' : undefined}>
-          {label as string}
+        <Text
+          fontSize="sm"
+          fontWeight="medium"
+          color={isFailed ? 'red.700' : undefined}
+        >
+          {label ?? ''}
         </Text>
       </HStack>
+
+      {/* Node type badge */}
+      {/*{nodeType && (*/}
+      {/*  <Badge*/}
+      {/*    mt={1}*/}
+      {/*    size="xs"*/}
+      {/*    colorPalette={typeColor}*/}
+      {/*    variant="subtle"*/}
+      {/*    borderRadius="full"*/}
+      {/*  >*/}
+      {/*    {nodeType}*/}
+      {/*  </Badge>*/}
+      {/*)}*/}
 
       {/* React Flow handles for connecting nodes */}
       <Handle type="target" position={Position.Top} />

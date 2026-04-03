@@ -15,12 +15,15 @@ public class LearningItemCreatedEvent : IWorkspaceEvent
 
     [JsonProperty("status")]
     public string Status { get; set; }
+    [JsonProperty("type")]
+    public string Type { get; set; }
 
-    public LearningItemCreatedEvent(string id, string title, string? description, string status)
+    public LearningItemCreatedEvent(string id, string title, string? description,  string status, string type)
     {
         Id = id;
         Title = title;
         Description = description;
         Status = status;
+        Type = type;
     }
 }

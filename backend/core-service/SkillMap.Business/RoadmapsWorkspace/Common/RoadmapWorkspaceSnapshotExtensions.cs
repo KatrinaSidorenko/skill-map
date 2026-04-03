@@ -55,7 +55,7 @@ public static class RoadmapWorkspaceSnapshotExtensions
         return new RoadmapSnapshot()
         {
             Id = roadmapDto.Id,
-            LearningItems = roadmapDto.Nodes?.Select(n => new LearningItemSnapshot(n.Id, n.Title, n.Description, Core.Constants.LearningStatus.NotStarted)).ToList() ?? new List<LearningItemSnapshot>(),
+            LearningItems = roadmapDto.Nodes?.Select(n => new LearningItemSnapshot(n.Id, n.Title, n.Description, n.Type, Core.Constants.LearningStatus.NotStarted)).ToList() ?? new List<LearningItemSnapshot>(),
             LearningItemsConnections = roadmapDto.Edges?.Select(e => new LearningItemsConnectionSnapshot(e.Id, e.Source, e.Target)).ToList() ?? new List<LearningItemsConnectionSnapshot>()
         };
     }
