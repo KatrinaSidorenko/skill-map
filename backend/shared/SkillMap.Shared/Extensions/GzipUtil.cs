@@ -4,6 +4,7 @@
 
 using System.IO.Compression;
 using System.Text;
+
 using SkillMap.Shared.Extensions;
 
 namespace SkillMap.Shared.Gzip;

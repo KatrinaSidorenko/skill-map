@@ -22,13 +22,13 @@ public class InboxTaskConfiguration : IEntityTypeConfiguration<InboxTask>
 
         builder.Property(x => x.TaskType)
             .HasColumnName("task_type")
-            .HasConversion<string>() 
+            .HasConversion<string>()
             .HasMaxLength(50)
             .IsRequired();
 
         builder.Property(x => x.Status)
             .HasColumnName("status")
-            .HasConversion<string>() 
+            .HasConversion<string>()
             .HasMaxLength(50)
             .IsRequired();
 

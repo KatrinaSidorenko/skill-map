@@ -17,6 +17,7 @@ internal class AssessmentAttemptConfiguration : IEntityTypeConfiguration<Assessm
         builder.Property(utr => utr.UpdatedAt).HasColumnName("updated_at").IsRequired(false);
 
         builder.Property(utr => utr.AssessmentId).HasColumnName("assessment_id").IsRequired();
+        builder.Property(utr => utr.UserId).HasColumnName("user_id").IsRequired();
 
         builder.Property(utr => utr.MaxPoints)
             .HasColumnName("max_points")
@@ -36,5 +37,6 @@ internal class AssessmentAttemptConfiguration : IEntityTypeConfiguration<Assessm
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(utr => new { utr.AssessmentId, utr.CompletedAt });
+        builder.HasIndex(utr => new { utr.AssessmentId, utr.UserId });
     }
 }

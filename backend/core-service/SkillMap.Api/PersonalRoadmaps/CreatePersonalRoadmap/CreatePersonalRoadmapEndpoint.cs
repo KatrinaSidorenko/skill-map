@@ -1,6 +1,7 @@
-﻿using SkillMap.Business.Abstractions;
+﻿using LearningPlatform.Shared.Api;
+
+using SkillMap.Business.Abstractions;
 using SkillMap.Business.PersonalRoadmaps;
-using LearningPlatform.Shared.Api;
 
 namespace SkillMap.Api.PersonalRoadmaps.CreatePersonalRoadmap;
 

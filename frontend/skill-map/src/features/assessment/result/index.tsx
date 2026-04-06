@@ -15,13 +15,7 @@ import {
 import { toaster } from '@/components/ui/toaster';
 import useLocalization from '@/i18n/useLocalization';
 
-export default function TestResults({
-  testId,
-  testResultId,
-}: {
-  testId?: string;
-  testResultId?: string;
-}) {
+export default function TestResults({ attemptId }: { attemptId?: string }) {
   const router = useRouter();
   const { getAssessmentTranslations } = useLocalization();
   const checkedQuestionResults = useAppSelector(selectCheckedQuestionResults);
@@ -38,9 +32,9 @@ export default function TestResults({
     useLazyGetRoadmapChangesSuggestionQuery();
 
   const onViewSuggestions = () => {
-    if (!testResultId) return;
+    if (!attemptId) return;
 
-    getRoadmapChangesSuggestion({ testResultId })
+    getRoadmapChangesSuggestion({ testResultId: attemptId })
       .unwrap()
       .then((data) => {
         createRoadmapTestSuggestionsDialog.open(
@@ -116,25 +110,19 @@ export default function TestResults({
   );
 }
 
-export function TestResultsWrapper({
-  testId,
-  testResultId,
-}: {
-  testId?: string;
-  testResultId?: string;
-}) {
+export function TestResultsWrapper({ attemptId }: { attemptId?: string }) {
   const [getRoadmapTestingResult, { data, isLoading }] =
     useLazyGetRoadmapTestResultQuery();
 
   useEffect(() => {
-    if (testResultId) {
-      getRoadmapTestingResult({ testResultId }).unwrap();
+    if (attemptId) {
+      getRoadmapTestingResult({ attemptId: attemptId }).unwrap();
     }
-  }, [testResultId, getRoadmapTestingResult]);
+  }, [attemptId, getRoadmapTestingResult]);
 
   if (isLoading || !data) {
     return <SpinnerScreen />;
   }
 
-  return <TestResults testId={testId} testResultId={testResultId} />;
+  return <TestResults attemptId={attemptId} />;
 }

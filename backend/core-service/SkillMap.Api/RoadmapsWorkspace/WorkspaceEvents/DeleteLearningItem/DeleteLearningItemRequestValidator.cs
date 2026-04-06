@@ -7,5 +7,5 @@ internal sealed class DeleteLearningItemRequestValidator : AbstractValidator<Del
     public DeleteLearningItemRequestValidator()
     {
         RuleFor(r => r.Id).NotEmpty().WithMessage("Learning item id is required");
- }
+    }
 }

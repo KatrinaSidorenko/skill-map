@@ -11,7 +11,7 @@ public static class RoadmapBlueprintMediationModule
         var commandsHandlersAssembly = typeof(IRoadmapBlueprintModule).Assembly;
         services.AddMediatR(configuration => configuration.RegisterServicesFromAssemblies(commandsHandlersAssembly));
 
- services.AddScoped<IRoadmapBlueprintModule, RoadmapBlueprintModule>();
+        services.AddScoped<IRoadmapBlueprintModule, RoadmapBlueprintModule>();
 
         return services;
     }

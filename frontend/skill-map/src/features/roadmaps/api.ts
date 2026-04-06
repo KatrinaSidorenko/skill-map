@@ -164,7 +164,7 @@ export const roadmapApi = createApi({
     }),
     getRoadmapTestingHistory: builder.query<TestingHistoryDto, string>({
       query: (id) => ({
-        url: `roadmaptest/history/${id}`,
+        url: `assessments/workspace/${id}/history`,
         method: 'GET',
       }),
     }),

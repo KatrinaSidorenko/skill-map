@@ -26,12 +26,7 @@ import {
 import { useEffect } from 'react';
 import { toaster } from '@/components/ui/toaster';
 import SpinnerScreen from '@/components/base/spinner';
-import {
-  useCreateStartTestTakeAttemptMutation,
-  useGenerateIntermediateRoadmapTestMutation,
-  useGenerateRoadmapTestMutation,
-} from '@/features/assessment/api';
-import { DEFAULT_GENERATE_TEST_CONFIG } from '@/features/assessment/helper';
+import { useRoadmapAssessment } from '@/features/assessment/useRoadmapAssessment';
 import TestingHistory from '@/components/testing-history';
 import ImageWrapper from '@/components/ui/imageWrapper';
 
@@ -41,42 +36,22 @@ export default function SavedRoadmapView({
   roadmap: SavedPlainRoadmap;
 }) {
   const router = useRouter();
-  const { getRoadmapTransaltions, getEditorTranslations } = useLocalization();
+  const { getRoadmapTransaltions } = useLocalization();
   const statusColor = getStatusColor(roadmap.status);
-  const [generateTest, { isLoading }] = useGenerateRoadmapTestMutation();
-  const [
-    generateIntermediateRoadmapTest,
-    { isLoading: isGeneratingIntermediate },
-  ] = useGenerateIntermediateRoadmapTestMutation();
   const [deleteRoadmap, { isLoading: isDeletingRoadmap }] =
     useDeleteRoadmapMutation();
-  const [startNewAttempt] =
-    useCreateStartTestTakeAttemptMutation();
-  const takeTest = async () => {
-    try {
-      const result = await generateTest({
-        roadmapId: roadmap.id,
-        config: DEFAULT_GENERATE_TEST_CONFIG,
-      }).unwrap();
-      console.log('Generated Test:', result);
-      router.push(`/assessment/${result.testId}`);
-    } catch (error) {
-      console.error('Error generating test:', error);
-    }
-  };
 
-  const takeIntermediateTest = async () => {
-    try {
-      const result = await generateIntermediateRoadmapTest({
-        roadmapId: roadmap.id,
-        config: DEFAULT_GENERATE_TEST_CONFIG,
-      }).unwrap();
-      console.log('Generated Intermediate Test:', result);
-      router.push(`/assessment/${result.testId}`);
-    } catch (error) {
-      console.error('Error generating intermediate test:', error);
-    }
-  };
+  const {
+    takeInitialTest,
+    takeIntermediateTest,
+    onStartNewAttempt,
+    onContinueAttempt,
+    onOpenAttempt,
+    isInitialGenerating,
+    isIntermediateGenerating,
+  } = useRoadmapAssessment({
+    onError: (msg) => toaster.error({ title: msg }),
+  });
 
   const [
     getRoadmapTestingHistory,
@@ -96,37 +71,6 @@ export default function SavedRoadmapView({
     router.push(`/editor/sandbox/${roadmap.id}`);
   };
 
-  const onOpenAttempt = ({
-    testId,
-    resultId,
-  }: {
-    testId: string;
-    resultId: string;
-  }) => {
-    router.replace(`/assessment/${testId}/result/${resultId}`);
-  };
-
-  const onStartNewAttempt = async ({ testId }: { testId: string }) => {
-    await startNewAttempt({ testId })
-      .unwrap()
-      .then(() => {
-        router.push(`/assessment/${testId}`);
-      })
-      .catch(() => {
-        toaster.error({
-          title: getRoadmapTransaltions('failedToStartNewAttempt'),
-        });
-      });
-  };
-
-  const onContinueAttempt = ({
-    testId,
-  }: {
-    testId: string;
-    resultId: string;
-  }) => {
-    router.push(`/assessment/${testId}`);
-  };
 
   const deleteRoadmapHandler = async () => {
     try {
@@ -290,13 +234,13 @@ export default function SavedRoadmapView({
         <TestingHistory
           data={testingHistory}
           isLoading={isTestingHistoryLoading}
-          onGenerateInitialTest={takeTest}
-          isInitialTestGenerating={isLoading}
+          onGenerateInitialTest={() => takeInitialTest(roadmap.id)}
+          isInitialTestGenerating={isInitialGenerating}
           onOpenAttempt={onOpenAttempt}
           onContinueAttempt={onContinueAttempt}
           onStartNewAttempt={onStartNewAttempt}
-          onGenerateIntermediateTest={takeIntermediateTest}
-          isIntermediateTestGenerating={isGeneratingIntermediate}
+          onGenerateIntermediateTest={() => takeIntermediateTest(roadmap.id)}
+          isIntermediateTestGenerating={isIntermediateGenerating}
         />
       </Box>
     </Box>

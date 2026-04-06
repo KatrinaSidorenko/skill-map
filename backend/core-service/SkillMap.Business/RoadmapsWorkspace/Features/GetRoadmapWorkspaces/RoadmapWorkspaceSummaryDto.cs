@@ -13,12 +13,12 @@ public record RoadmapWorkspaceSummaryDto(
     LearningStatus Status)
 {
     public static RoadmapWorkspaceSummaryDto Create(
-        long workspaceId, 
+        long workspaceId,
         string title,
         string description,
         string imageUrl,
         DateTime savedAt,
-        LearningStatus? status, 
+        LearningStatus? status,
         double? progress)
     {
         return new RoadmapWorkspaceSummaryDto(

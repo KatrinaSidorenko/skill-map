@@ -14,7 +14,6 @@ interface RoadmapTestResultDto {
 
 interface QuestionResultDto {
   id: string;
-  topicId: string;
   text: string;
   type: TestQuestionType;
   answers: AnswerResultDto[];
@@ -26,7 +25,7 @@ interface AnswerResultDto {
 }
 
 interface RoadmapTestAnswersRequest {
-  questionAnswers: QuestionAnswer[];
+  answers: QuestionAnswer[];
 }
 
 interface QuestionAnswer {

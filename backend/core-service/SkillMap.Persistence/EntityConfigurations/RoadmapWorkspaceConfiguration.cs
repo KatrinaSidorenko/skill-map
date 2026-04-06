@@ -38,7 +38,7 @@ public class RoadmapWorkspaceConfiguration : IEntityTypeConfiguration<RoadmapWor
             .WithOne(pr => pr.RoadmapWorkspace)
             .HasForeignKey<RoadmapWorkspace>(ur => ur.PersonalRoadmapId);
 
-        builder.HasIndex(ur => new { ur.AuthorId, ur.RoadmapId, ur.PersonalRoadmapId}).IsUnique();
+        builder.HasIndex(ur => new { ur.AuthorId, ur.RoadmapId, ur.PersonalRoadmapId }).IsUnique();
         builder.HasIndex(ur => new { ur.AuthorId, ur.RoadmapId });
     }
 }

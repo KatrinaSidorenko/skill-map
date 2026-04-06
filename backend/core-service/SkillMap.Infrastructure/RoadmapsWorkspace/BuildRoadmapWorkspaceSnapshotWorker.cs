@@ -32,7 +32,7 @@ internal sealed class BuildRoadmapWorkspaceSnapshotWorker : BackgroundService
         _logger.LogInformation("Starting {WorkerName} with id {WorkerId}", nameof(BuildRoadmapWorkspaceSnapshotWorker), _workerId);
 
         using var timer = new PeriodicTimer(_delay);
-        
+
         while (await timer.WaitForNextTickAsync(stoppingToken))
         {
             using var scope = _serviceProvider.CreateScope();
@@ -62,8 +62,8 @@ internal sealed class BuildRoadmapWorkspaceSnapshotWorker : BackgroundService
                 }
                 else
                 {
-                   var command = new BuildBlueprintWorkspaceSnapshotCommand(input.WorkspaceId, input.RoadmapId);
-                   result = await mediator.Send(command, stoppingToken);
+                    var command = new BuildBlueprintWorkspaceSnapshotCommand(input.WorkspaceId, input.RoadmapId);
+                    result = await mediator.Send(command, stoppingToken);
                 }
 
                 task.Status = Core.Tasks.TaskStatus.Completed;
@@ -97,7 +97,7 @@ internal sealed class BuildRoadmapWorkspaceSnapshotWorker : BackgroundService
     private async Task<InboxTask?> LookupForTask(IRepository<InboxTask> inboxRepository, CancellationToken cancellationToken)
     {
         return await inboxRepository.GetFirstOrDefaultAsync(
-            filter: t => 
+            filter: t =>
                 t.TaskType == TaskType.BuildWorkspaceSnapshot &&
                 t.Status == Core.Tasks.TaskStatus.Pending &&
                 t.WorkerId == null,

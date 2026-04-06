@@ -52,7 +52,7 @@ export interface RecentTest {
 
 export const mockRecentTests: RecentTest[] = [
   {
-    testId: 'algorithms-basic',
+    attemptId: 'algorithms-basic',
     type: 'Algorithms – Basics',
     score: 88,
     maxScore: 100,
@@ -60,7 +60,7 @@ export const mockRecentTests: RecentTest[] = [
     status: 'completed',
   },
   {
-    testId: 'system-design-intro',
+    attemptId: 'system-design-intro',
     type: 'System Design – Intro',
     score: 71,
     maxScore: 80,
@@ -68,7 +68,7 @@ export const mockRecentTests: RecentTest[] = [
     status: 'completed',
   },
   {
-    testId: 'data-structures-intermediate',
+    attemptId: 'data-structures-intermediate',
     type: 'Data Structures – Intermediate',
     score: null,
     maxScore: 120,
@@ -76,7 +76,7 @@ export const mockRecentTests: RecentTest[] = [
     status: 'in_progress',
   },
   {
-    testId: 'react-fundamentals',
+    attemptId: 'react-fundamentals',
     type: 'React – Fundamentals',
     score: 55,
     maxScore: 100,
@@ -84,4 +84,3 @@ export const mockRecentTests: RecentTest[] = [
     status: 'completed',
   },
 ];
-

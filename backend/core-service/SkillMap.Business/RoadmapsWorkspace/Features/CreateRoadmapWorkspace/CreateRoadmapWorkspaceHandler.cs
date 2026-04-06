@@ -29,7 +29,7 @@ internal sealed class CreateRoadmapWorkspaceHandler(IRepository<RoadmapWorkspace
         roadmapWorkspace = new RoadmapWorkspace(request.UserId, request.RoadmapId, null);
         var blueprintResult = await blueprintRepository.GetPlainRoadmapsByIds([request.RoadmapId], DefaultParams.SearchingParams, cancellationToken);
         if (blueprintResult.IsFailed) throw new InvalidOperationException($"Failed to get roadmap blueprint for roadmap id {request.RoadmapId}. Error: {blueprintResult.Message}");
-       
+
         var blueprint = blueprintResult.Data.Result.Single();
         roadmapWorkspace.SetMetadata(new RoadmapWorkspaceMetadata(blueprint.Title, blueprint.Description, blueprint.ImageUrl));
 

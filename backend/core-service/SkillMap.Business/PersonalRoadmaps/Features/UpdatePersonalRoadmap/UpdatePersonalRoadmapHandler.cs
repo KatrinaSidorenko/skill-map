@@ -19,11 +19,11 @@ internal sealed class UpdatePersonalRoadmapHandler(IRepository<PersonalRoadmap> 
     ct: cancellationToken)
             ?? throw new ResourceNotFoundException(nameof(PersonalRoadmap), request.PersonalRoadmapId.ToString());
 
- personalRoadmap.Title = request.Title;
-personalRoadmap.Description = request.Description;
-personalRoadmap.ImageUrl = request.ImageUrl;
+        personalRoadmap.Title = request.Title;
+        personalRoadmap.Description = request.Description;
+        personalRoadmap.ImageUrl = request.ImageUrl;
 
-   await repository.UpdateAsync(personalRoadmap, cancellationToken);
+        await repository.UpdateAsync(personalRoadmap, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
     }
 }

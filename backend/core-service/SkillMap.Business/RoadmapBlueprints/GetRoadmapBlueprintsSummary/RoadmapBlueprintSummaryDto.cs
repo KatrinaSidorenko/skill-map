@@ -10,5 +10,5 @@ public record RoadmapBlueprintSummaryDto(
     bool IsSaved)
 {
     public static RoadmapBlueprintSummaryDto Create(PlainRoadmapDto dto, bool isSaved)
-        => new (dto.Id, dto.Title, dto.Description, dto.ImageUrl, isSaved);
+        => new(dto.Id, dto.Title, dto.Description, dto.ImageUrl, isSaved);
 }

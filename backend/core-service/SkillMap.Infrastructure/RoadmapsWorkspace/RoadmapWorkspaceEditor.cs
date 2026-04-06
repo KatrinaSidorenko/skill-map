@@ -13,7 +13,7 @@ using SkillMap.Shared.Results;
 namespace SkillMap.Infrastructure.RoadmapsWorkspace;
 
 public class RoadmapWorkspaceEditor(
-    IRoadmapWorkspaceRepository workspaceRepository, 
+    IRoadmapWorkspaceRepository workspaceRepository,
     IRoadmapWorkspaceEventRepository eventsRepository) : IRoadmapWorkspaceEditor
 {
     public async Task<RoadmapSnapshot> GetActualRoadmapSnapshot(long workspaceId, CancellationToken cancellationToken)

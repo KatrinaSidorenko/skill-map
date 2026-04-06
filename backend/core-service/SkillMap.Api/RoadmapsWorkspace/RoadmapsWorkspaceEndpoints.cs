@@ -7,8 +7,8 @@ using SkillMap.Api.RoadmapsWorkspace.GetWorkspaceEventsStatus;
 using SkillMap.Api.RoadmapsWorkspace.WorkspaceEvents.AddLearningItem;
 using SkillMap.Api.RoadmapsWorkspace.WorkspaceEvents.CreateLearningItemConnection;
 using SkillMap.Api.RoadmapsWorkspace.WorkspaceEvents.DeleteLearningItem;
-using SkillMap.Api.RoadmapsWorkspace.WorkspaceEvents.UpdateLearningItem;
 using SkillMap.Api.RoadmapsWorkspace.WorkspaceEvents.DeleteLearningItemConnection;
+using SkillMap.Api.RoadmapsWorkspace.WorkspaceEvents.UpdateLearningItem;
 
 namespace SkillMap.Api.Roadmap;
 

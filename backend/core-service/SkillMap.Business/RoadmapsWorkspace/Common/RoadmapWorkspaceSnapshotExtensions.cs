@@ -22,7 +22,7 @@ public static class RoadmapWorkspaceSnapshotExtensions
 
     public static RoadmapSnapshotMetadata ParseMetadata(this RoadmapWorkspaceSnapshot snapshot)
         => snapshot?.Metadata?.JsonDeserializeOrDefault<RoadmapSnapshotMetadata>();
-   
+
     public static async Task<RoadmapSnapshot> ApplyEventsToSnapshot(
         this RoadmapSnapshot snapshot,
         List<RoadmapWorkspaceEvent> events,
@@ -79,8 +79,8 @@ public static class RoadmapWorkspaceSnapshotExtensions
 
     public static async Task<RoadmapWorkspaceSnapshot> CreateRoadmapWorkspaceSnapshot(
         long workspaceId,
-        RoadmapWorkspaceSnapshot latestSnapshot, 
-        List<RoadmapWorkspaceEvent> eventsList, 
+        RoadmapWorkspaceSnapshot latestSnapshot,
+        List<RoadmapWorkspaceEvent> eventsList,
         CancellationToken ct)
     {
         var snapshotContent = await latestSnapshot.GetRoadmapSnapshot(ct);
@@ -93,7 +93,7 @@ public static class RoadmapWorkspaceSnapshotExtensions
         return newSnapshot;
     }
 
-    public static CreateRoadmapDto ToCreateBlueprint(this 
+    public static CreateRoadmapDto ToCreateBlueprint(this
         RoadmapSnapshot roadmapSnapshot,
         string title,
         string description,

@@ -13,7 +13,7 @@ internal sealed class AddLearningItemRequestValidator : AbstractValidator<AddLea
             .Must(s => LearningStatusExtensions.GetStatuses().Contains(s))
             .WithMessage("Status must be one of the following: Planned, InProgress, Completed");
         RuleFor(r => r.Type).NotEmpty().WithMessage("Type is required")
-            .Must(t => LearningItemTypeExtensions.GetTypes().Contains(t))
+            .Must(t => LearningItemType.GetTypes().Contains(t))
             .WithMessage("Type must be one of the following: Skill, Project, Course, Article, Video, Book");
     }
 }

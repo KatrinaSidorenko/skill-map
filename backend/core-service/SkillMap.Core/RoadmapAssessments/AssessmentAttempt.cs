@@ -3,6 +3,7 @@
 public class AssessmentAttempt : TrackedEntity
 {
     public long AssessmentId { get; set; }
+    public long UserId { get; set; }
     public double MaxPoints { get; set; }
     public double ScoredPoints { get; set; }
     public byte[] ResultData { get; set; }

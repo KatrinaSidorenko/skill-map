@@ -4,14 +4,14 @@ import { v4 as uuidv4 } from 'uuid';
 
 const getNodePosition = (index: number): { x: number; y: number } => ({
   x: 0,
-  y: index * 150, // space nodes 150px apart vertically
+  y: index * 350, // space nodes 150px apart vertically
 });
 
 export const generateNodeId = () => uuidv4().replaceAll('-', '');
 export const generateEdgeId = (fromId: string, toId: string) =>
   `${fromId}-${toId}`;
 
-const nodeWidth = 180;
+const nodeWidth = 200;
 const nodeHeight = 100;
 
 export function getLayoutedElements(
@@ -107,7 +107,9 @@ export function mapRoadmapToReactFlowForSaved(roadmap: SavedRoadmap): {
   return getLayoutedElements(nodes, edges, 'TB');
 }
 
-export function computeTopicStatus(childStatuses: LearningStatus[]): LearningStatus {
+export function computeTopicStatus(
+  childStatuses: LearningStatus[],
+): LearningStatus {
   if (childStatuses.length === 0) return 'notstarted';
   if (childStatuses.every((s) => s === 'completed')) return 'completed';
   if (childStatuses.every((s) => s === 'notstarted')) return 'notstarted';

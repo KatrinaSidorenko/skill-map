@@ -21,14 +21,14 @@ export function StatusNode({ id, data, selected }: NodeProps) {
 
   return (
     <Box
-      borderRadius="md"
+      borderRadius="lg"
       borderWidth={isFailed ? 2 : 1}
-      borderColor={isFailed ? 'red.400' : selected ? 'brand.200' : 'gray.200'}
+      borderColor={isFailed ? 'red.400' : selected ? 'brand.500' : 'gray.200'}
       borderTopWidth={3}
       borderTopColor={isFailed ? 'red.400' : topBorderColor}
       bg={isFailed ? 'red.50' : isPending ? 'gray.100' : 'white'}
       p={3}
-      shadow="sm"
+      shadow="md"
       minW="100px"
       textAlign="center"
       opacity={isPending ? 0.65 : 1}

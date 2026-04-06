@@ -74,6 +74,34 @@ export default function useCascadeStatus() {
       }
     }
 
+    // 2c. Top-down cascade: topic just became "completed" → mark all subtopic children as completed
+    for (const changedId of changedNodeIds) {
+      const changedNode = nodeById.get(changedId);
+      if (
+        changedNode?.data.nodeType !== 'topic' ||
+        (changedNode.data.status as LearningStatus) !== 'completed'
+      )
+        continue;
+
+      const childIds = childrenMap.get(changedId) ?? [];
+      for (const childId of childIds) {
+        const childNode = nodeById.get(childId);
+        if (
+          !childNode ||
+          childNode.data.nodeType !== 'subtopic' ||
+          (childNode.data.status as LearningStatus) === 'completed' ||
+          pendingIds.includes(childId)
+        )
+          continue;
+
+        queueSaveChange(
+          workspaceId,
+          { id: childId, status: 'completed' },
+          { ...childNode, data: { ...childNode.data, status: 'completed' } },
+        );
+      }
+    }
+
     if (topicsToRecompute.size === 0) return;
 
     // 3. Recompute only the affected topics

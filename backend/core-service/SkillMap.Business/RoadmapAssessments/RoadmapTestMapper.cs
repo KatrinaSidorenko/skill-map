@@ -1,7 +1,7 @@
 ﻿using LearningPlatform.RoadmapTests.Contracts;
 using LearningPlatform.RoadmapTests.Contracts.Models;
 
-using SkillMap.Business.RoadmapTest.Helpers;
+using SkillMap.Business.RoadmapAssessments.Common;
 using SkillMap.Business.RoadmapTest.Models;
 using SkillMap.Core.Constants;
 using SkillMap.Core.RoadmapAssessments;

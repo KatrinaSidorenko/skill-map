@@ -3,8 +3,8 @@
 using LearningPlatform.RoadmapTests.Contracts;
 
 using SkillMap.Business.Abstractions;
+using SkillMap.Business.RoadmapAssessments.Common;
 using SkillMap.Business.RoadmapTest;
-using SkillMap.Business.RoadmapTest.Helpers;
 using SkillMap.Business.RoadmapTest.Models;
 using SkillMap.Business.UserRoadmapTest.Models;
 using SkillMap.Business.UserTest;
@@ -20,7 +20,7 @@ public class AssessmentAttemptService(IUnitOfWork unitOfWork) : IAssessmentAttem
     public async Task<string> SaveUserRoadmapTest(
         long workspaceId,
         string roadmapId,
-        RoadmapTestType testType,
+        RoadmapAssessmentType testType,
         RoadmapTestDao roadmapTest,
         CancellationToken ct)
     {
@@ -76,7 +76,7 @@ public class AssessmentAttemptService(IUnitOfWork unitOfWork) : IAssessmentAttem
 
         var assessment = await assessmentRepository.GetFirstOrDefaultAsync(x => x.Id == testIdL, ct);
         var workspace = await workspaceRepository.GetByIdAsync(assessment.RoadmapWorkspaceId, ct);
-        var testData = await assessment.GetRoadmapTest(ct);
+        var testData = await assessment.GetAssessmentContent(ct);
         return testData.ToDaoModel(assessment.TestType, assessment.RoadmapWorkspaceId.ToString(), assessment.Id, workspace.ActualRoadmapId);
     }
 
@@ -99,7 +99,7 @@ public class AssessmentAttemptService(IUnitOfWork unitOfWork) : IAssessmentAttem
 
         var attempt = existingAttempt.First();
         attempt.CompletedAt = DateTime.UtcNow;
-        await attempt.SetTestResults(domainResult, ct);
+        await attempt.SetAssessmentAttemptResult(domainResult, ct);
 
         await attemptRepository.UpdateAsync(attempt, ct);
         await attemptRepository.SaveChangesAsync(ct);
@@ -111,12 +111,12 @@ public class AssessmentAttemptService(IUnitOfWork unitOfWork) : IAssessmentAttem
         var attemptRepository = unitOfWork.CreateRepository<AssessmentAttempt>();
         var testResultIdL = testResultId.EnsureParseLong();
         var attempt = await attemptRepository.GetByIdAsync(testResultIdL, ct);
-        var testData = await attempt.GetTestResults(ct);
+        var testData = await attempt.GetAssessmentAttemptResult(ct);
         var roadmapTest = await GetRoadmapTest(attempt.AssessmentId.ToString(), ct);
         return testData.ToDaoResult().ToTestEstimationResult(roadmapTest);
     }
 
-    public async Task<RoadmapTestResultsDto> GetLatestCompletedTestAnalysisResult(long userRoadmapId, RoadmapTestType roadmapTestType, CancellationToken ct)
+    public async Task<RoadmapTestResultsDto> GetLatestCompletedTestAnalysisResult(long userRoadmapId, RoadmapAssessmentType roadmapTestType, CancellationToken ct)
     {
         var assessmentRepository = unitOfWork.CreateRepository<RoadmapAssessment>();
         var attemptRepository = unitOfWork.CreateRepository<AssessmentAttempt>();
@@ -137,7 +137,7 @@ public class AssessmentAttemptService(IUnitOfWork unitOfWork) : IAssessmentAttem
             return null;
         }
 
-        var testData = await savedAttempt.GetTestResults(ct);
+        var testData = await savedAttempt.GetAssessmentAttemptResult(ct);
         return testData.ToDaoResult();
     }
 

@@ -12,7 +12,7 @@ public static class LayerRegistration
                    options
                    .UseLazyLoadingProxies()
                    .UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
-       
+
 
         return services;
     }

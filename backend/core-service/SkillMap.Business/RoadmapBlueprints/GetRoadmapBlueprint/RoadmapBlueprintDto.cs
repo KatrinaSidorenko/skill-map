@@ -1,6 +1,6 @@
-using Newtonsoft.Json;
-
 using LearningPlatform.Roadmap.Business.Contracts.Models;
+
+using Newtonsoft.Json;
 
 namespace SkillMap.Business.RoadmapBlueprints.GetRoadmapBlueprint;
 

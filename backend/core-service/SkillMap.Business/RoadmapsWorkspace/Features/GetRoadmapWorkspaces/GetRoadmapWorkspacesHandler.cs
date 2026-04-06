@@ -13,7 +13,7 @@ using SkillMap.Shared.Models;
 namespace SkillMap.Business.RoadmapsWorkspace.Features.GetRoadmapWorkspaces;
 
 [UsedImplicitly]
-internal sealed class GetRoadmapWorkspacesHandler(IRepository<RoadmapWorkspace> repository) 
+internal sealed class GetRoadmapWorkspacesHandler(IRepository<RoadmapWorkspace> repository)
     : IRequestHandler<GetRoadmapWorkspacesQuery, PaginationResult<RoadmapWorkspaceSummaryDto>>
 {
     public async Task<PaginationResult<RoadmapWorkspaceSummaryDto>> Handle(GetRoadmapWorkspacesQuery request, CancellationToken cancellationToken)

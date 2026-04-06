@@ -18,11 +18,11 @@ internal sealed class RoadmapWorkspaceCreatedEventHandler(IRepository<InboxTask>
     public async Task Handle(RoadmapWorkspaceCreatedEvent notification, CancellationToken cancellationToken)
     {
         var task = new InboxTask(new BuildWorkspaceSnapshotInput
-            {
-                WorkspaceId = notification.WorkspaceId,
-                RoadmapId = notification.RoadmapId,
-                IsInAuthorMode = notification.IsInAuthorMode,
-            }.JsonSerializeOrDefault(), TaskType.BuildWorkspaceSnapshot);
+        {
+            WorkspaceId = notification.WorkspaceId,
+            RoadmapId = notification.RoadmapId,
+            IsInAuthorMode = notification.IsInAuthorMode,
+        }.JsonSerializeOrDefault(), TaskType.BuildWorkspaceSnapshot);
 
         await repository.AddAsync(task, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);

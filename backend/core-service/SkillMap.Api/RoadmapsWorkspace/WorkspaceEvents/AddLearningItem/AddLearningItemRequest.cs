@@ -24,6 +24,5 @@ public class AddLearningItemRequest
     public string Type { get; set; }
 
     public AddLearningItemCommand ToCommand(long userRoadmapId)
-        => new (userRoadmapId, Id, Title, Description, Status, Type, ClientWorkspaceVersion, IdempotencyKey);
+        => new(userRoadmapId, Id, Title, Description, Status, Type, ClientWorkspaceVersion, IdempotencyKey);
 }
-

@@ -18,7 +18,7 @@ public class LearningItemCreatedEvent : IWorkspaceEvent
     [JsonProperty("type")]
     public string Type { get; set; }
 
-    public LearningItemCreatedEvent(string id, string title, string? description,  string status, string type)
+    public LearningItemCreatedEvent(string id, string title, string? description, string status, string type)
     {
         Id = id;
         Title = title;

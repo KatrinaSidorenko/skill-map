@@ -25,8 +25,8 @@ type Props = {
 
   onGenerateInitialTest?: () => void;
   onGenerateIntermediateTest?: () => void;
-  onOpenAttempt?: (args: { testId: string; resultId: string }) => void;
-  onContinueAttempt?: (args: { testId: string; resultId: string }) => void;
+  onOpenAttempt?: (args: { testId: string; attemptId: string }) => void;
+  onContinueAttempt?: (args: { testId: string; attemptId: string }) => void;
   onStartNewAttempt?: (args: { testId: string }) => void;
 
   title?: string;
@@ -103,6 +103,7 @@ function mapAccordionDefaults(
 }
 
 function isInitialTestingExist(data: TestingHistoryDto | null | undefined) {
+  return true;
   if (!data) return false;
   return data.items.some((item) => item.type === 'initial');
 }
@@ -345,7 +346,7 @@ export default function TestingHistory({
                                   onClick={() =>
                                     onContinueAttempt?.({
                                       testId: t.testId,
-                                      resultId: t.last!.resultId,
+                                      attemptId: t.last!.resultId,
                                     })
                                   }
                                 >
@@ -537,7 +538,7 @@ export default function TestingHistory({
                                           onClick={() =>
                                             onOpenAttempt?.({
                                               testId: t.testId,
-                                              resultId: a.resultId,
+                                              attemptId: a.resultId,
                                             })
                                           }
                                         >

@@ -64,5 +64,3 @@ public class PersonalizedLearningItemsConnectionResponse
         ToId = toId;
     }
 }
-
-

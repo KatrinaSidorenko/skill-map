@@ -1,6 +1,7 @@
-﻿using SkillMap.Api.Roadmaps;
+﻿using LearningPlatform.Shared.Api;
+
+using SkillMap.Api.Roadmaps;
 using SkillMap.Business.PersonalizedRoadmaps;
-using LearningPlatform.Shared.Api;
 
 namespace SkillMap.Api.RoadmapsWorkspace.WorkspaceEvents.AddLearningItem;
 

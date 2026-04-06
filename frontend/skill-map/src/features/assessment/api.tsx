@@ -1,54 +1,53 @@
 import { baseQuery } from '@/store/baseQuery';
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { setCheckedAnswerForQuestions, setCurrentTest } from './store';
-import { get } from 'http';
 
 export const assessmentApi = createApi({
   reducerPath: 'assessmentApi',
-  baseQuery: baseQuery('roadmaptest'),
+  baseQuery: baseQuery(''),
   endpoints: (builder) => ({
     generateRoadmapTest: builder.mutation<
-      RoadmapTestResultDto,
+      string,
       { roadmapId: string; config: RoadmapTestConfigDto }
     >({
       query: ({ roadmapId, config }) => ({
-        url: `${roadmapId}/initial`,
+        url: `roadmaptest/${roadmapId}/initial`,
         method: 'POST',
         body: config,
       }),
     }),
     generateIntermediateRoadmapTest: builder.mutation<
-      RoadmapTestResultDto,
+      string,
       { roadmapId: string; config: RoadmapTestConfigDto }
     >({
       query: ({ roadmapId, config }) => ({
-        url: `${roadmapId}/intermediate`,
+        url: `assessments/${roadmapId}/intermediate`,
         method: 'POST',
         body: config,
       }),
     }),
     createStartTestTakeAttempt: builder.mutation<
-      TestResultResponse,
+      { attemptId: string },
       { testId: string }
     >({
       query: ({ testId }) => ({
-        url: `${testId}/start`,
+        url: `assessments/${testId}/attempts`,
         method: 'POST',
       }),
     }),
     checkRoadmapTestAnswers: builder.mutation<
       TestResultResponse,
-      { testId: string; answers: RoadmapTestAnswersRequest }
+      { attemptId: string; answers: RoadmapTestAnswersRequest }
     >({
-      query: ({ testId, answers }) => ({
-        url: `check/${testId}`,
+      query: ({ attemptId, answers }) => ({
+        url: `assessments/attempts/${attemptId}/evaluate`,
         method: 'POST',
         body: answers,
       }),
     }),
-    getRoadmapTest: builder.query<RoadmapTestResultDto, { testId: string }>({
-      query: ({ testId }) => ({
-        url: `${testId}`,
+    getRoadmapTest: builder.query<RoadmapTestResultDto, { attemptId: string }>({
+      query: ({ attemptId }) => ({
+        url: `assessments/attempts/${attemptId}`,
         method: 'GET',
       }),
       onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
@@ -62,10 +61,10 @@ export const assessmentApi = createApi({
     }),
     getRoadmapTestResult: builder.query<
       TestEstimationResult,
-      { testResultId: string }
+      { attemptId: string }
     >({
-      query: ({ testResultId }) => ({
-        url: `results/${testResultId}`,
+      query: ({ attemptId }) => ({
+        url: `assessments/attempts/${attemptId}/result`,
         method: 'GET',
       }),
       onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
@@ -82,7 +81,7 @@ export const assessmentApi = createApi({
       { testResultId: string }
     >({
       query: ({ testResultId }) => ({
-        url: `suggestions/${testResultId}`,
+        url: `roadmaptest/suggestions/${testResultId}`,
         method: 'GET',
       }),
     }),

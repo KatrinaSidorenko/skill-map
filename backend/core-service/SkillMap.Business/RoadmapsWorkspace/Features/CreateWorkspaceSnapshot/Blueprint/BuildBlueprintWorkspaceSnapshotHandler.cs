@@ -50,9 +50,9 @@ internal sealed class BuildBlueprintWorkspaceSnapshotHandler(
         }
 
         var newWorkspaceSnapshot = await RoadmapWorkspaceSnapshotExtensions.CreateRoadmapWorkspaceSnapshot(
-            request.WorkspaceId, 
-            latestSnapshot, 
-            eventsList, 
+            request.WorkspaceId,
+            latestSnapshot,
+            eventsList,
             cancellationToken);
         await snapshotsRepository.AddAsync(newWorkspaceSnapshot, cancellationToken);
         await snapshotsRepository.SaveChangesAsync(cancellationToken);

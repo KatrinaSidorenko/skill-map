@@ -126,9 +126,15 @@ namespace SkillMap.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("user_id");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AssessmentId", "CompletedAt");
+
+                    b.HasIndex("AssessmentId", "UserId");
 
                     b.ToTable("assessment_attempt", (string)null);
                 });

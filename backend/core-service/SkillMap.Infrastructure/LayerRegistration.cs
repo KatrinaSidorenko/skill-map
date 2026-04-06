@@ -63,7 +63,7 @@ public static class LayerRegistration
 
         // migrations
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-        
+
         services.AddNeo4jPersistence(configuration);
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddPersistenceLayer(configuration);

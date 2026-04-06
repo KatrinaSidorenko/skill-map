@@ -26,8 +26,8 @@ public class PersonalRoadmapConfiguration : IEntityTypeConfiguration<PersonalRoa
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(x => x.RoadmapWorkspace)
-            .WithOne(w => w.PersonalRoadmap) 
-            .HasForeignKey<RoadmapWorkspace>(w => w.PersonalRoadmapId) 
+            .WithOne(w => w.PersonalRoadmap)
+            .HasForeignKey<RoadmapWorkspace>(w => w.PersonalRoadmapId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -3,6 +3,7 @@
 // </copyright>
 
 using System.Net;
+
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SkillMap.Shared.Results;
@@ -14,10 +15,10 @@ public static class ResultExtension
     // public static Result<T> GetFailureResult<T>(this ResultData resultData, string additionalMessage = "")
     //    => new(false, resultData.Message.Append(additionalMessage), resultData.Code);
     public static ResponseInfo GetResultResponse<T>(this Result<T> result)
-        => new (result.Code, result.Message);
+        => new(result.Code, result.Message);
 
     public static ExceptionResult ToExceptionResult<T>(this Result<T> result)
-        => new (result.Code, result.Message);
+        => new(result.Code, result.Message);
 
     public static bool IsBadRequest<T>(this Result<T> result)
         => !result.IsSuccessful && result.Code.Contains(ErrorCode.USERINPUTERRORPREFIX);

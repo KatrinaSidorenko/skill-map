@@ -1,14 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 interface InitialState {
-  testId: string | null;
+  attemptId: string | null;
+  assessmentId: string | null;
   questions: QuestionResultDto[];
   questionAnswers: Record<string, QuestionAnswer>;
   questionCheckedResults: TestEstimationResult | null;
 }
 
 const initialState: InitialState = {
-  testId: null,
+  attemptId: null,
+  assessmentId: null,
   questions: [],
   questionAnswers: {},
   questionCheckedResults: null,
@@ -22,11 +24,11 @@ const assesmentSlice = createSlice({
       state,
       action: { payload: { test: RoadmapTestResultDto } },
     ) => {
-      state.testId = action.payload.test.testId;
+      state.assessmentId = action.payload.test.testId;
       state.questions = action.payload.test.questions;
     },
     clearCurrentTest: (state) => {
-      state.testId = null;
+      state.assessmentId = null;
       state.questions = [];
     },
     setAnswerForQuestion: (
@@ -55,7 +57,7 @@ export const {
 export const selectTestQuestions = (state: { assessment: InitialState }) =>
   state.assessment.questions;
 export const selectCurrentTestId = (state: { assessment: InitialState }) =>
-  state.assessment.testId;
+  state.assessment.assessmentId;
 export const selectQuestionAnswers = (state: { assessment: InitialState }) =>
   state.assessment.questionAnswers;
 export const selectCheckedQuestionResults = (state: {

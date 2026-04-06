@@ -14,7 +14,7 @@ import { useEffect } from 'react';
 import SpinnerScreen from '@/components/base/spinner';
 import useLocalization from '@/i18n/useLocalization';
 
-export default function TestForm({ testId }: { testId?: string }) {
+export default function TestForm({ attemptId }: { attemptId?: string }) {
   const router = useRouter();
   const { getAssessmentTranslations } = useLocalization();
   const testQuestions = useAppSelector(selectTestQuestions);
@@ -24,20 +24,20 @@ export default function TestForm({ testId }: { testId?: string }) {
   const isSubmitDisabled = Object.keys(testAnswers).length <= 0;
 
   const onSubmit = async () => {
-    if (!testId) {
+    if (!attemptId) {
       toaster.warning({
         title: getAssessmentTranslations('cannotSubmitTest'),
       });
       return;
     }
     try {
-      const testResult = await checkAnswers({
-        testId: testId,
+      await checkAnswers({
+        attemptId: attemptId,
         answers: {
-          questionAnswers: Object.values(testAnswers),
+          answers: Object.values(testAnswers),
         },
       }).unwrap();
-      router.replace(`/assessment/${testId}/result/${testResult.id}`);
+      router.replace(`/assessment/attempt/${attemptId}/result`);
     } catch (error) {
       toaster.error({
         title: getAssessmentTranslations('failedToSubmitTest'),
@@ -53,7 +53,9 @@ export default function TestForm({ testId }: { testId?: string }) {
   return (
     <Box width="80%" p={6} borderRadius="md" bg="white" padding={20}>
       <Box mb={6}>
-        <Heading size="lg">{getAssessmentTranslations('assessmentTest')}</Heading>
+        <Heading size="lg">
+          {getAssessmentTranslations('assessmentTest')}
+        </Heading>
       </Box>
 
       <VStack gap={6} align="stretch">
@@ -85,18 +87,17 @@ export default function TestForm({ testId }: { testId?: string }) {
   );
 }
 
-export function TestFormWrapper({ testId }: { testId: string }) {
+export function TestFormWrapper({ attemptId }: { attemptId: string }) {
   const [getRoadmapTest, { data, isLoading, isError }] =
     useLazyGetRoadmapTestQuery();
   useEffect(() => {
-    if (testId) {
-      getRoadmapTest({ testId }).unwrap();
+    if (attemptId) {
+      getRoadmapTest({ attemptId: attemptId }).unwrap();
     }
-  }, [testId, getRoadmapTest]);
+  }, [attemptId, getRoadmapTest]);
 
   if (isLoading) {
     return <SpinnerScreen />;
   }
-  return <TestForm testId={testId} />;
+  return <TestForm attemptId={attemptId} />;
 }
-
