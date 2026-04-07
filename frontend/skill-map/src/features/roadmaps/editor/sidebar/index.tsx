@@ -38,7 +38,7 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
 
   const [label, setLabel] = useState('');
   const [description, setDescription] = useState('');
-  const [status, setStatus] = useState<string[]>([]);
+  const [status, setStatus] = useState<string>('');
   const [nodeType, setNodeType] = useState<LearningItemType>('subtopic');
 
   // Load form state: try cache first, fall back to Redux node data
@@ -50,19 +50,19 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
         if (cached) {
           setLabel(cached.label);
           setDescription(cached.description);
-          setStatus([cached.status]);
+          setStatus(cached.status);
           setNodeType((node.data?.nodeType as LearningItemType) ?? 'subtopic');
         } else {
           setLabel((node.data?.label as string) ?? '');
           setDescription((node.data?.description as string) ?? '');
-          setStatus([(node.data?.status as string) ?? 'notstarted']);
+          setStatus((node.data?.status as string) ?? 'notstarted');
           setNodeType((node.data?.nodeType as LearningItemType) ?? 'subtopic');
         }
       })
       .catch(() => {
         setLabel((node.data?.label as string) ?? '');
         setDescription((node.data?.description as string) ?? '');
-        setStatus([(node.data?.status as string) ?? 'notstarted']);
+        setStatus((node.data?.status as string) ?? 'notstarted');
         setNodeType((node.data?.nodeType as LearningItemType) ?? 'subtopic');
       });
   }, [node]);
@@ -76,10 +76,11 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
         label,
         description,
         status: status[0] ?? 'notstarted',
+        type: nodeType,
       }).catch(() => {});
     }, 500);
     return () => clearTimeout(timer);
-  }, [label, description, status, node]);
+  }, [label, description, status, node, nodeType]);
 
   const handleSave = () => {
     if (!node || !roadmapId) return;
@@ -93,8 +94,8 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
         ...rfNode.data,
         label,
         description,
-        status: status[0] ?? 'notstarted',
-        nodeType,
+        status: status as LearningStatus,
+        type: nodeType,
       },
     } as Node;
 
@@ -104,7 +105,8 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
         id: rfNode.id,
         title: label,
         description,
-        status: (status[0] || 'notstarted') as LearningStatus,
+        status: status as LearningStatus,
+        type: nodeType,
       },
       updatedNode,
     );
@@ -160,7 +162,10 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
             </VStack>
 
             {editorConfig.useStatus && (
-              <StatusSelect value={status} onChange={setStatus} />
+              <StatusSelect
+                value={[status]}
+                onChange={(s) => setStatus(s[0])}
+              />
             )}
 
             {/* Node type */}

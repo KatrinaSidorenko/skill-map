@@ -85,8 +85,16 @@ export const assessmentApi = createApi({
         method: 'GET',
       }),
     }),
-    //
-    // applyRoadmapChangesSuggestion: builder.mutation<void>({}),
+    applyRoadmapSuggestions: builder.mutation<
+      void,
+      { attemptId: string; items: ApplySuggestionItem[] }
+    >({
+      query: ({ attemptId, items }) => ({
+        url: `assessments/attempts/${attemptId}/suggestions/apply`,
+        method: 'POST',
+        body: { items },
+      }),
+    }),
   }),
 });
 
@@ -98,4 +106,5 @@ export const {
   useCreateStartTestTakeAttemptMutation,
   useLazyGetRoadmapChangesSuggestionQuery,
   useGenerateIntermediateRoadmapTestMutation,
+  useApplyRoadmapSuggestionsMutation,
 } = assessmentApi;

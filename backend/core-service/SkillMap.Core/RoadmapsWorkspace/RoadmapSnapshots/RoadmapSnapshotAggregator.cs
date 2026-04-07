@@ -43,7 +43,8 @@ public class RoadmapSnapshotAggregator
                     {
                         Title = e.Title ?? existingItem.Title,
                         Description = e.Description ?? existingItem.Description,
-                        Status = newStatus
+                        Status = newStatus,
+                        Type = e.Type ?? existingItem.Type,
                     };
                 }
                 break;

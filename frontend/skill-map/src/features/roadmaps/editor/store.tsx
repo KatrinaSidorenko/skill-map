@@ -57,7 +57,7 @@ const roadmapEditorSlice = createSlice({
           items: action.payload.nodes.map((n) => n as RoadmapNode),
           connections: action.payload.edges,
         } as Roadmap);
-        state.nodes = nodes;
+        state.nodes = nodes.map((n) => ({ ...n, type: 'creatorNode' }));
         state.edges = edges;
         return;
       }
@@ -88,7 +88,7 @@ const roadmapEditorSlice = createSlice({
     addNode: (state, action: PayloadAction<Node>) => {
       const node = {
         ...action.payload,
-        type: state.editorConfig.useStatus ? 'statusNode' : 'default',
+        type: state.editorConfig.useStatus ? 'statusNode' : 'creatorNode',
       };
       state.nodes.push(node);
     },

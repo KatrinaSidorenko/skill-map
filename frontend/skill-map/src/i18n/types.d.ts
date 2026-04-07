@@ -50,6 +50,9 @@ interface ILocalization {
     notStarted: string;
     inProgress: string;
     completed: string;
+    skip: string;
+    repeat: string;
+    upcoming: string;
     status: string;
     description: string;
     label: string;
@@ -101,6 +104,9 @@ interface ILocalization {
     inprogress: string;
     completed: string;
     notstarted: string;
+    skip: string;
+    repeat: string;
+    upcoming: string;
     saved: string;
     openInEditor: string;
     deleteSaved: string;
@@ -120,6 +126,9 @@ interface ILocalization {
     noSuggestions: string;
     actualStatus: string;
     suggestedStatus: string;
+    selected: string;
+    applySuccess: string;
+    applyError: string;
     error: string;
     cancel: string;
     apply: string;

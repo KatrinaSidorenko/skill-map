@@ -10,13 +10,15 @@ public class UpdateLearningItemRequest
     public string Id { get; set; }
 
     [JsonProperty("title")]
-    public string Title { get; set; }
+    public string? Title { get; set; }
+    [JsonProperty("type")]
+    public string? Type { get; set; }
 
     [JsonProperty("description")]
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
     [JsonProperty("status")]
-    public string Status { get; set; }
+    public string? Status { get; set; }
 
     [JsonProperty("clientWorkspaceVersion")]
     public int ClientWorkspaceVersion { get; set; }
@@ -25,5 +27,5 @@ public class UpdateLearningItemRequest
     public string IdempotencyKey { get; set; }
 
     public UpdateLearningItemCommand ToCommand(long userRoadmapId)
-        => new(userRoadmapId, Id, Title, Description, Status, ClientWorkspaceVersion, IdempotencyKey);
+        => new(userRoadmapId, Id, Title, Description, Status, Type, ClientWorkspaceVersion, IdempotencyKey);
 }

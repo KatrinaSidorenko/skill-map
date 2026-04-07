@@ -155,6 +155,7 @@ export default function useEventQueue() {
       change: LearningItemChangeRequest,
       updatedNode?: Node,
     ) => {
+      console.log(change);
       const key = generateNodeId();
       const event: QueueEvent = {
         idempotencyKey: key,

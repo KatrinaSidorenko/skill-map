@@ -39,7 +39,7 @@ internal static class LearningRoadmapStatusesPropagation
                 // "if add A-> C so only if B and C are completed A should be completd in another AssumedInprogress"
                 if (subtopics.Any())
                 {
-                    bool allCompleted = subtopics.All(c => c.Status == LearningStatus.Completed);
+                    bool allCompleted = subtopics.All(c => c.Status == LearningStatus.Completed || c.Assumption == AssessmentAssumption.AssumedCompleted);
                     bool allNotStarted = subtopics.All(c => c.Status == LearningStatus.NotStarted && c.Assumption == null);
                     bool anyInProgressOrCompleted = subtopics.Any(c =>
                         c.Status == LearningStatus.InProgress ||
@@ -50,7 +50,7 @@ internal static class LearningRoadmapStatusesPropagation
                     {
                         currentNode = currentNode with
                         {
-                            Status = LearningStatus.Completed,
+                           // Status = LearningStatus.Completed,
                             Assumption = currentNode.Status == LearningStatus.Completed ? currentNode.Assumption : AssessmentAssumption.AssumedCompleted
                         };
                     }
@@ -58,7 +58,7 @@ internal static class LearningRoadmapStatusesPropagation
                     {
                         currentNode = currentNode with
                         {
-                            Status = LearningStatus.InProgress,
+                            //Status = LearningStatus.InProgress,
                             Assumption = AssessmentAssumption.AssumedInProgress
                         };
                     }
@@ -82,7 +82,7 @@ internal static class LearningRoadmapStatusesPropagation
                         // Важно: переопределяем статус от композиции, так как наличие зависимого прогресса - это 100% пруф знания базы
                         currentNode = currentNode with
                         {
-                            Status = LearningStatus.Completed,
+                            // Status = LearningStatus.Completed,
                             Assumption = AssessmentAssumption.AssumedCompleted
                         };
 
@@ -91,7 +91,11 @@ internal static class LearningRoadmapStatusesPropagation
                         {
                             if (st.Status != LearningStatus.Completed)
                             {
-                                var updatedSubtopic = st with { Assumption = AssessmentAssumption.AssumedCompleted };
+                                var updatedSubtopic = st with 
+                                { 
+                                    //Status = LearningStatus.Completed, 
+                                    Assumption = AssessmentAssumption.AssumedCompleted 
+                                };
                                 itemsMap[st.Id] = updatedSubtopic;
                             }
                         });

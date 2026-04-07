@@ -23,16 +23,18 @@ internal static class QuestionDistributionCalculator
 
     internal static SubtopicPools BuildPools(List<LeaningItemAssessment> subtopics)
     {
+        subtopics = subtopics.Where(st => st.Status != LearningStatus.Skip).ToList();
+
         var completed = subtopics
-            .Where(s => s.Status == LearningStatus.Completed && s.Assumption == null)
-          .ToList();
+           .Where(s => s.Status == LearningStatus.Completed && s.Assumption == null)
+            .ToList();
 
         var assumed = subtopics
             .Where(s => s.Assumption == AssessmentAssumption.AssumedCompleted)
             .ToList();
 
         var frontier = subtopics
-      .Where(s => s.Status != LearningStatus.Completed && s.Assumption != AssessmentAssumption.AssumedCompleted)
+            .Where(s => s.Status != LearningStatus.Completed && s.Assumption != AssessmentAssumption.AssumedCompleted)
             .ToList();
 
         return new SubtopicPools(completed, assumed, frontier);

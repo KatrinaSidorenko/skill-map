@@ -1,21 +1,11 @@
-import { Box, Text, VStack, Badge } from '@chakra-ui/react';
+import { Box, Text, VStack } from '@chakra-ui/react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
-import { getStatusColor, getNodeTypeColor } from '../../helpers';
+import { getNodeTypeColor } from '../../helpers';
 import { useAppSelector } from '@/store/hooks';
 import { selectPendingIds, selectFailedIds } from '../store';
 
-const STATUS_LABELS: Record<LearningStatus, string> = {
-  notstarted: 'Not Started',
-  inprogress: 'In Progress',
-  completed: 'Completed',
-  skip: 'Skip',
-  repeat: 'Repeat',
-  upcoming: 'Upcoming',
-};
-
-export function StatusNode({ id, data, selected }: NodeProps) {
+export function CreatorNode({ id, data, selected }: NodeProps) {
   const label = data.label as string | undefined;
-  const status = data.status as LearningStatus | undefined;
   const nodeType = data.nodeType as LearningItemType | undefined;
   const pendingIds = useAppSelector(selectPendingIds);
   const failedIds = useAppSelector(selectFailedIds);
@@ -23,13 +13,8 @@ export function StatusNode({ id, data, selected }: NodeProps) {
   const isPending = pendingIds.includes(id);
   const isFailed = failedIds.includes(id);
 
-  const typeColor = getNodeTypeColor(
-    (nodeType as LearningItemType) ?? 'subtopic',
-  );
+  const typeColor = getNodeTypeColor((nodeType as LearningItemType) ?? 'subtopic');
   const topBorderColor = `${typeColor}.400`;
-  const effectiveStatus: LearningStatus = status ?? 'notstarted';
-  const statusColor = isFailed ? 'red' : isPending ? 'gray' : getStatusColor(effectiveStatus);
-  const statusLabel = isFailed ? 'Failed' : isPending ? 'Saving…' : STATUS_LABELS[effectiveStatus];
 
   return (
     <Box
@@ -56,8 +41,7 @@ export function StatusNode({ id, data, selected }: NodeProps) {
           : undefined
       }
     >
-      <VStack gap={2} align="center">
-        {/* Label */}
+      <VStack gap={1} align="center">
         <Text
           fontSize="sm"
           fontWeight="semibold"
@@ -66,17 +50,6 @@ export function StatusNode({ id, data, selected }: NodeProps) {
         >
           {label ?? ''}
         </Text>
-
-        {/* Status badge */}
-        <Badge
-          colorPalette={statusColor}
-          variant="subtle"
-          size="sm"
-          borderRadius="full"
-          px={2}
-        >
-          {statusLabel}
-        </Badge>
       </VStack>
 
       <Handle type="target" position={Position.Top} />
@@ -84,3 +57,4 @@ export function StatusNode({ id, data, selected }: NodeProps) {
     </Box>
   );
 }
+

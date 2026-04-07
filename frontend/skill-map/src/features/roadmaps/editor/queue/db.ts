@@ -6,6 +6,7 @@ export interface NodeSettings {
   label: string;
   description: string;
   status: string;
+  type: string;
 }
 
 interface SkillMapDB extends DBSchema {
@@ -28,7 +29,9 @@ let dbPromise: Promise<IDBPDatabase<SkillMapDB>> | null = null;
 
 export function getDB(): Promise<IDBPDatabase<SkillMapDB>> {
   if (typeof window === 'undefined') {
-    return Promise.reject(new Error('IndexedDB is not available on the server'));
+    return Promise.reject(
+      new Error('IndexedDB is not available on the server'),
+    );
   }
   if (!dbPromise) {
     dbPromise = openDB<SkillMapDB>('skill-map-event-queue', 2, {
@@ -55,4 +58,3 @@ export function getDB(): Promise<IDBPDatabase<SkillMapDB>> {
   }
   return dbPromise;
 }
-

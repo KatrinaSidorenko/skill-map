@@ -111,8 +111,14 @@ export function computeTopicStatus(
   childStatuses: LearningStatus[],
 ): LearningStatus {
   if (childStatuses.length === 0) return 'notstarted';
-  if (childStatuses.every((s) => s === 'completed')) return 'completed';
-  if (childStatuses.every((s) => s === 'notstarted')) return 'notstarted';
+  // If every child has the exact same status, bubble it straight up.
+  // This prevents cascade loops for statuses like skip/repeat/upcoming.
+  const first = childStatuses[0];
+  if (childStatuses.every((s) => s === first)) return first;
+  if (childStatuses.every((s) => s === 'completed' || s === 'skip'))
+    return 'completed';
+  if (childStatuses.every((s) => s === 'notstarted' || s === 'upcoming'))
+    return 'notstarted';
   return 'inprogress';
 }
 
@@ -127,6 +133,12 @@ export const getStatusColor = (status: LearningStatus) => {
       return 'green';
     case 'inprogress':
       return 'blue';
+    case 'skip':
+      return 'orange';
+    case 'repeat':
+      return 'yellow';
+    case 'upcoming':
+      return 'purple';
     case 'notstarted':
     default:
       return 'gray';

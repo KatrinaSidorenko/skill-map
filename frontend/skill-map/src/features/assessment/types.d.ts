@@ -98,6 +98,13 @@ interface RoadmapStateSuggestionItem {
 
 interface RoadmapStateSuggestionsResponse {
   suggestedItems: RoadmapStateSuggestionItem[];
+  topicToSubtopicConnections: Record<string, string[]>;
+}
+
+interface ApplySuggestionItem {
+  id: string;
+  type: LearningItemType;
+  status: LearningStatus;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type

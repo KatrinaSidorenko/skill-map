@@ -1,3 +1,4 @@
+using SkillMap.Api.RoadmapAssessments.ApplyRoadmapStateSuggestions;
 using SkillMap.Api.RoadmapAssessments.CreateAssessmentAttempt;
 using SkillMap.Api.RoadmapAssessments.CreateIntermediateAssessment;
 using SkillMap.Api.RoadmapAssessments.EvaluateRoadmapAssessment;
@@ -19,5 +20,6 @@ internal static class RoadmapAssessmentsEndpoints
         app.MapGetAssessmentAttemptResult();
         app.MapGetAssessmentHistory();
         app.MapGetRoadmapStateSuggestions();
+        app.MapApplyRoadmapStateSuggestions();
     }
 }

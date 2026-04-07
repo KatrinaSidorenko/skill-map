@@ -8,7 +8,7 @@ public record AddLearningItemCommand(long WorkspaceId, string Id, string Title, 
 {
     public WorkspaceEventType EventType => WorkspaceEventType.CreateLearningItem;
     public object GetMetadata()
-        => new LearningItemCreatedEvent(Id, Title, Description, Type, Status ?? LearningStatus.NotStarted.ToStatusString());
+        => new LearningItemCreatedEvent(Id, Title, Description, Status ?? LearningStatus.NotStarted.ToStatusString(), Type);
     public string GetMetadataJson() => GetMetadata().JsonSerializeOrDefault();
     public RoadmapWorkspaceEvent ToRoadmapWorkspaceEvent(int version)
         => new(WorkspaceId, EventType, GetMetadataJson(), version, IdempotencyKey);

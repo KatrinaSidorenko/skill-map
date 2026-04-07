@@ -7,12 +7,15 @@ public class RoadmapStateSuggestionsResponse
 {
     [JsonPropertyName("suggestedItems")]
     public List<RoadmapStateSuggestionItemResponse> SuggestedItems { get; init; }
+    [JsonPropertyName("topicToSubtopicConnections")]
+    public Dictionary<string, List<string>> TopicToSubtopicConnections { get; init; }
 
     public static RoadmapStateSuggestionsResponse Create(RoadmapStateSuggestionsDto dto) => new()
     {
         SuggestedItems = dto.SuggestedItems
             .Select(RoadmapStateSuggestionItemResponse.Create)
-            .ToList()
+            .ToList(),
+        TopicToSubtopicConnections = dto.TopicToSubtopicConnections
     };
 }
 

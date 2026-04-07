@@ -9,10 +9,7 @@ import {
 import { HiBars3 } from 'react-icons/hi2';
 import { Node, useReactFlow } from '@xyflow/react';
 import { useAppSelector } from '@/store/hooks';
-import {
-  selectWorkspaceId,
-  selectSelectedElement,
-} from '../store';
+import { selectWorkspaceId, selectSelectedElement } from '../store';
 import { generateNodeId } from '../../helpers';
 import createNodeDialog from './create-node';
 import useEventQueue from '../queue/useEventQueue';
@@ -47,7 +44,12 @@ export default function Toolbox({ onToggleSidebar }: ToolboxProps) {
   }, [selected, onRemoveSelected]);
 
   const handleCreateNode = useCallback(
-    (data: { label: string; description: string; status: string[]; nodeType: LearningItemType }) => {
+    (data: {
+      label: string;
+      description: string;
+      status: string[];
+      nodeType: LearningItemType;
+    }) => {
       if (!workspaceId) return;
       const { x, y, zoom } = reactFlowInstance.getViewport();
       const viewportCenter = {
@@ -73,7 +75,7 @@ export default function Toolbox({ onToggleSidebar }: ToolboxProps) {
           title: data.label || 'Untitled Node',
           description: data.description,
           status: (data.status[0] || 'notstarted') as LearningStatus,
-          nodeType: data.nodeType,
+          type: data.nodeType,
         },
         reactFlowNode,
       );

@@ -28,11 +28,13 @@ import {
   setSelectedElement,
 } from './store';
 import { StatusNode } from './status-node';
+import { CreatorNode } from './status-node/CreatorNode';
 import { generateEdgeId } from '@/features/roadmaps/helpers';
 import useEventQueue from './queue/useEventQueue';
 
 const nodeTypes: NodeTypes = {
   statusNode: StatusNode,
+  creatorNode: CreatorNode,
 };
 
 function RoadmapEditorContainer({ children }: { children: React.ReactNode }) {

@@ -36,7 +36,16 @@ internal class GetRoadmapStateSuggestionsHandler(
         var snapshotWithSuggestedStatuses = ApplySuggestedLearningStatuses(workspaceSnapshot, suggestions);
         var propagatedSnapshotWithSuggestedStatuses = LearningRoadmapStatusesPropagation.PropagateLearningItemStatuses(snapshotWithSuggestedStatuses);
         var differences = CalculateDifferencesBetweenSnapshots(workspaceSnapshot, propagatedSnapshotWithSuggestedStatuses);
-        return new RoadmapStateSuggestionsDto(differences);
+        var itemsConnections = workspaceSnapshot.LearningItemsConnections
+            .GroupBy(c => c.FromId)
+            .ToDictionary(g => g.Key, g => g.Select(c => c.ToId).ToList());
+        var learningItemsDict = workspaceSnapshot.LearningItems.ToDictionary(li => li.Id);
+        var topicToSubtopicConnections = workspaceSnapshot.LearningItems
+            .Where(li => li.Type == LearningItemType.Topic)
+            .ToDictionary(
+                li => li.Id,
+                li => (itemsConnections.GetOrDefault(li.Id) ?? []).Where(i => learningItemsDict.GetOrDefault(i)?.Type == LearningItemType.SubTopic).ToList());
+        return new RoadmapStateSuggestionsDto(differences, topicToSubtopicConnections);
     }
 
     private List<LearningItemSuggestionDto> CalculateDifferencesBetweenSnapshots(RoadmapSnapshot actualSnapshot, List<LeaningItemAssessment> leaningItemsWithAppliedSuggestions)
@@ -46,6 +55,8 @@ internal class GetRoadmapStateSuggestionsHandler(
         foreach (var learningItem in leaningItemsWithAppliedSuggestions)
         {
             var actualStatus = actualStatusesDict.GetOrDefault(learningItem.Id);
+            if (actualStatus == LearningStatus.Skip) continue;
+
             var suggestedStatus = learningItem.GetLearningStatus();
             if (actualStatus != suggestedStatus)
             {

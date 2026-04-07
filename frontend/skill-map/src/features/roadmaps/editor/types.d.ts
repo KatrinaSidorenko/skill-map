@@ -7,6 +7,7 @@ interface LearningItemChangeRequest {
   title?: string;
   description?: string;
   status?: LearningStatus;
+  type?: LearningItemType;
   idempotencyKey?: string;
 }
 
@@ -25,7 +26,7 @@ interface CreateNodeRequest {
   title: string;
   description: string;
   status: LearningStatus;
-  nodeType?: LearningItemType;
+  type?: LearningItemType;
   idempotencyKey?: string;
 }
 
