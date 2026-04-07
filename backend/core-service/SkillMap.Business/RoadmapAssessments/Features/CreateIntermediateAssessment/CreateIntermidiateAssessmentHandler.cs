@@ -9,13 +9,9 @@ using SkillMap.Business.Abstractions;
 using SkillMap.Business.RoadmapAssessments.Common;
 using SkillMap.Business.RoadmapAssessments.Common.SelectLearningItems;
 using SkillMap.Business.RoadmapsWorkspace;
-using SkillMap.Business.RoadmapTest;
-using SkillMap.Business.RoadmapTest.Models;
-using SkillMap.Business.UserTest;
 using SkillMap.Core.Constants;
 using SkillMap.Core.RoadmapAssessments;
 using SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots;
-using SkillMap.Core.Tasks;
 
 namespace SkillMap.Business.RoadmapAssessments.Features.CreateIntermediateAssessment;
 
@@ -51,14 +47,14 @@ internal class CreateIntermediateAssessmentHandler(
 
         var generatedTopicQuestions = await questionsGenerator.GenerateTopicsQuestions(topicsWithSettings, cancellationToken);
 
-        var roadmapTest = new RoadmapTestDao
+        var roadmapTest = new RoadmapAssessmentDto
         {
             RoadmapId = snapshot.Id,
             WorkspaceId = request.WorkspaceId.ToString(),
             Type = TestType.ToString(),
             TopicQuestions = generatedTopicQuestions,
             TopicSettings = creationSettings,
-            TestConfig = new RoadmapTestConfigDto { DifficultyLevel = Difficulty.Medium.ToDifficultyString() },
+            TestConfig = new RoadmapAssessmentConfigDto { DifficultyLevel = Difficulty.Medium.ToDifficultyString() },
         };
 
         var entity = new RoadmapAssessment

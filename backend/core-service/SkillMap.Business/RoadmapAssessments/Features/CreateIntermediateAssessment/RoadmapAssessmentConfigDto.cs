@@ -2,11 +2,9 @@
 
 using Newtonsoft.Json;
 
-namespace SkillMap.Business.RoadmapTest.Models;
-
-public class RoadmapTestConfigDto
+namespace SkillMap.Business.RoadmapAssessments.Features.CreateIntermediateAssessment;
+internal class RoadmapAssessmentConfigDto
 {
-
     [JsonProperty("numberOfQuestions")]
     public int? NumberOfQuestions { get; set; } = 15;
     [JsonProperty("timeLimitInMinutes")]

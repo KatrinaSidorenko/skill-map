@@ -1,9 +1,10 @@
 ﻿using LearningPlatform.Roadmap.Business.Contracts.Models;
 using LearningPlatform.RoadmapTests.Contracts.Models;
 
-namespace SkillMap.Business.RoadmapTest.TopicSelectors;
 
-public class StratifiedRoadmapTopicsSelector : IRoadmapTopicsSelector
+namespace SkillMap.Business.RoadmapAssessments.Common.SelectLearningItems;
+
+public class StratifiedRoadmapTopicsSelector
 {
     public List<Topic> SelectCoreTopics(
         List<Node> nodes,

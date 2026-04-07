@@ -12,7 +12,6 @@ using MediatR;
 
 using SkillMap.Business.Abstractions;
 using SkillMap.Business.RoadmapAssessments.Common;
-using SkillMap.Business.RoadmapTest.Models;
 using SkillMap.Core.RoadmapAssessments;
 using SkillMap.Shared.Extensions;
 using SkillMap.Shared.Results;
