@@ -122,6 +122,8 @@
     "viewSuggestions": "View Suggestions",
     "suggestionsTitle": "Suggestions for Test",
     "noSuggestions": "No suggestions available.",
+    "actualStatus": "Current Status",
+    "suggestedStatus": "Suggested Status",
     "error": "Error",
     "cancel": "Cancel",
     "apply": "Apply"

@@ -88,15 +88,16 @@ interface AnswerDetail {
 }
 
 // SUGGESTIONS
-interface RoadmapTestSuggestionItem {
-  learningItemId: string;
-  status: LearningStatus;
+interface RoadmapStateSuggestionItem {
+  id: string;
   title: string;
-  description: string;
+  type: LearningItemType;
+  actualStatus: LearningStatus;
+  suggestedStatus: LearningStatus;
 }
 
-interface RoadmapTestSuggestionsDto {
-  suggestions: RoadmapTestSuggestionItem[];
+interface RoadmapStateSuggestionsResponse {
+  suggestedItems: RoadmapStateSuggestionItem[];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type

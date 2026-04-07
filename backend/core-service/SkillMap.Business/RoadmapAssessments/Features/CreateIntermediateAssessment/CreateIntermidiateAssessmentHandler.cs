@@ -36,7 +36,7 @@ internal class CreateIntermediateAssessmentHandler(
             {
                 DifficultyLevel = Difficulty.Medium,
                 QuestionsCount = 1,
-                Types = RoadmapTestConstants.SupportedQuestionTypes.ToList(),
+                Types = RoadmapAssessmentConstant.SupportedQuestionTypes.ToList(),
             });
 
         var topicsWithSettings = selectedSubtopics

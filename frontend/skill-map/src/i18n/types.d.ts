@@ -118,6 +118,8 @@ interface ILocalization {
     viewSuggestions: string;
     suggestionsTitle: string;
     noSuggestions: string;
+    actualStatus: string;
+    suggestedStatus: string;
     error: string;
     cancel: string;
     apply: string;

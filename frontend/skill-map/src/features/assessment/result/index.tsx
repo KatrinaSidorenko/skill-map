@@ -12,7 +12,6 @@ import {
   useLazyGetRoadmapChangesSuggestionQuery,
   useLazyGetRoadmapTestResultQuery,
 } from '../api';
-import { toaster } from '@/components/ui/toaster';
 import useLocalization from '@/i18n/useLocalization';
 
 export default function TestResults({ attemptId }: { attemptId?: string }) {
@@ -28,13 +27,13 @@ export default function TestResults({ attemptId }: { attemptId?: string }) {
     router.replace(`/saved/roadmap/${checkedQuestionResults?.workspaceId}`);
   };
 
-  const [getRoadmapChangesSuggestion, { data, isLoading }] =
+  const [getRoadmapChangesSuggestion, { isLoading }] =
     useLazyGetRoadmapChangesSuggestionQuery();
 
   const onViewSuggestions = () => {
     if (!attemptId) return;
 
-    getRoadmapChangesSuggestion({ testResultId: attemptId })
+    getRoadmapChangesSuggestion({ attemptId })
       .unwrap()
       .then((data) => {
         createRoadmapTestSuggestionsDialog.open(

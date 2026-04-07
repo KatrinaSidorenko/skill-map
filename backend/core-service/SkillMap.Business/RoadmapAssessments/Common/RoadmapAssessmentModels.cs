@@ -27,6 +27,17 @@ internal record LeaningItemAssessment(
             snapshot.Status,
             assumption);
     }
+
+    public LearningStatus GetLearningStatus()
+    {
+        return !Assumption.HasValue ? Status
+            : Assumption.Value switch
+            {
+                AssessmentAssumption.AssumedCompleted => LearningStatus.Completed,
+                AssessmentAssumption.AssumedInProgress => LearningStatus.InProgress,
+                _ => Status
+            };
+    }
 }
 internal record LearningItemsConnectionAssessment(
     string Id,
@@ -42,3 +53,9 @@ internal record LearningItemsConnectionAssessment(
             snapshot.ToId);
     }
 }
+
+internal record LearningItemSuggestion(
+    string Id,
+    LearningStatus Status,
+    AssessmentAssumption? Assumption,
+    LearningStatus SuggestedStatus);

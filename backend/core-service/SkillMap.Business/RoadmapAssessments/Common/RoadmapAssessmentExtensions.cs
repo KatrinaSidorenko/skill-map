@@ -6,7 +6,7 @@ using UserRoadmpTestDao = SkillMap.Core.RoadmapAssessments.RoadmapAssessment;
 
 namespace SkillMap.Business.RoadmapAssessments.Common;
 
-public static class RoadmapTestExtensions
+public static class RoadmapAssessmentExtensions
 {
     public static async Task<RoadmapTestDao> GetAssessmentContent(this UserRoadmpTestDao userRoadmapTest, CancellationToken ct)
     {

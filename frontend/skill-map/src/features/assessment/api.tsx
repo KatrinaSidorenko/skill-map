@@ -77,11 +77,11 @@ export const assessmentApi = createApi({
       },
     }),
     getRoadmapChangesSuggestion: builder.query<
-      RoadmapTestSuggestionsDto,
-      { testResultId: string }
+      RoadmapStateSuggestionsResponse,
+      { attemptId: string }
     >({
-      query: ({ testResultId }) => ({
-        url: `roadmaptest/suggestions/${testResultId}`,
+      query: ({ attemptId }) => ({
+        url: `assessments/attempts/${attemptId}/suggestions`,
         method: 'GET',
       }),
     }),

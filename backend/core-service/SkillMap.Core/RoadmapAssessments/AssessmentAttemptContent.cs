@@ -5,15 +5,15 @@ namespace SkillMap.Core.RoadmapAssessments;
 
 public class AssessmentAttemptContent
 {
-    public Dictionary<string, TopicAnswersAnalysis> TopicsAnalysis { get; set; }
+    public Dictionary<string, LearningItemAnswersAnalysis> LearningItemsAnalysis { get; set; }
 
     [JsonIgnore]
-    public int TotalPossiblePoints => TopicsAnalysis.Values.Sum(t => t.TotalPossiblePoints);
+    public int TotalPossiblePoints => LearningItemsAnalysis.Values.Sum(t => t.TotalPossiblePoints);
     [JsonIgnore]
-    public int AchievedPoints => TopicsAnalysis.Values.Sum(t => t.AchievedPoints);
+    public int AchievedPoints => LearningItemsAnalysis.Values.Sum(t => t.AchievedPoints);
 }
 
-public class TopicAnswersAnalysis
+public class LearningItemAnswersAnalysis
 {
     public Dictionary<string, QuestionAnalysisResult> QuestionsAnalysis { get; set; }
     [JsonIgnore]

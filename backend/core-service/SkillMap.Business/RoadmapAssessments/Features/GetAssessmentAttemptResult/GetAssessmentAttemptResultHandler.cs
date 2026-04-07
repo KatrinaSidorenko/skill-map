@@ -30,9 +30,9 @@ internal sealed class GetAssessmentAttemptResultHandler(
             ?? throw new ResourceNotFoundException(nameof(RoadmapAssessment), attempt.AssessmentId.ToString());
         var assessmentContent = await assessment.GetAssessmentContent(cancellationToken);
 
-        var questionLookup = assessmentContent.TopicQuestions.SelectMany(tq => tq.Questions).ToDictionary(q => q.Id);
+        var questionLookup = assessmentContent.TopicQuestions?.SelectMany(tq => tq.Questions).ToDictionary(q => q.Id);
 
-        var questionResults = attemptContent.TopicsAnalysis.SelectMany(topic => topic.Value.QuestionsAnalysis.Select(qa => (TopicId: topic.Key, QuestionId: qa.Key, Result: qa.Value)))
+        var questionResults = attemptContent.LearningItemsAnalysis?.SelectMany(topic => topic.Value.QuestionsAnalysis.Select(qa => (TopicId: topic.Key, QuestionId: qa.Key, Result: qa.Value)))
             .ToDictionary(
                 x => x.QuestionId,
                 x =>

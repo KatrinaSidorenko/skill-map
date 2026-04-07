@@ -2,7 +2,7 @@
 
 namespace SkillMap.Business.RoadmapAssessments.Common;
 
-public class RoadmapTestConstants
+public class RoadmapAssessmentConstant
 {
     public const int MinAmountOfTopics = 3;
     public const int MaxQuestionsPerTopic = 3;

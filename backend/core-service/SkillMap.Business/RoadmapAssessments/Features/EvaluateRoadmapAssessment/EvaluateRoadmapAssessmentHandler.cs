@@ -17,7 +17,7 @@ using SkillMap.Shared.Extensions;
 using SkillMap.Shared.Results;
 
 using CoreQuestionAnalysisResult = SkillMap.Core.RoadmapAssessments.QuestionAnalysisResult;
-using CoreTopicAnswersAnalysis = SkillMap.Core.RoadmapAssessments.TopicAnswersAnalysis;
+using CoreTopicAnswersAnalysis = SkillMap.Core.RoadmapAssessments.LearningItemAnswersAnalysis;
 
 namespace SkillMap.Business.RoadmapAssessments.Features.EvaluateRoadmapAssessment;
 
@@ -43,7 +43,7 @@ internal sealed class EvaluateRoadmapAssessmentHandler(
             q => ScoreQuestion(q, answersByQuestionId.GetOrDefault(q.Id)));
         var analysisResult = new AssessmentAttemptContent
         {
-            TopicsAnalysis = content.TopicQuestions.ToDictionary(
+            LearningItemsAnalysis = content.TopicQuestions.ToDictionary(
              tq => tq.TopicId,
             tq => new CoreTopicAnswersAnalysis
             {

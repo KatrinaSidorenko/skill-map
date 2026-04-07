@@ -116,6 +116,8 @@
     "viewSuggestions": "Переглянути пропозиції",
     "suggestionsTitle": "Пропозиції за тестом",
     "noSuggestions": "Пропозицій немає.",
+    "actualStatus": "Поточний статус",
+    "suggestedStatus": "Рекомендований статус",
     "error": "Помилка",
     "cancel": "Скасувати",
     "apply": "Застосувати"
