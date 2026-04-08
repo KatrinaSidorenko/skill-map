@@ -6,7 +6,6 @@ import {
   VStack,
   HStack,
   Text,
-  Image,
   Button,
   Separator,
   Progress,
@@ -16,7 +15,6 @@ import {
 import { FiArrowRight, FiTrash2 } from 'react-icons/fi';
 import { useRouter } from 'next/navigation';
 import useLocalization from '@/i18n/useLocalization';
-import { MOCK_IMAGE_URL } from '@/store/mock';
 import { formatDistanceToNow } from 'date-fns';
 import { getProgressInPercentage, getStatusColor } from '../../helpers';
 import ContentNotFoundScreen from '@/components/base/notfound';
@@ -28,13 +26,9 @@ import {
 import { useEffect } from 'react';
 import { toaster } from '@/components/ui/toaster';
 import SpinnerScreen from '@/components/base/spinner';
-import {
-  useCreateStartTestTakeAttemptMutation,
-  useGenerateIntermediateRoadmapTestMutation,
-  useGenerateRoadmapTestMutation,
-} from '@/features/assessment/api';
-import { DEFAULT_GENERATE_TEST_CONFIG } from '@/features/assessment/helper';
+import { useRoadmapAssessment } from '@/features/assessment/useRoadmapAssessment';
 import TestingHistory from '@/components/testing-history';
+import ImageWrapper from '@/components/ui/imageWrapper';
 
 export default function SavedRoadmapView({
   roadmap,
@@ -44,40 +38,20 @@ export default function SavedRoadmapView({
   const router = useRouter();
   const { getRoadmapTransaltions } = useLocalization();
   const statusColor = getStatusColor(roadmap.status);
-  const [generateTest, { isLoading }] = useGenerateRoadmapTestMutation();
-  const [
-    generateIntermediateRoadmapTest,
-    { isLoading: isGeneratingIntermediate },
-  ] = useGenerateIntermediateRoadmapTestMutation();
   const [deleteRoadmap, { isLoading: isDeletingRoadmap }] =
     useDeleteRoadmapMutation();
-  const [startNewAttempt, { isLoading: isStartingNewAttempt }] =
-    useCreateStartTestTakeAttemptMutation();
-  const takeTest = async () => {
-    try {
-      const result = await generateTest({
-        roadmapId: roadmap.id,
-        config: DEFAULT_GENERATE_TEST_CONFIG,
-      }).unwrap();
-      console.log('Generated Test:', result);
-      router.push(`/assessment/${result.testId}`);
-    } catch (error) {
-      console.error('Error generating test:', error);
-    }
-  };
 
-  const takeIntermediateTest = async () => {
-    try {
-      const result = await generateIntermediateRoadmapTest({
-        roadmapId: roadmap.id,
-        config: DEFAULT_GENERATE_TEST_CONFIG,
-      }).unwrap();
-      console.log('Generated Intermediate Test:', result);
-      router.push(`/assessment/${result.testId}`);
-    } catch (error) {
-      console.error('Error generating intermediate test:', error);
-    }
-  };
+  const {
+    takeInitialTest,
+    takeIntermediateTest,
+    onStartNewAttempt,
+    onContinueAttempt,
+    onOpenAttempt,
+    isInitialGenerating,
+    isIntermediateGenerating,
+  } = useRoadmapAssessment({
+    onError: (msg) => toaster.error({ title: msg }),
+  });
 
   const [
     getRoadmapTestingHistory,
@@ -89,54 +63,22 @@ export default function SavedRoadmapView({
       .unwrap()
       .catch(() => {
         toaster.error({
-          title: 'Failed to load testing history. Please try again later.',
+          title: getRoadmapTransaltions('failedToLoadTestingHistory'),
         });
       });
   }, [roadmap.id, getRoadmapTestingHistory]);
   const handleOpenEditor = () => {
-    router.push(`/editor/sandbox/saved/${roadmap.id}`);
+    router.push(`/editor/sandbox/${roadmap.id}`);
   };
 
-  const onOpenAttempt = ({
-    testId,
-    resultId,
-  }: {
-    testId: string;
-    resultId: string;
-  }) => {
-    router.replace(`/assessment/${testId}/result/${resultId}`);
-  };
-
-  const onStartNewAttempt = async ({ testId }: { testId: string }) => {
-    await startNewAttempt({ testId })
-      .unwrap()
-      .then(() => {
-        router.push(`/assessment/${testId}`);
-      })
-      .catch(() => {
-        toaster.error({
-          title: 'Failed to start a new attempt. Please try again later.',
-        });
-      });
-  };
-
-  const onContinueAttempt = ({
-    testId,
-    resultId,
-  }: {
-    testId: string;
-    resultId: string;
-  }) => {
-    router.push(`/assessment/${testId}`);
-  };
 
   const deleteRoadmapHandler = async () => {
     try {
       await deleteRoadmap({ id: roadmap.id }).unwrap();
       router.push('/saved');
-    } catch (error) {
+    } catch {
       toaster.error({
-        title: 'Failed to delete the saved roadmap. Please try again later.',
+        title: getRoadmapTransaltions('failedToDeleteSavedRoadmap'),
       });
     }
   };
@@ -162,12 +104,11 @@ export default function SavedRoadmapView({
             borderRadius="xl"
             overflow="hidden"
             borderWidth="1px"
-            borderColor="border.default"
             bg="bg.page"
           >
-            <Image
-              src={roadmap.imageUrl ?? MOCK_IMAGE_URL}
-              alt={roadmap.title}
+            <ImageWrapper
+              imageUrl={roadmap.imageUrl}
+              title={roadmap.title}
               w="full"
               h="full"
               objectFit="cover"
@@ -265,7 +206,7 @@ export default function SavedRoadmapView({
               <Button size="sm" onClick={handleOpenEditor}>
                 <HStack gap={2}>
                   <FiArrowRight />
-                  <Span>Open in Editor</Span>
+                  <Span>{getRoadmapTransaltions('openInEditor')}</Span>
                 </HStack>
               </Button>
 
@@ -278,7 +219,7 @@ export default function SavedRoadmapView({
               >
                 <HStack gap={2}>
                   <FiTrash2 />
-                  <Span>Delete Saved</Span>
+                  <Span>{getRoadmapTransaltions('deleteSaved')}</Span>
                 </HStack>
               </Button>
             </HStack>
@@ -293,13 +234,13 @@ export default function SavedRoadmapView({
         <TestingHistory
           data={testingHistory}
           isLoading={isTestingHistoryLoading}
-          onGenerateInitialTest={takeTest}
-          isInitialTestGenerating={isLoading}
+          onGenerateInitialTest={() => takeInitialTest(roadmap.id)}
+          isInitialTestGenerating={isInitialGenerating}
           onOpenAttempt={onOpenAttempt}
           onContinueAttempt={onContinueAttempt}
           onStartNewAttempt={onStartNewAttempt}
-          onGenerateIntermediateTest={takeIntermediateTest}
-          isIntermediateTestGenerating={isGeneratingIntermediate}
+          onGenerateIntermediateTest={() => takeIntermediateTest(roadmap.id)}
+          isIntermediateTestGenerating={isIntermediateGenerating}
         />
       </Box>
     </Box>
@@ -309,13 +250,14 @@ export default function SavedRoadmapView({
 export function SavedRoadmapViewWrapper({ roadmapId }: { roadmapId: string }) {
   const [triggerGetRoadmap, { isLoading, data: savedRoadmap }] =
     useLazyGetPlainUserSavedRoadmapQuery();
+  const { getRoadmapTransaltions } = useLocalization();
   useEffect(() => {
     if (roadmapId) {
       triggerGetRoadmap(roadmapId)
         .unwrap()
         .catch(() => {
           toaster.error({
-            title: 'Failed to load the saved roadmap. Please try again later.',
+            title: getRoadmapTransaltions('failedToLoadSavedRoadmap'),
           });
         });
     }

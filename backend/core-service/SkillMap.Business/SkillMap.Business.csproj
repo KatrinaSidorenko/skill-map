@@ -7,10 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+    <PackageReference Include="JetBrains.Annotations" Version="2025.2.4" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\roadmap-tests\LearningPlatform.RoadmapTests.Contracts\LearningPlatform.RoadmapTests.Contracts.csproj" />
     <ProjectReference Include="..\..\roadmaps-catalog-service\LearningPlatform.Roadmap.Business\LearningPlatform.Roadmap.Business.csproj" />
     <ProjectReference Include="..\..\shared\SkillMap.Shared\SkillMap.Shared.csproj" />
     <ProjectReference Include="..\SkillMap.Core\SkillMap.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="PersonalRoadmaps\Features\SuppressPersonalRoadmap\" />
   </ItemGroup>
 
 </Project>

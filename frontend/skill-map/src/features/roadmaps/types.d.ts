@@ -1,7 +1,14 @@
-type LearningStatus = 'notstarted' | 'inprogress' | 'completed';
+type LearningStatus =
+  | 'notstarted'
+  | 'inprogress'
+  | 'completed'
+  | 'skip'
+  | 'repeat'
+  | 'upcoming';
 
 interface PlainRoadmap {
   id: string;
+  workspaceId: string;
   title: string;
   description: string;
   imageUrl: string;
@@ -17,10 +24,12 @@ interface SavedPlainRoadmap extends PlainRoadmap {
   status: LearningStatus;
 }
 
+type LearningItemType = 'topic' | 'subtopic';
 interface RoadmapNode {
   id: string;
   title: string;
   description: string;
+  type: LearningItemType;
 }
 
 interface RoadmapEdge {
@@ -30,11 +39,12 @@ interface RoadmapEdge {
 
 interface Roadmap {
   id: string;
+  workspaceId: string;
   title: string;
   description: string;
   isSaved?: boolean;
-  nodes: RoadmapNode[];
-  edges: RoadmapEdge[];
+  items: RoadmapNode[];
+  connections: RoadmapEdge[];
 }
 
 interface SavedRoadmap {
@@ -42,8 +52,8 @@ interface SavedRoadmap {
   title: string;
   description: string;
   imageUrl: string;
-  nodes: ModifiedNode[];
-  edges: RoadmapEdge[];
+  items: ModifiedNode[];
+  connections: RoadmapEdge[];
   progress: number; // percentage of completion
   savedAt: string; // ISO date string
   status: LearningStatus;
@@ -83,14 +93,17 @@ interface CreateDraftRoadmapPayload {
   title: string;
   description: string;
   imageUrl?: string;
-  isPublic: boolean;
+  isPublic?: boolean;
 }
 
 interface UpdateUserRoadmapRequest {
   title?: string;
   description?: string;
   imageUrl?: string;
-  isPublic?: boolean;
+}
+
+interface PublishRoadmapRequest {
+  isPublic: boolean;
 }
 
 interface CreatedUserRoadmap {

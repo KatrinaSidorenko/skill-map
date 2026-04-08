@@ -1,0 +1,2 @@
+﻿namespace SkillMap.Business.RoadmapAssessments.Features.GetRoadmapStateSuggestions;
+public record GetRoadmapStateSuggestionsQuery(long AttemptId) : ICommand<RoadmapStateSuggestionsDto>;

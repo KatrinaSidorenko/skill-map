@@ -15,25 +15,26 @@ import {
   NodeMouseHandler,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { Flex, VStack, Text, Button } from '@chakra-ui/react';
+import { Flex, VStack, Button } from '@chakra-ui/react';
 import { IoChevronBackOutline } from 'react-icons/io5';
 
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
-  selectPlainRoadmap,
   selectRoadmap,
-  selectRoadmapId,
-  setEdge,
+  selectWorkspaceId,
   setEdgeChnages,
   setNodeChanges,
   setSelectedElement,
 } from './store';
-import { useCreateEdgeMutation } from '../api';
 import { StatusNode } from './status-node';
+import { CreatorNode } from './status-node/CreatorNode';
+import { generateEdgeId } from '@/features/roadmaps/helpers';
+import useEventQueue from './queue/useEventQueue';
 
 const nodeTypes: NodeTypes = {
   statusNode: StatusNode,
+  creatorNode: CreatorNode,
 };
 
 function RoadmapEditorContainer({ children }: { children: React.ReactNode }) {
@@ -45,7 +46,6 @@ function RoadmapEditorContainer({ children }: { children: React.ReactNode }) {
 }
 
 function RoadmapEditorHeader() {
-  const roadmap = useAppSelector(selectPlainRoadmap);
   const router = useRouter();
   return (
     <Flex
@@ -59,28 +59,20 @@ function RoadmapEditorHeader() {
       <Button size="sm" variant="ghost" onClick={() => router.back()}>
         <IoChevronBackOutline size="24" />
       </Button>
-
-      <Text fontSize="xl" fontWeight="semibold" pr={2}>
-        {roadmap?.title || 'Untitled Roadmap'}
-      </Text>
     </Flex>
   );
 }
 
 interface RoadmapEditorProps {
   children: React.ReactNode;
-  createEdge: ReturnType<typeof useCreateEdgeMutation>[0];
   setSidebarOpen: (open: boolean) => void;
 }
 
-function RoadmapEditor({
-  children,
-  createEdge,
-  setSidebarOpen,
-}: RoadmapEditorProps) {
+function RoadmapEditor({ children, setSidebarOpen }: RoadmapEditorProps) {
   const dispatch = useAppDispatch();
-  const roadmapId = useAppSelector(selectRoadmapId);
+  const roadmapId = useAppSelector(selectWorkspaceId);
   const { nodes, edges } = useAppSelector(selectRoadmap);
+  const { queueCreateEdge } = useEventQueue();
 
   const handleNodeDoubleClick: NodeMouseHandler = useCallback(
     (event, node) => {
@@ -88,7 +80,7 @@ function RoadmapEditor({
       dispatch(setSelectedElement(node));
       setSidebarOpen(true);
     },
-    [dispatch],
+    [dispatch, setSidebarOpen],
   );
 
   const onNodesChange = useCallback(
@@ -101,30 +93,25 @@ function RoadmapEditor({
     [dispatch],
   );
 
-  // todo: refactor merge
   const onNodeClick = useCallback((_e: React.MouseEvent, node: Node) => {
     dispatch(setSelectedElement(node));
-  }, []);
+  }, [dispatch]);
 
   const onEdgeClick = useCallback((_e: React.MouseEvent, edge: Edge) => {
     dispatch(setSelectedElement(edge));
-  }, []);
+  }, [dispatch]);
 
   const onConnect = useCallback(
     (connection: Connection) => {
-      dispatch(setEdge(connection));
       if (!roadmapId) return;
-      createEdge({
-        roadmapId: roadmapId,
-        edge: {
-          sourceId: connection.source!,
-          targetId: connection.target!,
-        },
-      }).catch((err) => {
-        console.error('Failed to create edge:', err);
-      });
+      const edgeId = generateEdgeId(connection.source!, connection.target!);
+      queueCreateEdge(
+        roadmapId,
+        { id: edgeId, source: connection.source!, target: connection.target! },
+        connection,
+      );
     },
-    [roadmapId],
+    [roadmapId, queueCreateEdge],
   );
 
   return (

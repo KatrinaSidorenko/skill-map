@@ -56,7 +56,8 @@ public static class RoadmapMapper
         {
             Id = nodeDto.Id.RemoveDashFromGuid(),
             Title = nodeDto.Title,
-            Description = nodeDto.Description
+            Description = nodeDto.Description,
+            Type = nodeDto.Type,
         };
     }
 

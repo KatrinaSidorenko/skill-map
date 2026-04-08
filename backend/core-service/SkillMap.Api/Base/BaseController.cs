@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 
 using SkillMap.Business.Abstractions;
-using SkillMap.Core.Entities;
+using SkillMap.Core.User;
 using SkillMap.Shared.Results;
 
 namespace SkillMap.Api.Base;

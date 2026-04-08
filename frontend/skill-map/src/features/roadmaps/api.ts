@@ -7,33 +7,27 @@ export const roadmapApi = createApi({
   endpoints: (builder) => ({
     getRoadmaps: builder.query<PaginationResponse<PlainRoadmap>, SearchConfig>({
       query: ({ pageSize, pageNumber, query }) => ({
-        url: 'roadmaps',
+        url: 'roadmap-blueprints',
         method: 'GET',
         params: { pageSize, pageNumber, query },
       }),
     }),
     getRoadmapById: builder.query<RoadmapResponse, string>({
       query: (id) => ({
-        url: `roadmaps/${id}`,
-        method: 'GET',
-      }),
-    }),
-    getRebuildRoadmapById: builder.query<RoadmapResponse, string>({
-      query: (id) => ({
-        url: `roadmaptest/rebuild/${id}`,
+        url: `roadmap-blueprints/${id}`,
         method: 'GET',
       }),
     }),
     saveRoadmap: builder.mutation<void, { id: string }>({
       query: ({ id }) => ({
-        url: `userroadmaps/save`,
+        url: `roadmaps-workspace`,
         method: 'POST',
         params: { roadmapId: id },
       }),
     }),
     deleteRoadmap: builder.mutation<void, { id: string }>({
       query: ({ id }) => ({
-        url: `userroadmaps/archive/${id}`,
+        url: `roadmaps-workspace/${id}`,
         method: 'DELETE',
       }),
     }),
@@ -42,57 +36,18 @@ export const roadmapApi = createApi({
       SearchConfig
     >({
       query: ({ pageSize, pageNumber, query }) => ({
-        url: 'modifiedroadmaps',
+        url: 'roadmaps-workspace',
         method: 'GET',
         params: { pageSize, pageNumber, query },
       }),
     }),
     getSavedRoadmap: builder.query<SavedRoadmap, string>({
       query: (id) => ({
-        url: `modifiedroadmaps/${id}`,
+        url: `roadmaps-workspace/${id}`,
         method: 'GET',
       }),
     }),
-    saveLearningItemChanges: builder.mutation<
-      void,
-      { roadmapId: string; changes: LearningItemsChangesRequest }
-    >({
-      query: ({ roadmapId, changes }) => ({
-        url: `modifiedroadmaps/save-change/${roadmapId}`,
-        method: 'POST',
-        body: changes,
-      }),
-    }),
-    deleteLearningItem: builder.mutation<
-      void,
-      { roadmapId: string; item: DeleteLearningItemRequest }
-    >({
-      query: ({ roadmapId, item }) => ({
-        url: `modifiedroadmaps/delete/${roadmapId}`,
-        method: 'POST',
-        body: item,
-      }),
-    }),
-    createNode: builder.mutation<
-      void,
-      { roadmapId: string; node: CreateNodeRequest }
-    >({
-      query: ({ roadmapId, node }) => ({
-        url: `modifiedroadmaps/create-item/${roadmapId}`,
-        method: 'POST',
-        body: node,
-      }),
-    }),
-    createEdge: builder.mutation<
-      void,
-      { roadmapId: string; edge: CreateEdgeRequest }
-    >({
-      query: ({ roadmapId, edge }) => ({
-        url: `modifiedroadmaps/create-connection/${roadmapId}`,
-        method: 'POST',
-        body: edge,
-      }),
-    }),
+
     getLearningItemMaterials: builder.query<
       LearningItemMaterial[],
       { roadmapId: string; itemId: string }
@@ -105,7 +60,7 @@ export const roadmapApi = createApi({
     }),
     createRoadmap: builder.mutation<{ id: string }, CreateDraftRoadmapPayload>({
       query: (payload) => ({
-        url: 'userroadmaps',
+        url: 'personal-roadmaps',
         method: 'POST',
         body: payload,
       }),
@@ -115,17 +70,17 @@ export const roadmapApi = createApi({
       SearchConfig
     >({
       query: ({ pageSize, pageNumber, query }) => ({
-        url: 'userroadmaps',
+        url: 'personal-roadmaps',
         method: 'GET',
         params: { pageSize, pageNumber, query },
       }),
     }),
     createItemInUserRoadmap: builder.mutation<
       void,
-      { roadmapId: string; node: CreateNodeRequest }
+      { workspaceId: string; node: CreateNodeRequest }
     >({
-      query: ({ roadmapId, node }) => ({
-        url: `userroadmaps/create-item/${roadmapId}`,
+      query: ({ workspaceId, node }) => ({
+        url: `roadmaps-workspace/create-item/${workspaceId}`,
         method: 'POST',
         body: node,
       }),
@@ -135,7 +90,7 @@ export const roadmapApi = createApi({
       { roadmapId: string; edge: CreateEdgeRequest }
     >({
       query: ({ roadmapId, edge }) => ({
-        url: `userroadmaps/create-connection/${roadmapId}`,
+        url: `roadmaps-workspace/create-connection/${roadmapId}`,
         method: 'POST',
         body: edge,
       }),
@@ -145,7 +100,10 @@ export const roadmapApi = createApi({
       { roadmapId: string; item: DeleteLearningItemRequest }
     >({
       query: ({ roadmapId, item }) => ({
-        url: `userroadmaps/delete-item/${roadmapId}`,
+        url:
+          item.type == 'node'
+            ? `roadmaps-workspace/delete-item/${roadmapId}`
+            : `roadmaps-workspace/delete-connection/${roadmapId}`,
         method: 'POST',
         body: item,
       }),
@@ -155,20 +113,20 @@ export const roadmapApi = createApi({
       { roadmapId: string; change: LearningItemChangeRequest }
     >({
       query: ({ roadmapId, change }) => ({
-        url: `userroadmaps/update-item/${roadmapId}`,
+        url: `roadmaps-workspace/update-item/${roadmapId}`,
         method: 'POST',
         body: change,
       }),
     }),
-    getUserCreatedRoadmap: builder.query<RoadmapResponse, string>({
+    getUserCreatedRoadmap: builder.query<Roadmap, string>({
       query: (id) => ({
-        url: `userroadmaps/${id}`,
+        url: `roadmaps-workspace/${id}`,
         method: 'GET',
       }),
     }),
     deleteUserRoadmap: builder.mutation<void, { id: string }>({
       query: ({ id }) => ({
-        url: `userroadmaps/${id}`,
+        url: `personal-roadmaps/${id}`,
         method: 'DELETE',
       }),
     }),
@@ -177,27 +135,49 @@ export const roadmapApi = createApi({
       { id: string; payload: UpdateUserRoadmapRequest }
     >({
       query: ({ id, payload }) => ({
-        url: `userroadmaps/${id}`,
+        url: `personal-roadmaps/${id}`,
         method: 'PUT',
+        body: payload,
+      }),
+    }),
+    publishPersonalRoadmap: builder.mutation<
+      void,
+      { id: string; payload: PublishRoadmapRequest }
+    >({
+      query: ({ id, payload }) => ({
+        url: `personal-roadmaps/${id}/publish`,
+        method: 'POST',
         body: payload,
       }),
     }),
     getPlainUserCreatedRoadmap: builder.query<PlainRoadmap, string>({
       query: (id) => ({
-        url: `userroadmaps/plain/${id}`,
+        url: `personal-roadmaps/${id}`,
         method: 'GET',
       }),
     }),
     getPlainUserSavedRoadmap: builder.query<SavedPlainRoadmap, string>({
       query: (id) => ({
-        url: `modifiedroadmaps/plain/${id}`,
+        url: `roadmaps-workspace/${id}/summary`,
         method: 'GET',
       }),
     }),
     getRoadmapTestingHistory: builder.query<TestingHistoryDto, string>({
       query: (id) => ({
-        url: `roadmaptest/history/${id}`,
+        url: `assessments/workspace/${id}/history`,
         method: 'GET',
+      }),
+    }),
+    getWorkspaceEventsStatus: builder.mutation<
+      {
+        events: EventStatusItem[];
+      },
+      { workspaceId: string; keys: string[] }
+    >({
+      query: ({ workspaceId, keys }) => ({
+        url: `roadmaps-workspace/${workspaceId}/events/status`,
+        method: 'POST',
+        body: { keys },
       }),
     }),
   }),
@@ -210,10 +190,6 @@ export const {
   useLazyGetRoadmapsQuery,
   useSaveRoadmapMutation,
   useGetSavedRoadmapQuery,
-  useSaveLearningItemChangesMutation,
-  useDeleteLearningItemMutation,
-  useCreateNodeMutation,
-  useCreateEdgeMutation,
   useDeleteRoadmapMutation,
   useLazyGetLearningItemMaterialsQuery,
   useCreateRoadmapMutation,
@@ -225,9 +201,10 @@ export const {
   useGetUserCreatedRoadmapQuery,
   useDeleteUserRoadmapMutation,
   useUpdateUserRoadmapMutation,
+  usePublishPersonalRoadmapMutation,
   useLazyGetPlainUserCreatedRoadmapQuery,
   useLazyGetPlainUserSavedRoadmapQuery,
   useGetPlainUserSavedRoadmapQuery,
-  useGetRebuildRoadmapByIdQuery,
   useLazyGetRoadmapTestingHistoryQuery,
+  useGetWorkspaceEventsStatusMutation,
 } = roadmapApi;

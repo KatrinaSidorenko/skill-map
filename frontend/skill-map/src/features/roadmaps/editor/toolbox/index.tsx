@@ -8,110 +8,79 @@ import {
 } from 'react-icons/io';
 import { HiBars3 } from 'react-icons/hi2';
 import { Node, useReactFlow } from '@xyflow/react';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import {
-  addNode,
-  deleteEdge,
-  deleteNode,
-  selectRoadmapId,
-  selectSelectedElement,
-  setSelectedElement,
-} from '../store';
-import {
-  useCreateNodeMutation,
-  useDeleteLearningItemMutation,
-} from '../../api';
-import { generateId } from '../../helpers';
+import { useAppSelector } from '@/store/hooks';
+import { selectWorkspaceId, selectSelectedElement } from '../store';
+import { generateNodeId } from '../../helpers';
 import createNodeDialog from './create-node';
+import useEventQueue from '../queue/useEventQueue';
 
 interface ToolboxProps {
   onToggleSidebar: () => void;
-  deleteItem: ReturnType<typeof useDeleteLearningItemMutation>[0];
-  createNode: ReturnType<typeof useCreateNodeMutation>[0];
 }
-export default function Toolbox({
-  onToggleSidebar,
-  deleteItem,
-  createNode,
-}: ToolboxProps) {
-  const dispatch = useAppDispatch();
+
+export default function Toolbox({ onToggleSidebar }: ToolboxProps) {
   const selected = useAppSelector(selectSelectedElement);
-  const roadmapId = useAppSelector(selectRoadmapId);
+  const workspaceId = useAppSelector(selectWorkspaceId);
   const hasSelection = !!selected;
   const isNode = selected ? !('source' in selected) : false;
 
   const reactFlowInstance = useReactFlow();
+  const { queueCreateNode, queueDeleteItem } = useEventQueue();
 
-  const onRemoveSelected = async () => {
-    if (!selected || !roadmapId) return;
-    try {
-      if ('source' in selected && 'target' in selected) {
-        await deleteItem({
-          roadmapId,
-          item: { id: selected.id, type: 'edge' },
-        }).unwrap();
-        dispatch(deleteEdge(selected.id));
-      } else {
-        await deleteItem({
-          roadmapId,
-          item: { id: selected.id, type: 'node' },
-        }).unwrap();
-        dispatch(deleteNode(selected.id));
-      }
-      dispatch(setSelectedElement(null));
-    } catch (error) {
-      console.error('Failed to delete item:', error);
-    }
-  };
+  const onRemoveSelected = useCallback(() => {
+    if (!selected || !workspaceId) return;
+    const type = 'source' in selected ? 'edge' : 'node';
+    queueDeleteItem(workspaceId, { id: selected.id, type });
+  }, [selected, workspaceId, queueDeleteItem]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Delete' && selected) {
         onRemoveSelected();
-        dispatch(setSelectedElement(null));
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selected]);
+  }, [selected, onRemoveSelected]);
 
   const handleCreateNode = useCallback(
-    (data: { label: string; description: string; status: string[] }) => {
+    (data: {
+      label: string;
+      description: string;
+      status: string[];
+      nodeType: LearningItemType;
+    }) => {
+      if (!workspaceId) return;
       const { x, y, zoom } = reactFlowInstance.getViewport();
-
       const viewportCenter = {
         x: -x / zoom + window.innerWidth / 2 / zoom,
         y: -y / zoom + window.innerHeight / 2 / zoom,
       };
-      const newNode: Node = {
-        id: generateId(),
+      const nodeId = generateNodeId();
+      const reactFlowNode: Node = {
+        id: nodeId,
         position: viewportCenter,
         data: {
           label: data.label || 'Untitled Node',
           description: data.description,
           status: data.status,
+          nodeType: data.nodeType,
         },
       };
 
-      dispatch(addNode(newNode));
-
-      if (roadmapId) {
-        createNode({
-          roadmapId,
-          node: {
-            id: newNode.id,
-            title: data.label || 'Untitled Node',
-            description: data.description,
-            status: (data.status[0] || 'notstarted') as LearningStatus,
-          },
-        })
-          .unwrap()
-          .catch((error) => {
-            console.error('Failed to create node:', error);
-          });
-      }
+      queueCreateNode(
+        workspaceId,
+        {
+          id: nodeId,
+          title: data.label || 'Untitled Node',
+          description: data.description,
+          status: (data.status[0] || 'notstarted') as LearningStatus,
+          type: data.nodeType,
+        },
+        reactFlowNode,
+      );
     },
-    [roadmapId],
+    [workspaceId, reactFlowInstance, queueCreateNode],
   );
 
   return (

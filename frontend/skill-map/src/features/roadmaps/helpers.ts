@@ -1,15 +1,17 @@
-import { Edge, Node } from '@xyflow/react';
+import { Edge, Node, MarkerType } from '@xyflow/react';
 import dagre from '@dagrejs/dagre';
 import { v4 as uuidv4 } from 'uuid';
 
 const getNodePosition = (index: number): { x: number; y: number } => ({
   x: 0,
-  y: index * 150, // space nodes 150px apart vertically
+  y: index * 350, // space nodes 150px apart vertically
 });
 
-export const generateId = () => uuidv4().replaceAll('-', '');
+export const generateNodeId = () => uuidv4().replaceAll('-', '');
+export const generateEdgeId = (fromId: string, toId: string) =>
+  `${fromId}-${toId}`;
 
-const nodeWidth = 180;
+const nodeWidth = 200;
 const nodeHeight = 100;
 
 export function getLayoutedElements(
@@ -44,24 +46,36 @@ export function getLayoutedElements(
   return { nodes: layoutedNodes, edges };
 }
 
+export const getNodeTypeColor = (type: LearningItemType): string => {
+  switch (type) {
+    case 'topic':
+      return 'purple';
+    case 'subtopic':
+    default:
+      return 'teal';
+  }
+};
+
 export function mapRoadmapToReactFlow(roadmap: Roadmap): {
   nodes: Node[];
   edges: Edge[];
 } {
-  const nodes: Node[] = roadmap.nodes.map((n, index) => ({
+  const nodes: Node[] = roadmap.items.map((n, index) => ({
     id: String(n.id),
     position: getNodePosition(index),
     data: {
       label: n.title,
       description: n.description,
+      nodeType: n.type,
     },
     type: 'default',
   }));
 
-  const edges: Edge[] = roadmap.edges.map((e) => ({
-    id: `${e.source}-${e.target}`,
+  const edges: Edge[] = roadmap.connections.map((e) => ({
+    id: generateEdgeId(e.source, e.target),
     source: String(e.source),
     target: String(e.target),
+    markerEnd: { type: MarkerType.ArrowClosed },
   }));
 
   return getLayoutedElements(nodes, edges, 'TB');
@@ -71,24 +85,41 @@ export function mapRoadmapToReactFlowForSaved(roadmap: SavedRoadmap): {
   nodes: Node[];
   edges: Edge[];
 } {
-  const nodes: Node[] = roadmap.nodes.map((n, index) => ({
+  const nodes: Node[] = roadmap.items.map((n, index) => ({
     id: String(n.id),
     position: getNodePosition(index),
     data: {
       label: n.title,
       description: n.description,
       status: n.status,
+      nodeType: n.type,
     },
     type: 'statusNode',
   }));
 
-  const edges: Edge[] = roadmap.edges.map((e) => ({
-    id: `${e.source}-${e.target}`,
+  const edges: Edge[] = roadmap.connections.map((e) => ({
+    id: generateEdgeId(e.source, e.target),
     source: String(e.source),
     target: String(e.target),
+    markerEnd: { type: MarkerType.ArrowClosed },
   }));
 
   return getLayoutedElements(nodes, edges, 'TB');
+}
+
+export function computeTopicStatus(
+  childStatuses: LearningStatus[],
+): LearningStatus {
+  if (childStatuses.length === 0) return 'notstarted';
+  // If every child has the exact same status, bubble it straight up.
+  // This prevents cascade loops for statuses like skip/repeat/upcoming.
+  const first = childStatuses[0];
+  if (childStatuses.every((s) => s === first)) return first;
+  if (childStatuses.every((s) => s === 'completed' || s === 'skip'))
+    return 'completed';
+  if (childStatuses.every((s) => s === 'notstarted' || s === 'upcoming'))
+    return 'notstarted';
+  return 'inprogress';
 }
 
 export const defaultPagination = {
@@ -102,6 +133,12 @@ export const getStatusColor = (status: LearningStatus) => {
       return 'green';
     case 'inprogress':
       return 'blue';
+    case 'skip':
+      return 'orange';
+    case 'repeat':
+      return 'yellow';
+    case 'upcoming':
+      return 'purple';
     case 'notstarted':
     default:
       return 'gray';

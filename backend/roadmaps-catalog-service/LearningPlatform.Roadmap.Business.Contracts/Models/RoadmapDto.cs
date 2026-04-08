@@ -26,6 +26,8 @@ public class Node
     public string Title { get; set; }
     [JsonProperty("description")]
     public string Description { get; set; }
+    [JsonProperty("type")]
+    public string Type { get; set; }
 }
 
 public class Edge

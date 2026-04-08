@@ -1,0 +1,64 @@
+name: skillmap
+
+services:
+  core-service:
+    build:
+      context: .
+      dockerfile: core-service/Dockerfile
+    depends_on:
+      - core-db
+    container_name: skillmap-core-service
+    ports:
+      - "8081:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://*:8080
+    networks:
+      - skillmap-network
+
+  roadmap-tests-service:
+    build:
+      context: .
+      dockerfile: roadmap-tests/Dockerfile
+    depends_on:
+      - core-db
+      - roadmap-catalog-db
+    container_name: skillmap-roadmap-tests-service
+    ports:
+      - "8082:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://*:8080
+    networks:
+      - skillmap-network
+
+  core-db:
+    image: postgres:15
+    container_name: skillmap-core-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres # use scerect file
+      - POSTGRES_DB=skillmap
+    networks:
+      - skillmap-network
+    
+  roadmap-catalog-db:
+    image: neo4j:5.9
+    container_name: skillmap-roadmap-catalog-db
+    environment:
+      - NEO4J_AUTH=neo4j/neo4j # use scerect file
+      - NEO4J_dbms_memory_pagecache_size=512M
+      - NEO4J_dbms_memory_heap_initial__size=512M
+      - NEO4J_dbms_memory_heap_max__size=512M
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    networks:
+      - skillmap-network
+
+networks:
+  skillmap-network:
+    driver: bridge
+
+volumes:
+  skillmap-core-db: {} # think about schema automatic migrations + seed of data
