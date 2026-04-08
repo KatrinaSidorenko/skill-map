@@ -8,7 +8,7 @@ namespace SkillMap.Shared.Extensions;
 
 public static class JsonExtensions
 {
-    public static T DeserializeOrDefault<T>(this string json, T defaultValue = default)
+    public static T JsonDeserializeOrDefault<T>(this string json, T defaultValue = default)
     {
         if (string.IsNullOrEmpty(json))
         {
@@ -25,7 +25,7 @@ public static class JsonExtensions
         }
     }
 
-    public static string SerializeOrDefault<T>(this T obj)
+    public static string JsonSerializeOrDefault<T>(this T obj)
     {
         if (obj == null)
         {

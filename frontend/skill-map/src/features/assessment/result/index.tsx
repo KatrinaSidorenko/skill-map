@@ -11,60 +11,52 @@ import { selectCheckedQuestionResults } from '../store';
 import {
   useLazyGetRoadmapChangesSuggestionQuery,
   useLazyGetRoadmapTestResultQuery,
+  useApplyRoadmapSuggestionsMutation,
 } from '../api';
-import { useSaveLearningItemChangesMutation } from '@/features/roadmaps/api';
 import { toaster } from '@/components/ui/toaster';
+import useLocalization from '@/i18n/useLocalization';
 
-export default function TestResults({
-  testId,
-  testResultId,
-}: {
-  testId?: string;
-  testResultId?: string;
-}) {
+export default function TestResults({ attemptId }: { attemptId?: string }) {
   const router = useRouter();
+  const { getAssessmentTranslations } = useLocalization();
   const checkedQuestionResults = useAppSelector(selectCheckedQuestionResults);
-  const [saveRoadmapItemsChanges] = useSaveLearningItemChangesMutation();
 
   const totalAchieved = checkedQuestionResults?.totalAchievedPoints ?? 0;
   const totalPossible = checkedQuestionResults?.totalPossiblePoints ?? 0;
 
   const onCancel = () => {
-    router.replace(`/saved/roadmap/${checkedQuestionResults?.roadmapId}`);
+    router.replace(`/saved/roadmap/${checkedQuestionResults?.workspaceId}`);
   };
 
-  const [getRoadmapChangesSuggestion, { data, isLoading }] =
+  const [getRoadmapChangesSuggestion, { isLoading }] =
     useLazyGetRoadmapChangesSuggestionQuery();
+  const [applyRoadmapSuggestions] = useApplyRoadmapSuggestionsMutation();
 
   const onViewSuggestions = () => {
-    if (!testResultId) return;
+    if (!attemptId) return;
 
-    getRoadmapChangesSuggestion({ testResultId })
+    getRoadmapChangesSuggestion({ attemptId })
       .unwrap()
       .then((data) => {
         createRoadmapTestSuggestionsDialog.open(
           'createRoadmapTestSuggestionsDialog',
           {
             suggestionsDto: data,
-            onApply: async (selectedIds) => {
-              await saveRoadmapItemsChanges({
-                roadmapId: checkedQuestionResults?.roadmapId ?? '',
-                changes: {
-                  changes: data.suggestions
-                    .filter((s) => selectedIds.includes(s.learningItemId))
-                    .map((s) => ({
-                      id: s.learningItemId,
-                      // title: s.title,
-                      // description: s.description,
-                      status: s.status as LearningStatus,
-                    })),
-                },
-              }).catch((e) => {
-                toaster.error({ title: 'Error', description: e.message });
-              });
-              router.replace(
-                `/editor/sandbox/saved/${checkedQuestionResults?.roadmapId}`,
-              );
+            onApply: async (selectedItems: ApplySuggestionItem[]) => {
+              await applyRoadmapSuggestions({ attemptId: attemptId!, items: selectedItems })
+                .unwrap()
+                .then(() => {
+                  toaster.success({
+                    title: getAssessmentTranslations('applySuccess'),
+                  });
+                  router.replace(`/saved/roadmap/${checkedQuestionResults?.workspaceId}`);
+                })
+                .catch(() => {
+                  toaster.error({
+                    title: getAssessmentTranslations('error'),
+                    description: getAssessmentTranslations('applyError'),
+                  });
+                });
             },
           },
         );
@@ -75,7 +67,9 @@ export default function TestResults({
     <>
       <Box width="80%" p={6} borderRadius="md" bg="white" padding={20}>
         <Box mb={6}>
-          <Heading size="lg">Test Results</Heading>
+          <Heading size="lg">
+            {getAssessmentTranslations('testResults')}
+          </Heading>
 
           <HStack mt={3} gap={4} align="center">
             <Text color="gray.600" fontSize="sm">
@@ -95,7 +89,7 @@ export default function TestResults({
         {/* Action Buttons */}
         <HStack mt={8} justify="flex-end" gap={3}>
           <Button size="sm" variant="ghost" onClick={onCancel}>
-            Cancel
+            {getAssessmentTranslations('cancel')}
           </Button>
           <Button
             size="sm"
@@ -103,7 +97,7 @@ export default function TestResults({
             onClick={onViewSuggestions}
             loading={isLoading}
           >
-            View Suggestions
+            {getAssessmentTranslations('viewSuggestions')}
           </Button>
         </HStack>
       </Box>
@@ -112,25 +106,19 @@ export default function TestResults({
   );
 }
 
-export function TestResultsWrapper({
-  testId,
-  testResultId,
-}: {
-  testId?: string;
-  testResultId?: string;
-}) {
+export function TestResultsWrapper({ attemptId }: { attemptId?: string }) {
   const [getRoadmapTestingResult, { data, isLoading }] =
     useLazyGetRoadmapTestResultQuery();
 
   useEffect(() => {
-    if (testResultId) {
-      getRoadmapTestingResult({ testResultId }).unwrap();
+    if (attemptId) {
+      getRoadmapTestingResult({ attemptId: attemptId }).unwrap();
     }
-  }, [testResultId, getRoadmapTestingResult]);
+  }, [attemptId, getRoadmapTestingResult]);
 
   if (isLoading || !data) {
     return <SpinnerScreen />;
   }
 
-  return <TestResults testId={testId} testResultId={testResultId} />;
+  return <TestResults attemptId={attemptId} />;
 }

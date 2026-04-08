@@ -173,9 +173,9 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
         return Result.Success((nodesList, edgesList));
     }
 
-    public async Task<Result<PaginationResult<List<NodeDto>>>> GetPublicPlainRoadmapsByIds(
+    public async Task<Result<PaginationResult<NodeDto>>> GetPublicPlainRoadmapsByIds(
         List<string> roadmapIds,
-        SearchingParams @params,
+        FilteringParams @params,
         CancellationToken ct,
         bool excludePrivate = true)
     {
@@ -212,9 +212,9 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
                 var result = await tx.RunAsync(query, new
                 {
                     ids = roadmapIds,
-                    skip = @params.paginationParams.Skip,
-                    limit = @params.paginationParams.pageSize,
-                    searchTerm = @params.searchTermByName
+                    skip = @params.PaginationParams.Skip,
+                    limit = @params.PaginationParams.PageSize,
+                    searchTerm = @params.SearchTerm
                 });
 
                 var nodes = new List<NodeDto>();
@@ -238,7 +238,7 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
                 var result = await tx.RunAsync(countQuery, new
                 {
                     ids = roadmapIds,
-                    searchTerm = @params.searchTermByName
+                    searchTerm = @params.SearchTerm
                 });
                 await result.FetchAsync();
                 return result.Current["total"].As<int>();
@@ -246,7 +246,7 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
 
             await session.CloseAsync();
 
-            return Result.Success(new PaginationResult<List<NodeDto>>
+            return Result.Success(new PaginationResult<NodeDto>
             {
                 Result = response,
                 TotalCount = totalCount
@@ -255,7 +255,7 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to get roadmaps by ids");
-            return ResultType.FailedToGetRoadmap<PaginationResult<List<NodeDto>>>(ex.Message);
+            return ResultType.FailedToGetRoadmap<PaginationResult<NodeDto>>(ex.Message);
         }
     }
 
@@ -510,6 +510,83 @@ RETURN roadmapId, count(DISTINCT n) AS totalTopicsAndSubtopics;
         {
             Logger.LogError(ex, "Failed to delete roadmap {roadmapId}", roadmapId);
             return ResultType.FailedToGetRoadmap<bool>(ex.Message);
+        }
+    }
+
+    public async Task<Result<string>> CreateFullRoadmap(CreateRoadmapDto createRoadmapDto, CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+
+        try
+        {
+            // Build root ROADMAP node from the DTO metadata
+            var roadmapNode = new NodeDto
+            {
+                ExternalId = createRoadmapDto.SourceId,
+                Title = createRoadmapDto.Title,
+                Description = createRoadmapDto.Description ?? string.Empty,
+                Type = NodeType.Roadmap,
+                AdditionalProps = new Dictionary<string, string>
+                {
+                    { NodeProps.ImageUrl, createRoadmapDto.ImageUrl ?? string.Empty },
+                    { NodeProps.OwnerId, createRoadmapDto.OwnerId ?? string.Empty },
+                    { NodeProps.RoadmapId, createRoadmapDto.SourceId ?? string.Empty },
+                    { NodeProps.SourceVersion, createRoadmapDto.SourceVersion.ToString() },
+                    { NodeProps.SourceId, createRoadmapDto.SourceId ?? string.Empty }
+                }
+            }.GenerateInnerId();
+
+            // Nodes: roadmap root + all topic/subtopic nodes with generated inner ids
+            var allNodes = createRoadmapDto.Nodes
+                .Select(n => n.GenerateInnerId())
+                .Prepend(roadmapNode)
+                .ToList();
+
+            var nodesByExternalId = allNodes.ToDictionary(n => n.ExternalId, n => n);
+
+            // create adge between roadmap root and top level topics
+            var nodeWithoutIncomingEdges = allNodes.Where(n => !createRoadmapDto.Edges.Any(e => e.Target.Id == n.ExternalId)).ToList();
+            var edgesToRoot = nodeWithoutIncomingEdges
+                .Where(n => n.ExternalId != roadmapNode.ExternalId)
+                .Select(n => new EdgeDto
+                {
+                    Source = roadmapNode,
+                    Target = n,
+                }.GenerateInnerId())
+                .ToList();
+            var allEdges = createRoadmapDto.Edges
+                .Select(e => e.GenerateInnerId())
+                .ToList().Concat(edgesToRoot).ToList();
+
+            var nodeCommands = allNodes
+                .Select(n => n.CreateNodeCommand())
+                .ToList();
+
+            var edgeCommands = allEdges
+                .Select(e => e.CreateEdgeCommand(nodesByExternalId))
+                .ToList();
+
+            var allCommands = nodeCommands.Concat(edgeCommands).ToList();
+
+            using var session = Driver.AsyncSession(s => s.WithDatabase(DbSettings.Name));
+            using var transaction = await session.BeginTransactionAsync();
+
+            var result = await ExecuteCommands(transaction, allCommands, ct);
+            if (!result.IsSuccessful)
+            {
+                await transaction.RollbackAsync();
+                return Result.Failure<string>(result.Code, result.Message);
+            }
+
+            await transaction.CommitAsync();
+            await session.CloseAsync();
+
+            return Result.Success(createRoadmapDto.SourceId);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to create full roadmap {RoadmapId}", createRoadmapDto.SourceId);
+            return ResultType.FailedToSave<string>(ex.Message);
         }
     }
 }

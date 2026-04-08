@@ -2,6 +2,7 @@ using LearningPlatform.Shared.Api.Extensions;
 using LearningPlatform.Shared.Api.Middleware;
 using LearningPlatform.Shared.Caching;
 
+using SkillMap.Api;
 using SkillMap.Business;
 using SkillMap.Infrastructure;
 using SkillMap.Persistence;
@@ -30,15 +31,9 @@ builder.Services.AddCors(options =>
                     .AllowAnyHeader());
 });
 
-builder.Services.AddCaching();
-builder.Services
-    .AddInfrastructureLayer(builder.Configuration)
-    .AddBusinessLayer()
-    .AddPersistenceLayer(builder.Configuration);
 
-//builder.Services.AddScoped<IQuestionsGenerator, QuestionsGenerator>();
-// add memory cache for testing prototype
-
+builder.Services.AddInfrastructureLayer(builder.Configuration);
+builder.Services.AddModules(builder.Configuration);
 
 var app = builder.Build();
 
@@ -57,5 +52,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.RegisterModules();
 
 app.Run();

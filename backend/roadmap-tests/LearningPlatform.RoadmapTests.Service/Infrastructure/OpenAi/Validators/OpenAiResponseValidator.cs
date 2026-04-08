@@ -45,10 +45,10 @@ public static class OpenAiResponseValidator
         var content = response.Value.Content.FirstOrDefault(c => !string.IsNullOrWhiteSpace(c.Text))?.Text;
         if (string.IsNullOrWhiteSpace(content))
         {
-            return new GenerationResult<OpenAiQuestionsResponse>(GenerationErrorReasons.OpenAIOutputIsEmpty(response.Value.SerializeOrDefault()));
+            return new GenerationResult<OpenAiQuestionsResponse>(GenerationErrorReasons.OpenAIOutputIsEmpty(response.Value.JsonSerializeOrDefault()));
         }
 
-        var parsed = content.DeserializeOrDefault<OpenAiQuestionsResponse>();
+        var parsed = content.JsonDeserializeOrDefault<OpenAiQuestionsResponse>();
         if (parsed is null)
         {
             return new GenerationResult<OpenAiQuestionsResponse>(GenerationErrorReasons.DeserializationError());

@@ -10,27 +10,32 @@ const config = defineConfig({
         mono: { value: 'var(--font-fira-code)' },
       },
 
-      // main color pallete
-      // text - #1F1F1F (blackish)
-      // bg - #FFFFFF (white)
-      // accent - #B9FF66 (green)
-      // muted - #F4F4F4 (gray)
-      // error -rgb(203, 96, 102) (red)
+      // ─── Skill-Map Color System ─────────────────────────────────────
+      //
+      //  Story: clean white canvas  +  lime green = growth/achievement
+      //         teal = knowledge/navigation  (bridges lime & dark text)
+      //
+      //  brand.20–50    → backgrounds (white, section gray)
+      //  brand.100–300  → lime-green family (accent, CTA, hover)
+      //  brand.400      → primary text (near-black)
+      //  brand.500–950  → teal (interactive: buttons, links, focus)
+      //  brand.1000     → error red
+      // ────────────────────────────────────────────────────────────────
       colors: {
         brand: {
-          20: { value: '#F4F4F4' }, // gray
-          50: { value: '#FFFFFF' }, // white
-          100: { value: '#CDF0A5' }, // light green
-          200: { value: '#B9FF66' }, // green
-          300: { value: '#5C5F5A' }, // light black
-          400: { value: '#1F1F1F' }, // blackish
-          500: { value: '#3D568F' },
-          600: { value: '#334674' },
-          700: { value: '#2A3659' },
-          800: { value: '#20263E' },
-          900: { value: '#161A28' },
-          950: { value: '#0D0F14' },
-          1000: { value: '#cb6065' },
+          20:   { value: '#F7F9F7' }, // section / card bg  (pale green-tinted gray)
+          50:   { value: '#FFFFFF' }, // page bg
+          100:  { value: '#E8FDD4' }, // mint tint           (subtle accent fills)
+          200:  { value: '#B9FF66' }, // 🌟 lime green       (signature CTA)
+          300:  { value: '#95E044' }, // lime green hover
+          400:  { value: '#1A1A1A' }, // primary text        (near-black)
+          500:  { value: '#0D9488' }, // teal                (primary interactive)
+          600:  { value: '#0F766E' }, // teal hover
+          700:  { value: '#115E59' }, // teal active/pressed
+          800:  { value: '#134E4A' }, // teal dark           (headings, emphasis)
+          900:  { value: '#1A2E2C' }, // deep teal-black
+          950:  { value: '#0D1716' }, // darkest
+          1000: { value: '#EF4444' }, // error red
         },
       },
     },
@@ -40,37 +45,44 @@ const config = defineConfig({
     semanticTokens: {
       colors: {
         bg: {
-          page: { value: '{colors.brand.50}' },
-          section: { value: '{colors.brand.20}' },
-          accent: { value: '{colors.brand.100}' },
-          primaryAccent: { value: '{colors.brand.200}' },
+          page:         { value: '{colors.brand.50}' },    // white
+          section:      { value: '{colors.brand.20}' },    // pale green-gray  (cards)
+          accent:       { value: '{colors.brand.100}' },   // mint tint        (highlights)
+          primaryAccent:{ value: '{colors.brand.200}' },   // lime green
         },
         text: {
-          primary: { value: '{colors.brand.400}' },
-          heading: { value: '{colors.brand.800}' },
-          muted: { value: '{colors.brand.100}' },
-          accent: { value: '{colors.brand.200}' },
+          primary:   { value: '{colors.brand.400}' },  // #1A1A1A  near-black
+          heading:   { value: '{colors.brand.800}' },  // dark teal
+          muted:     { value: '{colors.gray.500}' },   // ✅ neutral gray (was broken lime!)
+          secondary: { value: '{colors.gray.600}' },   // medium gray
+          accent:    { value: '{colors.brand.200}' },  // lime green (on dark bg)
+          onAccent:  { value: '{colors.brand.800}' },  // dark teal ON lime bg
         },
         button: {
-          solidBg: { value: '{colors.brand.500}' },
-          solidText: { value: '{colors.brand.50}' },
-          outlineBorder: { value: '{colors.brand.500}' },
-          subtleBg: { value: '{colors.brand.100}' },
-          subtleText: { value: '{colors.brand.500}' },
+          solidBg:      { value: '{colors.brand.500}' },  // teal
+          solidText:    { value: '{colors.brand.50}' },   // white
+          outlineBorder:{ value: '{colors.brand.500}' },  // teal
+          subtleBg:     { value: '{colors.brand.100}' },  // mint tint
+          subtleText:   { value: '{colors.brand.500}' },  // teal
+          accentBg:     { value: '{colors.brand.200}' },  // lime
+          accentText:   { value: '{colors.brand.800}' },  // dark teal on lime
         },
         border: {
-          default: { value: '{colors.brand.200}' },
-          focus: { value: '{colors.brand.800}' },
+          default: { value: '{colors.brand.20}' },    // subtle gray-green
+          muted:   { value: '{colors.gray.200}' },    // neutral gray border
+          focus:   { value: '{colors.brand.500}' },   // teal focus ring
         },
         states: {
-          danger: { value: '{colors.red.500}' },
-          warning: { value: '{colors.yellow.400}' },
-          success: { value: '{colors.green.500}' },
+          danger:  { value: '{colors.brand.1000}' },  // red
+          warning: { value: '{colors.yellow.500}' },
+          success: { value: '{colors.brand.200}' },   // lime = success ✅
+          info:    { value: '{colors.brand.500}' },   // teal = info ℹ️
         },
         sidebar: {
-          bg: { value: '{colors.brand.20}' },
-          text: { value: '{colors.brand.400}' },
+          bg:        { value: '{colors.brand.20}' },
+          text:      { value: '{colors.brand.400}' },
           linkHover: { value: '{colors.brand.100}' },
+          active:    { value: '{colors.brand.200}' }, // lime active link
         },
       },
     },

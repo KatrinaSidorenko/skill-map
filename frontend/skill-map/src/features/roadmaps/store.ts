@@ -1,4 +1,3 @@
-import { roadmaps } from '@/store/mock';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type InitialState = {

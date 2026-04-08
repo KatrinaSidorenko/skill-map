@@ -1,5 +1,4 @@
 ﻿using SkillMap.Business.Account.Models;
-using SkillMap.Core.Entities;
 using SkillMap.Shared.Results;
 
 namespace SkillMap.Business.Account;

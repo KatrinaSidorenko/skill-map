@@ -63,6 +63,7 @@ export default function SearchContainer<T>({
         pageSize,
         query: search,
       });
+      console.log(result);
       setItems(result.items);
       setTotalPages(Math.max(1, Math.ceil(result.total / pageSize)));
       setError(null);

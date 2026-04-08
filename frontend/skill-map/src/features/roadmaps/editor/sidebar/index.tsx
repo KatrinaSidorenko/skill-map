@@ -11,86 +11,107 @@ import {
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import type { Node } from '@xyflow/react';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { useAppSelector } from '@/store/hooks';
 import {
   selectEditorConfig,
-  selectRoadmapId,
+  selectWorkspaceId,
   selectSelectedElement,
-  updateNode,
 } from '../store';
 import StatusSelect from './status-select';
+import NodeTypeSelect from './node-type-select';
 import useLocalization from '@/i18n/useLocalization';
-import { useSaveLearningItemChangesMutation } from '../../api';
-import { toaster } from '@/components/ui/toaster';
+import useEventQueue from '../queue/useEventQueue';
+import { cacheNodeSettings, loadNodeSettings } from '../queue/cacheService';
 import MaterialsContainer from './materials';
 
 interface NodeSidebarProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  saveChange: ReturnType<typeof useSaveLearningItemChangesMutation>[0];
 }
 
-export default function NodeSidebar({
-  open,
-  onOpenChange,
-  saveChange,
-}: NodeSidebarProps) {
-  const dispatch = useAppDispatch();
-  const roadmapId = useAppSelector(selectRoadmapId);
+export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
+  const roadmapId = useAppSelector(selectWorkspaceId);
   const node = useAppSelector(selectSelectedElement);
   const editorConfig = useAppSelector(selectEditorConfig);
   const { getEditorTranslations } = useLocalization();
+  const { queueSaveChange } = useEventQueue();
 
   const [label, setLabel] = useState('');
   const [description, setDescription] = useState('');
-  const [status, setStatus] = useState<string[]>([]);
+  const [status, setStatus] = useState<string>('');
+  const [nodeType, setNodeType] = useState<LearningItemType>('subtopic');
 
+  // Load form state: try cache first, fall back to Redux node data
   useEffect(() => {
-    if (node) {
-      setLabel((node.data?.label as string) ?? '');
-      setDescription((node.data?.description as string) ?? '');
-      setStatus([(node.data?.status as string) ?? 'notstarted']);
-    }
+    if (!node) return;
+    const nodeId = node.id;
+    loadNodeSettings(nodeId)
+      .then((cached) => {
+        if (cached) {
+          setLabel(cached.label);
+          setDescription(cached.description);
+          setStatus(cached.status);
+          setNodeType((node.data?.nodeType as LearningItemType) ?? 'subtopic');
+        } else {
+          setLabel((node.data?.label as string) ?? '');
+          setDescription((node.data?.description as string) ?? '');
+          setStatus((node.data?.status as string) ?? 'notstarted');
+          setNodeType((node.data?.nodeType as LearningItemType) ?? 'subtopic');
+        }
+      })
+      .catch(() => {
+        setLabel((node.data?.label as string) ?? '');
+        setDescription((node.data?.description as string) ?? '');
+        setStatus((node.data?.status as string) ?? 'notstarted');
+        setNodeType((node.data?.nodeType as LearningItemType) ?? 'subtopic');
+      });
   }, [node]);
 
-  const handleSave = async () => {
+  // Auto-save draft to cache whenever form values change (debounced 500 ms)
+  useEffect(() => {
+    if (!node) return;
+    const timer = setTimeout(() => {
+      cacheNodeSettings({
+        nodeId: node.id,
+        label,
+        description,
+        status: status[0] ?? 'notstarted',
+        type: nodeType,
+      }).catch(() => {});
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [label, description, status, node, nodeType]);
+
+  const handleSave = () => {
     if (!node || !roadmapId) return;
+    // Sidebar is only opened for nodes (not edges); guard against Edge union type
+    if (!('position' in node)) return;
 
-    try {
-      await saveChange({
-        roadmapId,
-        changes: {
-          changes: [
-            {
-              id: node.id,
-              title: label,
-              description,
-              status: (status[0] || 'notstarted') as LearningStatus,
-            },
-          ],
-        },
-      }).unwrap();
+    const rfNode = node as Node;
+    const updatedNode = {
+      ...rfNode,
+      data: {
+        ...rfNode.data,
+        label,
+        description,
+        status: status as LearningStatus,
+        type: nodeType,
+      },
+    } as Node;
 
-      dispatch(
-        updateNode({
-          ...node,
-          data: {
-            ...node.data,
-            label,
-            description,
-            status: status[0],
-          },
-        } as Node),
-      );
+    queueSaveChange(
+      roadmapId,
+      {
+        id: rfNode.id,
+        title: label,
+        description,
+        status: status as LearningStatus,
+        type: nodeType,
+      },
+      updatedNode,
+    );
 
-      onOpenChange(false);
-    } catch (err) {
-      toaster.create({
-        type: 'error',
-        closable: true,
-        title: getEditorTranslations('failedToSaveChanges'),
-      });
-    }
+    onOpenChange(false);
   };
 
   return (
@@ -141,8 +162,18 @@ export default function NodeSidebar({
             </VStack>
 
             {editorConfig.useStatus && (
-              <StatusSelect value={status} onChange={setStatus} />
+              <StatusSelect
+                value={[status]}
+                onChange={(s) => setStatus(s[0])}
+              />
             )}
+
+            {/* Node type */}
+            <NodeTypeSelect
+              value={[nodeType]}
+              onChange={(val) => setNodeType(val[0])}
+            />
+
             <Separator />
 
             {/* Actions */}

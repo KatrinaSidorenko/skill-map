@@ -1,9 +1,7 @@
 'use client';
 
-import { MOCK_IMAGE_URL } from '@/store/mock';
 import {
   HoverCard,
-  Image,
   Text,
   VStack,
   Flex,
@@ -19,6 +17,7 @@ import {
   getStatusColor,
 } from '@/features/roadmaps/helpers';
 import { FiEdit2, FiTrash2 } from 'react-icons/fi';
+import ImageWrapper from '@/components/ui/imageWrapper';
 
 interface RoadmapCardProps {
   roadmap: PlainRoadmap;
@@ -43,9 +42,9 @@ export function RoadmapCard({ roadmap, handleClick }: RoadmapCardProps) {
           p={2}
           // height={'130px'}
         >
-          <Image
-            src={roadmap.imageUrl ?? MOCK_IMAGE_URL}
-            alt={roadmap.title}
+          <ImageWrapper
+            imageUrl={roadmap.imageUrl}
+            title={roadmap.title}
             w="150px"
             h="130px"
             objectFit="cover"
@@ -109,9 +108,9 @@ export function SavedRoadmapCard({
           p={2}
           transition="all 0.15s ease-in-out"
         >
-          <Image
-            src={roadmap.imageUrl ?? MOCK_IMAGE_URL}
-            alt={roadmap.title}
+          <ImageWrapper
+            imageUrl={roadmap.imageUrl}
+            title={roadmap.title}
             w="150px"
             h="130px"
             objectFit="cover"
@@ -212,9 +211,9 @@ export function RoadmapCardWithActions({
           position="relative"
         >
           {/* Image Section */}
-          <Image
-            src={roadmap.imageUrl ?? MOCK_IMAGE_URL}
-            alt={roadmap.title}
+          <ImageWrapper
+            imageUrl={roadmap.imageUrl}
+            title={roadmap.title}
             w="150px"
             h="130px"
             objectFit="cover"

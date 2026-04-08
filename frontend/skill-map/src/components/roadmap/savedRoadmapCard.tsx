@@ -1,8 +1,8 @@
 'use client';
 
-import { MOCK_IMAGE_URL } from '@/store/mock';
-import { HoverCard, Image, Text, Badge, VStack, Flex } from '@chakra-ui/react';
+import { HoverCard, Text, Badge, VStack, Flex } from '@chakra-ui/react';
 import NextLink from 'next/link';
+import ImageWrapper from '@/components/ui/imageWrapper';
 
 interface RoadmapCardProps {
   roadmap: SavedPlainRoadmap;
@@ -25,9 +25,9 @@ export function RoadmapCard({ roadmap }: RoadmapCardProps) {
             direction="row"
             p={2}
           >
-            <Image
-              src={roadmap.imageUrl ?? MOCK_IMAGE_URL}
-              alt={roadmap.title}
+            <ImageWrapper
+              imageUrl={roadmap.imageUrl}
+              title={roadmap.title}
               w="150px"
               h="130px"
               objectFit="cover"

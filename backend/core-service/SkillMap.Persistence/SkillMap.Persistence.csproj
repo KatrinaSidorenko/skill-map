@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\roadmaps-catalog-service\SkillMap.Persistence.Neo4j\SkillMap.Persistence.Neo4j.csproj" />
-    <ProjectReference Include="..\SkillMap.Infrastructure\SkillMap.Infrastructure.csproj" />
+    <ProjectReference Include="..\SkillMap.Core\SkillMap.Core.csproj" />
   </ItemGroup>
 
 </Project>

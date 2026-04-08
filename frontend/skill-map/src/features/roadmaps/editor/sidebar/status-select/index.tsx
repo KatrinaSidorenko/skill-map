@@ -3,7 +3,6 @@
 import useLocalization from '@/i18n/useLocalization';
 import {
   Select,
-  Portal,
   createListCollection,
   Text,
   VStack,
@@ -22,6 +21,9 @@ export default function StatusSelect({
       { label: getEditorTranslations('notStarted'), value: 'notstarted' },
       { label: getEditorTranslations('inProgress'), value: 'inprogress' },
       { label: getEditorTranslations('completed'), value: 'completed' },
+      { label: getEditorTranslations('skip'), value: 'skip' },
+      { label: getEditorTranslations('repeat'), value: 'repeat' },
+      { label: getEditorTranslations('upcoming'), value: 'upcoming' },
     ],
   });
 

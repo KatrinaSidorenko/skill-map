@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -18,7 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\shared\LearningPlatform.Shared.Api\LearningPlatform.Shared.Api.csproj" />
     <ProjectReference Include="..\SkillMap.Business\SkillMap.Business.csproj" />
-    <ProjectReference Include="..\SkillMap.Persistence\SkillMap.Persistence.csproj" />
+    <ProjectReference Include="..\SkillMap.Infrastructure\SkillMap.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

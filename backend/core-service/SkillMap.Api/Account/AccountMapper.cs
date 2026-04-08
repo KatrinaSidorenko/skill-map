@@ -2,7 +2,7 @@
 
 using SkillMap.Api.Account.Models;
 using SkillMap.Business.Account.Models;
-using SkillMap.Core.Entities;
+using SkillMap.Core.User;
 
 namespace SkillMap.Api.Account;
 
