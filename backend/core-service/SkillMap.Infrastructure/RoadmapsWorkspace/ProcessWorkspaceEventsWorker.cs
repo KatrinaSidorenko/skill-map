@@ -39,9 +39,7 @@ internal sealed class ProcessWorkspaceEventsWorker : BackgroundService
        "Starting {WorkerName} id={WorkerId} with {ThreadCount} threads",
         nameof(ProcessWorkspaceEventsWorker), _workerId, _workerThreadCount);
 
-        var threads = Enumerable
-            .Range(0, _workerThreadCount)
-    .Select(i => RunProcessingLoopAsync(i, stoppingToken));
+        var threads = Enumerable.Range(0, _workerThreadCount).Select(i => RunProcessingLoopAsync(i, stoppingToken));
 
         await Task.WhenAll(threads);
     }
@@ -100,17 +98,12 @@ internal sealed class ProcessWorkspaceEventsWorker : BackgroundService
             pendingEvent.Id, pendingEvent.EventStatus, pendingEvent.RejectionReason ?? "–");
     }
 
-    // -----------------------------------------------------------------------
-    // Cycle validation for CreateConnection events
-    // -----------------------------------------------------------------------
-
     private async Task ApplyConnectionEventAsync(
         RoadmapWorkspaceEvent pendingEvent,
-     IRoadmapWorkspaceSnapshotRepository snapshotRepository,
+        IRoadmapWorkspaceSnapshotRepository snapshotRepository,
         IRoadmapWorkspaceEventRepository eventRepository,
         CancellationToken ct)
     {
-        // 1. Load the latest persisted snapshot for this workspace
         var latestSnapshot = await snapshotRepository.GetLatestSnapshot(pendingEvent.RoadmapWorkspaceId, ct);
         if (latestSnapshot is null)
         {
@@ -122,23 +115,18 @@ internal sealed class ProcessWorkspaceEventsWorker : BackgroundService
             return;
         }
 
-        // 2. Fetch all applied events between the snapshot version and this event's version
-        //    to rebuild the exact state the graph was in just before this event arrived
         var bridgeEvents = await eventRepository.GetAppliedEventsBetweenAsync(
             pendingEvent.RoadmapWorkspaceId,
- fromVersionExclusive: latestSnapshot.Version,
-toVersionExclusive: pendingEvent.Version,
-        ct);
+            fromVersionExclusive: latestSnapshot.Version,
+            toVersionExclusive: pendingEvent.Version,
+            ct);
 
-        // 3. Rebuild current snapshot from base + bridge events
         var currentSnapshot = await latestSnapshot.GetRoadmapSnapshot(ct);
         if (bridgeEvents.Count > 0)
             currentSnapshot = await currentSnapshot.ApplyEventsToSnapshot(bridgeEvents, ct);
 
-        // 4. Apply the candidate connection event on top
         var candidateSnapshot = await currentSnapshot.ApplyEventsToSnapshot([pendingEvent], ct);
 
-        // 5. Topological sort cycle check
         if (TopologicalSort.HasCycle(candidateSnapshot))
         {
             _logger.LogWarning(

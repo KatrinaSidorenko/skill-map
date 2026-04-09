@@ -103,7 +103,7 @@ function mapAccordionDefaults(
 }
 
 function isInitialTestingExist(data: TestingHistoryDto | null | undefined) {
-  return true;
+  //return true;
   if (!data) return false;
   return data.items.some((item) => item.type === 'initial');
 }
@@ -120,6 +120,7 @@ export default function TestingHistory({
   onGenerateIntermediateTest,
   title,
 }: Props) {
+  console.log(data);
   const { getTestingHistoryTranslations } = useLocalization();
   const items = data?.items ?? [];
   const hasInitialTesting = isInitialTestingExist(data);
@@ -156,17 +157,18 @@ export default function TestingHistory({
         </HStack>
 
         <HStack gap={3}>
-          {onGenerateIntermediateTest && hasInitialTesting && (
-            <Button
-              onClick={onGenerateIntermediateTest}
-              loading={isIntermediateTestGenerating}
-              disabled={isIntermediateTestGenerating}
-              size="sm"
-              variant="ghost"
-            >
-              {getTestingHistoryTranslations('takeIntermediateTest')}
-            </Button>
-          )}
+          {onGenerateIntermediateTest &&
+            data?.isIntermediateAssessmentAvailable && (
+              <Button
+                onClick={onGenerateIntermediateTest}
+                loading={isIntermediateTestGenerating}
+                disabled={isIntermediateTestGenerating}
+                size="sm"
+                variant="ghost"
+              >
+                {getTestingHistoryTranslations('takeIntermediateTest')}
+              </Button>
+            )}
           {isLoading ? (
             <Badge>{getTestingHistoryTranslations('loading')}</Badge>
           ) : (
@@ -195,15 +197,17 @@ export default function TestingHistory({
             <Text color="text.primary" opacity={0.8}>
               {getTestingHistoryTranslations('noTestsDescription')}
             </Text>
-            {!hasInitialTesting && onGenerateInitialTest && (
-              <Button
-                mt={2}
-                onClick={() => onGenerateInitialTest()}
-                loading={isInitialTestGenerating}
-              >
-                {getTestingHistoryTranslations('generateInitialTest')}
-              </Button>
-            )}
+            {!hasInitialTesting &&
+              !data?.isIntermediateAssessmentAvailable &&
+              onGenerateInitialTest && (
+                <Button
+                  mt={2}
+                  onClick={() => onGenerateInitialTest()}
+                  loading={isInitialTestGenerating}
+                >
+                  {getTestingHistoryTranslations('generateInitialTest')}
+                </Button>
+              )}
           </VStack>
         </Box>
       ) : (

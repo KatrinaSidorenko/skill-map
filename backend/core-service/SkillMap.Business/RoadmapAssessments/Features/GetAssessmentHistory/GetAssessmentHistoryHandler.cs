@@ -3,6 +3,8 @@ using JetBrains.Annotations;
 using MediatR;
 
 using SkillMap.Business.Abstractions;
+using SkillMap.Business.RoadmapsWorkspace;
+using SkillMap.Core.Constants;
 using SkillMap.Core.RoadmapAssessments;
 using SkillMap.Core.RoadmapsWorkspace;
 using SkillMap.Shared.Extensions;
@@ -13,6 +15,7 @@ namespace SkillMap.Business.RoadmapAssessments.Features.GetAssessmentHistory;
 
 [UsedImplicitly]
 internal sealed class GetAssessmentHistoryHandler(
+        IRoadmapWorkspaceEditor workspaceRepository,
         IRepository<RoadmapAssessment> assessmentRepository,
         IRepository<AssessmentAttempt> attemptRepository)
     : IRequestHandler<GetAssessmentHistoryQuery, AssessmentHistoryDto>
@@ -21,13 +24,16 @@ internal sealed class GetAssessmentHistoryHandler(
         GetAssessmentHistoryQuery request,
         CancellationToken cancellationToken)
     {
+        var workspace = await workspaceRepository.GetActualRoadmapSnapshot(request.WorkspaceId, cancellationToken) ?? throw new ResourceNotFoundException(nameof(RoadmapWorkspace), $"Roadmap workspace with id {request.WorkspaceId} not found.");
         var assessments = await assessmentRepository.GetAllAsync(
             filter: a => a.RoadmapWorkspaceId == request.WorkspaceId,
             orderBy: q => q.OrderByDescending(a => a.CreatedAt),
             ct: cancellationToken);
+        var hasCompletedTopic = workspace.LearningItems.Any(li => li.Type == LearningItemType.Topic && li.Status == LearningStatus.Completed);
+
         if (!assessments.Any())
         {
-            return new AssessmentHistoryDto(Items: []);
+            return new AssessmentHistoryDto(Items: [], IsIntermediateAssessmentAvailable: hasCompletedTopic);
         }
 
         var assessmentIds = assessments.Select(a => a.Id).ToHashSet();
@@ -43,7 +49,6 @@ internal sealed class GetAssessmentHistoryHandler(
                     .Select(a =>
                     {
                         var assessmentAttempts = attemptsByAssessmentId.GetOrDefault(a.Id) ?? [];
-
                         var attemptDtos = assessmentAttempts
                             .Select(r => new AssessmentAttemptHistoryDto(
                                 AttemptId: r.Id.ToString(),
@@ -53,15 +58,14 @@ internal sealed class GetAssessmentHistoryHandler(
                             .ToList();
 
                         var maxScore = assessmentAttempts.FirstOrDefault()?.MaxPoints ?? 0;
-
                         return new AssessmentHistoryItemDto(
-                        AssessmentId: a.Id.ToString(),
-                        Type: a.TestType,
-                        MaxScore: maxScore,
-                        Attempts: attemptDtos);
+                            AssessmentId: a.Id.ToString(),
+                            Type: a.TestType,
+                            MaxScore: maxScore,
+                            Attempts: attemptDtos);
                     })
             .ToList();
 
-        return new AssessmentHistoryDto(items);
+        return new AssessmentHistoryDto(items, IsIntermediateAssessmentAvailable: hasCompletedTopic);
     }
 }

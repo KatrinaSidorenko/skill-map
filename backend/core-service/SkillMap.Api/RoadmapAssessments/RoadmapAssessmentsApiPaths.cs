@@ -6,6 +6,7 @@ internal static class RoadmapAssessmentsApiPaths
 {
     private const string AssessmentsRoot = $"{ApiPaths.Root}/assessments";
 
+    public const string CreateInitialAssessment    = $"{AssessmentsRoot}/{{workspaceId}}/initial";
     public const string CreateIntermediateAssessment  = $"{AssessmentsRoot}/{{workspaceId}}/intermediate";
     public const string CreateAssessmentAttempt       = $"{AssessmentsRoot}/{{assessmentId}}/attempts";
 
