@@ -12,7 +12,7 @@ using SkillMap.Shared.Results;
 namespace SkillMap.Business.RoadmapsWorkspace.Features.GetRoadmapWorkspaceSummary;
 
 [UsedImplicitly]
-internal sealed class GetRoadmapWorkspaceSummaryHandler(IRepository<RoadmapWorkspace> repository)
+internal sealed class GetRoadmapWorkspaceSummaryHandler(IRepository<RoadmapWorkspace> repository, IRoadmapLearningItemStatusRepository roadmapLearningItemStatusRepository)
     : IRequestHandler<GetRoadmapWorkspaceSummaryQuery, RoadmapWorkspaceSummaryDto>
 {
     public async Task<RoadmapWorkspaceSummaryDto> Handle(GetRoadmapWorkspaceSummaryQuery request, CancellationToken cancellationToken)
@@ -24,7 +24,8 @@ internal sealed class GetRoadmapWorkspaceSummaryHandler(IRepository<RoadmapWorks
         var latestSnapshot = workspace.Snapshots.OrderByDescending(s => s.CreatedAt).FirstOrDefault()
             ?? throw new ResourceNotFoundException(nameof(RoadmapWorkspaceSnapshot), $"No snapshots found for workspace {request.WorkspaceId}");
 
-        var snapshotMetadata = latestSnapshot.ParseMetadata();
+        var (totalItems, completedItems) = await roadmapLearningItemStatusRepository.GetWorkspaceProgressAsync(request.WorkspaceId, cancellationToken);
+        var snapshotMetadata = RoadmapWorkspaceSnapshotExtensions.CalculateSnapshotMetadata(totalItems, completedItems);
 
         return RoadmapWorkspaceSummaryDto.Create(
             workspace.Id,

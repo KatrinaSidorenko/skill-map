@@ -16,10 +16,10 @@ internal class RoadmapWorkspaceEventRepository : Repository<RoadmapWorkspaceEven
     public async Task<int> GetLastAvailableEventVersion(long workspaceId, CancellationToken ct, bool withIncrement = false)
     {
         var lastEvent = await GetAllAsync(
-         filter: e => e.RoadmapWorkspaceId == workspaceId,
-           orderBy: q => q.OrderByDescending(e => e.CreatedAt).OrderByDescending(e => e.Version),
-   count: 1,
- ct: ct);
+            filter: e => e.RoadmapWorkspaceId == workspaceId,
+            orderBy: q => q.OrderByDescending(e => e.CreatedAt).OrderByDescending(e => e.Version),
+            count: 1,
+            ct: ct);
 
         return (lastEvent.FirstOrDefault()?.Version ?? RoadmapWorkspaceConstants.InitialVersion) + (withIncrement ? 1 : 0);
     }
@@ -30,10 +30,6 @@ internal class RoadmapWorkspaceEventRepository : Repository<RoadmapWorkspaceEven
               orderBy: q => q.OrderBy(e => e.CreatedAt).ThenBy(e => e.Version),
     ct: ct)).ToList();
 
-    /// <summary>
-    /// Atomically claims the next pending event using SELECT FOR UPDATE SKIP LOCKED,
-    /// so concurrent worker threads never pick the same row.
-    /// </summary>
     public async Task<RoadmapWorkspaceEvent?> DequeueNextPendingEventAsync(CancellationToken ct)
     {
         return await _dbSet
@@ -51,12 +47,12 @@ internal class RoadmapWorkspaceEventRepository : Repository<RoadmapWorkspaceEven
         long workspaceId,
         int fromVersionExclusive,
         int toVersionExclusive,
-     CancellationToken ct)
-    => (await GetAllAsync(
-            filter: e => e.RoadmapWorkspaceId == workspaceId
-            && e.EventStatus == WorkspaceEventStatus.Applied
-            && e.Version > fromVersionExclusive
-            && e.Version < toVersionExclusive,
-            orderBy: q => q.OrderBy(e => e.Version),
-            ct: ct)).ToList();
+        CancellationToken ct)
+        => (await GetAllAsync(
+                filter: e => e.RoadmapWorkspaceId == workspaceId
+                && e.EventStatus == WorkspaceEventStatus.Applied
+                && e.Version > fromVersionExclusive
+                && e.Version < toVersionExclusive,
+                orderBy: q => q.OrderBy(e => e.Version),
+                ct: ct)).ToList();
 }

@@ -1,4 +1,5 @@
-﻿using SkillMap.Core.Constants;
+﻿using SkillMap.Business.RoadmapsWorkspace.IntegrationEvents;
+using SkillMap.Core.Constants;
 using SkillMap.Core.PersonalizedRoadmaps;
 using SkillMap.Core.RoadmapsWorkspace.Events;
 using SkillMap.Shared.Extensions;
@@ -12,4 +13,9 @@ public record AddLearningItemCommand(long WorkspaceId, string Id, string Title, 
     public string GetMetadataJson() => GetMetadata().JsonSerializeOrDefault();
     public RoadmapWorkspaceEvent ToRoadmapWorkspaceEvent(int version)
         => new(WorkspaceId, EventType, GetMetadataJson(), version, IdempotencyKey);
+    public CreateLearningItemStatusProjectionCommand GetItemStatusProjectionCommand()
+    {
+        var projectionDto = new CreateLearningItemStatusProjectionDto(Id, true, Status.FromStatusStringOrDefault() ?? LearningStatus.NotStarted);
+        return CreateLearningItemStatusProjectionCommand.Create(WorkspaceId, new List<CreateLearningItemStatusProjectionDto> { projectionDto });
+    }
 }

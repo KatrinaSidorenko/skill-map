@@ -1,5 +1,7 @@
 ﻿using System.Linq.Expressions;
 
+using SkillMap.Core.RoadmapsWorkspace;
+
 namespace SkillMap.Business.Abstractions;
 
 public interface IRepository<TEntity> where TEntity : class
@@ -25,4 +27,5 @@ public interface IRepository<TEntity> where TEntity : class
     Task<bool> IsUnique(Expression<Func<TEntity, bool>> filter, CancellationToken ct = default);
     Task<bool> SaveChangesAsync(CancellationToken ct = default);
     Task<TEntity?> GetByPredicate(Expression<Func<TEntity, bool>> filter, CancellationToken ct = default);
+    Task<bool> AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken ct = default);
 }

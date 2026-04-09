@@ -16,8 +16,16 @@ public class RoadmapLearningItemStatus : TrackedEntity
         Status = status;
     }
 
-    public void UpdateStatus(string newStatus)
+    public void UpdateStatus(string? newStatus)
     {
-        Status = newStatus;
+        Status = newStatus ?? Status;
+    }
+
+    public void UpdateAvailability(bool? isAvailable)
+    {
+        if (isAvailable.HasValue)
+        {
+            IsAvailable = isAvailable.Value;
+        }
     }
 }
