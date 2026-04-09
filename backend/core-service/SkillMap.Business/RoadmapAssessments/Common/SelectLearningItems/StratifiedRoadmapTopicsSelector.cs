@@ -1,135 +1,164 @@
-﻿using LearningPlatform.Roadmap.Business.Contracts.Models;
-using LearningPlatform.RoadmapTests.Contracts.Models;
-
+﻿using SkillMap.Business.RoadmapAssessments.Common;
+using SkillMap.Core.Constants;
 
 namespace SkillMap.Business.RoadmapAssessments.Common.SelectLearningItems;
 
-public class StratifiedRoadmapTopicsSelector
+/// <summary>
+/// Selects subtopics for the initial assessment by stratifying the topic graph into levels
+/// and picking the highest-impact topics from each level (breadth-first, greedy by descendant count),
+/// then resolving their child subtopics as the actual question candidates.
+/// </summary>
+internal static class StratifiedRoadmapTopicsSelector
 {
-    public List<Topic> SelectCoreTopics(
-        List<Node> nodes,
-        List<Edge> edges,
-        int questionsLimit)
+    internal static List<LeaningItemAssessment> SelectCoreSubtopics(
+        List<LeaningItemAssessment> subtopicPool,
+        List<LeaningItemAssessment> topics,
+        List<LearningItemsConnectionAssessment> topicDependencies,
+        Dictionary<string, List<string>> subtopicToTopicMap,
+        int budget,
+        Random rnd)
     {
-        var graph = new Dictionary<string, List<string>>();
-        var inDegree = nodes.ToDictionary(n => n.Id, n => 0);
+        if (budget <= 0) return [];
 
-        foreach (var node in nodes) graph[node.Id] = new List<string>();
-        foreach (var edge in edges)
+        // 1. Rank topics by graph position and pick the best ones
+        var bestTopicIds = SelectBestTopicIds(topics, topicDependencies, budget);
+
+        // 2. Collect subtopics whose parent topic is among the best-ranked ones
+        var fromBestTopics = subtopicPool
+            .Where(s => subtopicToTopicMap.TryGetValue(s.Id, out var parentTopics) &&
+                parentTopics.Any(t => bestTopicIds.Contains(t)))
+            .OrderBy(_ => rnd.Next())
+            .ToList();
+
+        var selected = fromBestTopics.Take(budget).ToList();
+
+        // 3. Fallback: fill remaining slots with random subtopics from the full pool
+        if (selected.Count < budget)
         {
-            if (edge.Source == null || edge.Target == null) continue;
-            if (!graph.ContainsKey(edge.Source) || !graph.ContainsKey(edge.Target)) continue;
-            graph[edge.Source].Add(edge.Target);
-            if (inDegree.ContainsKey(edge.Target)) inDegree[edge.Target]++;
+            var remaining = subtopicPool
+                .Except(selected)
+                .OrderBy(_ => rnd.Next())
+                .Take(budget - selected.Count);
+
+            selected.AddRange(remaining);
+        }
+
+        return selected;
+    }
+
+    // -------------------------------------------------------------------------
+    // Graph-based topic ranking
+    // -------------------------------------------------------------------------
+
+    private static HashSet<string> SelectBestTopicIds(
+        List<LeaningItemAssessment> topics,
+        List<LearningItemsConnectionAssessment> topicDependencies,
+        int budget)
+    {
+        if (topics.Count == 0) return [];
+
+        var graph = new Dictionary<string, List<string>>();
+        var inDegree = topics.ToDictionary(n => n.Id, _ => 0);
+
+        foreach (var topic in topics) graph[topic.Id] = [];
+
+        foreach (var edge in topicDependencies)
+        {
+            if (!graph.ContainsKey(edge.FromId) || !graph.ContainsKey(edge.ToId)) continue;
+            graph[edge.FromId].Add(edge.ToId);
+            inDegree[edge.ToId]++;
         }
 
         var nodeLevels = new Dictionary<string, int>();
         var nodeImpacts = new Dictionary<string, int>();
 
-        CalculateLevels(nodes, graph, inDegree, nodeLevels);
-        CalculateDescendants(nodes, graph, nodeImpacts);
+        CalculateLevels(topics, graph, inDegree, nodeLevels);
+        CalculateDescendants(topics, graph, nodeImpacts);
+
+        if (nodeLevels.Count == 0) return topics.Take(budget).Select(t => t.Id).ToHashSet();
 
         var levelsCount = nodeLevels.Values.Max() + 1;
-        var questionsPerLevel = Math.Max(1, questionsLimit / levelsCount);
+        var topicsPerLevel = Math.Max(1, budget / levelsCount);
 
-        return nodes
-            .Select(n => new
+        return topics
+            .Select(t => new
             {
-                Node = n,
-                Level = nodeLevels.ContainsKey(n.Id) ? nodeLevels[n.Id] : 0,
-                Impact = nodeImpacts.ContainsKey(n.Id) ? nodeImpacts[n.Id] : 0
+                Id = t.Id,
+                Level = nodeLevels.GetValueOrDefault(t.Id, 0),
+                Impact = nodeImpacts.GetValueOrDefault(t.Id, 0)
             })
             .GroupBy(x => x.Level)
-            .OrderBy(g => g.Key) // Start from basics (Level 0) going up
+            .OrderBy(g => g.Key)
             .SelectMany(group => group
-                .OrderByDescending(x => x.Impact) // Prioritize "Core" topics
-                .Take(questionsPerLevel) // Take top 2 "Pillars" from this level
-                .Select(x => x.Node)
-            )
-            .Take(questionsLimit) // Hard cap
-            .Select(n => new Topic(n.Id, n.Title, n.Description)).ToList();
+                .OrderByDescending(x => x.Impact)
+                .Take(topicsPerLevel)
+                .Select(x => x.Id))
+            .Take(budget)
+            .ToHashSet();
     }
 
-    private void CalculateLevels(
-        List<Node> nodes,
+    private static void CalculateLevels(
+        List<LeaningItemAssessment> topics,
         Dictionary<string, List<string>> graph,
         Dictionary<string, int> inDegree,
         Dictionary<string, int> levels)
     {
         var queue = new Queue<(string Id, int Level)>();
 
-        foreach (var node in nodes.Where(n => inDegree[n.Id] == 0))
+        foreach (var topic in topics.Where(n => inDegree[n.Id] == 0))
         {
-            queue.Enqueue((node.Id, 0));
-            levels[node.Id] = 0;
+            queue.Enqueue((topic.Id, 0));
+            levels[topic.Id] = 0;
         }
 
         while (queue.Count > 0)
         {
             var (currentId, currentLevel) = queue.Dequeue();
 
-            if (graph.TryGetValue(currentId, out var children))
+            if (!graph.TryGetValue(currentId, out var children)) continue;
+
+            foreach (var child in children)
             {
-                foreach (var child in children)
+                int nextLevel = currentLevel + 1;
+                if (!levels.TryGetValue(child, out var existingLevel) || existingLevel < nextLevel)
                 {
-                    int nextLevel = currentLevel + 1;
-                    if (!levels.ContainsKey(child) || levels[child] < nextLevel)
-                    {
-                        levels[child] = nextLevel;
-                        queue.Enqueue((child, nextLevel));
-                    }
+                    levels[child] = nextLevel;
+                    queue.Enqueue((child, nextLevel));
                 }
             }
         }
     }
 
-    private void CalculateDescendants(
-    List<Node> nodes,
-    Dictionary<string, List<string>> graph,
-    Dictionary<string, int> nodeImpacts)
+    private static void CalculateDescendants(
+        List<LeaningItemAssessment> topics,
+        Dictionary<string, List<string>> graph,
+        Dictionary<string, int> nodeImpacts)
     {
-        var memoizationCache = new Dictionary<string, HashSet<string>>();
+        var cache = new Dictionary<string, HashSet<string>>();
 
-        foreach (var node in nodes)
-        {
-            var descendants = GetUniqueDescendants(node.Id, graph, memoizationCache);
-
-            nodeImpacts[node.Id] = descendants.Count;
-        }
+        foreach (var topic in topics)
+            nodeImpacts[topic.Id] = GetUniqueDescendants(topic.Id, graph, cache).Count;
     }
 
-    private HashSet<string> GetUniqueDescendants(
+    private static HashSet<string> GetUniqueDescendants(
         string nodeId,
         Dictionary<string, List<string>> graph,
         Dictionary<string, HashSet<string>> cache)
     {
-        // 1. Check Cache (Memoization)
-        if (cache.TryGetValue(nodeId, out var cachedResult))
-        {
-            return cachedResult;
-        }
+        if (cache.TryGetValue(nodeId, out var cached)) return cached;
 
-        // 2. Initialize set for this node
-        var myDescendants = new HashSet<string>();
+        var descendants = new HashSet<string>();
 
-        // 3. Traverse Children
         if (graph.TryGetValue(nodeId, out var children))
         {
             foreach (var childId in children)
             {
-                // Add the child itself
-                myDescendants.Add(childId);
-
-                // Recursively get the child's descendants
-                var childDescendants = GetUniqueDescendants(childId, graph, cache);
-
-                // Add all of the child's descendants to my set
-                myDescendants.UnionWith(childDescendants);
+                descendants.Add(childId);
+                descendants.UnionWith(GetUniqueDescendants(childId, graph, cache));
             }
         }
 
-        // 4. Save to Cache and Return
-        cache[nodeId] = myDescendants;
-        return myDescendants;
+        cache[nodeId] = descendants;
+        return descendants;
     }
 }

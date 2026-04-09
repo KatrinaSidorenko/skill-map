@@ -1,5 +1,6 @@
 interface TestingHistoryDto {
   items: TestHistoryItemDto[];
+  isIntermediateAssessmentAvailable: boolean;
 }
 
 interface TestHistoryItemDto {

@@ -85,6 +85,7 @@ export default function useCascadeStatus() {
       if (prevBottomUpTopics.has(changedId)) continue; // came from bottom-up → skip
 
       const newStatus = changedNode.data.status as LearningStatus;
+      if (newStatus !== 'completed') continue;
       const childIds = childrenMap.get(changedId) ?? [];
 
       for (const childId of childIds) {
@@ -134,5 +135,13 @@ export default function useCascadeStatus() {
       // Mark as bottom-up so the NEXT render skips top-down cascade for this topic
       bottomUpComputedRef.current.add(topicId);
     }
-  }, [nodes, childrenMap, parentMap, workspaceId, pendingIds, editorConfig, queueSaveChange]);
+  }, [
+    nodes,
+    childrenMap,
+    parentMap,
+    workspaceId,
+    pendingIds,
+    editorConfig,
+    queueSaveChange,
+  ]);
 }
