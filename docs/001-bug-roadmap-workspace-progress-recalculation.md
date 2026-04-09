@@ -32,7 +32,7 @@ Create a separate metadata table (or add columns to the existing `Workspace` tab
     * Extremely fast. No need to reconstruct the graph state.
     * Data is immediately available via a simple `JOIN` or direct query.
 * **Cons & Trade-offs:**
-    * *Concurrency (Your PostgreSQL concern):* What if `+` and `-` events arrive concurrently? 
+    * *Concurrency:* What if `+` and `-` events arrive concurrently? 
         * *How Postgres handles it:* PostgreSQL is ACID-compliant. An operation like `UPDATE metadata SET total = total + 1 WHERE roadmap_id = X` acquires a row-level lock. Concurrent updates will wait in a queue and execute sequentially. It is safe from data corruption, but under *extreme* load (e.g., 1000 events/sec for one roadmap), this lock can cause a bottleneck.
     * *Event Ordering & Idempotency:* What happens if a `NODE_COMPLETED` event arrives *before* the `NODE_ADDED` event due to network lag? What if an event is processed twice? We might end up with negative counters or skewed statistics.
 
