@@ -43,8 +43,8 @@ internal sealed class BuildBlueprintWorkspaceSnapshotHandler(
             await snapshotsRepository.AddAsync(initialSnapshot, cancellationToken);
             await snapshotsRepository.SaveChangesAsync(cancellationToken);
 
-            var learningItemsProjections = roadmapSnapshot.LearningItems.Select(i => CreateLearningItemStatusProjectionDto.ToProjectionDto(i)).ToList();
-            var createProjectionsCommand = CreateLearningItemStatusProjectionCommand.Create(request.WorkspaceId, learningItemsProjections);
+            var learningItemsProjections = roadmapSnapshot.LearningItems.Select(i => CreateLearningItemProjectionDto.ToProjectionDto(i)).ToList();
+            var createProjectionsCommand = CreateLearningItemProjectionCommand.Create(request.WorkspaceId, learningItemsProjections);
             await eventBus.PublishAsync(createProjectionsCommand, cancellationToken);
 
             logger.LogInformation(

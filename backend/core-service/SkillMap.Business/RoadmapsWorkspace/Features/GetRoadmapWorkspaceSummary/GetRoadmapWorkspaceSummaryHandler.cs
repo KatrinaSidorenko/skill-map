@@ -12,7 +12,7 @@ using SkillMap.Shared.Results;
 namespace SkillMap.Business.RoadmapsWorkspace.Features.GetRoadmapWorkspaceSummary;
 
 [UsedImplicitly]
-internal sealed class GetRoadmapWorkspaceSummaryHandler(IRepository<RoadmapWorkspace> repository, IRoadmapLearningItemStatusRepository roadmapLearningItemStatusRepository)
+internal sealed class GetRoadmapWorkspaceSummaryHandler(IRepository<RoadmapWorkspace> repository, IRoadmapLearningItemProjectionRepository roadmapLearningItemStatusRepository)
     : IRequestHandler<GetRoadmapWorkspaceSummaryQuery, RoadmapWorkspaceSummaryDto>
 {
     public async Task<RoadmapWorkspaceSummaryDto> Handle(GetRoadmapWorkspaceSummaryQuery request, CancellationToken cancellationToken)

@@ -6,9 +6,9 @@ using SkillMap.Core.RoadmapsWorkspace;
 using SkillMap.Persistence;
 
 namespace SkillMap.Infrastructure.RoadmapsWorkspace;
-internal class RoadmapLearningItemStatusRepository : Repository<RoadmapLearningItemStatus>, IRoadmapLearningItemStatusRepository
+internal class RoadmapLearningItemProjectionRepository : Repository<RoadmapLearningProjection>, IRoadmapLearningItemProjectionRepository
 {
-    public RoadmapLearningItemStatusRepository(SkillMapDbContext context) : base(context) { }
+    public RoadmapLearningItemProjectionRepository(SkillMapDbContext context) : base(context) { }
     
     public async Task<(int TotalItems, int CompletedItems)> GetWorkspaceProgressAsync(long workspaceId, CancellationToken ct)
     {

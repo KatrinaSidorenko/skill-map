@@ -5,13 +5,13 @@ using SkillMap.Shared.EventBus;
 using SkillMap.Shared.Extensions;
 
 namespace SkillMap.Business.RoadmapsWorkspace.Features.CreateLearningItemsStatusProjection;
-internal class CreateLearningItemsStatusProjectionHandler(IRoadmapLearningItemStatusRepository repository) : IIntegrationEventHandler<CreateLearningItemStatusProjectionCommand>
+internal class CreateLearningItemsProjectionHandler(IRoadmapLearningItemProjectionRepository repository) : IIntegrationEventHandler<CreateLearningItemProjectionCommand>
 {
-    public async Task Handle(CreateLearningItemStatusProjectionCommand notification, CancellationToken cancellationToken)
+    public async Task Handle(CreateLearningItemProjectionCommand notification, CancellationToken cancellationToken)
     {
         var workspaceProjections = await repository.GetAllAsync(p => p.RoadmapWorkspaceId == notification.WorkspaceId,  ct: cancellationToken);
         var workspaceProjectionsDict = workspaceProjections.ToDictionary(p => p.LearningItemId, p => p);
-        foreach (var projectionDto in notification.ProjectionDtos)
+        foreach (var projectionDto in notification.ProjectionDtos.DistinctBy(p => p.LearningItemId))
         {
             var existingProjection = workspaceProjectionsDict.GetOrDefault(projectionDto.LearningItemId);
             if (existingProjection != null)
@@ -22,7 +22,7 @@ internal class CreateLearningItemsStatusProjectionHandler(IRoadmapLearningItemSt
             }
             else
             {
-                var newProjection = projectionDto.ToRoadmapLearningItemStatus(notification.WorkspaceId);
+                var newProjection = projectionDto.ToRoadmapLearningItemProjection(notification.WorkspaceId);
                 await repository.AddAsync(newProjection, cancellationToken);
             }
         }

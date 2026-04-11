@@ -2,7 +2,7 @@
 using SkillMap.Core.RoadmapsWorkspace;
 
 namespace SkillMap.Business.RoadmapsWorkspace;
-public interface IRoadmapLearningItemStatusRepository : IRepository<RoadmapLearningItemStatus>
+public interface IRoadmapLearningItemProjectionRepository : IRepository<RoadmapLearningProjection>
 {
     Task<(int TotalItems, int CompletedItems)> GetWorkspaceProgressAsync(long workspaceId, CancellationToken ct);
 }

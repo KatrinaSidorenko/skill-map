@@ -13,9 +13,9 @@ public record DeleteLearningItemCommand(long WorkspaceId, string Id, int ClientW
     public RoadmapWorkspaceEvent ToRoadmapWorkspaceEvent(int version)
         => new(WorkspaceId, EventType, GetMetadataJson(), version, IdempotencyKey);
 
-    public CreateLearningItemStatusProjectionCommand GetItemStatusProjectionCommand()
+    public CreateLearningItemProjectionCommand GetItemStatusProjectionCommand()
     {
-        var projectionDto = new CreateLearningItemStatusProjectionDto(Id, false, null);
-        return CreateLearningItemStatusProjectionCommand.Create(WorkspaceId, new List<CreateLearningItemStatusProjectionDto> { projectionDto });
+        var projectionDto = new CreateLearningItemProjectionDto(Id, false, null);
+        return CreateLearningItemProjectionCommand.Create(WorkspaceId, new List<CreateLearningItemProjectionDto> { projectionDto });
     }
 }

@@ -38,7 +38,7 @@ public class RoadmapWorkspace : TrackedEntity
     public virtual ICollection<RoadmapWorkspaceEvent> WorkspaceEvents { get; set; }
     public virtual ICollection<RoadmapWorkspaceSnapshot> Snapshots { get; set; }
     public virtual ICollection<RoadmapAssessment> Assessments { get; set; }
-    public virtual ICollection<RoadmapLearningItemStatus> LearningItemStatuses { get; set; }
+    public virtual ICollection<RoadmapLearningProjection> LearningItemStatuses { get; set; }
 
     public RoadmapWorkspace() { }
     public RoadmapWorkspace(long userId, string? roadmapId, long? personalRoadmapId)

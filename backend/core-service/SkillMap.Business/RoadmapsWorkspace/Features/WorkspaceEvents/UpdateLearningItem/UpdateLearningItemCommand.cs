@@ -14,9 +14,9 @@ public record UpdateLearningItemCommand(long WorkspaceId, string Id, string? Tit
     public string GetMetadataJson() => GetMetadata().JsonSerializeOrDefault();
     public RoadmapWorkspaceEvent ToRoadmapWorkspaceEvent(int version)
         => new(WorkspaceId, EventType, GetMetadataJson(), version, IdempotencyKey);
-    public CreateLearningItemStatusProjectionCommand GetItemStatusProjectionCommand()
+    public CreateLearningItemProjectionCommand GetItemStatusProjectionCommand()
     {
-        var projectionDto = new CreateLearningItemStatusProjectionDto(Id, null, Status?.FromStatusStringOrDefault());
-        return CreateLearningItemStatusProjectionCommand.Create(WorkspaceId, new List<CreateLearningItemStatusProjectionDto> { projectionDto });
+        var projectionDto = new CreateLearningItemProjectionDto(Id, null, Status?.FromStatusStringOrDefault());
+        return CreateLearningItemProjectionCommand.Create(WorkspaceId, new List<CreateLearningItemProjectionDto> { projectionDto });
     }
 }

@@ -1,5 +1,5 @@
 ﻿namespace SkillMap.Core.RoadmapsWorkspace;
-public class RoadmapLearningItemStatus : TrackedEntity
+public class RoadmapLearningProjection : TrackedEntity
 {
     public long RoadmapWorkspaceId { get; private set; }
     public string LearningItemId { get; private set; }
@@ -8,7 +8,7 @@ public class RoadmapLearningItemStatus : TrackedEntity
 
     public virtual RoadmapWorkspace RoadmapWorkspace { get; set; }
 
-    public RoadmapLearningItemStatus(long roadmapWorkspaceId, string learningItemId, bool isAvailable, string status)
+    public RoadmapLearningProjection(long roadmapWorkspaceId, string learningItemId, bool isAvailable, string status)
     {
         RoadmapWorkspaceId = roadmapWorkspaceId;
         LearningItemId = learningItemId;
