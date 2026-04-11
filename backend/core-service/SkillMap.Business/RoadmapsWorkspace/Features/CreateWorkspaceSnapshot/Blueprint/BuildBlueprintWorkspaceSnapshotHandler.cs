@@ -9,15 +9,18 @@ using Microsoft.Extensions.Logging;
 using SkillMap.Business.Abstractions;
 using SkillMap.Business.PersonalizedRoadmaps.Common;
 using SkillMap.Business.RoadmapsWorkspace.Common;
+using SkillMap.Business.RoadmapsWorkspace.IntegrationEvents;
 using SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots;
+using SkillMap.Shared.EventBus;
 
 namespace SkillMap.Business.RoadmapsWorkspace.Features.CreateWorkspaceSnapshot.Blueprint;
 
 [UsedImplicitly]
 internal sealed class BuildBlueprintWorkspaceSnapshotHandler(
     IRoadmapBlueprintRepository roadmapBlueprintRepository,
-  IRoadmapWorkspaceSnapshotRepository snapshotsRepository,
+    IRoadmapWorkspaceSnapshotRepository snapshotsRepository,
     IRoadmapWorkspaceEventRepository eventsRepository,
+    IEventBus eventBus,
     ILogger<BuildBlueprintWorkspaceSnapshotHandler> logger) : IRequestHandler<BuildBlueprintWorkspaceSnapshotCommand, long>
 {
     public async Task<long> Handle(BuildBlueprintWorkspaceSnapshotCommand request, CancellationToken cancellationToken)
@@ -33,21 +36,16 @@ internal sealed class BuildBlueprintWorkspaceSnapshotHandler(
             }
 
             var roadmapBlueprint = roadmapBlueprintResult.Data;
-            var roadmapSnapshot = roadmapBlueprint.MakeRoadmapSnapshot();
-
-            if (TopologicalSort.HasCycle(roadmapSnapshot))
-            {
-                logger.LogWarning(
-                     "Roadmap blueprint {RoadmapId} has cyclic dependencies — attempting to resolve via Tarjan SCC",
-                        request.RoadmapId);
-
-                roadmapSnapshot = RemoveCycleEdges(roadmapSnapshot);
-            }
+            var roadmapSnapshot = roadmapBlueprint.MakeRoadmapSnapshot().EnsureNoCycleEdges(logger);
 
             var initialSnapshot = new RoadmapWorkspaceSnapshot(request.WorkspaceId, null, RoadmapWorkspaceConstants.InitialVersion);
             await initialSnapshot.SetRoadmapSnapshot(roadmapSnapshot, cancellationToken);
             await snapshotsRepository.AddAsync(initialSnapshot, cancellationToken);
             await snapshotsRepository.SaveChangesAsync(cancellationToken);
+
+            var learningItemsProjections = roadmapSnapshot.LearningItems.Select(i => CreateLearningItemProjectionDto.ToProjectionDto(i)).ToList();
+            var createProjectionsCommand = CreateLearningItemProjectionCommand.Create(request.WorkspaceId, learningItemsProjections);
+            await eventBus.PublishAsync(createProjectionsCommand, cancellationToken);
 
             logger.LogInformation(
               "Created initial snapshot for workspace {WorkspaceId} with version {Version}",
@@ -75,32 +73,5 @@ internal sealed class BuildBlueprintWorkspaceSnapshotHandler(
         await snapshotsRepository.AddAsync(newWorkspaceSnapshot, cancellationToken);
         await snapshotsRepository.SaveChangesAsync(cancellationToken);
         return newWorkspaceSnapshot.Id;
-    }
-
-
-    private RoadmapSnapshot RemoveCycleEdges(RoadmapSnapshot snapshot)
-    {
-        var sccComponents = new TarjanSccDetector(snapshot).FindStronglyConnectedComponents();
-
-        if (!sccComponents.IsCyclic())
-            return snapshot;
-
-        var cyclicSccs = RoadmapSnapshotValidator.GetSCCs(sccComponents);
-        var edgesToRemove = cyclicSccs.ResolveCycles(snapshot.LearningItemsConnections);
-        var edgeIdsToRemove = edgesToRemove.Select(e => e.Id).ToHashSet();
-
-        logger.LogWarning(
-            "Removing {Count} cycle edge(s) from roadmap {RoadmapId}: [{Edges}]",
-            edgeIdsToRemove.Count,
-            snapshot.Id,
-            string.Join(", ", edgeIdsToRemove));
-
-        return new RoadmapSnapshot
-        {
-            Id = snapshot.Id,
-            Version = snapshot.Version,
-            LearningItems = snapshot.LearningItems,
-            LearningItemsConnections = snapshot.LearningItemsConnections.Where(c => !edgeIdsToRemove.Contains(c.Id)).ToList()
-        };
     }
 }

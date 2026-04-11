@@ -1,3 +1,4 @@
+using SkillMap.Business.RoadmapsWorkspace.IntegrationEvents;
 using SkillMap.Core.PersonalizedRoadmaps;
 using SkillMap.Core.RoadmapsWorkspace.Events;
 using SkillMap.Shared.Extensions;
@@ -11,4 +12,10 @@ public record DeleteLearningItemCommand(long WorkspaceId, string Id, int ClientW
     public string GetMetadataJson() => GetMetadata().JsonSerializeOrDefault();
     public RoadmapWorkspaceEvent ToRoadmapWorkspaceEvent(int version)
         => new(WorkspaceId, EventType, GetMetadataJson(), version, IdempotencyKey);
+
+    public CreateLearningItemProjectionCommand GetItemStatusProjectionCommand()
+    {
+        var projectionDto = new CreateLearningItemProjectionDto(Id, false, null);
+        return CreateLearningItemProjectionCommand.Create(WorkspaceId, new List<CreateLearningItemProjectionDto> { projectionDto });
+    }
 }

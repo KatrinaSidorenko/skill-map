@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SkillMap.Persistence;
@@ -11,9 +12,11 @@ using SkillMap.Persistence;
 namespace SkillMap.Persistence.Migrations
 {
     [DbContext(typeof(SkillMapDbContext))]
-    partial class SkillMapDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260411075009_learning-items-projection")]
+    partial class learningitemsprojection
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -226,7 +229,7 @@ namespace SkillMap.Persistence.Migrations
                     b.ToTable("personal_roadmap", (string)null);
                 });
 
-            modelBuilder.Entity("SkillMap.Core.RoadmapsWorkspace.RoadmapLearningProjection", b =>
+            modelBuilder.Entity("SkillMap.Core.RoadmapsWorkspace.RoadmapLearningItemStatus", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -265,12 +268,10 @@ namespace SkillMap.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoadmapWorkspaceId", "LearningItemId")
+                    b.HasIndex("RoadmapWorkspaceId", "IsAvailable", "Status")
                         .IsUnique();
 
-                    b.HasIndex("RoadmapWorkspaceId", "IsAvailable", "Status");
-
-                    b.ToTable("roadmap_learning_item_projection", (string)null);
+                    b.ToTable("roadmap_learning_item_status", (string)null);
                 });
 
             modelBuilder.Entity("SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots.RoadmapWorkspaceSnapshot", b =>
@@ -518,7 +519,7 @@ namespace SkillMap.Persistence.Migrations
                     b.Navigation("Author");
                 });
 
-            modelBuilder.Entity("SkillMap.Core.RoadmapsWorkspace.RoadmapLearningProjection", b =>
+            modelBuilder.Entity("SkillMap.Core.RoadmapsWorkspace.RoadmapLearningItemStatus", b =>
                 {
                     b.HasOne("SkillMap.Core.RoadmapsWorkspace.RoadmapWorkspace", "RoadmapWorkspace")
                         .WithMany("LearningItemStatuses")

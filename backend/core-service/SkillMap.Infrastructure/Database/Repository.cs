@@ -26,6 +26,12 @@ internal class Repository<TEntity> : IRepository<TEntity>
         return true;
     }
 
+    public async Task<bool> AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken ct = default)
+    {
+        await _dbSet.AddRangeAsync(entities, ct);
+        return true;
+    }
+
     public async Task<bool> DeleteAsync(long id, CancellationToken ct = default)
     {
         var entity = await _dbSet.FindAsync(new object[] { id }, ct);
