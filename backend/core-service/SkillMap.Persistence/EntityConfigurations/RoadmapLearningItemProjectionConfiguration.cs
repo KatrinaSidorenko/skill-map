@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SkillMap.Core.RoadmapsWorkspace;
 
 namespace SkillMap.Persistence.EntityConfigurations;
-internal class RoadmapLearningItemStatusConfiguration : IEntityTypeConfiguration<RoadmapLearningItemStatus>
+internal class RoadmapLearningItemProjectionConfiguration : IEntityTypeConfiguration<RoadmapLearningProjection>
 {
-    public void Configure(EntityTypeBuilder<RoadmapLearningItemStatus> builder)
+    public void Configure(EntityTypeBuilder<RoadmapLearningProjection> builder)
     {
-        builder.ToTable("roadmap_learning_item_status");
+        builder.ToTable("roadmap_learning_item_projection");
         builder.HasKey(rlis => rlis.Id);
         builder.Property(rlis => rlis.Id).HasColumnName("id");
         builder.Property(rlis => rlis.CreatedAt).HasColumnName("created_at").IsRequired();
@@ -21,6 +21,7 @@ internal class RoadmapLearningItemStatusConfiguration : IEntityTypeConfiguration
             .WithMany(rw => rw.LearningItemStatuses)
             .HasForeignKey(rlis => rlis.RoadmapWorkspaceId)
             .OnDelete(DeleteBehavior.Cascade);
-        builder.HasIndex(rlis => new { rlis.RoadmapWorkspaceId, rlis.IsAvailable, rlis.Status }).IsUnique();
+        builder.HasIndex(rlis => new { rlis.RoadmapWorkspaceId, rlis.LearningItemId }).IsUnique();
+        builder.HasIndex(rlis => new { rlis.RoadmapWorkspaceId, rlis.IsAvailable, rlis.Status });
     }
 }
