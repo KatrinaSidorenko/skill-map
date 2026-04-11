@@ -6,6 +6,9 @@ using LearningPlatform.Roadmap.Business.Contracts.Models;
 
 using MediatR;
 
+using Microsoft.Extensions.Logging;
+
+using SkillMap.Business.RoadmapsWorkspace.Common;
 using SkillMap.Core.PersonalizedRoadmaps;
 using SkillMap.Core.RoadmapsWorkspace.Events;
 using SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots;
@@ -69,7 +72,12 @@ public static class RoadmapWorkspaceSnapshotExtensions
 
         var totalItems = snapshot.LearningItems.DistinctBy(li => li.Id).Count();
         var completedItems = snapshot.LearningItems.Count(i => i.Status == Core.Constants.LearningStatus.Completed);
-        var progress = ((double)completedItems / totalItems);
+        return CalculateSnapshotMetadata(totalItems, completedItems);
+    }
+
+    public static RoadmapSnapshotMetadata CalculateSnapshotMetadata(int totalItems, int completedItems)
+    {
+        var progress = totalItems > 0 ? ((double)completedItems / totalItems) : 0;
         var status = completedItems <= 0 ? Core.Constants.LearningStatus.NotStarted :
                      completedItems >= totalItems ? Core.Constants.LearningStatus.Completed :
                      Core.Constants.LearningStatus.InProgress;
@@ -123,6 +131,36 @@ public static class RoadmapWorkspaceSnapshotExtensions
                 Source = nodes.GetOrDefault(lc.FromId),
                 Target = nodes.GetOrDefault(lc.ToId),
             }).ToList(),
+        };
+    }
+
+    public static RoadmapSnapshot EnsureNoCycleEdges(this RoadmapSnapshot snapshot, ILogger logger)
+    {
+        var sccComponents = new TarjanSccDetector(snapshot).FindStronglyConnectedComponents();
+
+        if (!sccComponents.IsCyclic())
+            return snapshot;
+
+        logger.LogWarning(
+                   "Roadmap blueprint {RoadmapId} has cyclic dependencies — attempting to resolve via Tarjan SCC",
+                      snapshot.Id);
+
+        var cyclicSccs = RoadmapSnapshotValidator.GetSCCs(sccComponents);
+        var edgesToRemove = cyclicSccs.ResolveCycles(snapshot.LearningItemsConnections);
+        var edgeIdsToRemove = edgesToRemove.Select(e => e.Id).ToHashSet();
+
+        logger.LogWarning(
+            "Removing {Count} cycle edge(s) from roadmap {RoadmapId}: [{Edges}]",
+            edgeIdsToRemove.Count,
+            snapshot.Id,
+            string.Join(", ", edgeIdsToRemove));
+
+        return new RoadmapSnapshot
+        {
+            Id = snapshot.Id,
+            Version = snapshot.Version,
+            LearningItems = snapshot.LearningItems,
+            LearningItemsConnections = snapshot.LearningItemsConnections.Where(c => !edgeIdsToRemove.Contains(c.Id)).ToList()
         };
     }
 }

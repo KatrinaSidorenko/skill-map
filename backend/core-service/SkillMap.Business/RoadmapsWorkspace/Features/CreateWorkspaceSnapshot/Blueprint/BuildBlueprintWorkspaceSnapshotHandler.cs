@@ -1,5 +1,4 @@
-﻿
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 
 using LearningPlatform.Roadmap.Business.Contracts;
 
@@ -10,7 +9,9 @@ using Microsoft.Extensions.Logging;
 using SkillMap.Business.Abstractions;
 using SkillMap.Business.PersonalizedRoadmaps.Common;
 using SkillMap.Business.RoadmapsWorkspace.Common;
+using SkillMap.Business.RoadmapsWorkspace.IntegrationEvents;
 using SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots;
+using SkillMap.Shared.EventBus;
 
 namespace SkillMap.Business.RoadmapsWorkspace.Features.CreateWorkspaceSnapshot.Blueprint;
 
@@ -19,6 +20,7 @@ internal sealed class BuildBlueprintWorkspaceSnapshotHandler(
     IRoadmapBlueprintRepository roadmapBlueprintRepository,
     IRoadmapWorkspaceSnapshotRepository snapshotsRepository,
     IRoadmapWorkspaceEventRepository eventsRepository,
+    IEventBus eventBus,
     ILogger<BuildBlueprintWorkspaceSnapshotHandler> logger) : IRequestHandler<BuildBlueprintWorkspaceSnapshotCommand, long>
 {
     public async Task<long> Handle(BuildBlueprintWorkspaceSnapshotCommand request, CancellationToken cancellationToken)
@@ -32,20 +34,33 @@ internal sealed class BuildBlueprintWorkspaceSnapshotHandler(
                 logger.LogError("Roadmap blueprint with id {RoadmapId} not found", request.RoadmapId);
                 throw new InvalidOperationException($"Roadmap blueprint with id {request.RoadmapId} not found");
             }
+
             var roadmapBlueprint = roadmapBlueprintResult.Data;
-            var roadmapSnapshot = roadmapBlueprint.MakeRoadmapSnapshot();
+            var roadmapSnapshot = roadmapBlueprint.MakeRoadmapSnapshot().EnsureNoCycleEdges(logger);
+
             var initialSnapshot = new RoadmapWorkspaceSnapshot(request.WorkspaceId, null, RoadmapWorkspaceConstants.InitialVersion);
             await initialSnapshot.SetRoadmapSnapshot(roadmapSnapshot, cancellationToken);
             await snapshotsRepository.AddAsync(initialSnapshot, cancellationToken);
             await snapshotsRepository.SaveChangesAsync(cancellationToken);
-            logger.LogInformation("Created initial snapshot for workspace {WorkspaceId} with version {Version}", request.WorkspaceId, RoadmapWorkspaceConstants.InitialVersion);
+
+            var learningItemsProjections = roadmapSnapshot.LearningItems.Select(i => CreateLearningItemProjectionDto.ToProjectionDto(i)).ToList();
+            var createProjectionsCommand = CreateLearningItemProjectionCommand.Create(request.WorkspaceId, learningItemsProjections);
+            await eventBus.PublishAsync(createProjectionsCommand, cancellationToken);
+
+            logger.LogInformation(
+              "Created initial snapshot for workspace {WorkspaceId} with version {Version}",
+                   request.WorkspaceId, RoadmapWorkspaceConstants.InitialVersion);
+
             return initialSnapshot.Id;
         }
 
         var eventsList = await eventsRepository.GetCheckedEventsGreaterThan(request.WorkspaceId, latestSnapshot.Version, cancellationToken);
         if (eventsList.Count <= 0)
         {
-            logger.LogInformation("No new events found for workspace {WorkspaceId} since last snapshot version {Version}. Returning existing snapshot.", request.WorkspaceId, latestSnapshot.Version);
+            logger.LogInformation(
+                "No new events found for workspace {WorkspaceId} since last snapshot version {Version}. Returning existing snapshot.",
+                request.WorkspaceId, latestSnapshot.Version);
+
             return latestSnapshot.Id;
         }
 
@@ -54,6 +69,7 @@ internal sealed class BuildBlueprintWorkspaceSnapshotHandler(
             latestSnapshot,
             eventsList,
             cancellationToken);
+
         await snapshotsRepository.AddAsync(newWorkspaceSnapshot, cancellationToken);
         await snapshotsRepository.SaveChangesAsync(cancellationToken);
         return newWorkspaceSnapshot.Id;

@@ -23,6 +23,20 @@ public static class LearningStatusExtensions
         _ => "unknown"
     };
 
+    public static LearningStatus? FromStatusStringOrDefault(this string status)
+    {
+        return status.ToLower() switch
+        {
+            "notstarted" => LearningStatus.NotStarted,
+            "inprogress" => LearningStatus.InProgress,
+            "completed" => LearningStatus.Completed,
+            "skip" => LearningStatus.Skip,
+            "repeat" => LearningStatus.Repeat,
+            "upcoming" => LearningStatus.Upcoming,
+            _ => null
+        };
+    }
+
     public static List<string> GetStatuses()
     {
         return Enum.GetValues(typeof(LearningStatus))

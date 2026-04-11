@@ -74,7 +74,7 @@ internal class GetRoadmapStateSuggestionsHandler(
     {
         var snapshotCopy = snapshot.DeepCopy();
         var learningItemsDict = snapshotCopy.LearningItems.ToDictionary(li => li.Id);
-        foreach (var suggestion in suggestions)
+        foreach (var suggestion in suggestions.Where(s => s.Status != s.SuggestedStatus))
         {
             var learningItem = learningItemsDict.GetOrDefault(suggestion.Id);
             if (learningItem == null) continue;

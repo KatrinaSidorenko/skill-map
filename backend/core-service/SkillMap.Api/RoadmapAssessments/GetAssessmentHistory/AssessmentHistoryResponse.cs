@@ -8,10 +8,13 @@ public class AssessmentHistoryResponse
 {
     [JsonPropertyName("items")]
     public List<AssessmentHistoryItemResponse> Items { get; init; }
+    [JsonPropertyName("isIntermediateAssessmentAvailable")]
+    public bool IsIntermediateAssessmentAvailable { get; init; }
 
     public static AssessmentHistoryResponse Create(AssessmentHistoryDto dto) => new()
     {
-        Items = dto.Items.Select(AssessmentHistoryItemResponse.Create).ToList()
+        Items = dto.Items.Select(AssessmentHistoryItemResponse.Create).ToList(),
+        IsIntermediateAssessmentAvailable = dto.IsIntermediateAssessmentAvailable
     };
 }
 

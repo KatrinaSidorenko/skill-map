@@ -11,7 +11,7 @@ export const assessmentApi = createApi({
       { roadmapId: string; config: RoadmapTestConfigDto }
     >({
       query: ({ roadmapId, config }) => ({
-        url: `roadmaptest/${roadmapId}/initial`,
+        url: `assessments/${roadmapId}/initial`,
         method: 'POST',
         body: config,
       }),

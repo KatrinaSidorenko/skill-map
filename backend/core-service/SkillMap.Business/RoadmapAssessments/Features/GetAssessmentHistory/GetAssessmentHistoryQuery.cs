@@ -2,7 +2,7 @@ namespace SkillMap.Business.RoadmapAssessments.Features.GetAssessmentHistory;
 
 public record GetAssessmentHistoryQuery(long WorkspaceId) : ICommand<AssessmentHistoryDto>;
 
-public record AssessmentHistoryDto(List<AssessmentHistoryItemDto> Items);
+public record AssessmentHistoryDto(List<AssessmentHistoryItemDto> Items, bool IsIntermediateAssessmentAvailable);
 
 public record AssessmentHistoryItemDto(
     string AssessmentId,
