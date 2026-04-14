@@ -37,3 +37,6 @@ When the client receives a broadcasted event via WebSocket:
 3. Implement the message broker and ensure events are partitioned by `workspace_id`.
 4. Refactor the worker to process events sequentially per workspace, including validation and conflict resolution.
 5. Update the client to handle optimistic updates, maintain a pending queue, and reconcile incoming events properly.
+
+#### Sequence Diagram
+![Sequence Diagram](assets/sequence-diagram-editor.png)
