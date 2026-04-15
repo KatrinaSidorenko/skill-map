@@ -59,7 +59,11 @@ export default function useEventQueue() {
       enqueueEvent(event)
         .then(() => {
           if (!hubConnection) return;
-          return hubConnection.invoke('AddLearningItem', workspaceId, hubPayload);
+          return hubConnection.invoke(
+            'AddLearningItem',
+            workspaceId,
+            hubPayload,
+          );
         })
         .catch(() => {
           // Hub unavailable – event stays 'pending' in IDB;
@@ -102,7 +106,11 @@ export default function useEventQueue() {
       enqueueEvent(event)
         .then(() => {
           if (!hubConnection) return;
-          return hubConnection.invoke('CreateConnection', workspaceId, hubPayload);
+          return hubConnection.invoke(
+            'CreateConnection',
+            workspaceId,
+            hubPayload,
+          );
         })
         .catch(() => {});
     },
@@ -195,9 +203,15 @@ export default function useEventQueue() {
       enqueueEvent(event)
         .then(() => {
           if (!hubConnection) return;
-          return hubConnection.invoke('UpdateLearningItem', workspaceId, hubPayload);
+          return hubConnection.invoke(
+            'UpdateLearningItem',
+            workspaceId,
+            hubPayload,
+          );
         })
-        .catch(() => {});
+        .catch((error) => {
+          console.log(error);
+        });
     },
     [dispatch, hubConnection, workspaceVersion],
   );

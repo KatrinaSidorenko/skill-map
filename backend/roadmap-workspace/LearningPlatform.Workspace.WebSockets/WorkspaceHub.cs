@@ -32,23 +32,23 @@ public class WorkspaceHub : Hub<IWorkspaceClient>
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, GetWorkspaceGroupName(workspaceId));
     }
 
-    public async Task AddLearningItem(string workspaceId, AddLearningItemAction action, CancellationToken ct)
-        => await EnqueueAction(workspaceId, action, ct);
+    public async Task AddLearningItem(string workspaceId, AddLearningItemAction action)
+        => await EnqueueAction(workspaceId, action);
 
-    public async Task UpdateLearningItem(string workspaceId, UpdateLearningItemAction action, CancellationToken ct)
-        => await EnqueueAction(workspaceId, action, ct);
+    public async Task UpdateLearningItem(string workspaceId, UpdateLearningItemAction action)
+        => await EnqueueAction(workspaceId, action);
 
-    public async Task DeleteLearningItem(string workspaceId, DeleteLearningItemAction action, CancellationToken ct)
-        => await EnqueueAction(workspaceId, action, ct);
+    public async Task DeleteLearningItem(string workspaceId, DeleteLearningItemAction action)
+        => await EnqueueAction(workspaceId, action);
 
-    public async Task CreateConnection(string workspaceId, CreateLearningItemConnectionAction action, CancellationToken ct)
-        => await EnqueueAction(workspaceId, action, ct);
+    public async Task CreateConnection(string workspaceId, CreateLearningItemConnectionAction action)
+        => await EnqueueAction(workspaceId, action);
 
-    public async Task DeleteConnection(string workspaceId, DeleteLearningItemConnectionAction action, CancellationToken ct)
-        => await EnqueueAction(workspaceId, action, ct);
+    public async Task DeleteConnection(string workspaceId, DeleteLearningItemConnectionAction action)
+        => await EnqueueAction(workspaceId, action);
 
 
-    private async Task EnqueueAction(string workspaceId, WorkspaceActionRequest payload, CancellationToken ct)
+    private async Task EnqueueAction(string workspaceId, WorkspaceActionRequest payload, CancellationToken ct = default)
     {
         try
         {

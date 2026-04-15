@@ -18,7 +18,7 @@ public class DeleteLearningItemAction : WorkspaceActionRequest
     [JsonIgnore]
     private long WorkspaceIdLong => long.Parse(Id);
     public override WorkspaceAction ToWorkspaceAction(string workspaceId)
-        => new WorkspaceAction(WorkspaceIdLong, WorkspaceActionType.DeleteLearningItem, ToCommand());
+        => new WorkspaceAction(long.Parse(workspaceId), WorkspaceActionType.DeleteLearningItem, ToCommand());
 
     protected override IWorkspaceActionCommand ToCommand()
         => new DeleteLearningItemActionCommand(Id, ClientWorkspaceVersion, IdempotencyKey);

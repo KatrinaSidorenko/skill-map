@@ -29,7 +29,7 @@ public class UpdateLearningItemAction : WorkspaceActionRequest
     [JsonIgnore]
     private long WorkspaceIdLong => long.Parse(Id);
     public override WorkspaceAction ToWorkspaceAction(string workspaceId)
-        => new WorkspaceAction(WorkspaceIdLong, WorkspaceActionType.UpdateLearningItem, ToCommand());
+        => new WorkspaceAction(long.Parse(workspaceId), WorkspaceActionType.UpdateLearningItem, ToCommand());
 
     protected override IWorkspaceActionCommand ToCommand()
             => new UpdateLearningItemActionCommand(Id, Title, Description, Status, Type, BaseVersion, IdempotencyKey);

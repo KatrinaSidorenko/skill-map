@@ -30,6 +30,6 @@ internal static class RoadmapsWorkspaceEndpoints
         //app.MapDeleteLearningItemConnection();
         //app.MapGetWorkspaceEventsStatus();
 
-        app.MapHub<WorkspaceHub>("/hubs/workspace");
+        app.MapHub<WorkspaceHub>("api/hubs/workspace");
     }
 }

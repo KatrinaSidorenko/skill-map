@@ -3,6 +3,7 @@ using LearningPlatform.Workspace.WebSockets.Contracts.Commands;
 
 using MediatR;
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -19,8 +20,7 @@ internal class WorkspaceEventsProcessor(
     ILogger<WorkspaceEventsProcessor> logger,
     IWorkspaceActionStream actionStream,
     IWorkspaceNotifier notifier,
-    IMediator mediator,
-    IRoadmapWorkspaceEventRepository eventsRepository) : BackgroundService
+    IServiceProvider serviceProvider) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -47,6 +47,9 @@ internal class WorkspaceEventsProcessor(
 
     private async Task<(WorkspaceActionProcessResult Result, int ActualVersion)> ProcessActionAsync(WorkspaceAction action, CancellationToken ct)
     {
+        using var scope = serviceProvider.CreateScope();
+        var eventsRepository = scope.ServiceProvider.GetRequiredService<IRoadmapWorkspaceEventRepository>();
+        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
         var lastWorkspaceEventVersion = await eventsRepository.GetLastAvailableEventVersion(action.WorkspaceId, ct);
         try
         {

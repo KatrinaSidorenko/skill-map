@@ -9,7 +9,7 @@ import {
   Flex,
   Separator,
 } from '@chakra-ui/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { Node } from '@xyflow/react';
 import { useAppSelector } from '@/store/hooks';
 import {
@@ -41,10 +41,26 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
   const [status, setStatus] = useState<string>('');
   const [nodeType, setNodeType] = useState<LearningItemType>('subtopic');
 
+  /**
+   * Snapshot of the node's persisted values at the time the sidebar opened.
+   * Used to diff against the current form state so we only send changed fields.
+   */
+  const originalRef = useRef({ label: '', description: '', status: '', nodeType: 'subtopic' as LearningItemType });
+
   // Load form state: try cache first, fall back to Redux node data
   useEffect(() => {
     if (!node) return;
     const nodeId = node.id;
+
+    // Always record the current persisted node values as the baseline for diffing
+    const persisted = {
+      label: (node.data?.label as string) ?? '',
+      description: (node.data?.description as string) ?? '',
+      status: (node.data?.status as string) ?? 'notstarted',
+      nodeType: (node.data?.nodeType as LearningItemType) ?? 'subtopic',
+    };
+    originalRef.current = persisted;
+
     loadNodeSettings(nodeId)
       .then((cached) => {
         if (cached) {
@@ -53,17 +69,17 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
           setStatus(cached.status);
           setNodeType((node.data?.nodeType as LearningItemType) ?? 'subtopic');
         } else {
-          setLabel((node.data?.label as string) ?? '');
-          setDescription((node.data?.description as string) ?? '');
-          setStatus((node.data?.status as string) ?? 'notstarted');
-          setNodeType((node.data?.nodeType as LearningItemType) ?? 'subtopic');
+          setLabel(persisted.label);
+          setDescription(persisted.description);
+          setStatus(persisted.status);
+          setNodeType(persisted.nodeType);
         }
       })
       .catch(() => {
-        setLabel((node.data?.label as string) ?? '');
-        setDescription((node.data?.description as string) ?? '');
-        setStatus((node.data?.status as string) ?? 'notstarted');
-        setNodeType((node.data?.nodeType as LearningItemType) ?? 'subtopic');
+        setLabel(persisted.label);
+        setDescription(persisted.description);
+        setStatus(persisted.status);
+        setNodeType(persisted.nodeType);
       });
   }, [node]);
 

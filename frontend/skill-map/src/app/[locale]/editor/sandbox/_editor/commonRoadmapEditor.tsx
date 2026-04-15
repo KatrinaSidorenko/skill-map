@@ -19,6 +19,24 @@ import NodeSidebar from '@/features/roadmaps/editor/sidebar';
 import { useAppDispatch } from '@/store/hooks';
 import useCascadeStatus from '@/features/roadmaps/editor/queue/useCascadeStatus';
 
+function EditorContent() {
+  useCascadeStatus();
+
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const handleToggleSidebar = useCallback(() => setSidebarOpen((p) => !p), []);
+
+  return (
+    <ReactFlowProvider>
+      <RoadmapEditor.Container>
+        <RoadmapEditor.Header />
+        <RoadmapEditor setSidebarOpen={setSidebarOpen}>
+          <Toolbox onToggleSidebar={handleToggleSidebar} />
+          <NodeSidebar open={isSidebarOpen} onOpenChange={setSidebarOpen} />
+        </RoadmapEditor>
+      </RoadmapEditor.Container>
+    </ReactFlowProvider>
+  );
+}
 
 export default function RoadmapWorkspacePage({
   workspaceId,
@@ -29,26 +47,15 @@ export default function RoadmapWorkspacePage({
 }) {
   const dispatch = useAppDispatch();
 
-  // Propagate subtopic status changes up to parent topic nodes
-  useCascadeStatus();
-
-  // Skip the RTK Query until the sync phase is complete so we always
-  // fetch the roadmap with the server's latest state.
   const { data, error, isLoading, isFetching } = useGetUserCreatedRoadmapQuery(
     workspaceId ?? '',
   );
-
-  const [isSidebarOpen, setSidebarOpen] = useState(false);
-
-  const handleToggleSidebar = useCallback(() => {
-    setSidebarOpen((prev) => !prev);
-  }, []);
 
   useEffect(() => {
     if (data) {
       const roadmap = data;
       dispatch(clearEditor());
-      dispatch(setEditorConfig({ useStatus: useStatus }));
+      dispatch(setEditorConfig({ useStatus }));
       dispatch(
         setWorkspaceRoadmap({
           id: roadmap.id,
@@ -79,20 +86,9 @@ export default function RoadmapWorkspacePage({
           {(isLoading || isFetching) && workspaceId ? (
             <SpinnerScreen />
           ) : (
-            <ReactFlowProvider>
-              <WorkspaceHubProvider>
-                <RoadmapEditor.Container>
-                  <RoadmapEditor.Header />
-                  <RoadmapEditor setSidebarOpen={setSidebarOpen}>
-                    <Toolbox onToggleSidebar={handleToggleSidebar} />
-                    <NodeSidebar
-                      open={isSidebarOpen}
-                      onOpenChange={setSidebarOpen}
-                    />
-                  </RoadmapEditor>
-                </RoadmapEditor.Container>
-              </WorkspaceHubProvider>
-            </ReactFlowProvider>
+            <WorkspaceHubProvider>
+              <EditorContent />
+            </WorkspaceHubProvider>
           )}
         </Container>
       )}
