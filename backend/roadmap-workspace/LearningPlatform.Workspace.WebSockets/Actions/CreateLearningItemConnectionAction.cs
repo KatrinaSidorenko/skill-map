@@ -22,8 +22,10 @@ public class CreateLearningItemConnectionAction : WorkspaceActionRequest
     [JsonPropertyName("idempotencyKey")]
     public string IdempotencyKey { get; set; }
 
+    [JsonIgnore]
+    private long WorkspaceIdLong => long.Parse(Id);
     public override WorkspaceAction ToWorkspaceAction(string workspaceId)
-        => new WorkspaceAction(workspaceId, WorkspaceActionType.CreateConnection, ToCommand());
+        => new WorkspaceAction(WorkspaceIdLong, WorkspaceActionType.CreateConnection, ToCommand());
 
     protected override IWorkspaceActionCommand ToCommand()
         => new CreateLearningItemConnectionActionCommand(Id, Source, Target, ClientWorkspaceVersion, IdempotencyKey);

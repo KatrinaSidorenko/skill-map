@@ -13,7 +13,7 @@ using SkillMap.Shared.Models;
 namespace SkillMap.Business.RoadmapsWorkspace.Features.GetRoadmapWorkspaces;
 
 [UsedImplicitly]
-internal sealed class GetRoadmapWorkspacesHandler(IRepository<RoadmapWorkspace> repository)
+internal sealed class GetRoadmapWorkspacesHandler(IRepository<RoadmapWorkspace> repository, IRoadmapLearningItemProjectionRepository roadmapLearningItemStatusRepository)
     : IRequestHandler<GetRoadmapWorkspacesQuery, PaginationResult<RoadmapWorkspaceSummaryDto>>
 {
     public async Task<PaginationResult<RoadmapWorkspaceSummaryDto>> Handle(GetRoadmapWorkspacesQuery request, CancellationToken cancellationToken)
@@ -29,7 +29,9 @@ internal sealed class GetRoadmapWorkspacesHandler(IRepository<RoadmapWorkspace> 
         foreach (var workspace in userWorkspaces.Where(w => w.Snapshots != null && w.Snapshots.Count > 0))
         {
             var latestSnapshot = workspace.Snapshots?.OrderByDescending(s => s.CreatedAt).FirstOrDefault();
-            var snapshotMetadata = latestSnapshot?.ParseMetadata();
+            // todo: remove N +1 query and get all progress in one query
+            var (totalItems, completedItems) = await roadmapLearningItemStatusRepository.GetWorkspaceProgressAsync(workspace.Id, cancellationToken);
+            var snapshotMetadata = RoadmapWorkspaceSnapshotExtensions.CalculateSnapshotMetadata(totalItems, completedItems);
             if (workspace.Metadata == null) { continue; }
 
             //todo: how i can get plain info of roadmap like title, description and image url??

@@ -24,9 +24,10 @@ public class AddLearningItemAction : WorkspaceActionRequest
     public string IdempotencyKey { get; set; }
     [JsonPropertyName("type")]
     public string Type { get; set; }
-
+    [JsonIgnore]
+    private long WorkspaceIdLong => long.Parse(Id);
     public override WorkspaceAction ToWorkspaceAction(string workspaceId)
-        => new WorkspaceAction(workspaceId, WorkspaceActionType.CreateLearningItem, ToCommand());
+        => new WorkspaceAction(WorkspaceIdLong, WorkspaceActionType.CreateLearningItem, ToCommand());
 
     protected override IWorkspaceActionCommand ToCommand()
         => new AddLearningItemActionCommand(Id, Title, Description, Status, Type, BaseVersion, IdempotencyKey);

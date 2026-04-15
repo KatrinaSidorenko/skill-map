@@ -15,9 +15,10 @@ public class DeleteLearningItemConnectionAction : WorkspaceActionRequest
 
     [JsonPropertyName("idempotencyKey")]
     public string IdempotencyKey { get; set; }
-
+    [JsonIgnore]
+    private long WorkspaceIdLong => long.Parse(Id);
     public override WorkspaceAction ToWorkspaceAction(string workspaceId)
-        => new WorkspaceAction(workspaceId, WorkspaceActionType.DeleteConnection, ToCommand());
+        => new WorkspaceAction(WorkspaceIdLong, WorkspaceActionType.DeleteConnection, ToCommand());
 
     protected override IWorkspaceActionCommand ToCommand()
         => new DeleteLearningItemConnectionActionCommand(Id, ClientWorkspaceVersion, IdempotencyKey);

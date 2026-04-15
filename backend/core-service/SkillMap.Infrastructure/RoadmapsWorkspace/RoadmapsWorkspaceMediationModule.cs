@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using LearningPlatform.Workspace.WebSockets.Contracts;
 
-using SkillMap.Business.PersonalizedRoadmaps;
-using SkillMap.Business.PersonalRoadmaps;
+using Microsoft.Extensions.DependencyInjection;
+
 using SkillMap.Business.RoadmapsWorkspace;
 using SkillMap.Infrastructure.RoadmapsWorkspace;
 
@@ -23,6 +23,9 @@ public static class PersonalRoadmapMediationModule
         services.AddScoped<IRoadmapLearningItemProjectionRepository, RoadmapLearningItemProjectionRepository>();
 
         services.AddScoped<IRoadmapWorkspaceEditor, RoadmapWorkspaceEditor>();
+
+        services.AddSingleton<IWorkspaceNotifier, WorkspaceNotifier>();
+        services.AddScoped<IWorkspaceActionStream, WorkspaceActionStream>();
 
         return services;
     }

@@ -1,6 +1,12 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import * as signalR from '@microsoft/signalr';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
@@ -12,7 +18,10 @@ import {
   setWorkspaceVersion,
 } from '../store';
 import { getDB } from './db';
-import { updateEventStatus, getEventsByWorkspaceAndStatus } from './queueService';
+import {
+  updateEventStatus,
+  getEventsByWorkspaceAndStatus,
+} from './queueService';
 import { toaster } from '@/components/ui/toaster';
 
 const HUB_URL = `${process.env.NEXT_PUBLIC_API_URL}/hubs/workspace`;
@@ -57,7 +66,9 @@ export function WorkspaceHubProvider({ children }: WorkspaceHubProviderProps) {
   const dispatch = useAppDispatch();
   const workspaceId = useAppSelector(selectWorkspaceId);
 
-  const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
+  const [connection, setConnection] = useState<signalR.HubConnection | null>(
+    null,
+  );
 
   // Keep refs so that callbacks registered once always have the latest values.
   const dispatchRef = useRef(dispatch);
@@ -71,10 +82,10 @@ export function WorkspaceHubProvider({ children }: WorkspaceHubProviderProps) {
 
     const conn = new signalR.HubConnectionBuilder()
       .withUrl(HUB_URL, {
-        accessTokenFactory: () =>
-          (typeof window !== 'undefined'
-            ? localStorage.getItem('skill-map-token')
-            : null) ?? '',
+        // accessTokenFactory: () =>
+        //   (typeof window !== 'undefined'
+        //     ? localStorage.getItem('skill-map-token')
+        //     : null) ?? '',
       })
       .withAutomaticReconnect()
       .configureLogging(signalR.LogLevel.Warning)
@@ -145,7 +156,10 @@ export function WorkspaceHubProvider({ children }: WorkspaceHubProviderProps) {
       try {
         await conn.invoke('Join', wId);
       } catch (err) {
-        console.warn('[WorkspaceHub] Failed to rejoin workspace on reconnect:', err);
+        console.warn(
+          '[WorkspaceHub] Failed to rejoin workspace on reconnect:',
+          err,
+        );
       }
 
       // Re-send events that were never acknowledged
@@ -153,11 +167,9 @@ export function WorkspaceHubProvider({ children }: WorkspaceHubProviderProps) {
         const pending = await getEventsByWorkspaceAndStatus(wId, 'pending');
         for (const event of pending) {
           if (event.hubMethod && event.hubPayload) {
-            conn
-              .invoke(event.hubMethod, wId, event.hubPayload)
-              .catch(() => {
-                // Still unreachable – will be retried on the next reconnect
-              });
+            conn.invoke(event.hubMethod, wId, event.hubPayload).catch(() => {
+              // Still unreachable – will be retried on the next reconnect
+            });
           }
         }
       } catch {
@@ -171,9 +183,7 @@ export function WorkspaceHubProvider({ children }: WorkspaceHubProviderProps) {
     conn
       .start()
       .then(() => conn.invoke('Join', workspaceId))
-      .catch((err) =>
-        console.error('[WorkspaceHub] Failed to connect:', err),
-      );
+      .catch((err) => console.error('[WorkspaceHub] Failed to connect:', err));
 
     setConnection(conn);
 
@@ -200,4 +210,3 @@ export function WorkspaceHubProvider({ children }: WorkspaceHubProviderProps) {
     </WorkspaceHubContext.Provider>
   );
 }
-
