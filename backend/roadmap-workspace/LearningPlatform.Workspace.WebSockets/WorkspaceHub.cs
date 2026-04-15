@@ -17,7 +17,7 @@ public class WorkspaceHub : Hub<IWorkspaceClient>
         _logger = logger;
     }
 
-    private string GetWorkspaceGroupName(string workspaceId) => $"workspace-{workspaceId}";
+    private string GetWorkspaceGroupName(string workspaceId) => workspaceId;
 
     public async Task Join(string workspaceId)
     {

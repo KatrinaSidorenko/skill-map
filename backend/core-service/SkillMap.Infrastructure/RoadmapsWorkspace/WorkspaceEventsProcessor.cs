@@ -28,8 +28,15 @@ internal class WorkspaceEventsProcessor(
         {
             try
             {
-                var result = await ProcessActionAsync(action, stoppingToken);
-                //await notifier.NotifyWorkspaceChangedAsync(action.WorkspaceId, roadmapId, stoppingToken);
+                var (result, actualVersion) = await ProcessActionAsync(action, stoppingToken);
+                if (result.Status == WorkspaceActionStatus.Applied)
+                {
+                    await notifier.NotifyActionConfirmed(action.WorkspaceId.ToString(), actualVersion, result.IdempotencyKey, stoppingToken);
+                }
+                else if (result.Status == WorkspaceActionStatus.Rejected)
+                {
+                    await notifier.NotifyActionRejected(action.WorkspaceId.ToString(), actualVersion, result.IdempotencyKey, stoppingToken);
+                }
             }
             catch (Exception ex)
             {
@@ -38,21 +45,21 @@ internal class WorkspaceEventsProcessor(
         }
     }
 
-    private async Task<WorkspaceActionProcessResult> ProcessActionAsync(WorkspaceAction action, CancellationToken ct)
+    private async Task<(WorkspaceActionProcessResult Result, int ActualVersion)> ProcessActionAsync(WorkspaceAction action, CancellationToken ct)
     {
+        var lastWorkspaceEventVersion = await eventsRepository.GetLastAvailableEventVersion(action.WorkspaceId, ct);
         try
         {
             // todo: add check IndempotencyKey to prevent processing the same action multiple times in case of retries, maybe store it in cache with expiration
-            var lastWorkspaceEventVersion = await eventsRepository.GetLastAvailableEventVersion(action.WorkspaceId, ct);
             var command = ToCommand(action.WorkspaceId, action.Payload, lastWorkspaceEventVersion);
             await mediator.Send(command, ct);
-            return new WorkspaceActionProcessResult(action.Payload.IdempotencyKey, WorkspaceActionStatus.Applied);
+            return (new WorkspaceActionProcessResult(action.Payload.IdempotencyKey, WorkspaceActionStatus.Applied), lastWorkspaceEventVersion + 1);
         }
         catch (Exception ex)
         {
             // todo: add typed exception like cycles detected
             logger.LogError(ex, "Error processing workspace action for workspace {WorkspaceId}", action.WorkspaceId);
-            return new WorkspaceActionProcessResult(action.Payload.IdempotencyKey, WorkspaceActionStatus.Rejected);
+            return (new WorkspaceActionProcessResult(action.Payload.IdempotencyKey, WorkspaceActionStatus.Rejected), lastWorkspaceEventVersion);
         }
     }
 

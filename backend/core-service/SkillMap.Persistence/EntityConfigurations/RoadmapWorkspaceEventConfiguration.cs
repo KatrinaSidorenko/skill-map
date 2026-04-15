@@ -20,17 +20,6 @@ internal class RoadmapWorkspaceEventConfiguration : IEntityTypeConfiguration<Roa
 
         builder.Property(rm => rm.RoadmapWorkspaceId).HasColumnName("roadmap_workspace_id").IsRequired();
         builder.Property(rm => rm.IdempotencyKey).HasColumnName("idempotency_key").IsRequired();
-        builder.Property(rm => rm.EventStatus)
-            .HasColumnName("event_status")
-            .IsRequired()
-            .HasConversion(
-                v => v.ToString(),
-                v => (WorkspaceEventStatus)Enum.Parse(typeof(WorkspaceEventStatus), v));
-
-        builder.Property(rm => rm.RejectionReason)
-            .HasColumnName("rejection_reason")
-            .IsRequired(false);
-
         builder.Property(rm => rm.EventType)
             .HasColumnName("event_type")
             .IsRequired()
@@ -39,14 +28,14 @@ internal class RoadmapWorkspaceEventConfiguration : IEntityTypeConfiguration<Roa
                 v => (WorkspaceEventType)Enum.Parse(typeof(WorkspaceEventType), v));
 
         builder.Property(ws => ws.Version).HasColumnName("version").IsRequired();
-        builder.HasIndex(rm => new { rm.RoadmapWorkspaceId, rm.Version }).IsUnique();
 
         builder.Property(ws => ws.Metadata).HasColumnType("jsonb").HasColumnName("metadata");
         builder.HasOne(rm => rm.RoadmapWorkspace)
             .WithMany(ur => ur.WorkspaceEvents)
             .HasForeignKey(rm => rm.RoadmapWorkspaceId);
 
+        builder.HasIndex(rm => new { rm.RoadmapWorkspaceId, rm.Version }).IsUnique();
         builder.HasIndex(rm => new { rm.RoadmapWorkspaceId, rm.EventType });
-        builder.HasIndex(rm => new { rm.RoadmapWorkspaceId, rm.IdempotencyKey, rm.EventStatus });
+        builder.HasIndex(rm => new { rm.RoadmapWorkspaceId, rm.IdempotencyKey });
     }
 }

@@ -1,6 +1,5 @@
 'use client';
 import SpinnerScreen from '@/components/base/spinner';
-import SyncScreen from '@/components/base/spinner/SyncScreen';
 import { useGetUserCreatedRoadmapQuery } from '@/features/roadmaps/api';
 import RoadmapEditor from '@/features/roadmaps/editor';
 import { Flex } from '@chakra-ui/react';
@@ -13,17 +12,13 @@ import {
   setWorkspaceRoadmap,
   setRoadmap,
 } from '@/features/roadmaps/editor/store';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { WorkspaceHubProvider } from '@/features/roadmaps/editor/queue/WorkspaceHubProvider';
+import { useCallback, useEffect, useState } from 'react';
 import Toolbox from '@/features/roadmaps/editor/toolbox';
 import NodeSidebar from '@/features/roadmaps/editor/sidebar';
 import { useAppDispatch } from '@/store/hooks';
-import useQueuePoller from '@/features/roadmaps/editor/queue/useQueuePoller';
-import useQueueFlush from '@/features/roadmaps/editor/queue/useQueueFlush';
 import useCascadeStatus from '@/features/roadmaps/editor/queue/useCascadeStatus';
-import { skipToken } from '@reduxjs/toolkit/query/react';
 
-/** Possible phases of the sync-then-load lifecycle */
-type SyncPhase = 'checking' | 'syncing' | 'done';
 
 export default function RoadmapWorkspacePage({
   workspaceId,
@@ -34,37 +29,13 @@ export default function RoadmapWorkspacePage({
 }) {
   const dispatch = useAppDispatch();
 
-  // Background retry poller (runs after the editor is loaded)
-  useQueuePoller();
   // Propagate subtopic status changes up to parent topic nodes
   useCascadeStatus();
-
-  const { flush, hasPending } = useQueueFlush();
-  const [syncPhase, setSyncPhase] = useState<SyncPhase>('checking');
-  // Prevent double-run in React StrictMode
-  const syncStarted = useRef(false);
-
-  useEffect(() => {
-    if (!workspaceId || syncStarted.current) return;
-    syncStarted.current = true;
-
-    (async () => {
-      try {
-        const pending = await hasPending(workspaceId);
-        if (pending) {
-          setSyncPhase('syncing');
-          await flush(workspaceId);
-        }
-      } finally {
-        setSyncPhase('done');
-      }
-    })();
-  }, [workspaceId, flush, hasPending]);
 
   // Skip the RTK Query until the sync phase is complete so we always
   // fetch the roadmap with the server's latest state.
   const { data, error, isLoading, isFetching } = useGetUserCreatedRoadmapQuery(
-    syncPhase === 'done' ? (workspaceId ?? '') : skipToken,
+    workspaceId ?? '',
   );
 
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -105,31 +76,22 @@ export default function RoadmapWorkspacePage({
         <ErrorScreen />
       ) : (
         <Container isSection={false}>
-          {/* Phase 1 – syncing offline changes */}
-          {syncPhase !== 'done' ? (
-            syncPhase === 'syncing' ? (
-              <SyncScreen />
-            ) : (
-              // 'checking' phase is fast (just an IDB read); show nothing or a
-              // minimal spinner so there is no layout flash
-              <SpinnerScreen />
-            )
-          ) : (isLoading || isFetching) && workspaceId ? (
-            /* Phase 2 – loading roadmap from server */
+          {(isLoading || isFetching) && workspaceId ? (
             <SpinnerScreen />
           ) : (
-            /* Phase 3 – editor ready */
             <ReactFlowProvider>
-              <RoadmapEditor.Container>
-                <RoadmapEditor.Header />
-                <RoadmapEditor setSidebarOpen={setSidebarOpen}>
-                  <Toolbox onToggleSidebar={handleToggleSidebar} />
-                  <NodeSidebar
-                    open={isSidebarOpen}
-                    onOpenChange={setSidebarOpen}
-                  />
-                </RoadmapEditor>
-              </RoadmapEditor.Container>
+              <WorkspaceHubProvider>
+                <RoadmapEditor.Container>
+                  <RoadmapEditor.Header />
+                  <RoadmapEditor setSidebarOpen={setSidebarOpen}>
+                    <Toolbox onToggleSidebar={handleToggleSidebar} />
+                    <NodeSidebar
+                      open={isSidebarOpen}
+                      onOpenChange={setSidebarOpen}
+                    />
+                  </RoadmapEditor>
+                </RoadmapEditor.Container>
+              </WorkspaceHubProvider>
             </ReactFlowProvider>
           )}
         </Container>
