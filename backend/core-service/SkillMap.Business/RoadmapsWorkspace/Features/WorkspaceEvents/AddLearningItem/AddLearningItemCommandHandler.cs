@@ -3,7 +3,6 @@
 using MediatR;
 
 using SkillMap.Business.RoadmapsWorkspace.IntegrationEvents;
-using SkillMap.Core.PersonalizedRoadmaps;
 using SkillMap.Shared.EventBus;
 
 namespace SkillMap.Business.RoadmapsWorkspace.Features.WorkspaceEvents.AddLearningItem;
@@ -17,7 +16,6 @@ internal sealed class AddLearningItemCommandHandler(IRoadmapWorkspaceEventReposi
         await repository.AddAsync(command.ToRoadmapWorkspaceEvent(lastVersion), cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
 
-        await eventBus.PublishAsync(RoadmapWorkspaceChangedEvent.Create(command.WorkspaceId, lastVersion, command.EventType), cancellationToken);
         await eventBus.PublishAsync(command.GetItemStatusProjectionCommand(), cancellationToken);
     }
 }

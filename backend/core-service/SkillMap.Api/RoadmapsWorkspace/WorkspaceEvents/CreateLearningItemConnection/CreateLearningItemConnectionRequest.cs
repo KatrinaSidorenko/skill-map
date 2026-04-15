@@ -15,12 +15,12 @@ public class CreateLearningItemConnectionRequest
     [JsonProperty("target")]
     public string Target { get; set; }
 
-    [JsonProperty("clientWorkspaceVersion")]
-    public int ClientWorkspaceVersion { get; set; }
+    [JsonProperty("baseVersion")]
+    public int BaseVersion { get; set; }
 
     [JsonProperty("idempotencyKey")]
     public string IdempotencyKey { get; set; }
 
     public CreateLearningItemConnectionCommand ToCommand(long userRoadmapId)
-        => new(userRoadmapId, Id, Source, Target, ClientWorkspaceVersion, IdempotencyKey);
+        => new(userRoadmapId, Id, Source, Target, BaseVersion, IdempotencyKey);
 }

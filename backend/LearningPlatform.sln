@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "core", "core", "{CCE2F5E8-6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{D98B031D-F6B2-4233-A465-BBBDD4B5D47F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "roadmaps", "roadmaps", "{52C224CE-DDC8-484F-B8EC-F5B947A9612F}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "roadmap-blueprint", "roadmap-blueprint", "{52C224CE-DDC8-484F-B8EC-F5B947A9612F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkillMap.Api", "core-service\SkillMap.Api\SkillMap.Api.csproj", "{408C9EE1-2E9E-0757-EBEA-0C922983BC4A}"
 EndProject
@@ -29,7 +29,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningPlatform.Roadmap.Bu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkillMap.Persistence.Neo4j", "roadmaps-catalog-service\SkillMap.Persistence.Neo4j\SkillMap.Persistence.Neo4j.csproj", "{71FF8AE8-B466-B23D-837B-485A3AF7833D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "roadmap-tests", "roadmap-tests", "{E2B67E48-14FB-4166-BCF0-E78B1E7A5B9E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "roadmap-assessment", "roadmap-assessment", "{E2B67E48-14FB-4166-BCF0-E78B1E7A5B9E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningPlatform.RoadmapTests.Contracts", "roadmap-tests\LearningPlatform.RoadmapTests.Contracts\LearningPlatform.RoadmapTests.Contracts.csproj", "{9423D07B-DAFA-4F36-9C99-0E9FE8DEF411}"
 EndProject
@@ -38,6 +38,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningPlatform.Shared.Api", "shared\LearningPlatform.Shared.Api\LearningPlatform.Shared.Api.csproj", "{6B361953-10E9-42D9-ADA5-A6017E42EAD6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningPlatform.Shared.Caching", "shared\LearningPlatform.Shared.Caching\LearningPlatform.Shared.Caching.csproj", "{AED70115-BA4B-403C-9EB4-542E92B5ADC2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "roadmap-workspace", "roadmap-workspace", "{A2B7A6F9-4512-4BA4-8EAA-B8A4E036928A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningPlatform.Workspace.WebSockets", "roadmap-workspace\LearningPlatform.Workspace.WebSockets\LearningPlatform.Workspace.WebSockets.csproj", "{F4256156-A463-46B3-B227-F207883588C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningPlatform.Workspace.WebSockets.Contracts", "roadmap-workspace\LearningPlatform.Workspace.WebSockets.Contracts\LearningPlatform.Workspace.WebSockets.Contracts.csproj", "{87B01DA1-7DD6-F779-C4B2-3FBABF43B8D5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -97,6 +103,14 @@ Global
 		{AED70115-BA4B-403C-9EB4-542E92B5ADC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AED70115-BA4B-403C-9EB4-542E92B5ADC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AED70115-BA4B-403C-9EB4-542E92B5ADC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4256156-A463-46B3-B227-F207883588C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4256156-A463-46B3-B227-F207883588C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4256156-A463-46B3-B227-F207883588C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4256156-A463-46B3-B227-F207883588C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87B01DA1-7DD6-F779-C4B2-3FBABF43B8D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87B01DA1-7DD6-F779-C4B2-3FBABF43B8D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87B01DA1-7DD6-F779-C4B2-3FBABF43B8D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87B01DA1-7DD6-F779-C4B2-3FBABF43B8D5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -119,6 +133,9 @@ Global
 		{FB786D5A-18CA-4CA7-AC1B-E16E142E8471} = {E2B67E48-14FB-4166-BCF0-E78B1E7A5B9E}
 		{6B361953-10E9-42D9-ADA5-A6017E42EAD6} = {D98B031D-F6B2-4233-A465-BBBDD4B5D47F}
 		{AED70115-BA4B-403C-9EB4-542E92B5ADC2} = {D98B031D-F6B2-4233-A465-BBBDD4B5D47F}
+		{A2B7A6F9-4512-4BA4-8EAA-B8A4E036928A} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{F4256156-A463-46B3-B227-F207883588C7} = {A2B7A6F9-4512-4BA4-8EAA-B8A4E036928A}
+		{87B01DA1-7DD6-F779-C4B2-3FBABF43B8D5} = {A2B7A6F9-4512-4BA4-8EAA-B8A4E036928A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3044A960-D773-46CB-9347-147499DCD200}

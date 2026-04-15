@@ -17,7 +17,6 @@ internal sealed class DeleteLearningItemCommandHandler(IRoadmapWorkspaceEventRep
         await repository.AddAsync(command.ToRoadmapWorkspaceEvent(lastVersion), cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
 
-        await eventBus.PublishAsync(RoadmapWorkspaceChangedEvent.Create(command.WorkspaceId, lastVersion, command.EventType), cancellationToken);
         await eventBus.PublishAsync(command.GetItemStatusProjectionCommand(), cancellationToken);
     }
 }

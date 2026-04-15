@@ -23,9 +23,6 @@ public static class RoadmapWorkspaceSnapshotExtensions
     public static async Task SetRoadmapSnapshot(this RoadmapWorkspaceSnapshot snapshot, RoadmapSnapshot roadmapSnapshot, CancellationToken ct)
         => snapshot.SetContent(await roadmapSnapshot.GzipJsonObjectUtf8(ct));
 
-    public static RoadmapSnapshotMetadata ParseMetadata(this RoadmapWorkspaceSnapshot snapshot)
-        => snapshot?.Metadata?.JsonDeserializeOrDefault<RoadmapSnapshotMetadata>();
-
     public static async Task<RoadmapSnapshot> ApplyEventsToSnapshot(
         this RoadmapSnapshot snapshot,
         List<RoadmapWorkspaceEvent> events,
@@ -96,7 +93,6 @@ public static class RoadmapWorkspaceSnapshotExtensions
 
         var newSnapshot = new RoadmapWorkspaceSnapshot(workspaceId);
         newSnapshot.SetVersion(eventsList.OrderByDescending(e => e.Version).First().Version);
-        newSnapshot.SetMetadata(newRoadmapSnapshot.CalculateSnapshotMetadata());
         await newSnapshot.SetRoadmapSnapshot(newRoadmapSnapshot, ct);
         return newSnapshot;
     }
