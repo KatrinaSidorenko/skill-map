@@ -104,28 +104,36 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
     if (!('position' in node)) return;
 
     const rfNode = node as Node;
-    const updatedNode = {
-      ...rfNode,
-      data: {
-        ...rfNode.data,
-        label,
-        description,
-        status: status as LearningStatus,
-        type: nodeType,
-      },
-    } as Node;
+    const orig = originalRef.current;
 
-    queueSaveChange(
-      roadmapId,
-      {
-        id: rfNode.id,
-        title: label,
-        description,
-        status: status as LearningStatus,
-        type: nodeType,
-      },
-      updatedNode,
-    );
+    // Build a partial change containing only the fields that actually differ
+    const change: LearningItemChangeRequest = { id: rfNode.id };
+    if (label !== orig.label) change.title = label;
+    if (description !== orig.description) change.description = description;
+    if (status !== orig.status) change.status = status as LearningStatus;
+    if (nodeType !== orig.nodeType) change.type = nodeType;
+
+    // Nothing changed – close without sending anything
+    const hasChanges =
+      change.title !== undefined ||
+      change.description !== undefined ||
+      change.status !== undefined ||
+      change.type !== undefined;
+
+    if (hasChanges) {
+      const updatedNode: Node = {
+        ...rfNode,
+        data: {
+          ...rfNode.data,
+          ...(change.title !== undefined && { label: change.title }),
+          ...(change.description !== undefined && { description: change.description }),
+          ...(change.status !== undefined && { status: change.status }),
+          ...(change.type !== undefined && { type: change.type }),
+        },
+      };
+
+      queueSaveChange(roadmapId, change, updatedNode);
+    }
 
     onOpenChange(false);
   };

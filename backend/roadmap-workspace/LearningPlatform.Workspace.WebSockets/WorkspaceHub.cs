@@ -30,6 +30,7 @@ public class WorkspaceHub : Hub<IWorkspaceClient>
     public async Task Leave(string workspaceId)
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, GetWorkspaceGroupName(workspaceId));
+        _logger.LogInformation("User {UserId} left workspace {WorkspaceId}", Context.UserIdentifier, workspaceId);
     }
 
     public async Task AddLearningItem(string workspaceId, AddLearningItemAction action)
