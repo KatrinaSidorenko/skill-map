@@ -1,6 +1,10 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace LearningPlatform.Workspace.WebSockets.Contracts.Actions;
+using LearningPlatform.Workspace.WebSockets.Contracts;
+using LearningPlatform.Workspace.WebSockets.Contracts.Commands;
+
+
+namespace LearningPlatform.Workspace.WebSockets.Actions;
 
 public class AddLearningItemAction : WorkspaceActionRequest
 {
@@ -22,5 +26,8 @@ public class AddLearningItemAction : WorkspaceActionRequest
     public string Type { get; set; }
 
     public override WorkspaceAction ToWorkspaceAction(string workspaceId)
-        => new WorkspaceAction(workspaceId, WorkspaceActionType.CreateLearningItem, this);
+        => new WorkspaceAction(workspaceId, WorkspaceActionType.CreateLearningItem, ToCommand());
+
+    protected override IWorkspaceActionCommand ToCommand()
+        => new AddLearningItemActionCommand(Id, Title, Description, Status, Type, BaseVersion, IdempotencyKey);
 }

@@ -1,6 +1,9 @@
 using System.Text.Json.Serialization;
 
-namespace LearningPlatform.Workspace.WebSockets.Contracts.Actions;
+using LearningPlatform.Workspace.WebSockets.Contracts;
+using LearningPlatform.Workspace.WebSockets.Contracts.Commands;
+
+namespace LearningPlatform.Workspace.WebSockets.Actions;
 
 public class DeleteLearningItemConnectionAction : WorkspaceActionRequest
 {
@@ -14,5 +17,8 @@ public class DeleteLearningItemConnectionAction : WorkspaceActionRequest
     public string IdempotencyKey { get; set; }
 
     public override WorkspaceAction ToWorkspaceAction(string workspaceId)
-        => new WorkspaceAction(workspaceId, WorkspaceActionType.DeleteConnection, this);
+        => new WorkspaceAction(workspaceId, WorkspaceActionType.DeleteConnection, ToCommand());
+
+    protected override IWorkspaceActionCommand ToCommand()
+        => new DeleteLearningItemConnectionActionCommand(Id, ClientWorkspaceVersion, IdempotencyKey);
 }

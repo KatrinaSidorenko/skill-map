@@ -1,6 +1,9 @@
 using System.Text.Json.Serialization;
 
-namespace LearningPlatform.Workspace.WebSockets.Contracts.Actions;
+using LearningPlatform.Workspace.WebSockets.Contracts;
+using LearningPlatform.Workspace.WebSockets.Contracts.Commands;
+
+namespace LearningPlatform.Workspace.WebSockets.Actions;
 
 public class UpdateLearningItemAction : WorkspaceActionRequest
 {
@@ -10,7 +13,7 @@ public class UpdateLearningItemAction : WorkspaceActionRequest
     [JsonPropertyName("title")]
     public string? Title { get; set; }
     [JsonPropertyName("type")]
-    public string? Type { get; set; }
+  public string? Type { get; set; }
 
     [JsonPropertyName("description")]
     public string? Description { get; set; }
@@ -25,5 +28,8 @@ public class UpdateLearningItemAction : WorkspaceActionRequest
     public string IdempotencyKey { get; set; }
 
     public override WorkspaceAction ToWorkspaceAction(string workspaceId)
-        => new WorkspaceAction(workspaceId, WorkspaceActionType.UpdateLearningItem, this);
+        => new WorkspaceAction(workspaceId, WorkspaceActionType.UpdateLearningItem, ToCommand());
+
+protected override IWorkspaceActionCommand ToCommand()
+        => new UpdateLearningItemActionCommand(Id, Title, Description, Status, Type, BaseVersion, IdempotencyKey);
 }
