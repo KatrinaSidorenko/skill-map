@@ -1,3 +1,6 @@
 ﻿namespace LearningPlatform.Workspace.WebSockets.Contracts;
 
-public interface IWorkspaceActionCommand { }
+public interface IWorkspaceActionCommand 
+{
+    string IdempotencyKey { get; }
+}

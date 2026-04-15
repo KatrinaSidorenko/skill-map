@@ -8,7 +8,7 @@ public record ApplyRoadmapStateSuggestionsCommand(
     long AttemptId,
     List<SuggestionItemCommand> Items) : ICommand
 {
-    public WorkspaceEventType EventType => WorkspaceEventType.UpdateLearningItem;
+    public WorkspaceEventType EventType => WorkspaceEventType.LearningItemUpdated;
 }
 
 public record SuggestionItemCommand(string Id, string Type, string Status)
@@ -17,7 +17,7 @@ public record SuggestionItemCommand(string Id, string Type, string Status)
 
     public RoadmapWorkspaceEvent ToWorkspaceEvent(long workspaceId, int version) =>
         new(workspaceId,
-            WorkspaceEventType.UpdateLearningItem,
+            WorkspaceEventType.LearningItemUpdated,
             new LearningItemUpdatedEvent(Id, status: Status).JsonSerializeOrDefault(),
             version,
             IdempotencyKey);

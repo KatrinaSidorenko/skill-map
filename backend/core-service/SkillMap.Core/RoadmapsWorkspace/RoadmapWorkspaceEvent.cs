@@ -31,7 +31,7 @@ public class RoadmapWorkspaceEvent : TrackedEntity
         EventType = eventType;
         Metadata = metadata;
         Version = version;
-        EventStatus = eventType == WorkspaceEventType.CreateConnection ? WorkspaceEventStatus.Pending : WorkspaceEventStatus.Applied;
+        EventStatus = eventType == WorkspaceEventType.ConnectionCreated ? WorkspaceEventStatus.Pending : WorkspaceEventStatus.Applied;
         IdempotencyKey = idempotencyKey;
     }
 

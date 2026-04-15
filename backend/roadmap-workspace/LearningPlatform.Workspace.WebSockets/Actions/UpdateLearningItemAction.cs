@@ -13,7 +13,7 @@ public class UpdateLearningItemAction : WorkspaceActionRequest
     [JsonPropertyName("title")]
     public string? Title { get; set; }
     [JsonPropertyName("type")]
-  public string? Type { get; set; }
+    public string? Type { get; set; }
 
     [JsonPropertyName("description")]
     public string? Description { get; set; }
@@ -30,6 +30,6 @@ public class UpdateLearningItemAction : WorkspaceActionRequest
     public override WorkspaceAction ToWorkspaceAction(string workspaceId)
         => new WorkspaceAction(workspaceId, WorkspaceActionType.UpdateLearningItem, ToCommand());
 
-protected override IWorkspaceActionCommand ToCommand()
-        => new UpdateLearningItemActionCommand(Id, Title, Description, Status, Type, BaseVersion, IdempotencyKey);
+    protected override IWorkspaceActionCommand ToCommand()
+            => new UpdateLearningItemActionCommand(Id, Title, Description, Status, Type, BaseVersion, IdempotencyKey);
 }

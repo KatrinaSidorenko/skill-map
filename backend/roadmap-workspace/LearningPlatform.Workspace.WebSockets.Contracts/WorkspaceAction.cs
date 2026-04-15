@@ -1,2 +1,2 @@
 ﻿namespace LearningPlatform.Workspace.WebSockets.Contracts;
-public record WorkspaceAction(string workspaceId, WorkspaceActionType actionType, IWorkspaceActionCommand payload);
+public record WorkspaceAction(long WorkspaceId, WorkspaceActionType ActionType, IWorkspaceActionCommand Payload);

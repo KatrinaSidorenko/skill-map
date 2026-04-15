@@ -84,7 +84,7 @@ internal sealed class ProcessWorkspaceEventsWorker : BackgroundService
                     nameof(ProcessWorkspaceEventsWorker), _workerId,
                     pendingEvent.Id, pendingEvent.EventType, pendingEvent.RoadmapWorkspaceId);
 
-        if (pendingEvent.EventType == WorkspaceEventType.CreateConnection)
+        if (pendingEvent.EventType == WorkspaceEventType.ConnectionCreated)
             await ApplyConnectionEventAsync(pendingEvent, snapshotRepository, eventRepository, ct);
         else
             pendingEvent.SetStatus(WorkspaceEventStatus.Applied);
