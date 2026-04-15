@@ -42,6 +42,7 @@ internal class WorkspaceEventsProcessor(
     {
         try
         {
+            // todo: add check IndempotencyKey to prevent processing the same action multiple times in case of retries, maybe store it in cache with expiration
             var lastWorkspaceEventVersion = await eventsRepository.GetLastAvailableEventVersion(action.WorkspaceId, ct);
             var command = ToCommand(action.WorkspaceId, action.Payload, lastWorkspaceEventVersion);
             await mediator.Send(command, ct);

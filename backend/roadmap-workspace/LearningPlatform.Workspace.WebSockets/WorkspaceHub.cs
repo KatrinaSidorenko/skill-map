@@ -1,5 +1,5 @@
-﻿using LearningPlatform.Workspace.WebSockets.Contracts;
-using LearningPlatform.Workspace.WebSockets.Contracts.Actions;
+﻿using LearningPlatform.Workspace.WebSockets.Actions;
+using LearningPlatform.Workspace.WebSockets.Contracts;
 
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
