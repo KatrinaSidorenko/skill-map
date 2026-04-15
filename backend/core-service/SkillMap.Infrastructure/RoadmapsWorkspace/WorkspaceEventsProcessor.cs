@@ -20,8 +20,7 @@ internal class WorkspaceEventsProcessor(
     IWorkspaceActionStream actionStream,
     IWorkspaceNotifier notifier,
     IMediator mediator,
-    IRoadmapWorkspaceEventRepository eventsRepository,
-    IRoadmapWorkspaceEditor workspaceEditor) : BackgroundService
+    IRoadmapWorkspaceEventRepository eventsRepository) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -30,7 +29,7 @@ internal class WorkspaceEventsProcessor(
             try
             {
                 var result = await ProcessActionAsync(action, stoppingToken);
-                await notifier.NotifyWorkspaceChangedAsync(action.WorkspaceId, roadmapId, stoppingToken);
+                //await notifier.NotifyWorkspaceChangedAsync(action.WorkspaceId, roadmapId, stoppingToken);
             }
             catch (Exception ex)
             {
@@ -39,31 +38,35 @@ internal class WorkspaceEventsProcessor(
         }
     }
 
-    private async Task<ProcessedActionDto> ProcessActionAsync(WorkspaceAction action, CancellationToken ct)
+    private async Task<WorkspaceActionProcessResult> ProcessActionAsync(WorkspaceAction action, CancellationToken ct)
     {
         try
         {
-            var result = await mediator.Send(ToWorkspaceEvent(action.Payload), ct);
+            var lastWorkspaceEventVersion = await eventsRepository.GetLastAvailableEventVersion(action.WorkspaceId, ct);
+            var command = ToCommand(action.WorkspaceId, action.Payload, lastWorkspaceEventVersion);
+            await mediator.Send(command, ct);
+            return new WorkspaceActionProcessResult(action.Payload.IdempotencyKey, WorkspaceActionStatus.Applied);
         }
         catch (Exception ex)
         {
+            // todo: add typed exception like cycles detected
             logger.LogError(ex, "Error processing workspace action for workspace {WorkspaceId}", action.WorkspaceId);
-            return new ProcessedActionDto(action.Payload.IdempotencyKey, WorkspaceActionStatus.Error);
+            return new WorkspaceActionProcessResult(action.Payload.IdempotencyKey, WorkspaceActionStatus.Rejected);
         }
     }
 
-    private ICommand ToCommand(long workspaceId, IWorkspaceActionCommand command) => command switch
+    private ICommand ToCommand(long workspaceId, IWorkspaceActionCommand command, int baseVersion) => command switch
     {
         AddLearningItemActionCommand c => new AddLearningItemCommand(
-            workspaceId, c.Id, c.Title, c.Description, c.Status, c.Type, c.ClientWorkspaceVersion, c.IdempotencyKey),
+            workspaceId, c.Id, c.Title, c.Description, c.Status, c.Type, baseVersion, c.IdempotencyKey),
         UpdateLearningItemActionCommand c => new UpdateLearningItemCommand(
-            workspaceId, c.Id, c.Title, c.Description, c.Status, c.Type, c.ClientWorkspaceVersion, c.IdempotencyKey),
+            workspaceId, c.Id, c.Title, c.Description, c.Status, c.Type, baseVersion, c.IdempotencyKey),
         DeleteLearningItemActionCommand c => new DeleteLearningItemCommand(
-            workspaceId, c.Id, c.ClientWorkspaceVersion, c.IdempotencyKey),
+            workspaceId, c.Id, baseVersion, c.IdempotencyKey),
         CreateLearningItemConnectionActionCommand c => new CreateLearningItemConnectionCommand(
-            workspaceId, c.Id, c.Source, c.Target, c.ClientWorkspaceVersion, c.IdempotencyKey),
+            workspaceId, c.Id, c.Source, c.Target, baseVersion, c.IdempotencyKey),
         DeleteLearningItemConnectionActionCommand c => new DeleteLearningItemConnectionCommand(
-            workspaceId, c.Id, c.ClientWorkspaceVersion, c.IdempotencyKey),
+            workspaceId, c.Id, baseVersion, c.IdempotencyKey),
         _ => throw new ArgumentOutOfRangeException(nameof(command), $"Unsupported command type: {command.GetType()}")
     };
 }

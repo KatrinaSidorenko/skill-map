@@ -5,7 +5,6 @@ using MediatR;
 
 using SkillMap.Business.PersonalizedRoadmaps.Common;
 using SkillMap.Business.RoadmapsWorkspace.Common;
-using SkillMap.Shared.EventBus;
 
 namespace SkillMap.Business.RoadmapsWorkspace.Features.WorkspaceEvents.CreateLearningItemConnection;
 
