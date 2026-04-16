@@ -17,11 +17,14 @@ import { enqueueEvent } from './queueService';
 import { generateNodeId } from '../../helpers';
 import type { QueueEvent } from './types';
 import { useHubConnection } from './WorkspaceHubProvider';
+import { toaster } from '@/components/ui/toaster';
+import useLocalization from '@/i18n/useLocalization';
 
 export default function useEventQueue() {
   const dispatch = useAppDispatch();
   const hubConnection = useHubConnection();
   const workspaceVersion = useAppSelector(selectWorkspaceVersion);
+  const { getEditorTranslations } = useLocalization();
 
   /**
    * Optimistically add a node and send the creation to the hub.
@@ -68,9 +71,13 @@ export default function useEventQueue() {
         .catch(() => {
           // Hub unavailable – event stays 'pending' in IDB;
           // WorkspaceHubProvider re-sends it on reconnect.
+          toaster.create({
+            type: 'error',
+            title: getEditorTranslations('failedToCreateNode'),
+          });
         });
     },
-    [dispatch, hubConnection, workspaceVersion],
+    [dispatch, hubConnection, workspaceVersion, getEditorTranslations],
   );
 
   /**
@@ -112,9 +119,14 @@ export default function useEventQueue() {
             hubPayload,
           );
         })
-        .catch(() => {});
+        .catch(() => {
+          toaster.create({
+            type: 'error',
+            title: getEditorTranslations('failedToCreateEdge'),
+          });
+        });
     },
-    [dispatch, hubConnection, workspaceVersion],
+    [dispatch, hubConnection, workspaceVersion, getEditorTranslations],
   );
 
   /**
@@ -156,9 +168,14 @@ export default function useEventQueue() {
           if (!hubConnection) return;
           return hubConnection.invoke(hubMethod, workspaceId, hubPayload);
         })
-        .catch(() => {});
+        .catch(() => {
+          toaster.create({
+            type: 'error',
+            title: getEditorTranslations('failedToDeleteItem'),
+          });
+        });
     },
-    [dispatch, hubConnection, workspaceVersion],
+    [dispatch, hubConnection, workspaceVersion, getEditorTranslations],
   );
 
   /**
@@ -209,11 +226,14 @@ export default function useEventQueue() {
             hubPayload,
           );
         })
-        .catch((error) => {
-          console.log(error);
+        .catch(() => {
+          toaster.create({
+            type: 'error',
+            title: getEditorTranslations('failedToSaveNode'),
+          });
         });
     },
-    [dispatch, hubConnection, workspaceVersion],
+    [dispatch, hubConnection, workspaceVersion, getEditorTranslations],
   );
 
   return { queueCreateNode, queueCreateEdge, queueDeleteItem, queueSaveChange };
