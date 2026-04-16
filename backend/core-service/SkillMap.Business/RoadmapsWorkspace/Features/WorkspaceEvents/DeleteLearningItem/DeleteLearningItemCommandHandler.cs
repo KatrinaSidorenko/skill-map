@@ -13,6 +13,7 @@ internal sealed class DeleteLearningItemCommandHandler(IRoadmapWorkspaceEventRep
 {
     public async Task Handle(DeleteLearningItemCommand command, CancellationToken cancellationToken)
     {
+        // todo: delete not only node but also the edge connected to the node
         await repository.AddAsync(command.ToRoadmapWorkspaceEvent(), cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
 
