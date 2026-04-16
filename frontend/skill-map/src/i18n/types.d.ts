@@ -64,6 +64,14 @@ interface ILocalization {
     create: string;
     resources: string;
     noMaterialsFound: string;
+    nodeType: string;
+    selectType: string;
+    typeTopic: string;
+    typeSubtopic: string;
+    failedToCreateNode: string;
+    failedToCreateEdge: string;
+    failedToDeleteItem: string;
+    failedToSaveNode: string;
     createNewRoadmap: string;
     imageUrl: string;
     validationError: string;
