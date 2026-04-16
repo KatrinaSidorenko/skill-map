@@ -29,4 +29,7 @@ internal class RoadmapWorkspaceEventRepository : Repository<RoadmapWorkspaceEven
             filter: e => e.RoadmapWorkspaceId == workspaceId && e.Version > version,
             orderBy: q => q.OrderBy(e => e.CreatedAt).ThenBy(e => e.Version),
             ct: ct)).ToList();
+
+    public async Task<bool> IsEventExist(long workspaceId, string idempotencyKey, CancellationToken ct)
+        => await _dbSet.AnyAsync(e => e.RoadmapWorkspaceId == workspaceId && e.IdempotencyKey == idempotencyKey, ct);
 }

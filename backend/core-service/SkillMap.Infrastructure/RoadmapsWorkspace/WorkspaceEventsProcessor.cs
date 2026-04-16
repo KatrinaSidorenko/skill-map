@@ -53,7 +53,12 @@ internal class WorkspaceEventsProcessor(
         var lastWorkspaceEventVersion = await eventsRepository.GetLastAvailableEventVersion(action.WorkspaceId, ct);
         try
         {
-            // todo: add check IndempotencyKey to prevent processing the same action multiple times in case of retries, maybe store it in cache with expiration
+            if (await eventsRepository.IsEventExist(action.WorkspaceId, action.Payload.IdempotencyKey, ct))
+            {
+                logger.LogInformation("Workspace action with idempotency key {IdempotencyKey} already exists for workspace {WorkspaceId}", action.Payload.IdempotencyKey, action.WorkspaceId);
+                return (new WorkspaceActionProcessResult(action.Payload.IdempotencyKey, WorkspaceActionStatus.Applied), lastWorkspaceEventVersion);
+            }
+
             var command = ToCommand(action.WorkspaceId, action.Payload, lastWorkspaceEventVersion);
             await mediator.Send(command, ct);
             return (new WorkspaceActionProcessResult(action.Payload.IdempotencyKey, WorkspaceActionStatus.Applied), lastWorkspaceEventVersion + 1);
