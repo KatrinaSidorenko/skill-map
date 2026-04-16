@@ -28,7 +28,7 @@ internal sealed class RoadmapWorkspacePublishedEventHandler(
         var latestSnapshot = await snapshotsRepository.GetLatestSnapshot(notification.WorkspaceId, cancellationToken)
             ?? throw new InvalidOperationException($"No snapshot found for workspace {notification.WorkspaceId}");
 
-        var eventsList = await eventsRepository.GetCheckedEventsGreaterThan(notification.WorkspaceId, latestSnapshot.Version, cancellationToken);
+        var eventsList = await eventsRepository.GetEventsAfter(notification.WorkspaceId, latestSnapshot.Version, cancellationToken);
         if (eventsList.Count <= 0)
         {
             logger.LogInformation("No new events found for workspace {WorkspaceId} since last snapshot version {Version}. Returning existing snapshot.", notification.WorkspaceId, latestSnapshot.Version);

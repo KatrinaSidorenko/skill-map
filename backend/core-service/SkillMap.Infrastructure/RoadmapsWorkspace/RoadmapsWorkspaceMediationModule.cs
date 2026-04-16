@@ -18,7 +18,6 @@ public static class PersonalRoadmapMediationModule
         services.AddScoped<Business.PersonalRoadmaps.IRoadmapWorkspaceModule, PersonalRoadmapModule>();
         services.AddHostedService<BuildRoadmapWorkspaceSnapshotWorker>();
         services.AddHostedService<WorkspaceEventsProcessor>();
-        //services.AddHostedService<CheckIsRoadmapWorkspaceActiveWorker>();
 
         services.AddScoped<IRoadmapWorkspaceEventRepository, RoadmapWorkspaceEventRepository>();
         services.AddScoped<IRoadmapWorkspaceRepository, RoadmapWorkspaceRepository>();

@@ -1,17 +1,19 @@
 using JetBrains.Annotations;
 
-
 using MediatR;
 
 using SkillMap.Business.PersonalizedRoadmaps.Common;
 using SkillMap.Business.RoadmapsWorkspace.Common;
+using SkillMap.Business.RoadmapsWorkspace.IntegrationEvents;
+using SkillMap.Shared.EventBus;
 
 namespace SkillMap.Business.RoadmapsWorkspace.Features.WorkspaceEvents.CreateLearningItemConnection;
 
 [UsedImplicitly]
 internal sealed class CreateLearningItemConnectionCommandHandler(
     IRoadmapWorkspaceEventRepository repository, 
-    IRoadmapWorkspaceEditor roadmapWorkspaceEditor) : IRequestHandler<CreateLearningItemConnectionCommand>
+    IRoadmapWorkspaceEditor roadmapWorkspaceEditor,
+    IEventBus eventBus) : IRequestHandler<CreateLearningItemConnectionCommand>
 {
     public async Task Handle(CreateLearningItemConnectionCommand command, CancellationToken cancellationToken)
     {
@@ -25,5 +27,6 @@ internal sealed class CreateLearningItemConnectionCommandHandler(
 
         await repository.AddAsync(@event, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
+        await eventBus.PublishAsync(RoadmapWorkspaceChangedEvent.Create(command.WorkspaceId, @event.Version, command.EventType), cancellationToken);
     }
 }
