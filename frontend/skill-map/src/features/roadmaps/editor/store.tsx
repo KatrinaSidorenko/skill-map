@@ -73,6 +73,7 @@ const roadmapEditorSlice = createSlice({
     },
     setWorkspaceRoadmap: (state, action: PayloadAction<SavedPlainRoadmap>) => {
       state.plainRoadmap = action.payload;
+      state.workspaceVersion = action.payload.version;
       state.workspaceId = action.payload.workspaceId;
     },
     setSelectedElement: (state, action: PayloadAction<Node | Edge | null>) => {
@@ -213,8 +214,9 @@ export const selectPlainRoadmap = (state: { roadmapEditor: InitialState }) =>
   state.roadmapEditor.plainRoadmap;
 export const selectWorkspaceId = (state: { roadmapEditor: InitialState }) =>
   state.roadmapEditor.workspaceId;
-export const selectWorkspaceVersion = (state: { roadmapEditor: InitialState }) =>
-  state.roadmapEditor.workspaceVersion;
+export const selectWorkspaceVersion = (state: {
+  roadmapEditor: InitialState;
+}) => state.roadmapEditor.workspaceVersion;
 export const selectEditorConfig = (state: { roadmapEditor: InitialState }) =>
   state.roadmapEditor.editorConfig;
 

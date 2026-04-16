@@ -66,6 +66,7 @@ export default function RoadmapWorkspacePage({
           status: 'notstarted',
           savedAt: new Date().toISOString(),
           imageUrl: '',
+          version: roadmap.version,
         } as SavedPlainRoadmap),
       );
       dispatch(
