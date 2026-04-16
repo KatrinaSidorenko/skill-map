@@ -21,7 +21,6 @@ import StatusSelect from './status-select';
 import NodeTypeSelect from './node-type-select';
 import useLocalization from '@/i18n/useLocalization';
 import useEventQueue from '../queue/useEventQueue';
-import { cacheNodeSettings, loadNodeSettings } from '../queue/cacheService';
 import MaterialsContainer from './materials';
 
 interface NodeSidebarProps {
@@ -38,65 +37,29 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
 
   const [label, setLabel] = useState('');
   const [description, setDescription] = useState('');
-  const [status, setStatus] = useState<string>('');
+  const [status, setStatus] = useState<string>('notstarted');
   const [nodeType, setNodeType] = useState<LearningItemType>('subtopic');
 
-  /**
-   * Snapshot of the node's persisted values at the time the sidebar opened.
-   * Used to diff against the current form state so we only send changed fields.
-   */
   const originalRef = useRef({ label: '', description: '', status: '', nodeType: 'subtopic' as LearningItemType });
 
-  // Load form state: try cache first, fall back to Redux node data
+  // Sync form state from Redux whenever the selected node changes
   useEffect(() => {
     if (!node) return;
-    const nodeId = node.id;
 
-    // Always record the current persisted node values as the baseline for diffing
     const persisted = {
       label: (node.data?.label as string) ?? '',
       description: (node.data?.description as string) ?? '',
       status: (node.data?.status as string) ?? 'notstarted',
       nodeType: (node.data?.nodeType as LearningItemType) ?? 'subtopic',
     };
-    originalRef.current = persisted;
 
-    loadNodeSettings(nodeId)
-      .then((cached) => {
-        if (cached) {
-          setLabel(cached.label);
-          setDescription(cached.description);
-          setStatus(cached.status);
-          setNodeType((node.data?.nodeType as LearningItemType) ?? 'subtopic');
-        } else {
-          setLabel(persisted.label);
-          setDescription(persisted.description);
-          setStatus(persisted.status);
-          setNodeType(persisted.nodeType);
-        }
-      })
-      .catch(() => {
-        setLabel(persisted.label);
-        setDescription(persisted.description);
-        setStatus(persisted.status);
-        setNodeType(persisted.nodeType);
-      });
+    originalRef.current = persisted;
+    setLabel(persisted.label);
+    setDescription(persisted.description);
+    setStatus(persisted.status);
+    setNodeType(persisted.nodeType);
   }, [node]);
 
-  // Auto-save draft to cache whenever form values change (debounced 500 ms)
-  useEffect(() => {
-    if (!node) return;
-    const timer = setTimeout(() => {
-      cacheNodeSettings({
-        nodeId: node.id,
-        label,
-        description,
-        status: status[0] ?? 'notstarted',
-        type: nodeType,
-      }).catch(() => {});
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [label, description, status, node, nodeType]);
 
   const handleSave = () => {
     if (!node || !roadmapId) return;
