@@ -9,6 +9,8 @@ public class DeleteLearningItemAction : WorkspaceActionRequest
 {
     [JsonPropertyName("id")]
     public string Id { get; set; }
+    [JsonPropertyName("incidentConnectionIds")]
+    public List<string> IncidentConnectionIds { get; set; }
 
     [JsonPropertyName("clientWorkspaceVersion")]
     public int ClientWorkspaceVersion { get; set; }
@@ -20,5 +22,5 @@ public class DeleteLearningItemAction : WorkspaceActionRequest
         => new WorkspaceAction(long.Parse(workspaceId), WorkspaceActionType.DeleteLearningItem, ToCommand());
 
     protected override IWorkspaceActionCommand ToCommand()
-        => new DeleteLearningItemActionCommand(Id, ClientWorkspaceVersion, IdempotencyKey);
+        => new DeleteLearningItemActionCommand(Id, IncidentConnectionIds, ClientWorkspaceVersion, IdempotencyKey);
 }

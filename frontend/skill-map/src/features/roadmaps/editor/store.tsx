@@ -99,6 +99,9 @@ const roadmapEditorSlice = createSlice({
     deleteEdge: (state, action: PayloadAction<string>) => {
       state.edges = state.edges.filter((ed) => ed.id !== action.payload);
     },
+    deleteEdges: (state, action: PayloadAction<string[]>) => {
+      state.edges = state.edges.filter((ed) => !action.payload.includes(ed.id));
+    },
     deleteNode: (state, action: PayloadAction<string>) => {
       state.nodes = state.nodes.filter((n) => n.id !== action.payload);
       state.edges = state.edges.filter(
@@ -200,6 +203,7 @@ export const {
   markFailed,
   clearEditor,
   setWorkspaceVersion,
+  deleteEdges,
 } = roadmapEditorSlice.actions;
 
 export const selectRoadmap = (state: { roadmapEditor: InitialState }) => {

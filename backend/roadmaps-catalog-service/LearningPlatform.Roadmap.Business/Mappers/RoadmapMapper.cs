@@ -68,6 +68,7 @@ public static class RoadmapMapper
         return nodeDtos.Select(ToNode).ToList();
     }
 
+    public static string EdgeId(string sourceId, string targetId) => $"{sourceId}-{targetId}";
     public static Edge ToEdge(this EdgeDto edgeDto)
     {
         if (edgeDto == null)
@@ -75,7 +76,7 @@ public static class RoadmapMapper
 
         return new Edge
         {
-            Id = edgeDto.Id,
+            Id = EdgeId(edgeDto.Source?.Id.RemoveDashFromGuid(), edgeDto.Target?.Id.RemoveDashFromGuid()),
             Source = edgeDto.Source?.Id.RemoveDashFromGuid(),
             Target = edgeDto.Target?.Id.RemoveDashFromGuid(),
         };

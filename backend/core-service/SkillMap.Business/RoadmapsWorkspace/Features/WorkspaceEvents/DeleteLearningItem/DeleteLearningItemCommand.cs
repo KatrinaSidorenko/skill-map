@@ -5,10 +5,10 @@ using SkillMap.Shared.Extensions;
 
 namespace SkillMap.Business.RoadmapsWorkspace.Features.WorkspaceEvents.DeleteLearningItem;
 
-public record DeleteLearningItemCommand(long WorkspaceId, string Id, int BaseVersion, string IdempotencyKey) : ICommand
+public record DeleteLearningItemCommand(long WorkspaceId, string Id, List<string> IncidentConnectionIds, int BaseVersion, string IdempotencyKey) : ICommand
 {
     public WorkspaceEventType EventType => WorkspaceEventType.LearningItemDeleted;
-    public object GetMetadata() => new LearningItemDeletedEvent(Id);
+    public object GetMetadata() => new LearningItemDeletedEvent(Id, IncidentConnectionIds);
     public string GetMetadataJson() => GetMetadata().JsonSerializeOrDefault();
     public RoadmapWorkspaceEvent ToRoadmapWorkspaceEvent()
         => new(WorkspaceId, EventType, GetMetadataJson(), BaseVersion + 1, IdempotencyKey);

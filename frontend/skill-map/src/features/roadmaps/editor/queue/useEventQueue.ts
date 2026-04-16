@@ -12,6 +12,8 @@ import {
   updateNode,
   markPending,
   selectWorkspaceVersion,
+  selectEdges,
+  deleteEdges,
 } from '../store';
 import { enqueueEvent } from './queueService';
 import { generateNodeId } from '../../helpers';
@@ -24,6 +26,7 @@ export default function useEventQueue() {
   const dispatch = useAppDispatch();
   const hubConnection = useHubConnection();
   const workspaceVersion = useAppSelector(selectWorkspaceVersion);
+  const edges = useAppSelector(selectEdges);
   const { getEditorTranslations } = useLocalization();
 
   /**
@@ -137,8 +140,14 @@ export default function useEventQueue() {
       const key = generateNodeId();
       const isEdge = item.type === 'edge';
       const hubMethod = isEdge ? 'DeleteConnection' : 'DeleteLearningItem';
+      const incidentConnectionIds = isEdge
+        ? []
+        : edges
+            .filter((e) => e.source === item.id || e.target === item.id)
+            .map((e) => e.id);
       const hubPayload = {
         id: item.id,
+        ...(isEdge ? {} : { incidentConnectionIds }),
         baseVersion: workspaceVersion,
         idempotencyKey: key,
       };
@@ -160,6 +169,7 @@ export default function useEventQueue() {
         dispatch(deleteEdge(item.id));
       } else {
         dispatch(deleteNode(item.id));
+        dispatch(deleteEdges(incidentConnectionIds));
       }
       dispatch(setSelectedElement(null));
 
@@ -175,7 +185,7 @@ export default function useEventQueue() {
           });
         });
     },
-    [dispatch, hubConnection, workspaceVersion, getEditorTranslations],
+    [dispatch, hubConnection, workspaceVersion, edges, getEditorTranslations],
   );
 
   /**
