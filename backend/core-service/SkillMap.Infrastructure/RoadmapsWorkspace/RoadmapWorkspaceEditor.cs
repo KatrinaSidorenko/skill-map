@@ -24,7 +24,7 @@ public class RoadmapWorkspaceEditor(
             ?? throw new ResourceNotFoundException(nameof(RoadmapWorkspaceSnapshot), $"No snapshots found for workspace {workspaceId}");
 
         var snapshotContent = await latestSnapshot.GetRoadmapSnapshot(cancellationToken);
-        var events = await eventsRepository.GetCheckedEventsGreaterThan(workspace.Id, latestSnapshot.Version, cancellationToken);
+        var events = await eventsRepository.GetEventsAfter(workspace.Id, latestSnapshot.Version, cancellationToken);
         var eventsList = events.ToList();
 
         var targetSnapshotContent = snapshotContent;

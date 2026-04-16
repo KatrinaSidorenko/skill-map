@@ -2,5 +2,5 @@
 public class RoadmapWorkspaceConstants
 {
     public const int InitialVersion = 1;
-    public const int SnapshotCreationInterval = 20;
+    public const int SnapshotCreationInterval = 30;
 }

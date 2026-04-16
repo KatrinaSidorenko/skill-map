@@ -54,7 +54,7 @@ internal sealed class BuildBlueprintWorkspaceSnapshotHandler(
             return initialSnapshot.Id;
         }
 
-        var eventsList = await eventsRepository.GetCheckedEventsGreaterThan(request.WorkspaceId, latestSnapshot.Version, cancellationToken);
+        var eventsList = await eventsRepository.GetEventsAfter(request.WorkspaceId, latestSnapshot.Version, cancellationToken);
         if (eventsList.Count <= 0)
         {
             logger.LogInformation(

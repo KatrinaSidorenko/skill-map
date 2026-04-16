@@ -12,9 +12,11 @@ internal sealed class AddLearningItemCommandHandler(IRoadmapWorkspaceEventReposi
 {
     public async Task Handle(AddLearningItemCommand command, CancellationToken cancellationToken)
     {
-        await repository.AddAsync(command.ToRoadmapWorkspaceEvent(), cancellationToken);
+        var @event = command.ToRoadmapWorkspaceEvent();
+        await repository.AddAsync(@event, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
 
         await eventBus.PublishAsync(command.GetItemStatusProjectionCommand(), cancellationToken);
+        await eventBus.PublishAsync(RoadmapWorkspaceChangedEvent.Create(command.WorkspaceId, @event.Version, command.EventType), cancellationToken);
     }
 }
