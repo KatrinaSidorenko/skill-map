@@ -1,7 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Text.Json;
 
-using SkillMap.Business.PersonalizedRoadmaps;
-using SkillMap.Business.PersonalRoadmaps;
+using LearningPlatform.Workspace.WebSockets.Contracts;
+
+using Microsoft.Extensions.DependencyInjection;
+
 using SkillMap.Business.RoadmapsWorkspace;
 using SkillMap.Infrastructure.RoadmapsWorkspace;
 
@@ -15,14 +17,25 @@ public static class PersonalRoadmapMediationModule
 
         services.AddScoped<Business.PersonalRoadmaps.IRoadmapWorkspaceModule, PersonalRoadmapModule>();
         services.AddHostedService<BuildRoadmapWorkspaceSnapshotWorker>();
-        services.AddHostedService<ProcessWorkspaceEventsWorker>();
+        services.AddHostedService<WorkspaceEventsProcessor>();
+        //services.AddHostedService<CheckIsRoadmapWorkspaceActiveWorker>();
 
         services.AddScoped<IRoadmapWorkspaceEventRepository, RoadmapWorkspaceEventRepository>();
         services.AddScoped<IRoadmapWorkspaceRepository, RoadmapWorkspaceRepository>();
         services.AddScoped<IRoadmapWorkspaceSnapshotRepository, RoadmapWorkspaceSnapshotRepository>();
         services.AddScoped<IRoadmapLearningItemProjectionRepository, RoadmapLearningItemProjectionRepository>();
-
         services.AddScoped<IRoadmapWorkspaceEditor, RoadmapWorkspaceEditor>();
+
+        services.AddSingleton<IWorkspaceNotifier, WorkspaceNotifier>();
+        services.AddSingleton<IWorkspaceActionStream, WorkspaceActionStream>();
+        services.AddSignalR(options =>
+        {
+            options.EnableDetailedErrors = true;
+        })
+        .AddJsonProtocol(options =>
+        {
+            options.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        });
 
         return services;
     }

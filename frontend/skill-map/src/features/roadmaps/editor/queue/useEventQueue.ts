@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react';
 import type { Node, Connection } from '@xyflow/react';
-import { useAppDispatch } from '@/store/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   addNode,
   deleteEdge,
@@ -11,35 +11,42 @@ import {
   setSelectedElement,
   updateNode,
   markPending,
-  markConfirmed,
+  selectWorkspaceVersion,
 } from '../store';
-import {
-  useCreateItemInUserRoadmapMutation,
-  useCreateConnectionInUserRoadmapMutation,
-  useDeleteLearningItemFromUserRoadmapMutation,
-  useUpdateLearningItemInUserRoadmapMutation,
-} from '../../api';
-import { enqueueEvent, updateEventStatus } from './queueService';
+import { enqueueEvent } from './queueService';
 import { generateNodeId } from '../../helpers';
 import type { QueueEvent } from './types';
+import { useHubConnection } from './WorkspaceHubProvider';
+import { toaster } from '@/components/ui/toaster';
+import useLocalization from '@/i18n/useLocalization';
 
 export default function useEventQueue() {
   const dispatch = useAppDispatch();
-  const [createNodeMutation] = useCreateItemInUserRoadmapMutation();
-  const [createEdgeMutation] = useCreateConnectionInUserRoadmapMutation();
-  const [deleteItemMutation] = useDeleteLearningItemFromUserRoadmapMutation();
-  const [saveChangeMutation] = useUpdateLearningItemInUserRoadmapMutation();
+  const hubConnection = useHubConnection();
+  const workspaceVersion = useAppSelector(selectWorkspaceVersion);
+  const { getEditorTranslations } = useLocalization();
 
   /**
-   * Optimistically add a node and persist the creation to the queue.
-   * The API call happens in the background; the poller retries on failure.
+   * Optimistically add a node and send the creation to the hub.
+   * The event is persisted in IDB so the hub provider can re-send on reconnect.
    */
   const queueCreateNode = useCallback(
     (workspaceId: string, node: CreateNodeRequest, reactFlowNode: Node) => {
       const key = generateNodeId();
+      const hubPayload = {
+        id: node.id,
+        title: node.title,
+        description: node.description,
+        status: node.status,
+        type: node.type ?? 'subtopic',
+        baseVersion: workspaceVersion,
+        idempotencyKey: key,
+      };
       const event: QueueEvent = {
         idempotencyKey: key,
         type: 'createNode',
+        hubMethod: 'AddLearningItem',
+        hubPayload,
         status: 'pending',
         payload: { workspaceId, node },
         workspaceId,
@@ -53,33 +60,47 @@ export default function useEventQueue() {
       dispatch(markPending(node.id));
 
       enqueueEvent(event)
-        .then(() =>
-          createNodeMutation({
-            workspaceId,
-            node: { ...node, idempotencyKey: key },
-          }).unwrap(),
-        )
         .then(() => {
-          updateEventStatus(key, 'applied').catch(() => {});
-          dispatch(markConfirmed(node.id));
+          if (!hubConnection) return;
+          return hubConnection.invoke(
+            'AddLearningItem',
+            workspaceId,
+            hubPayload,
+          );
         })
-        .catch(() => {});
+        .catch(() => {
+          // Hub unavailable – event stays 'pending' in IDB;
+          // WorkspaceHubProvider re-sends it on reconnect.
+          toaster.create({
+            type: 'error',
+            title: getEditorTranslations('failedToCreateNode'),
+          });
+        });
     },
-    [dispatch, createNodeMutation],
+    [dispatch, hubConnection, workspaceVersion, getEditorTranslations],
   );
 
   /**
-   * Optimistically add an edge and persist the creation to the queue.
+   * Optimistically add an edge and send the creation to the hub.
    */
   const queueCreateEdge = useCallback(
-    (roadmapId: string, edge: CreateEdgeRequest, connection: Connection) => {
+    (workspaceId: string, edge: CreateEdgeRequest, connection: Connection) => {
       const key = generateNodeId();
+      const hubPayload = {
+        id: edge.id,
+        source: edge.source,
+        target: edge.target,
+        baseVersion: workspaceVersion,
+        idempotencyKey: key,
+      };
       const event: QueueEvent = {
         idempotencyKey: key,
         type: 'createEdge',
+        hubMethod: 'CreateConnection',
+        hubPayload,
         status: 'pending',
-        payload: { roadmapId, edge },
-        workspaceId: roadmapId,
+        payload: { workspaceId, edge },
+        workspaceId,
         elementId: edge.id,
         createdAt: Date.now(),
         retries: 0,
@@ -90,40 +111,52 @@ export default function useEventQueue() {
       dispatch(markPending(edge.id));
 
       enqueueEvent(event)
-        .then(() =>
-          createEdgeMutation({
-            roadmapId,
-            edge: { ...edge, idempotencyKey: key },
-          }).unwrap(),
-        )
-        // .then(() => {
-        //   updateEventStatus(key, 'applied').catch(() => {});
-        //   dispatch(markConfirmed(edge.id));
-        // })
-        .catch(() => {});
+        .then(() => {
+          if (!hubConnection) return;
+          return hubConnection.invoke(
+            'CreateConnection',
+            workspaceId,
+            hubPayload,
+          );
+        })
+        .catch(() => {
+          toaster.create({
+            type: 'error',
+            title: getEditorTranslations('failedToCreateEdge'),
+          });
+        });
     },
-    [dispatch, createEdgeMutation],
+    [dispatch, hubConnection, workspaceVersion, getEditorTranslations],
   );
 
   /**
-   * Optimistically remove a node/edge and persist the deletion to the queue.
+   * Optimistically remove a node/edge and send the deletion to the hub.
    */
   const queueDeleteItem = useCallback(
-    (roadmapId: string, item: DeleteLearningItemRequest) => {
+    (workspaceId: string, item: DeleteLearningItemRequest) => {
       const key = generateNodeId();
+      const isEdge = item.type === 'edge';
+      const hubMethod = isEdge ? 'DeleteConnection' : 'DeleteLearningItem';
+      const hubPayload = {
+        id: item.id,
+        baseVersion: workspaceVersion,
+        idempotencyKey: key,
+      };
       const event: QueueEvent = {
         idempotencyKey: key,
         type: 'deleteItem',
+        hubMethod,
+        hubPayload,
         status: 'pending',
-        payload: { roadmapId, item },
-        workspaceId: roadmapId,
+        payload: { workspaceId, item },
+        workspaceId,
         elementId: item.id,
         createdAt: Date.now(),
         retries: 0,
         lastAttemptAt: null,
       };
 
-      if (item.type === 'edge') {
+      if (isEdge) {
         dispatch(deleteEdge(item.id));
       } else {
         dispatch(deleteNode(item.id));
@@ -131,38 +164,48 @@ export default function useEventQueue() {
       dispatch(setSelectedElement(null));
 
       enqueueEvent(event)
-        .then(() =>
-          deleteItemMutation({
-            roadmapId,
-            item: { ...item, idempotencyKey: key },
-          }).unwrap(),
-        )
         .then(() => {
-          updateEventStatus(key, 'applied').catch(() => {});
+          if (!hubConnection) return;
+          return hubConnection.invoke(hubMethod, workspaceId, hubPayload);
         })
-        .catch(() => {});
+        .catch(() => {
+          toaster.create({
+            type: 'error',
+            title: getEditorTranslations('failedToDeleteItem'),
+          });
+        });
     },
-    [dispatch, deleteItemMutation],
+    [dispatch, hubConnection, workspaceVersion, getEditorTranslations],
   );
 
   /**
-   * Optimistically update a node and persist the change to the queue.
+   * Optimistically update a node and send the change to the hub.
    * Pass `updatedNode` to apply the optimistic Redux update immediately.
    */
   const queueSaveChange = useCallback(
     (
-      roadmapId: string,
+      workspaceId: string,
       change: LearningItemChangeRequest,
       updatedNode?: Node,
     ) => {
-      console.log(change);
       const key = generateNodeId();
+      const hubPayload = {
+        id: change.id,
+        title: change.title,
+        description: change.description,
+        status: change.status,
+        type: change.type,
+        baseVersion: workspaceVersion,
+        idempotencyKey: key,
+      };
       const event: QueueEvent = {
         idempotencyKey: key,
         type: 'saveChange',
+        hubMethod: 'UpdateLearningItem',
+        hubPayload,
         status: 'pending',
-        payload: { roadmapId, change },
-        workspaceId: roadmapId,
+        payload: { workspaceId, change },
+        workspaceId,
         elementId: change.id,
         createdAt: Date.now(),
         retries: 0,
@@ -175,19 +218,22 @@ export default function useEventQueue() {
       dispatch(markPending(change.id));
 
       enqueueEvent(event)
-        .then(() =>
-          saveChangeMutation({
-            roadmapId,
-            change: { ...change, idempotencyKey: key },
-          }).unwrap(),
-        )
         .then(() => {
-          updateEventStatus(key, 'applied').catch(() => {});
-          dispatch(markConfirmed(change.id));
+          if (!hubConnection) return;
+          return hubConnection.invoke(
+            'UpdateLearningItem',
+            workspaceId,
+            hubPayload,
+          );
         })
-        .catch(() => {});
+        .catch(() => {
+          toaster.create({
+            type: 'error',
+            title: getEditorTranslations('failedToSaveNode'),
+          });
+        });
     },
-    [dispatch, saveChangeMutation],
+    [dispatch, hubConnection, workspaceVersion, getEditorTranslations],
   );
 
   return { queueCreateNode, queueCreateEdge, queueDeleteItem, queueSaveChange };

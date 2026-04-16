@@ -4,11 +4,11 @@ using SkillMap.Shared.Extensions;
 
 namespace SkillMap.Business.RoadmapsWorkspace.Features.WorkspaceEvents.DeleteLearningItemConnection;
 
-public record DeleteLearningItemConnectionCommand(long WorkspaceId, string Id, int ClientWorkspaceVersion, string IdempotencyKey) : ICommand
+public record DeleteLearningItemConnectionCommand(long WorkspaceId, string Id, int BaseVersion, string IdempotencyKey) : ICommand
 {
-    public WorkspaceEventType EventType => WorkspaceEventType.DeleteConnection;
+    public WorkspaceEventType EventType => WorkspaceEventType.ConnectionDeleted;
     public object GetMetadata() => new LearningItemConnectionDeletedEvent(Id);
     public string GetMetadataJson() => GetMetadata().JsonSerializeOrDefault();
-    public RoadmapWorkspaceEvent ToRoadmapWorkspaceEvent(int version)
-        => new(WorkspaceId, EventType, GetMetadataJson(), version, IdempotencyKey);
+    public RoadmapWorkspaceEvent ToRoadmapWorkspaceEvent()
+        => new(WorkspaceId, EventType, GetMetadataJson(), BaseVersion + 1, IdempotencyKey);
 }

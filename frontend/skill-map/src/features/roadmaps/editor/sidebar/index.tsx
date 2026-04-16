@@ -9,7 +9,7 @@ import {
   Flex,
   Separator,
 } from '@chakra-ui/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { Node } from '@xyflow/react';
 import { useAppSelector } from '@/store/hooks';
 import {
@@ -21,7 +21,6 @@ import StatusSelect from './status-select';
 import NodeTypeSelect from './node-type-select';
 import useLocalization from '@/i18n/useLocalization';
 import useEventQueue from '../queue/useEventQueue';
-import { cacheNodeSettings, loadNodeSettings } from '../queue/cacheService';
 import MaterialsContainer from './materials';
 
 interface NodeSidebarProps {
@@ -38,49 +37,29 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
 
   const [label, setLabel] = useState('');
   const [description, setDescription] = useState('');
-  const [status, setStatus] = useState<string>('');
+  const [status, setStatus] = useState<string>('notstarted');
   const [nodeType, setNodeType] = useState<LearningItemType>('subtopic');
 
-  // Load form state: try cache first, fall back to Redux node data
+  const originalRef = useRef({ label: '', description: '', status: '', nodeType: 'subtopic' as LearningItemType });
+
+  // Sync form state from Redux whenever the selected node changes
   useEffect(() => {
     if (!node) return;
-    const nodeId = node.id;
-    loadNodeSettings(nodeId)
-      .then((cached) => {
-        if (cached) {
-          setLabel(cached.label);
-          setDescription(cached.description);
-          setStatus(cached.status);
-          setNodeType((node.data?.nodeType as LearningItemType) ?? 'subtopic');
-        } else {
-          setLabel((node.data?.label as string) ?? '');
-          setDescription((node.data?.description as string) ?? '');
-          setStatus((node.data?.status as string) ?? 'notstarted');
-          setNodeType((node.data?.nodeType as LearningItemType) ?? 'subtopic');
-        }
-      })
-      .catch(() => {
-        setLabel((node.data?.label as string) ?? '');
-        setDescription((node.data?.description as string) ?? '');
-        setStatus((node.data?.status as string) ?? 'notstarted');
-        setNodeType((node.data?.nodeType as LearningItemType) ?? 'subtopic');
-      });
+
+    const persisted = {
+      label: (node.data?.label as string) ?? '',
+      description: (node.data?.description as string) ?? '',
+      status: (node.data?.status as string) ?? 'notstarted',
+      nodeType: (node.data?.nodeType as LearningItemType) ?? 'subtopic',
+    };
+
+    originalRef.current = persisted;
+    setLabel(persisted.label);
+    setDescription(persisted.description);
+    setStatus(persisted.status);
+    setNodeType(persisted.nodeType);
   }, [node]);
 
-  // Auto-save draft to cache whenever form values change (debounced 500 ms)
-  useEffect(() => {
-    if (!node) return;
-    const timer = setTimeout(() => {
-      cacheNodeSettings({
-        nodeId: node.id,
-        label,
-        description,
-        status: status[0] ?? 'notstarted',
-        type: nodeType,
-      }).catch(() => {});
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [label, description, status, node, nodeType]);
 
   const handleSave = () => {
     if (!node || !roadmapId) return;
@@ -88,28 +67,36 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
     if (!('position' in node)) return;
 
     const rfNode = node as Node;
-    const updatedNode = {
-      ...rfNode,
-      data: {
-        ...rfNode.data,
-        label,
-        description,
-        status: status as LearningStatus,
-        type: nodeType,
-      },
-    } as Node;
+    const orig = originalRef.current;
 
-    queueSaveChange(
-      roadmapId,
-      {
-        id: rfNode.id,
-        title: label,
-        description,
-        status: status as LearningStatus,
-        type: nodeType,
-      },
-      updatedNode,
-    );
+    // Build a partial change containing only the fields that actually differ
+    const change: LearningItemChangeRequest = { id: rfNode.id };
+    if (label !== orig.label) change.title = label;
+    if (description !== orig.description) change.description = description;
+    if (status !== orig.status) change.status = status as LearningStatus;
+    if (nodeType !== orig.nodeType) change.type = nodeType;
+
+    // Nothing changed – close without sending anything
+    const hasChanges =
+      change.title !== undefined ||
+      change.description !== undefined ||
+      change.status !== undefined ||
+      change.type !== undefined;
+
+    if (hasChanges) {
+      const updatedNode: Node = {
+        ...rfNode,
+        data: {
+          ...rfNode.data,
+          ...(change.title !== undefined && { label: change.title }),
+          ...(change.description !== undefined && { description: change.description }),
+          ...(change.status !== undefined && { status: change.status }),
+          ...(change.type !== undefined && { type: change.type }),
+        },
+      };
+
+      queueSaveChange(roadmapId, change, updatedNode);
+    }
 
     onOpenChange(false);
   };

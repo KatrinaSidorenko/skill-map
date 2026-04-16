@@ -13,8 +13,6 @@ public class RoadmapWorkspaceEvent : TrackedEntity
     public long RoadmapWorkspaceId { get; private set; }
     public string IdempotencyKey { get; private set; }
     public WorkspaceEventType EventType { get; private set; }
-    public WorkspaceEventStatus EventStatus { get; private set; }
-    public string? RejectionReason { get; private set; }
     public string? Metadata { get; private set; }
     public int Version { get; private set; }
 
@@ -31,15 +29,6 @@ public class RoadmapWorkspaceEvent : TrackedEntity
         EventType = eventType;
         Metadata = metadata;
         Version = version;
-        EventStatus = eventType == WorkspaceEventType.CreateConnection ? WorkspaceEventStatus.Pending : WorkspaceEventStatus.Applied;
         IdempotencyKey = idempotencyKey;
-    }
-
-    public void SetStatus(WorkspaceEventStatus status) => EventStatus = status;
-
-    public void SetRejected(string reason)
-    {
-        EventStatus = WorkspaceEventStatus.Rejected;
-        RejectionReason = reason;
     }
 }

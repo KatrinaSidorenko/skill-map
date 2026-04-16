@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 
-using SkillMap.Api.Roadmap;
-using SkillMap.Api.RoadmapsWorkspace.WorkspaceEvents.AddLearningItem;
+using SkillMap.Api.PersonalRoadmaps.CreatePersonalRoadmap;
 using SkillMap.Infrastructure.PersonalRoadmaps;
 using SkillMap.Shared;
 
@@ -9,7 +8,7 @@ namespace SkillMap.Api.PersonalRoadmaps;
 
 public static class PersonalRoadmapsModule
 {
-    private static Assembly CurrentModule => typeof(AddLearningItemRequest).Assembly;
+    private static Assembly CurrentModule => typeof(CreatePersonalRoadmapRequest).Assembly;
     public static void RegisterPersonalRoadmaps(this WebApplication app, string module)
     {
         //if (!app.Configuration.IsModuleEnabled(module))

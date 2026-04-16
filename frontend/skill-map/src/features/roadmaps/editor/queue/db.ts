@@ -1,14 +1,6 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
 import type { QueueEvent } from './types';
 
-export interface NodeSettings {
-  nodeId: string;
-  label: string;
-  description: string;
-  status: string;
-  type: string;
-}
-
 interface SkillMapDB extends DBSchema {
   events: {
     key: string;
@@ -18,10 +10,6 @@ interface SkillMapDB extends DBSchema {
       'by-createdAt': number;
       'by-workspaceId': string;
     };
-  };
-  'node-settings': {
-    key: string;
-    value: NodeSettings;
   };
 }
 
@@ -34,7 +22,7 @@ export function getDB(): Promise<IDBPDatabase<SkillMapDB>> {
     );
   }
   if (!dbPromise) {
-    dbPromise = openDB<SkillMapDB>('skill-map-event-queue', 2, {
+    dbPromise = openDB<SkillMapDB>('skill-map-event-queue', 3, {
       upgrade(db, oldVersion, _newVersion, transaction) {
         // v1 → create stores from scratch
         if (oldVersion < 1) {
@@ -44,14 +32,17 @@ export function getDB(): Promise<IDBPDatabase<SkillMapDB>> {
           eventStore.createIndex('by-status', 'status');
           eventStore.createIndex('by-createdAt', 'createdAt');
           eventStore.createIndex('by-workspaceId', 'workspaceId');
-
-          db.createObjectStore('node-settings', { keyPath: 'nodeId' });
         }
 
         // v2 → add by-workspaceId index to an already-existing store
         if (oldVersion === 1) {
           const store = transaction.objectStore('events');
           store.createIndex('by-workspaceId', 'workspaceId');
+        }
+
+        // v3 → drop the node-settings store (cache layer removed)
+        if (oldVersion === 2 && db.objectStoreNames.contains('node-settings' as never)) {
+          db.deleteObjectStore('node-settings' as never);
         }
       },
     });

@@ -18,6 +18,8 @@ import {
 type InitialState = {
   plainRoadmap: SavedPlainRoadmap | null;
   workspaceId: string | null;
+  /** Current known workspace version used as baseVersion when sending actions */
+  workspaceVersion: number;
   nodes: Node[];
   edges: Edge[];
   selectedElement: Node | Edge | null;
@@ -31,6 +33,7 @@ type InitialState = {
 const initialState: InitialState = {
   plainRoadmap: null,
   workspaceId: null,
+  workspaceVersion: 0,
   nodes: [],
   edges: [],
   selectedElement: null,
@@ -70,6 +73,7 @@ const roadmapEditorSlice = createSlice({
     },
     setWorkspaceRoadmap: (state, action: PayloadAction<SavedPlainRoadmap>) => {
       state.plainRoadmap = action.payload;
+      state.workspaceVersion = action.payload.version;
       state.workspaceId = action.payload.workspaceId;
     },
     setSelectedElement: (state, action: PayloadAction<Node | Edge | null>) => {
@@ -163,6 +167,7 @@ const roadmapEditorSlice = createSlice({
     clearEditor: (state) => {
       state.plainRoadmap = null;
       state.workspaceId = null;
+      state.workspaceVersion = 0;
       state.nodes = [];
       state.edges = [];
       state.selectedElement = null;
@@ -171,6 +176,9 @@ const roadmapEditorSlice = createSlice({
       state.editorConfig = {
         useStatus: true,
       };
+    },
+    setWorkspaceVersion: (state, action: PayloadAction<number>) => {
+      state.workspaceVersion = action.payload;
     },
   },
 });
@@ -191,6 +199,7 @@ export const {
   markConfirmed,
   markFailed,
   clearEditor,
+  setWorkspaceVersion,
 } = roadmapEditorSlice.actions;
 
 export const selectRoadmap = (state: { roadmapEditor: InitialState }) => {
@@ -205,6 +214,9 @@ export const selectPlainRoadmap = (state: { roadmapEditor: InitialState }) =>
   state.roadmapEditor.plainRoadmap;
 export const selectWorkspaceId = (state: { roadmapEditor: InitialState }) =>
   state.roadmapEditor.workspaceId;
+export const selectWorkspaceVersion = (state: {
+  roadmapEditor: InitialState;
+}) => state.roadmapEditor.workspaceVersion;
 export const selectEditorConfig = (state: { roadmapEditor: InitialState }) =>
   state.roadmapEditor.editorConfig;
 

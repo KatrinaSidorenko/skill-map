@@ -13,10 +13,7 @@ internal sealed class DeleteLearningItemConnectionCommandHandler(IRoadmapWorkspa
 {
     public async Task Handle(DeleteLearningItemConnectionCommand command, CancellationToken cancellationToken)
     {
-        var lastVersion = await repository.GetLastAvailableEventVersion(command.WorkspaceId, cancellationToken, withIncrement: true);
-        await repository.AddAsync(command.ToRoadmapWorkspaceEvent(lastVersion), cancellationToken);
+        await repository.AddAsync(command.ToRoadmapWorkspaceEvent(), cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
-
-        await eventBus.PublishAsync(RoadmapWorkspaceChangedEvent.Create(command.WorkspaceId, lastVersion, command.EventType), cancellationToken);
     }
 }

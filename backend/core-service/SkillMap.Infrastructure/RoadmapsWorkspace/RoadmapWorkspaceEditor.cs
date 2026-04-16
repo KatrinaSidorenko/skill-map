@@ -33,7 +33,7 @@ public class RoadmapWorkspaceEditor(
             targetSnapshotContent = await snapshotContent.ApplyEventsToSnapshot(eventsList, cancellationToken);
         }
 
-        targetSnapshotContent.Version = latestSnapshot.Version + eventsList.Count;
+        targetSnapshotContent.Version = eventsList.Count > 0 ? eventsList.Max(e => e.Version) : latestSnapshot.Version;
         targetSnapshotContent.LearningItems = targetSnapshotContent.LearningItems.DistinctBy(li => li.Id).ToList();
         targetSnapshotContent.LearningItemsConnections = targetSnapshotContent.LearningItemsConnections.DistinctBy(c => c.Id).ToList();
 

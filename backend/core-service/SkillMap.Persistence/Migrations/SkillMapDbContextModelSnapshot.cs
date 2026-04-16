@@ -38,11 +38,6 @@ namespace SkillMap.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<string>("EventStatus")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("event_status");
-
                     b.Property<string>("EventType")
                         .IsRequired()
                         .HasColumnType("text")
@@ -56,10 +51,6 @@ namespace SkillMap.Persistence.Migrations
                     b.Property<string>("Metadata")
                         .HasColumnType("jsonb")
                         .HasColumnName("metadata");
-
-                    b.Property<string>("RejectionReason")
-                        .HasColumnType("text")
-                        .HasColumnName("rejection_reason");
 
                     b.Property<long>("RoadmapWorkspaceId")
                         .HasColumnType("bigint")
@@ -77,10 +68,10 @@ namespace SkillMap.Persistence.Migrations
 
                     b.HasIndex("RoadmapWorkspaceId", "EventType");
 
+                    b.HasIndex("RoadmapWorkspaceId", "IdempotencyKey");
+
                     b.HasIndex("RoadmapWorkspaceId", "Version")
                         .IsUnique();
-
-                    b.HasIndex("RoadmapWorkspaceId", "IdempotencyKey", "EventStatus");
 
                     b.ToTable("workspace_event", (string)null);
                 });
@@ -289,11 +280,6 @@ namespace SkillMap.Persistence.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
-
-                    b.Property<string>("Metadata")
-                        .HasMaxLength(2048)
-                        .HasColumnType("jsonb")
-                        .HasColumnName("metadata");
 
                     b.Property<long>("RoadmapWorkspaceId")
                         .HasColumnType("bigint")
