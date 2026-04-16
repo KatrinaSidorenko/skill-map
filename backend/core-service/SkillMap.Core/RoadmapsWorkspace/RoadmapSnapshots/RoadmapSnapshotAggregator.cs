@@ -51,7 +51,6 @@ public class RoadmapSnapshotAggregator
 
             case LearningItemDeletedEvent e:
                 _items.RemoveAll(i => i.Id == e.Id);
-                // Depending on your business rules, you might also want to cascade delete connections here
                 _connections.RemoveAll(c => c.FromId == e.Id || c.ToId == e.Id);
                 break;
 

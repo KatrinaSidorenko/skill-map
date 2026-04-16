@@ -78,7 +78,7 @@ internal class WorkspaceEventsProcessor(
         UpdateLearningItemActionCommand c => new UpdateLearningItemCommand(
             workspaceId, c.Id, c.Title, c.Description, c.Status, c.Type, baseVersion, c.IdempotencyKey),
         DeleteLearningItemActionCommand c => new DeleteLearningItemCommand(
-            workspaceId, c.Id, baseVersion, c.IdempotencyKey),
+            workspaceId, c.Id, c.IncidentConnectionIds, baseVersion, c.IdempotencyKey),
         CreateLearningItemConnectionActionCommand c => new CreateLearningItemConnectionCommand(
             workspaceId, c.Id, c.Source, c.Target, baseVersion, c.IdempotencyKey),
         DeleteLearningItemConnectionActionCommand c => new DeleteLearningItemConnectionCommand(

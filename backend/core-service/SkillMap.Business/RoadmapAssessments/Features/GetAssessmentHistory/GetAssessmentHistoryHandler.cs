@@ -15,7 +15,7 @@ namespace SkillMap.Business.RoadmapAssessments.Features.GetAssessmentHistory;
 
 [UsedImplicitly]
 internal sealed class GetAssessmentHistoryHandler(
-        IRoadmapWorkspaceEditor workspaceRepository,
+        IRoadmapWorkspaceRepository workspaceRepository,
         IRepository<RoadmapAssessment> assessmentRepository,
         IRepository<AssessmentAttempt> attemptRepository)
     : IRequestHandler<GetAssessmentHistoryQuery, AssessmentHistoryDto>
@@ -24,12 +24,12 @@ internal sealed class GetAssessmentHistoryHandler(
         GetAssessmentHistoryQuery request,
         CancellationToken cancellationToken)
     {
-        var workspace = await workspaceRepository.GetActualRoadmapSnapshot(request.WorkspaceId, cancellationToken) ?? throw new ResourceNotFoundException(nameof(RoadmapWorkspace), $"Roadmap workspace with id {request.WorkspaceId} not found.");
+        var workspace = await workspaceRepository.GetUserActiveWorkspace(request.WorkspaceId, cancellationToken) ?? throw new ResourceNotFoundException(nameof(RoadmapWorkspace), $"Roadmap workspace with id {request.WorkspaceId} not found.");
         var assessments = await assessmentRepository.GetAllAsync(
             filter: a => a.RoadmapWorkspaceId == request.WorkspaceId,
             orderBy: q => q.OrderByDescending(a => a.CreatedAt),
             ct: cancellationToken);
-        var hasCompletedTopic = workspace.LearningItems.Any(li => li.Type == LearningItemType.Topic && li.Status == LearningStatus.Completed);
+        var hasCompletedTopic = workspace.LearningItemProjections.Any(li => li.Status == LearningStatus.Completed.ToStatusString());
 
         if (!assessments.Any())
         {
