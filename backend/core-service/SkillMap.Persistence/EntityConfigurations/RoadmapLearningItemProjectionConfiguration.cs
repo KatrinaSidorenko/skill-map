@@ -18,7 +18,7 @@ internal class RoadmapLearningItemProjectionConfiguration : IEntityTypeConfigura
         builder.Property(rlis => rlis.Status).HasColumnName("status").IsRequired().HasMaxLength(50);
         builder.Property(rlis => rlis.IsAvailable).HasColumnName("is_available").IsRequired();
         builder.HasOne(rlis => rlis.RoadmapWorkspace)
-            .WithMany(rw => rw.LearningItemStatuses)
+            .WithMany(rw => rw.LearningItemProjections)
             .HasForeignKey(rlis => rlis.RoadmapWorkspaceId)
             .OnDelete(DeleteBehavior.Cascade);
         builder.HasIndex(rlis => new { rlis.RoadmapWorkspaceId, rlis.LearningItemId }).IsUnique();

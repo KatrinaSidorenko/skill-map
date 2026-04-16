@@ -7,20 +7,6 @@ using SkillMap.Core.RoadmapsWorkspace;
 
 namespace SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots;
 
-public class RoadmapSnapshotMetadata
-{
-    [JsonProperty("progress")]
-    public double Progress { get; private set; }
-    [JsonProperty("status")]
-    public LearningStatus Status { get; private set; }
-
-    public RoadmapSnapshotMetadata(double progress, LearningStatus status)
-    {
-        Progress = progress;
-        Status = status;
-    }
-}
-
 public class RoadmapWorkspaceSnapshot : TrackedEntity
 {
     public long RoadmapWorkspaceId { get; private set; }
