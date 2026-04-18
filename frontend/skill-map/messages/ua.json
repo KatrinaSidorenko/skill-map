@@ -98,7 +98,13 @@
     "unpublishSuccess": "Дорожня карта знята з публікації.",
     "publishError": "Не вдалося змінити видимість. Спробуйте ще раз.",
     "confirmDelete": "Ви впевнені, що хочете видалити цю дорожню карту?",
-    "createdAt": "Створено"
+    "createdAt": "Створено",
+    "startLearning": "Почати навчання",
+    "skipNode": "Пропустити",
+    "repeatNode": "Повторити",
+    "markAllCompleted": "Позначити всі як завершені",
+    "subtopicsProgress": "Прогрес",
+    "complete": "завершено"
   },
   "roadmaps": {
     "search": "Пошук ...",

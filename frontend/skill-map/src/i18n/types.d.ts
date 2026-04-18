@@ -101,6 +101,12 @@ interface ILocalization {
     publishError: string;
     confirmDelete: string;
     createdAt: string;
+    startLearning: string;
+    skipNode: string;
+    repeatNode: string;
+    markAllCompleted: string;
+    subtopicsProgress: string;
+    complete: string;
   };
   roadmaps: {
     search: string;

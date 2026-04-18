@@ -10,6 +10,7 @@ import {
   setEdge,
   setSelectedElement,
   updateNode,
+  updateNodesBulk,
   markPending,
   selectWorkspaceVersion,
   selectEdges,
@@ -246,5 +247,63 @@ export default function useEventQueue() {
     [dispatch, hubConnection, workspaceVersion, getEditorTranslations],
   );
 
-  return { queueCreateNode, queueCreateEdge, queueDeleteItem, queueSaveChange };
+  // todo: it is should be rewritten on backend side
+  const queueSaveChangesBulk = useCallback(
+    (
+      workspaceId: string,
+      changes: Array<{ change: LearningItemChangeRequest; updatedNode: Node }>,
+    ) => {
+      dispatch(updateNodesBulk(changes.map((c) => c.updatedNode)));
+      for (const { change } of changes) {
+        const key = generateNodeId();
+        const hubPayload = {
+          id: change.id,
+          title: change.title,
+          description: change.description,
+          status: change.status,
+          type: change.type,
+          baseVersion: workspaceVersion,
+          idempotencyKey: key,
+        };
+        const event: QueueEvent = {
+          idempotencyKey: key,
+          type: 'saveChange',
+          hubMethod: 'UpdateLearningItem',
+          hubPayload,
+          status: 'pending',
+          payload: { workspaceId, change },
+          workspaceId,
+          elementId: change.id,
+          createdAt: Date.now(),
+          retries: 0,
+          lastAttemptAt: null,
+        };
+        dispatch(markPending(change.id));
+        enqueueEvent(event)
+          .then(() => {
+            if (!hubConnection) return;
+            return hubConnection.invoke(
+              'UpdateLearningItem',
+              workspaceId,
+              hubPayload,
+            );
+          })
+          .catch(() => {
+            toaster.create({
+              type: 'error',
+              title: getEditorTranslations('failedToSaveNode'),
+            });
+          });
+      }
+    },
+    [dispatch, hubConnection, workspaceVersion, getEditorTranslations],
+  );
+
+  return {
+    queueCreateNode,
+    queueCreateEdge,
+    queueDeleteItem,
+    queueSaveChange,
+    queueSaveChangesBulk,
+  };
 }

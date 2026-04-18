@@ -17,7 +17,7 @@ public static class RoadmapAssessmentStateHelper
         {
             "notstarted_none", new Dictionary<AssessmentStatus, LearningStatus>
             {
-                { AssessmentStatus.Passed, LearningStatus.InProgress },
+                { AssessmentStatus.Passed, LearningStatus.Completed },
                 { AssessmentStatus.Failed, LearningStatus.Upcoming },
                 { AssessmentStatus.NotTested, LearningStatus.NotStarted }
             }
@@ -62,8 +62,6 @@ public static class RoadmapAssessmentStateHelper
                 { AssessmentStatus.NotTested, LearningStatus.Upcoming }
             }
         },
-
-
         {
             "notstarted_assumedcompleted", new Dictionary<AssessmentStatus, LearningStatus>
             {
@@ -88,6 +86,54 @@ public static class RoadmapAssessmentStateHelper
                 { AssessmentStatus.Failed, LearningStatus.InProgress },
                 { AssessmentStatus.NotTested, LearningStatus.NotStarted }
             }
+        },
+        {
+            "skip_assumedinprogress", new Dictionary<AssessmentStatus, LearningStatus>
+            {
+                { AssessmentStatus.Passed, LearningStatus.Skip },
+                { AssessmentStatus.Failed, LearningStatus.Skip },
+                { AssessmentStatus.NotTested, LearningStatus.Skip }
+            }
+        },
+        {
+            "repeat_assumedinprogress", new Dictionary<AssessmentStatus, LearningStatus>
+            {
+                { AssessmentStatus.Passed, LearningStatus.Completed },
+                { AssessmentStatus.Failed, LearningStatus.Repeat },
+                { AssessmentStatus.NotTested, LearningStatus.Repeat }
+            }
+        },
+        {
+            "upcoming_assumedinprogress", new Dictionary<AssessmentStatus, LearningStatus>
+            {
+                { AssessmentStatus.Passed, LearningStatus.Completed },
+                { AssessmentStatus.Failed, LearningStatus.InProgress },
+                { AssessmentStatus.NotTested, LearningStatus.Upcoming }
+            }
+        },
+        {
+            "completed_assumedinprogress", new Dictionary<AssessmentStatus, LearningStatus>
+            {
+                { AssessmentStatus.Passed, LearningStatus.Completed },
+                { AssessmentStatus.Failed, LearningStatus.Repeat },
+                { AssessmentStatus.NotTested, LearningStatus.Completed }
+            }
+        },
+        {
+            "completed_assumedcompleted", new Dictionary<AssessmentStatus, LearningStatus>
+            {
+                { AssessmentStatus.Passed, LearningStatus.Completed },
+                { AssessmentStatus.Failed, LearningStatus.Repeat },
+                { AssessmentStatus.NotTested, LearningStatus.Completed }
+            }
+        },
+        {
+            "inprogress_assumedinprogress", new Dictionary<AssessmentStatus, LearningStatus>
+            {
+                { AssessmentStatus.Passed, LearningStatus.Completed },
+                { AssessmentStatus.Failed, LearningStatus.InProgress },
+                { AssessmentStatus.NotTested, LearningStatus.InProgress }
+            }
         }
     };
 
@@ -97,6 +143,10 @@ public static class RoadmapAssessmentStateHelper
         AssessmentAssumption? assumption,
         AssessmentStatus testStatus)
     {
+        if (assumption != null)
+        {
+            var tt = 0;
+        }
         var assumptionKey = assumption?.ToString().ToLowerInvariant() ?? "none";
         var lookupKey = $"{currentStatus.ToString().ToLowerInvariant()}_{assumptionKey}";
 
@@ -104,6 +154,10 @@ public static class RoadmapAssessmentStateHelper
         {
             if (testTransitions.TryGetValue(testStatus, out var newStatus))
             {
+                if (newStatus != currentStatus)
+                {
+                    var tt = 0;
+                }
                 return newStatus;
             }
         }
