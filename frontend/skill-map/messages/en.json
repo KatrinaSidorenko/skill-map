@@ -104,7 +104,13 @@
     "unpublishSuccess": "Roadmap unpublished.",
     "publishError": "Failed to change visibility. Please try again.",
     "confirmDelete": "Are you sure you want to delete this roadmap?",
-    "createdAt": "Created"
+    "createdAt": "Created",
+    "startLearning": "Start Learning",
+    "skipNode": "Skip",
+    "repeatNode": "Repeat",
+    "markAllCompleted": "Mark all as completed",
+    "subtopicsProgress": "Progress",
+    "complete": "complete"
   },
   "roadmaps": {
     "search": "Search ...",

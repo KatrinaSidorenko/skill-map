@@ -1,3 +1,5 @@
+using SkillMap.Business.RoadmapsWorkspace.IntegrationEvents;
+using SkillMap.Core.Constants;
 using SkillMap.Core.PersonalizedRoadmaps;
 using SkillMap.Core.RoadmapsWorkspace.Events;
 using SkillMap.Shared.Extensions;
@@ -21,4 +23,5 @@ public record SuggestionItemCommand(string Id, string Type, string Status)
             new LearningItemUpdatedEvent(Id, status: Status).JsonSerializeOrDefault(),
             version,
             IdempotencyKey);
+    public CreateLearningItemProjectionDto ToProjectionDto() => new(Id, true, Status.FromStatusStringOrDefault());
 }
