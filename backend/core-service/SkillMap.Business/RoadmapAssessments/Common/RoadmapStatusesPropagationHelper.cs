@@ -9,14 +9,31 @@ internal static class LearningRoadmapStatusesPropagation
     {
         var snapshotCopy = targetSnapshotContent.DeepCopy();
         var itemsMap = snapshotCopy.LearningItems
-           .Select(li => LeaningItemAssessment.FromLearningItemSnapshot(li, null))
-           .ToDictionary(li => li.Id);
+            .Select(li => LeaningItemAssessment.FromLearningItemSnapshot(li, null))
+            .ToDictionary(li => li.Id);
+
         var childrenMap = snapshotCopy.LearningItemsConnections
             .GroupBy(c => c.FromId)
             .ToDictionary(g => g.Key, g => g.Select(c => c.ToId).ToList());
 
         var visited = new HashSet<string>();
         var evaluating = new HashSet<string>();
+
+        void ForceAssumeCompletedDownwards(string id)
+        {
+            var node = itemsMap[id];
+            if (node.Status == LearningStatus.Skip || node.Status == LearningStatus.Completed) return;
+
+            itemsMap[id] = node with { Assumption = AssessmentAssumption.AssumedCompleted };
+            var childIds = childrenMap.GetOrDefault(id, []);
+            foreach (var childId in childIds)
+            {
+                if (itemsMap[childId].Type.Equals(LearningItemType.SubTopic, StringComparison.OrdinalIgnoreCase))
+                {
+                    ForceAssumeCompletedDownwards(childId);
+                }
+            }
+        }
 
         LeaningItemAssessment EvaluateNode(string nodeId)
         {
@@ -25,81 +42,78 @@ internal static class LearningRoadmapStatusesPropagation
 
             evaluating.Add(nodeId);
             var currentNode = itemsMap[nodeId];
-
-            if (childrenMap.TryGetValue(nodeId, out var childIds) && childIds.Any())
+            var childIds = childrenMap.GetOrDefault(nodeId, []);
+            if (childIds.Count <= 0)
             {
-                // Сначала рекурсивно вычисляем всех "детей" (DFS)
-                var evaluatedChildren = childIds.Select(EvaluateNode).ToList();
+                evaluating.Remove(nodeId);
+                visited.Add(nodeId);
+                return itemsMap[nodeId];
+            }
 
-                // Разделяем детей на Подтемы (Состав) и Темы (Зависимости)
-                var subtopics = evaluatedChildren.Where(c => c.Type.ToLower() == LearningItemType.SubTopic).ToList();
-                var dependentTopics = evaluatedChildren.Where(c => c.Type.ToLower() == LearningItemType.Topic).ToList();
+            foreach (var childId in childIds)
+            {
+                EvaluateNode(childId);
+            }
 
-                // === ЛОГИКА 1: Композиция (Topic -> Subtopics) ===
-                // "if add A-> C so only if B and C are completed A should be completd in another AssumedInprogress"
-                if (subtopics.Any())
+            var subtopics = childIds.Select(id => itemsMap[id]).Where(c => c.Type.Equals(LearningItemType.SubTopic, StringComparison.OrdinalIgnoreCase)).ToList();
+            var dependentTopics = childIds.Select(id => itemsMap[id]).Where(c => c.Type.Equals(LearningItemType.Topic, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            bool overriddenByAdvanced = false;
+            if (currentNode.Status != LearningStatus.Skip && dependentTopics.Count > 0)
+            {
+                var hasAdvancedProgress = dependentTopics.Any(t =>
+                    t.Status == LearningStatus.InProgress ||
+                    t.Status == LearningStatus.Completed ||
+                    t.Assumption == AssessmentAssumption.AssumedCompleted ||
+                    t.Assumption == AssessmentAssumption.AssumedInProgress);
+
+                if (hasAdvancedProgress)
                 {
-                    bool allCompleted = subtopics.All(c => c.Status == LearningStatus.Completed || c.Assumption == AssessmentAssumption.AssumedCompleted);
-                    bool allNotStarted = subtopics.All(c => c.Status == LearningStatus.NotStarted && c.Assumption == null);
-                    bool anyInProgressOrCompleted = subtopics.Any(c =>
-                        c.Status == LearningStatus.InProgress ||
-                        c.Status == LearningStatus.Completed ||
-                        c.Assumption != null);
+                    overriddenByAdvanced = true;
 
-                    if (allCompleted)
+                    if (currentNode.Status != LearningStatus.Completed)
                     {
-                        currentNode = currentNode with
-                        {
-                           // Status = LearningStatus.Completed,
-                            Assumption = currentNode.Status == LearningStatus.Completed ? currentNode.Assumption : AssessmentAssumption.AssumedCompleted
-                        };
+                        currentNode = currentNode with { Assumption = AssessmentAssumption.AssumedCompleted };
+                        itemsMap[nodeId] = currentNode;
                     }
-                    else if (anyInProgressOrCompleted)
+
+                    foreach (var st in subtopics)
                     {
-                        currentNode = currentNode with
-                        {
-                            //Status = LearningStatus.InProgress,
-                            Assumption = AssessmentAssumption.AssumedInProgress
-                        };
-                    }
-                    else if (allNotStarted)
-                    {
-                        currentNode = currentNode with { Status = LearningStatus.NotStarted, Assumption = null };
+                        ForceAssumeCompletedDownwards(st.Id);
                     }
                 }
+            }
 
-                // === ЛОГИКА 2: Зависимости / Каскад вверх (Topic -> Topic) ===
-                // "if A and B are topics if B is completed it means that A also should be Completed, if B is in progress A should be completd"
-                if (dependentTopics.Any())
+            if (!overriddenByAdvanced && subtopics.Count > 0)
+            {
+                subtopics = childIds.Select(id => itemsMap[id])
+                    .Where(c => c.Type.Equals(LearningItemType.SubTopic, StringComparison.OrdinalIgnoreCase)).ToList();
+
+                bool allSkipped = subtopics.All(c => c.Status == LearningStatus.Skip);
+                bool allCompleted = subtopics.All(c => c.Status == LearningStatus.Completed || c.Assumption == AssessmentAssumption.AssumedCompleted);
+                bool allNotStarted = subtopics.All(c => c.Status == LearningStatus.NotStarted && c.Assumption == null);
+
+                if (allSkipped)
                 {
-                    bool hasAdvancedProgress = dependentTopics.Any(t =>
-                        t.Status == LearningStatus.InProgress ||
-                        t.Status == LearningStatus.Completed);
+                    currentNode = currentNode with { Status = LearningStatus.Skip, Assumption = null };
+                }
+                else if (allCompleted)
+                {
+                    bool isStrictlyExplicitCompleted = subtopics.All(c => c.Status == LearningStatus.Completed && c.Assumption == null);
 
-                    // Если студент начал или закончил продвинутую тему, база (A) автоматически считается полностью пройденной
-                    if (hasAdvancedProgress)
+                    currentNode = currentNode with
                     {
-                        // Важно: переопределяем статус от композиции, так как наличие зависимого прогресса - это 100% пруф знания базы
-                        currentNode = currentNode with
-                        {
-                            // Status = LearningStatus.Completed,
-                            Assumption = AssessmentAssumption.AssumedCompleted
-                        };
-
-                        // all dependent topics should be also treated as Asssuemd Completed
-                        subtopics.ForEach(st =>
-                        {
-                            if (st.Status != LearningStatus.Completed)
-                            {
-                                var updatedSubtopic = st with 
-                                { 
-                                    //Status = LearningStatus.Completed, 
-                                    Assumption = AssessmentAssumption.AssumedCompleted 
-                                };
-                                itemsMap[st.Id] = updatedSubtopic;
-                            }
-                        });
-                    }
+                        Status = isStrictlyExplicitCompleted ? LearningStatus.Completed : currentNode.Status,
+                        Assumption = isStrictlyExplicitCompleted ? null : AssessmentAssumption.AssumedCompleted
+                    };
+                }
+                else if (allNotStarted)
+                {
+                    currentNode = currentNode with { Status = LearningStatus.NotStarted, Assumption = null };
+                }
+                else
+                {
+                    currentNode = currentNode with { Assumption = AssessmentAssumption.AssumedInProgress };
                 }
 
                 itemsMap[nodeId] = currentNode;
@@ -107,8 +121,7 @@ internal static class LearningRoadmapStatusesPropagation
 
             evaluating.Remove(nodeId);
             visited.Add(nodeId);
-
-            return currentNode;
+            return itemsMap[nodeId];
         }
 
         foreach (var nodeId in itemsMap.Keys)
@@ -117,5 +130,94 @@ internal static class LearningRoadmapStatusesPropagation
         }
 
         return itemsMap.Values.ToList();
+    }
+
+    internal static List<LeaningItemAssessment> GetValidatedAssessmentSuggestions(
+        List<LeaningItemAssessment> actualRoadmapWithPropagatedStatuses,
+        List<LearningItemSuggestion> suggestions,
+        List<LearningItemsConnectionSnapshot> connections)
+    {
+        var actualDict = actualRoadmapWithPropagatedStatuses.ToDictionary(a => a.Id);
+        var suggestionsDict = suggestions.ToDictionary(s => s.Id);
+        var parentsMap = connections
+            .GroupBy(c => c.ToId)
+            .ToDictionary(g => g.Key, g => g.Select(c => c.FromId).ToList());
+
+        var validatedDict = new Dictionary<string, LeaningItemAssessment>();
+        var evaluating = new HashSet<string>();
+
+        LeaningItemAssessment EvaluateNode(string nodeId)
+        {
+            var alreadyValidated = validatedDict.GetOrDefault(nodeId);
+            if (alreadyValidated != null) return alreadyValidated;
+
+            if (evaluating.Contains(nodeId)) throw new InvalidOperationException($"Cycle detected at node: {nodeId}");
+            evaluating.Add(nodeId);
+
+            var actualNode = actualDict[nodeId];
+            var parents = parentsMap.GetOrDefault(nodeId, []);
+
+            var areAllParentsCompleted = true;
+            foreach (var parentId in parents)
+            {
+                if (!actualDict.ContainsKey(parentId)) continue;
+
+                var parentResult = EvaluateNode(parentId);
+                var parentStatus = parentResult.GetLearningStatus();
+
+                if (parentStatus != LearningStatus.Completed && parentStatus != LearningStatus.Skip)
+                {
+                    areAllParentsCompleted = false;
+                    break;
+                }
+            }
+
+            LeaningItemAssessment resultNode;
+            var suggestion = suggestionsDict.GetOrDefault(nodeId);
+
+            if (suggestion != null)
+            {
+                var suggestsCompleted = 
+                    suggestion.SuggestedStatus == LearningStatus.Completed || 
+                    suggestion.SuggestedStatus == LearningStatus.Upcoming ||
+                    suggestion.SuggestedStatus == LearningStatus.InProgress ||
+                    suggestion.Assumption == AssessmentAssumption.AssumedCompleted;
+
+                if (suggestsCompleted && !areAllParentsCompleted)
+                {
+                    resultNode = actualNode with { Assumption = null };
+                }
+                else
+                {
+                    resultNode = actualNode with
+                    {
+                        Status = suggestion.SuggestedStatus,
+                        Assumption = suggestion.Assumption
+                    };
+                }
+            }
+            else
+            {
+                if (!areAllParentsCompleted && actualNode.Assumption == AssessmentAssumption.AssumedCompleted)
+                {
+                    resultNode = actualNode with { Assumption = null };
+                }
+                else
+                {
+                    resultNode = actualNode;
+                }
+            }
+
+            evaluating.Remove(nodeId);
+            validatedDict[nodeId] = resultNode;
+            return resultNode;
+        }
+
+        foreach (var nodeId in actualDict.Keys)
+        {
+            EvaluateNode(nodeId);
+        }
+
+        return validatedDict.Values.ToList();
     }
 }

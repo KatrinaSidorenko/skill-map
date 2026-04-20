@@ -12,162 +12,35 @@ internal enum AssessmentStatus
 
 public static class RoadmapAssessmentStateHelper
 {
-    private static readonly Dictionary<string, Dictionary<AssessmentStatus, LearningStatus>> _statusesMatrix = new()
-    {
-        {
-            "notstarted_none", new Dictionary<AssessmentStatus, LearningStatus>
-            {
-                { AssessmentStatus.Passed, LearningStatus.Completed },
-                { AssessmentStatus.Failed, LearningStatus.Upcoming },
-                { AssessmentStatus.NotTested, LearningStatus.NotStarted }
-            }
-        },
-        {
-            "inprogress_none", new Dictionary<AssessmentStatus, LearningStatus>
-            {
-                { AssessmentStatus.Passed, LearningStatus.Completed },
-                { AssessmentStatus.Failed, LearningStatus.InProgress },
-                { AssessmentStatus.NotTested, LearningStatus.InProgress }
-            }
-        },
-        {
-            "completed_none", new Dictionary<AssessmentStatus, LearningStatus>
-            {
-                { AssessmentStatus.Passed, LearningStatus.Completed },
-                { AssessmentStatus.Failed, LearningStatus.Repeat }, 
-                { AssessmentStatus.NotTested, LearningStatus.Completed }
-            }
-        },
-        {
-            "skip_none", new Dictionary<AssessmentStatus, LearningStatus>
-            {
-                { AssessmentStatus.Passed, LearningStatus.Skip },
-                { AssessmentStatus.Failed, LearningStatus.Skip },
-                { AssessmentStatus.NotTested, LearningStatus.Skip }
-            }
-        },
-        {
-            "repeat_none", new Dictionary<AssessmentStatus, LearningStatus>
-            {
-                { AssessmentStatus.Passed, LearningStatus.Completed },
-                { AssessmentStatus.Failed, LearningStatus.Repeat },
-                { AssessmentStatus.NotTested, LearningStatus.Repeat }
-            }
-        },
-        {
-            "upcoming_none", new Dictionary<AssessmentStatus, LearningStatus>
-            {
-                { AssessmentStatus.Passed, LearningStatus.Completed },
-                { AssessmentStatus.Failed, LearningStatus.InProgress },
-                { AssessmentStatus.NotTested, LearningStatus.Upcoming }
-            }
-        },
-        {
-            "notstarted_assumedcompleted", new Dictionary<AssessmentStatus, LearningStatus>
-            {
-                { AssessmentStatus.Passed, LearningStatus.Completed }, 
-                { AssessmentStatus.Failed, LearningStatus.InProgress },
-                { AssessmentStatus.NotTested, LearningStatus.NotStarted }
-            }
-        },
-        {
-            "inprogress_assumedcompleted", new Dictionary<AssessmentStatus, LearningStatus>
-            {
-                { AssessmentStatus.Passed, LearningStatus.Completed },
-                { AssessmentStatus.Failed, LearningStatus.InProgress },
-                { AssessmentStatus.NotTested, LearningStatus.InProgress }
-            }
-        },
-
-        {
-            "notstarted_assumedinprogress", new Dictionary<AssessmentStatus, LearningStatus>
-            {
-                { AssessmentStatus.Passed, LearningStatus.Completed },
-                { AssessmentStatus.Failed, LearningStatus.InProgress },
-                { AssessmentStatus.NotTested, LearningStatus.NotStarted }
-            }
-        },
-        {
-            "skip_assumedinprogress", new Dictionary<AssessmentStatus, LearningStatus>
-            {
-                { AssessmentStatus.Passed, LearningStatus.Skip },
-                { AssessmentStatus.Failed, LearningStatus.Skip },
-                { AssessmentStatus.NotTested, LearningStatus.Skip }
-            }
-        },
-        {
-            "repeat_assumedinprogress", new Dictionary<AssessmentStatus, LearningStatus>
-            {
-                { AssessmentStatus.Passed, LearningStatus.Completed },
-                { AssessmentStatus.Failed, LearningStatus.Repeat },
-                { AssessmentStatus.NotTested, LearningStatus.Repeat }
-            }
-        },
-        {
-            "upcoming_assumedinprogress", new Dictionary<AssessmentStatus, LearningStatus>
-            {
-                { AssessmentStatus.Passed, LearningStatus.Completed },
-                { AssessmentStatus.Failed, LearningStatus.InProgress },
-                { AssessmentStatus.NotTested, LearningStatus.Upcoming }
-            }
-        },
-        {
-            "completed_assumedinprogress", new Dictionary<AssessmentStatus, LearningStatus>
-            {
-                { AssessmentStatus.Passed, LearningStatus.Completed },
-                { AssessmentStatus.Failed, LearningStatus.Repeat },
-                { AssessmentStatus.NotTested, LearningStatus.Completed }
-            }
-        },
-        {
-            "completed_assumedcompleted", new Dictionary<AssessmentStatus, LearningStatus>
-            {
-                { AssessmentStatus.Passed, LearningStatus.Completed },
-                { AssessmentStatus.Failed, LearningStatus.Repeat },
-                { AssessmentStatus.NotTested, LearningStatus.Completed }
-            }
-        },
-        {
-            "inprogress_assumedinprogress", new Dictionary<AssessmentStatus, LearningStatus>
-            {
-                { AssessmentStatus.Passed, LearningStatus.Completed },
-                { AssessmentStatus.Failed, LearningStatus.InProgress },
-                { AssessmentStatus.NotTested, LearningStatus.InProgress }
-            }
-        }
-    };
-
-
     internal static LearningStatus SuggestStatus(
         LearningStatus currentStatus,
         AssessmentAssumption? assumption,
         AssessmentStatus testStatus)
     {
-        if (assumption != null)
+        return (currentStatus, assumption, testStatus) switch
         {
-            var tt = 0;
-        }
-        var assumptionKey = assumption?.ToString().ToLowerInvariant() ?? "none";
-        var lookupKey = $"{currentStatus.ToString().ToLowerInvariant()}_{assumptionKey}";
+            (LearningStatus.Skip, _, _) => LearningStatus.Skip,
+            (_, _, AssessmentStatus.Passed) => LearningStatus.Completed,
 
-        if (_statusesMatrix.TryGetValue(lookupKey, out var testTransitions))
-        {
-            if (testTransitions.TryGetValue(testStatus, out var newStatus))
-            {
-                if (newStatus != currentStatus)
-                {
-                    var tt = 0;
-                }
-                return newStatus;
-            }
-        }
+            (LearningStatus.NotStarted, _, AssessmentStatus.NotTested) => LearningStatus.NotStarted,
+            (LearningStatus.InProgress, _, AssessmentStatus.NotTested) => LearningStatus.InProgress,
+            (LearningStatus.Completed, _, AssessmentStatus.NotTested) => LearningStatus.Completed,
+            (LearningStatus.Repeat, _, AssessmentStatus.NotTested) => LearningStatus.Repeat,
+            (LearningStatus.Upcoming, _, AssessmentStatus.NotTested) => LearningStatus.Upcoming,
 
-        return testStatus switch
-        {
-            AssessmentStatus.Passed => LearningStatus.Completed,
-            AssessmentStatus.Failed => currentStatus == LearningStatus.Completed
-                                            ? LearningStatus.Repeat
-                                            : LearningStatus.InProgress,
+            (LearningStatus.Completed, _, AssessmentStatus.Failed) => LearningStatus.Repeat,
+            (LearningStatus.Repeat, _, AssessmentStatus.Failed) => LearningStatus.Repeat,
+
+            (LearningStatus.NotStarted, AssessmentAssumption.AssumedCompleted, AssessmentStatus.Failed) => LearningStatus.InProgress,
+            (LearningStatus.NotStarted, AssessmentAssumption.AssumedInProgress, AssessmentStatus.Failed) => LearningStatus.InProgress,
+            (LearningStatus.NotStarted, _, AssessmentStatus.Failed) => LearningStatus.Upcoming,
+
+            (LearningStatus.InProgress, _, AssessmentStatus.Failed) => LearningStatus.InProgress,
+            (LearningStatus.Upcoming, _, AssessmentStatus.Failed) => LearningStatus.InProgress,
+
+            (_, _, AssessmentStatus.Failed) => currentStatus == LearningStatus.Completed
+                                                ? LearningStatus.Repeat
+                                                : LearningStatus.InProgress,
             _ => currentStatus
         };
     }

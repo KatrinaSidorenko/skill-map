@@ -51,7 +51,10 @@ function computeTopicMeta(
       for (const childId of childrenMap.get(current) ?? []) {
         const child = nodeMap.get(childId);
         if (!child) continue;
-        if ((child.data?.nodeType as string) === 'topic') {
+        if (
+          (child.data?.nodeType as string) === 'topic' ||
+          (child.data?.status as string) === 'skip'
+        ) {
           continue;
         }
         subtopicIds.push(childId);

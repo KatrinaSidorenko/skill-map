@@ -1,4 +1,5 @@
-﻿using SkillMap.Core.Constants;
+﻿using SkillMap.Business.RoadmapAssessments.Features.GetRoadmapStateSuggestions;
+using SkillMap.Core.Constants;
 using SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots;
 
 namespace SkillMap.Business.RoadmapAssessments.Common;
@@ -58,4 +59,5 @@ internal record LearningItemSuggestion(
     string Id,
     LearningStatus Status,
     AssessmentAssumption? Assumption,
+    AssessmentStatus AssessmentStatus,
     LearningStatus SuggestedStatus);
