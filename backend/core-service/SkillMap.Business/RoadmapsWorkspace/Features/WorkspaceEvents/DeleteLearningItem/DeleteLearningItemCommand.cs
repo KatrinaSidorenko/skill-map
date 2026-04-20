@@ -15,7 +15,7 @@ public record DeleteLearningItemCommand(long WorkspaceId, string Id, List<string
 
     public CreateLearningItemProjectionCommand GetItemStatusProjectionCommand()
     {
-        var projectionDto = new CreateLearningItemProjectionDto(Id, false, null);
+        var projectionDto = new CreateLearningItemProjectionDto(Id, false, null, null);
         return CreateLearningItemProjectionCommand.Create(WorkspaceId, new List<CreateLearningItemProjectionDto> { projectionDto });
     }
 }

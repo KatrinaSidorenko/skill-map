@@ -46,7 +46,7 @@ internal static class RoadmapAssessmentDtoExtensions
     internal static TopicQuestions ToEntityTopicQuestions(this TopicQuestionsDto dto) => new()
     {
         TopicId = dto.Id,
-        Questions = dto.Questions.Select(q => q.ToEntityQuestion()).ToList()
+        Questions = dto.Questions.OrderByDescending(q => q.Text).Select(q => q.ToEntityQuestion()).ToList()
     };
 
     internal static Question ToEntityQuestion(this QuestionDto dto) => new()
@@ -54,7 +54,7 @@ internal static class RoadmapAssessmentDtoExtensions
         Id = dto.Id,
         Text = dto.Text,
         Type = dto.Type.ToQuestionTypeString(),
-        Answers = dto.Answers.Select(a => a.ToEntityAnswer()).ToList()
+        Answers = dto.Answers.OrderByDescending(q => q.Text).Select(a => a.ToEntityAnswer()).ToList()
     };
 
     internal static Answer ToEntityAnswer(this AnswerDto dto) => new()

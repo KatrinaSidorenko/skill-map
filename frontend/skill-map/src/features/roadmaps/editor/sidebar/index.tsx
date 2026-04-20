@@ -67,10 +67,8 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
     setNodeType(persisted.nodeType);
   }, [node]);
 
-  // Use pre-computed metadata from store
   const meta = node && 'position' in node ? topicMeta[node.id] : undefined;
   const isTopic = nodeType === 'topic';
-  // Topic with subtopics mode: show progress bar
   const showTopicProgress = isTopic && !!meta?.hasSubtopics;
 
   const handleSave = () => {
@@ -98,7 +96,9 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
         data: {
           ...rfNode.data,
           ...(change.title !== undefined && { label: change.title }),
-          ...(change.description !== undefined && { description: change.description }),
+          ...(change.description !== undefined && {
+            description: change.description,
+          }),
           ...(change.status !== undefined && { status: change.status }),
           ...(change.type !== undefined && { nodeType: change.type }),
         },
@@ -113,7 +113,9 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
     if (!node || !roadmapId || !('position' in node) || !meta) return;
     const updates = meta.subtopicIds
       .map((id) => allNodes.find((n) => n.id === id))
-      .filter((n): n is Node => !!n && (n.data?.status as string) !== 'completed')
+      .filter(
+        (n): n is Node => !!n && (n.data?.status as string) !== 'completed',
+      )
       .map((n) => ({
         change: { id: n.id, status: 'completed' as LearningStatus },
         updatedNode: { ...n, data: { ...n.data, status: 'completed' } },
@@ -181,7 +183,11 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
                       {getEditorTranslations('subtopicsProgress')}
                     </Text>
                     <Progress.Root
-                      value={meta!.totalCount > 0 ? (meta!.completedCount / meta!.totalCount) * 100 : 0}
+                      value={
+                        meta!.totalCount > 0
+                          ? (meta!.completedCount / meta!.totalCount) * 100
+                          : 0
+                      }
                       maxW="full"
                     >
                       <HStack gap={3} align="center">
@@ -192,9 +198,17 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
                           bg="gray.100"
                           overflow="hidden"
                         >
-                          <Progress.Range bg="green.400" transition="width 0.3s ease" />
+                          <Progress.Range
+                            bg="green.400"
+                            transition="width 0.3s ease"
+                          />
                         </Progress.Track>
-                        <Text fontSize="sm" color="gray.600" minW="60px" textAlign="right">
+                        <Text
+                          fontSize="sm"
+                          color="gray.600"
+                          minW="60px"
+                          textAlign="right"
+                        >
                           {meta!.completedCount}/{meta!.totalCount}{' '}
                           {getEditorTranslations('complete')}
                         </Text>
@@ -231,7 +245,11 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
 
             {/* Actions */}
             <HStack justify="flex-end" gap={3}>
-              <Button variant="ghost" onClick={() => onOpenChange(false)} size="sm">
+              <Button
+                variant="ghost"
+                onClick={() => onOpenChange(false)}
+                size="sm"
+              >
                 {getEditorTranslations('cancel')}
               </Button>
               <Button colorScheme="blue" onClick={handleSave} size="sm">

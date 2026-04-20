@@ -58,33 +58,7 @@ internal static class LearningRoadmapStatusesPropagation
             var subtopics = childIds.Select(id => itemsMap[id]).Where(c => c.Type.Equals(LearningItemType.SubTopic, StringComparison.OrdinalIgnoreCase)).ToList();
             var dependentTopics = childIds.Select(id => itemsMap[id]).Where(c => c.Type.Equals(LearningItemType.Topic, StringComparison.OrdinalIgnoreCase)).ToList();
 
-            bool overriddenByAdvanced = false;
-            if (currentNode.Status != LearningStatus.Skip && dependentTopics.Count > 0)
-            {
-                var hasAdvancedProgress = dependentTopics.Any(t =>
-                    t.Status == LearningStatus.InProgress ||
-                    t.Status == LearningStatus.Completed ||
-                    t.Assumption == AssessmentAssumption.AssumedCompleted ||
-                    t.Assumption == AssessmentAssumption.AssumedInProgress);
-
-                if (hasAdvancedProgress)
-                {
-                    overriddenByAdvanced = true;
-
-                    if (currentNode.Status != LearningStatus.Completed)
-                    {
-                        currentNode = currentNode with { Assumption = AssessmentAssumption.AssumedCompleted };
-                        itemsMap[nodeId] = currentNode;
-                    }
-
-                    foreach (var st in subtopics)
-                    {
-                        ForceAssumeCompletedDownwards(st.Id);
-                    }
-                }
-            }
-
-            if (!overriddenByAdvanced && subtopics.Count > 0)
+            if (subtopics.Count > 0)
             {
                 subtopics = childIds.Select(id => itemsMap[id])
                     .Where(c => c.Type.Equals(LearningItemType.SubTopic, StringComparison.OrdinalIgnoreCase)).ToList();
@@ -113,10 +87,33 @@ internal static class LearningRoadmapStatusesPropagation
                 }
                 else
                 {
-                    currentNode = currentNode with { Assumption = AssessmentAssumption.AssumedInProgress };
+                    currentNode = currentNode with { Status = LearningStatus.InProgress, Assumption = AssessmentAssumption.AssumedInProgress };
                 }
 
                 itemsMap[nodeId] = currentNode;
+            }
+
+            if (currentNode.Status != LearningStatus.Skip && dependentTopics.Count > 0)
+            {
+                var hasAdvancedProgress = dependentTopics.Any(t =>
+                    t.Status == LearningStatus.InProgress ||
+                    t.Status == LearningStatus.Completed ||
+                    t.Assumption == AssessmentAssumption.AssumedCompleted ||
+                    t.Assumption == AssessmentAssumption.AssumedInProgress);
+
+                if (hasAdvancedProgress)
+                {
+                    if (currentNode.Status != LearningStatus.Completed)
+                    {
+                        currentNode = currentNode with { Assumption = AssessmentAssumption.AssumedCompleted };
+                        itemsMap[nodeId] = currentNode;
+                    }
+
+                    foreach (var st in subtopics)
+                    {
+                        ForceAssumeCompletedDownwards(st.Id);
+                    }
+                }
             }
 
             evaluating.Remove(nodeId);
@@ -175,17 +172,16 @@ internal static class LearningRoadmapStatusesPropagation
             LeaningItemAssessment resultNode;
             var suggestion = suggestionsDict.GetOrDefault(nodeId);
 
-            if (suggestion != null)
+            if (suggestion != null && suggestion.Status != suggestion.SuggestedStatus)
             {
                 var suggestsCompleted = 
                     suggestion.SuggestedStatus == LearningStatus.Completed || 
-                    suggestion.SuggestedStatus == LearningStatus.Upcoming ||
                     suggestion.SuggestedStatus == LearningStatus.InProgress ||
                     suggestion.Assumption == AssessmentAssumption.AssumedCompleted;
 
                 if (suggestsCompleted && !areAllParentsCompleted)
                 {
-                    resultNode = actualNode with { Assumption = null };
+                    resultNode = actualNode with { Assumption = null, Status = suggestion.Status };
                 }
                 else
                 {

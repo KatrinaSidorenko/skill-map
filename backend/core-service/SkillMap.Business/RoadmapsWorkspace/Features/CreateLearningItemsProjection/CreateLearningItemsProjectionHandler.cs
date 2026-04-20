@@ -18,6 +18,7 @@ internal class CreateLearningItemsProjectionHandler(IRoadmapLearningItemProjecti
             {
                 existingProjection.UpdateStatus(projectionDto.LearningStatus.HasValue ? projectionDto.LearningStatus.Value.ToStatusString() : null);
                 existingProjection.UpdateAvailability(projectionDto.IsAvailable);
+                existingProjection.UpdateType(projectionDto.Type);
                 await repository.UpdateAsync(existingProjection, cancellationToken);
             }
             else

@@ -10,7 +10,6 @@ import {
   selectPendingIds,
   selectEditorConfig,
 } from '../store';
-import { computeTopicStatus } from '../../helpers';
 import useEventQueue from './useEventQueue';
 
 export default function useCascadeStatus() {
@@ -104,36 +103,6 @@ export default function useCascadeStatus() {
           { ...childNode, data: { ...childNode.data, status: newStatus } },
         );
       }
-    }
-
-    if (topicsToRecompute.size === 0) return;
-
-    // 3. Recompute only affected topics (bottom-up).
-    // Record each topic updated here so the next render skips top-down cascade for it.
-    for (const topicId of topicsToRecompute) {
-      if (pendingIds.includes(topicId)) continue;
-
-      const childIds = childrenMap.get(topicId) ?? [];
-      const subtopicChildren = childIds
-        .map((id) => nodeById.get(id))
-        .filter((n) => n?.data.nodeType === 'subtopic');
-
-      if (subtopicChildren.length === 0) continue;
-
-      const computed = computeTopicStatus(
-        subtopicChildren.map((c) => c!.data.status as LearningStatus),
-      );
-
-      const topicNode = nodeById.get(topicId)!;
-      if (computed === (topicNode.data.status as LearningStatus)) continue;
-
-      queueSaveChange(
-        workspaceId,
-        { id: topicId, status: computed },
-        { ...topicNode, data: { ...topicNode.data, status: computed } },
-      );
-      // Mark as bottom-up so the NEXT render skips top-down cascade for this topic
-      bottomUpComputedRef.current.add(topicId);
     }
   }, [
     nodes,
