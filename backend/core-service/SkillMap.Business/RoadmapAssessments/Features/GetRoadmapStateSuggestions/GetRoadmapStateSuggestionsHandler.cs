@@ -33,9 +33,8 @@ internal class GetRoadmapStateSuggestionsHandler(
         var attemptContent = await attempt.GetAssessmentAttemptResult(cancellationToken);
         var actualPropagatedWorkspaceStatuses = LearningRoadmapStatusesPropagation.PropagateLearningItemStatuses(workspaceSnapshot);
         var suggestions = CalculateSuggestionStatuses(actualPropagatedWorkspaceStatuses, attemptContent);
-        var snapshotWithSuggestedStatuses = ApplySuggestedLearningStatuses(workspaceSnapshot, suggestions);
-        var propagatedSnapshotWithSuggestedStatuses = LearningRoadmapStatusesPropagation.PropagateLearningItemStatuses(snapshotWithSuggestedStatuses);
-        var differences = CalculateDifferencesBetweenSnapshots(workspaceSnapshot, propagatedSnapshotWithSuggestedStatuses);
+        var validatedSuggestions = LearningRoadmapStatusesPropagation.GetValidatedAssessmentSuggestions(actualPropagatedWorkspaceStatuses, suggestions, workspaceSnapshot.LearningItemsConnections);
+        var differences = CalculateDifferencesBetweenSnapshots(workspaceSnapshot, validatedSuggestions);
         var itemsConnections = workspaceSnapshot.LearningItemsConnections
             .GroupBy(c => c.FromId)
             .ToDictionary(g => g.Key, g => g.Select(c => c.ToId).ToList());
@@ -70,20 +69,7 @@ internal class GetRoadmapStateSuggestionsHandler(
         }
         return result;
     }
-    private RoadmapSnapshot ApplySuggestedLearningStatuses(RoadmapSnapshot snapshot, List<LearningItemSuggestion> suggestions)
-    {
-        var snapshotCopy = snapshot.DeepCopy();
-        var learningItemsDict = snapshotCopy.LearningItems.ToDictionary(li => li.Id);
-        foreach (var suggestion in suggestions.Where(s => s.Status != s.SuggestedStatus))
-        {
-            var learningItem = learningItemsDict.GetOrDefault(suggestion.Id);
-            if (learningItem == null) continue;
-            learningItemsDict[suggestion.Id] = learningItem with { Status = suggestion.SuggestedStatus };
-        }
 
-        snapshotCopy.LearningItems = learningItemsDict.Values.ToList();
-        return snapshotCopy;
-    }
     private List<LearningItemSuggestion> CalculateSuggestionStatuses(List<LeaningItemAssessment> leaningItems, AssessmentAttemptContent attemptContent)
     {
         var result = new List<LearningItemSuggestion>();
@@ -97,6 +83,7 @@ internal class GetRoadmapStateSuggestionsHandler(
                 Id: learningItem.Id,
                 Status: actualStatus,
                 Assumption: assumedStatus,
+                AssessmentStatus: assessmentStatus,
                 SuggestedStatus: suggestedStatus));
         }
         return result;

@@ -1,8 +1,8 @@
-import { Box, Text, VStack, Badge } from '@chakra-ui/react';
+import { Box, Text, VStack, Badge, Progress } from '@chakra-ui/react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
 import { getStatusColor, getNodeTypeColor } from '../../helpers';
 import { useAppSelector } from '@/store/hooks';
-import { selectPendingIds, selectFailedIds } from '../store';
+import { selectPendingIds, selectFailedIds, selectTopicMeta } from '../store';
 
 const STATUS_LABELS: Record<LearningStatus, string> = {
   notstarted: 'Not Started',
@@ -19,6 +19,8 @@ export function StatusNode({ id, data, selected }: NodeProps) {
   const nodeType = data.nodeType as LearningItemType | undefined;
   const pendingIds = useAppSelector(selectPendingIds);
   const failedIds = useAppSelector(selectFailedIds);
+  const topicMeta = useAppSelector(selectTopicMeta);
+  const meta = topicMeta[id];
 
   const isPending = pendingIds.includes(id);
   const isFailed = failedIds.includes(id);
@@ -28,8 +30,22 @@ export function StatusNode({ id, data, selected }: NodeProps) {
   );
   const topBorderColor = `${typeColor}.400`;
   const effectiveStatus: LearningStatus = status ?? 'notstarted';
-  const statusColor = isFailed ? 'red' : isPending ? 'gray' : getStatusColor(effectiveStatus);
-  const statusLabel = isFailed ? 'Failed' : isPending ? 'Saving…' : STATUS_LABELS[effectiveStatus];
+  const statusColor = isFailed
+    ? 'red'
+    : isPending
+      ? 'gray'
+      : getStatusColor(effectiveStatus);
+  const statusLabel = isFailed
+    ? 'Failed'
+    : isPending
+      ? 'Saving…'
+      : STATUS_LABELS[effectiveStatus];
+
+  // Show progress bar only for topic nodes that have subtopics
+  const showProgress = !isFailed && !isPending && !!meta?.hasSubtopics;
+  const progressValue = showProgress
+    ? (meta!.completedCount / meta!.totalCount) * 100
+    : 0;
 
   return (
     <Box
@@ -41,7 +57,7 @@ export function StatusNode({ id, data, selected }: NodeProps) {
       bg={isFailed ? 'red.50' : isPending ? 'gray.100' : 'white'}
       p={3}
       shadow="md"
-      minW="140px"
+      minW="160px"
       textAlign="center"
       opacity={isPending ? 0.65 : 1}
       css={
@@ -67,16 +83,34 @@ export function StatusNode({ id, data, selected }: NodeProps) {
           {label ?? ''}
         </Text>
 
-        {/* Status badge */}
-        <Badge
-          colorPalette={statusColor}
-          variant="subtle"
-          size="sm"
-          borderRadius="full"
-          px={2}
-        >
-          {statusLabel}
-        </Badge>
+        {showProgress ? (
+          /* Topic with subtopics → mini progress bar */
+          <VStack gap={1} w="full" align="stretch">
+            <Progress.Root value={progressValue} size="xs" w="full">
+              <Progress.Track
+                borderRadius="full"
+                bg="gray.100"
+                overflow="hidden"
+              >
+                <Progress.Range bg="green.400" transition="width 0.3s ease" />
+              </Progress.Track>
+            </Progress.Root>
+            <Text fontSize="xs" color="gray.500" textAlign="center">
+              {meta!.completedCount}/{meta!.totalCount}
+            </Text>
+          </VStack>
+        ) : (
+          /* Subtopic or topic without subtopics → status badge */
+          <Badge
+            colorPalette={statusColor}
+            variant="subtle"
+            size="sm"
+            borderRadius="full"
+            px={2}
+          >
+            {statusLabel}
+          </Badge>
+        )}
       </VStack>
 
       <Handle type="target" position={Position.Top} />

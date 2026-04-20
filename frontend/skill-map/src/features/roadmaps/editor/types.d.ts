@@ -9,6 +9,7 @@ interface LearningItemChangeRequest {
   status?: LearningStatus;
   type?: LearningItemType;
   idempotencyKey?: string;
+  baseVersion?: number;
 }
 
 interface LearningItemsChangesRequest {
@@ -19,6 +20,7 @@ interface DeleteLearningItemRequest {
   id: string;
   type: 'node' | 'edge';
   idempotencyKey?: string;
+  baseVersion?: number;
 }
 
 interface CreateNodeRequest {
@@ -28,6 +30,7 @@ interface CreateNodeRequest {
   status: LearningStatus;
   type?: LearningItemType;
   idempotencyKey?: string;
+  baseVersion?: number;
 }
 
 interface CreateEdgeRequest {
@@ -35,6 +38,7 @@ interface CreateEdgeRequest {
   source: string;
   target: string;
   idempotencyKey?: string;
+  baseVersion?: number;
 }
 
 interface EditorConfig {

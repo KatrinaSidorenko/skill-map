@@ -25,8 +25,8 @@ public sealed class CompositeQuestionProvider : IQuestionSource
 
         _pipeline = new List<IQuestionSource>
         {
-            cacheGenerator,     // 1. Check Memory (Instant)
-            databaseGenerator,  // 2. Check SQL (Fast)
+            //cacheGenerator,     // 1. Check Memory (Instant)
+            //databaseGenerator,  // 2. Check SQL (Fast)
             openAiGenerator,    // 3. Generate New (Slow, $$)
             simpleGenerator     // 4. Last Resort (Free, Low Quality)
         };

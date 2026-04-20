@@ -24,35 +24,18 @@ internal class RoadmapWorkspaceEventRepository : Repository<RoadmapWorkspaceEven
         return (lastEvent.FirstOrDefault()?.Version ?? RoadmapWorkspaceConstants.InitialVersion) + (withIncrement ? 1 : 0);
     }
 
-    public async Task<List<RoadmapWorkspaceEvent>> GetCheckedEventsGreaterThan(long workspaceId, int version, CancellationToken ct)
+    public async Task<List<RoadmapWorkspaceEvent>> GetEventsAfter(long workspaceId, int version, CancellationToken ct)
        => (await GetAllAsync(
-     filter: e => e.RoadmapWorkspaceId == workspaceId && e.EventStatus == WorkspaceEventStatus.Applied && e.Version > version,
-              orderBy: q => q.OrderBy(e => e.CreatedAt).ThenBy(e => e.Version),
-    ct: ct)).ToList();
-
-    public async Task<RoadmapWorkspaceEvent?> DequeueNextPendingEventAsync(CancellationToken ct)
-    {
-        return await _dbSet
-            .FromSqlRaw("""
-            SELECT * FROM workspace_event
-             WHERE event_status = 'Pending'
-             ORDER BY version ASC
-             LIMIT 1
-             FOR UPDATE SKIP LOCKED
-     """)
-       .FirstOrDefaultAsync(ct);
-    }
-
-    public async Task<List<RoadmapWorkspaceEvent>> GetAppliedEventsBetweenAsync(
-        long workspaceId,
-        int fromVersionExclusive,
-        int toVersionExclusive,
-        CancellationToken ct)
+            filter: e => e.RoadmapWorkspaceId == workspaceId && e.Version > version,
+            orderBy: q => q.OrderBy(e => e.CreatedAt).ThenBy(e => e.Version),
+            ct: ct)).ToList();
+    public async Task<List<RoadmapWorkspaceEvent>> GetEventsBetween(long workspaceId, int fromVersion, int toVersion, CancellationToken ct)
         => (await GetAllAsync(
-                filter: e => e.RoadmapWorkspaceId == workspaceId
-                && e.EventStatus == WorkspaceEventStatus.Applied
-                && e.Version > fromVersionExclusive
-                && e.Version < toVersionExclusive,
-                orderBy: q => q.OrderBy(e => e.Version),
-                ct: ct)).ToList();
+            filter: e => e.RoadmapWorkspaceId == workspaceId && e.Version > fromVersion && e.Version <= toVersion,
+            orderBy: q => q.OrderBy(e => e.CreatedAt).ThenBy(e => e.Version),
+            ct: ct)).ToList();
+
+    public async Task<bool> IsEventExist(long workspaceId, string idempotencyKey, CancellationToken ct)
+        => await _dbSet.AnyAsync(e => e.RoadmapWorkspaceId == workspaceId && e.IdempotencyKey == idempotencyKey, ct);
+
 }

@@ -23,9 +23,6 @@ public static class RoadmapWorkspaceSnapshotExtensions
     public static async Task SetRoadmapSnapshot(this RoadmapWorkspaceSnapshot snapshot, RoadmapSnapshot roadmapSnapshot, CancellationToken ct)
         => snapshot.SetContent(await roadmapSnapshot.GzipJsonObjectUtf8(ct));
 
-    public static RoadmapSnapshotMetadata ParseMetadata(this RoadmapWorkspaceSnapshot snapshot)
-        => snapshot?.Metadata?.JsonDeserializeOrDefault<RoadmapSnapshotMetadata>();
-
     public static async Task<RoadmapSnapshot> ApplyEventsToSnapshot(
         this RoadmapSnapshot snapshot,
         List<RoadmapWorkspaceEvent> events,
@@ -63,26 +60,14 @@ public static class RoadmapWorkspaceSnapshotExtensions
         };
     }
 
-    public static RoadmapSnapshotMetadata CalculateSnapshotMetadata(this RoadmapSnapshot snapshot)
-    {
-        if (snapshot == null || snapshot.LearningItems.Count == 0)
-        {
-            return new RoadmapSnapshotMetadata(0.0, Core.Constants.LearningStatus.NotStarted);
-        }
-
-        var totalItems = snapshot.LearningItems.DistinctBy(li => li.Id).Count();
-        var completedItems = snapshot.LearningItems.Count(i => i.Status == Core.Constants.LearningStatus.Completed);
-        return CalculateSnapshotMetadata(totalItems, completedItems);
-    }
-
-    public static RoadmapSnapshotMetadata CalculateSnapshotMetadata(int totalItems, int completedItems)
+    public static (double Progress, Core.Constants.LearningStatus Status) CalculateSnapshotMetadata(int totalItems, int completedItems)
     {
         var progress = totalItems > 0 ? ((double)completedItems / totalItems) : 0;
         var status = completedItems <= 0 ? Core.Constants.LearningStatus.NotStarted :
                      completedItems >= totalItems ? Core.Constants.LearningStatus.Completed :
                      Core.Constants.LearningStatus.InProgress;
 
-        return new RoadmapSnapshotMetadata(progress, status);
+        return (progress, status);
     }
 
     public static async Task<RoadmapWorkspaceSnapshot> CreateRoadmapWorkspaceSnapshot(
@@ -96,7 +81,6 @@ public static class RoadmapWorkspaceSnapshotExtensions
 
         var newSnapshot = new RoadmapWorkspaceSnapshot(workspaceId);
         newSnapshot.SetVersion(eventsList.OrderByDescending(e => e.Version).First().Version);
-        newSnapshot.SetMetadata(newRoadmapSnapshot.CalculateSnapshotMetadata());
         await newSnapshot.SetRoadmapSnapshot(newRoadmapSnapshot, ct);
         return newSnapshot;
     }

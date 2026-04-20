@@ -6,6 +6,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
+import useLocalization from '@/i18n/useLocalization';
 
 export default function NodeTypeSelect({
   value,
@@ -14,17 +15,19 @@ export default function NodeTypeSelect({
   value: LearningItemType[];
   onChange: (val: LearningItemType[]) => void;
 }) {
+  const { getEditorTranslations } = useLocalization();
+
   const nodeTypes = createListCollection({
     items: [
-      { label: 'Topic', value: 'topic' },
-      { label: 'Subtopic', value: 'subtopic' },
+      { label: getEditorTranslations('typeTopic'), value: 'topic' },
+      { label: getEditorTranslations('typeSubtopic'), value: 'subtopic' },
     ],
   });
 
   return (
     <VStack align="stretch" gap={2}>
       <Text fontSize="sm" fontWeight="medium" color="gray.600">
-        Type
+        {getEditorTranslations('nodeType')}
       </Text>
       <Select.Root
         collection={nodeTypes}
@@ -37,7 +40,7 @@ export default function NodeTypeSelect({
         <Select.HiddenSelect />
         <Select.Control>
           <Select.Trigger>
-            <Select.ValueText placeholder="Select type" />
+            <Select.ValueText placeholder={getEditorTranslations('selectType')} />
           </Select.Trigger>
           <Select.IndicatorGroup>
             <Select.Indicator />
@@ -57,4 +60,3 @@ export default function NodeTypeSelect({
     </VStack>
   );
 }
-

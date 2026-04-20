@@ -22,6 +22,7 @@ interface SavedPlainRoadmap extends PlainRoadmap {
   progress: number; // percentage of completion
   savedAt: string; // ISO date string
   status: LearningStatus;
+  version: number;
 }
 
 type LearningItemType = 'topic' | 'subtopic';
@@ -39,6 +40,7 @@ interface RoadmapEdge {
 
 interface Roadmap {
   id: string;
+  version: number;
   workspaceId: string;
   title: string;
   description: string;

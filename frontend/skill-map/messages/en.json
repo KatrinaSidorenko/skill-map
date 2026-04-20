@@ -66,6 +66,14 @@
     "create": "Create",
     "resources": "Resources",
     "noMaterialsFound": "No materials found for this topic.",
+    "nodeType": "Type",
+    "selectType": "Select type",
+    "typeTopic": "Topic",
+    "typeSubtopic": "Subtopic",
+    "failedToCreateNode": "Failed to create node. Please try again.",
+    "failedToCreateEdge": "Failed to create connection. Please try again.",
+    "failedToDeleteItem": "Failed to delete item. Please try again.",
+    "failedToSaveNode": "Failed to save changes. Please try again.",
 
     "createNewRoadmap": "Create New Roadmap",
     "imageUrl": "Image URL",
@@ -96,7 +104,13 @@
     "unpublishSuccess": "Roadmap unpublished.",
     "publishError": "Failed to change visibility. Please try again.",
     "confirmDelete": "Are you sure you want to delete this roadmap?",
-    "createdAt": "Created"
+    "createdAt": "Created",
+    "startLearning": "Start Learning",
+    "skipNode": "Skip",
+    "repeatNode": "Repeat",
+    "markAllCompleted": "Mark all as completed",
+    "subtopicsProgress": "Progress",
+    "complete": "complete"
   },
   "roadmaps": {
     "search": "Search ...",

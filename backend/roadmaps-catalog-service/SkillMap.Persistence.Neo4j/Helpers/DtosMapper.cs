@@ -50,6 +50,8 @@ public static class DtosMapper
         return node;
     }
 
+    public static string EdgeId(string sourceId, string targetId) => $"{sourceId}-{targetId}";
+
     public static EdgeDto ToEdgeDto(this Dictionary<string, object> dict, Dictionary<string, NodeDto> nodesDict)
     {
         var sourceId = dict.GetOrDefault("source_id") as string;
@@ -57,7 +59,7 @@ public static class DtosMapper
 
         var edge = new EdgeDto
         {
-            Id = dict.GetOrDefault("id") as string,
+            Id = EdgeId(sourceId, targetId),
             Source = nodesDict.GetOrDefault(sourceId),
             Target = nodesDict.GetOrDefault(targetId),
         };

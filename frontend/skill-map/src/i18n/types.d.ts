@@ -64,6 +64,14 @@ interface ILocalization {
     create: string;
     resources: string;
     noMaterialsFound: string;
+    nodeType: string;
+    selectType: string;
+    typeTopic: string;
+    typeSubtopic: string;
+    failedToCreateNode: string;
+    failedToCreateEdge: string;
+    failedToDeleteItem: string;
+    failedToSaveNode: string;
     createNewRoadmap: string;
     imageUrl: string;
     validationError: string;
@@ -93,6 +101,12 @@ interface ILocalization {
     publishError: string;
     confirmDelete: string;
     createdAt: string;
+    startLearning: string;
+    skipNode: string;
+    repeatNode: string;
+    markAllCompleted: string;
+    subtopicsProgress: string;
+    complete: string;
   };
   roadmaps: {
     search: string;

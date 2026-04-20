@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using MediatR;
 
 using SkillMap.Business.RoadmapsWorkspace.IntegrationEvents;
-using SkillMap.Core.PersonalizedRoadmaps;
 using SkillMap.Shared.EventBus;
 
 namespace SkillMap.Business.RoadmapsWorkspace.Features.WorkspaceEvents.DeleteLearningItemConnection;
@@ -13,10 +12,9 @@ internal sealed class DeleteLearningItemConnectionCommandHandler(IRoadmapWorkspa
 {
     public async Task Handle(DeleteLearningItemConnectionCommand command, CancellationToken cancellationToken)
     {
-        var lastVersion = await repository.GetLastAvailableEventVersion(command.WorkspaceId, cancellationToken, withIncrement: true);
-        await repository.AddAsync(command.ToRoadmapWorkspaceEvent(lastVersion), cancellationToken);
+        var @event = command.ToRoadmapWorkspaceEvent();
+        await repository.AddAsync(@event, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
-
-        await eventBus.PublishAsync(RoadmapWorkspaceChangedEvent.Create(command.WorkspaceId, lastVersion, command.EventType), cancellationToken);
+        await eventBus.PublishAsync(RoadmapWorkspaceChangedEvent.Create(command.WorkspaceId, @event.Version, command.EventType), cancellationToken);
     }
 }
