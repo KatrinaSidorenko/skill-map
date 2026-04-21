@@ -23,6 +23,7 @@ import {
   getEventsByWorkspaceAndStatus,
 } from './queueService';
 import { toaster } from '@/components/ui/toaster';
+import useLocalization from '@/i18n/useLocalization';
 
 const HUB_URL = `${process.env.NEXT_PUBLIC_API_URL}/hubs/workspace`;
 
@@ -65,6 +66,7 @@ interface WorkspaceHubProviderProps {
 export function WorkspaceHubProvider({ children }: WorkspaceHubProviderProps) {
   const dispatch = useAppDispatch();
   const workspaceId = useAppSelector(selectWorkspaceId);
+  const { getEditorTranslations } = useLocalization();
 
   const [connection, setConnection] = useState<signalR.HubConnection | null>(
     null,
@@ -76,6 +78,9 @@ export function WorkspaceHubProvider({ children }: WorkspaceHubProviderProps) {
 
   const workspaceIdRef = useRef(workspaceId);
   workspaceIdRef.current = workspaceId;
+
+  const getEditorTranslationsRef = useRef(getEditorTranslations);
+  getEditorTranslationsRef.current = getEditorTranslations;
 
   useEffect(() => {
     if (!workspaceId) return;
@@ -137,7 +142,17 @@ export function WorkspaceHubProvider({ children }: WorkspaceHubProviderProps) {
             toaster.create({
               type: 'error',
               closable: true,
-              title: `Server rejected action: ${event.type}`,
+              title: getEditorTranslationsRef.current(
+                event.type === 'createNode'
+                  ? 'actionRejectedCreateNode'
+                  : event.type === 'saveChange'
+                    ? 'actionRejectedUpdateNode'
+                    : event.type === 'createEdge'
+                      ? 'actionRejectedCreateEdge'
+                      : event.type === 'deleteItem'
+                        ? 'actionRejectedDeleteEdge'
+                        : 'actionRejectedUnknown',
+              ),
             });
           }
         } catch {

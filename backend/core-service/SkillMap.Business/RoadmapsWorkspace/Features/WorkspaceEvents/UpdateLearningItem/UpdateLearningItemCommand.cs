@@ -16,7 +16,7 @@ public record UpdateLearningItemCommand(long WorkspaceId, string Id, string? Tit
         => new(WorkspaceId, EventType, GetMetadataJson(), BaseVersion + 1, IdempotencyKey);
     public CreateLearningItemProjectionCommand GetItemStatusProjectionCommand()
     {
-        var projectionDto = new CreateLearningItemProjectionDto(Id, null, Status?.FromStatusStringOrDefault());
+        var projectionDto = new CreateLearningItemProjectionDto(Id, null, Status?.FromStatusStringOrDefault(), Type);
         return CreateLearningItemProjectionCommand.Create(WorkspaceId, new List<CreateLearningItemProjectionDto> { projectionDto });
     }
 }

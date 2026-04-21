@@ -16,12 +16,13 @@ internal class RoadmapLearningItemProjectionConfiguration : IEntityTypeConfigura
         builder.Property(rlis => rlis.RoadmapWorkspaceId).HasColumnName("roadmap_workspace_id").IsRequired();
         builder.Property(rlis => rlis.LearningItemId).HasColumnName("learning_item_id").IsRequired().HasMaxLength(100);
         builder.Property(rlis => rlis.Status).HasColumnName("status").IsRequired().HasMaxLength(50);
+        builder.Property(rlis => rlis.Type).HasColumnName("type").IsRequired().HasMaxLength(50);
         builder.Property(rlis => rlis.IsAvailable).HasColumnName("is_available").IsRequired();
         builder.HasOne(rlis => rlis.RoadmapWorkspace)
             .WithMany(rw => rw.LearningItemProjections)
             .HasForeignKey(rlis => rlis.RoadmapWorkspaceId)
             .OnDelete(DeleteBehavior.Cascade);
         builder.HasIndex(rlis => new { rlis.RoadmapWorkspaceId, rlis.LearningItemId }).IsUnique();
-        builder.HasIndex(rlis => new { rlis.RoadmapWorkspaceId, rlis.IsAvailable, rlis.Status });
+        builder.HasIndex(rlis => new { rlis.RoadmapWorkspaceId, rlis.IsAvailable, rlis.Status, rlis.Type });
     }
 }

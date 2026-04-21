@@ -110,7 +110,13 @@
     "repeatNode": "Repeat",
     "markAllCompleted": "Mark all as completed",
     "subtopicsProgress": "Progress",
-    "complete": "complete"
+    "complete": "complete",
+    "actionRejectedCreateNode": "Failed to create node. The server rejected the action.",
+    "actionRejectedUpdateNode": "Failed to save changes. The server rejected the action.",
+    "actionRejectedDeleteNode": "Failed to delete node. The server rejected the action.",
+    "actionRejectedCreateEdge": "Failed to create connection. Cycle was detected",
+    "actionRejectedDeleteEdge": "Failed to delete connection. The server rejected the action.",
+    "actionRejectedUnknown": "The server rejected the action. Please try again."
   },
   "roadmaps": {
     "search": "Search ...",

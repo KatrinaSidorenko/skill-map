@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SkillMap.Persistence;
@@ -11,9 +12,11 @@ using SkillMap.Persistence;
 namespace SkillMap.Persistence.Migrations
 {
     [DbContext(typeof(SkillMapDbContext))]
-    partial class SkillMapDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260420114425_add-item-projection-type")]
+    partial class additemprojectiontype
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -252,9 +255,7 @@ namespace SkillMap.Persistence.Migrations
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("type");
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -265,7 +266,7 @@ namespace SkillMap.Persistence.Migrations
                     b.HasIndex("RoadmapWorkspaceId", "LearningItemId")
                         .IsUnique();
 
-                    b.HasIndex("RoadmapWorkspaceId", "IsAvailable", "Status", "Type");
+                    b.HasIndex("RoadmapWorkspaceId", "IsAvailable", "Status");
 
                     b.ToTable("roadmap_learning_item_projection", (string)null);
                 });

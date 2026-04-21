@@ -28,7 +28,7 @@ const LinkItems: Array<LinkItemProps> = [
   // { name: 'Trending', icon: FiTrendingUp },
   { name: 'Explore', icon: FiCompass, link: '/explore' },
   { name: 'Favourites', icon: FiStar, link: '/saved' },
-  { name: 'Create', icon: MdOutlineCreateNewFolder, link: '/sandbox' },
+  //{ name: 'Create', icon: MdOutlineCreateNewFolder, link: '/sandbox' },
   { name: 'Settings', icon: FiSettings, link: '/settings' },
 ];
 
