@@ -54,11 +54,11 @@ public sealed class TopicQuestionsProvider : ITopicQuestionsProvider
         });
         // todo: move to background job
         // todo: add categories to topic and questions
-        _ = ProcessGeneratedQuestions(
-            topic,
-            settings,
-            questions.Data,
-            CancellationToken.None);
+        //_ = ProcessGeneratedQuestions(
+        //    topic,
+        //    settings,
+        //    questions.Data,
+        //    CancellationToken.None);
 
 
         return new TopicQuestionsDto
