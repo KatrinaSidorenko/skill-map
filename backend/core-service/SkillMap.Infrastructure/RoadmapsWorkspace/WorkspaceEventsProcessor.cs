@@ -16,32 +16,33 @@ using SkillMap.Business.RoadmapsWorkspace.Features.WorkspaceEvents.DeleteLearnin
 using SkillMap.Business.RoadmapsWorkspace.Features.WorkspaceEvents.UpdateLearningItem;
 
 namespace SkillMap.Infrastructure.RoadmapsWorkspace;
+
+public interface IWorkspaceEventsProcessor
+{
+    Task ProcessAsync(WorkspaceAction action, CancellationToken stoppingToken);
+}
 internal class WorkspaceEventsProcessor(
     ILogger<WorkspaceEventsProcessor> logger,
-    IWorkspaceActionStream actionStream,
     IWorkspaceNotifier notifier,
-    IServiceProvider serviceProvider) : BackgroundService
+    IServiceProvider serviceProvider) : IWorkspaceEventsProcessor
 {
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    public async Task ProcessAsync(WorkspaceAction action, CancellationToken stoppingToken)
     {
-        await foreach (var action in actionStream.SubscribeToActions(stoppingToken))
+        try
         {
-            try
+            var (result, actualVersion) = await ProcessActionAsync(action, stoppingToken);
+            if (result.Status == WorkspaceActionStatus.Applied)
             {
-                var (result, actualVersion) = await ProcessActionAsync(action, stoppingToken);
-                if (result.Status == WorkspaceActionStatus.Applied)
-                {
-                    await notifier.NotifyActionConfirmed(action.WorkspaceId.ToString(), actualVersion, result.IdempotencyKey, stoppingToken);
-                }
-                else if (result.Status == WorkspaceActionStatus.Rejected)
-                {
-                    await notifier.NotifyActionRejected(action.WorkspaceId.ToString(), actualVersion, result.IdempotencyKey, stoppingToken);
-                }
+                await notifier.NotifyActionConfirmed(action.WorkspaceId.ToString(), actualVersion, result.IdempotencyKey, stoppingToken);
             }
-            catch (Exception ex)
+            else if (result.Status == WorkspaceActionStatus.Rejected)
             {
-                logger.LogError(ex, "Error processing workspace action for workspace {WorkspaceId}", action.WorkspaceId);
+                await notifier.NotifyActionRejected(action.WorkspaceId.ToString(), actualVersion, result.IdempotencyKey, stoppingToken);
             }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error processing workspace action for workspace {WorkspaceId}", action.WorkspaceId);
         }
     }
 
