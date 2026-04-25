@@ -8,10 +8,10 @@ namespace LearningPlatform.Workspace.WebSockets;
 
 public class WorkspaceHub : Hub<IWorkspaceClient>
 {
-    private readonly IWorkspaceActionStream _actionStream;
+    private readonly IRoadmapWorkspaceActionProducer _actionStream;
     private readonly ILogger<WorkspaceHub> _logger;
 
-    public WorkspaceHub(IWorkspaceActionStream actionStream, ILogger<WorkspaceHub> logger)
+    public WorkspaceHub(IRoadmapWorkspaceActionProducer actionStream, ILogger<WorkspaceHub> logger)
     {
         _actionStream = actionStream;
         _logger = logger;
@@ -54,7 +54,7 @@ public class WorkspaceHub : Hub<IWorkspaceClient>
         try
         {
             var action = payload.ToWorkspaceAction(workspaceId);
-            await _actionStream.EnqueueAction(action, ct);
+            await _actionStream.PublishAsync(action, ct);
         }
         catch (Exception ex)
         {
