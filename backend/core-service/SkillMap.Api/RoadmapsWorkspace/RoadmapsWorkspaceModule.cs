@@ -24,13 +24,8 @@ public static class RoadmapsWorkspaceModule
     public static IServiceCollection AddRoadmapsWorkspace(this IServiceCollection services,
         string module, IConfiguration configuration)
     {
-        //if (!configuration.IsModuleEnabled(module))
-        //{
-        //    return services;
-        //}
-
         services.AddRequestsValidations(CurrentModule);
-        services.AddRoadmapsWorkspaceInfrastructure();
+        services.AddRoadmapsWorkspaceInfrastructure(configuration);
 
         return services;
     }

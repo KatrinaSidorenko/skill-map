@@ -1,7 +1,9 @@
 ﻿using System.Text.Json;
 
+using LearningPlatform.Workspace.WebSockets;
 using LearningPlatform.Workspace.WebSockets.Contracts;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using SkillMap.Business.RoadmapsWorkspace;
@@ -10,14 +12,14 @@ using SkillMap.Infrastructure.RoadmapsWorkspace;
 namespace SkillMap.Infrastructure.PersonalizedRoadmaps;
 public static class PersonalRoadmapMediationModule
 {
-    public static IServiceCollection AddRoadmapsWorkspaceInfrastructure(this IServiceCollection services)
+    public static IServiceCollection AddRoadmapsWorkspaceInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         var commandsHandlersAssembly = typeof(Business.PersonalizedRoadmaps.IRoadmapWorkspaceModule).Assembly;
-        services.AddMediatR(configuration => configuration.RegisterServicesFromAssemblies(commandsHandlersAssembly));
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(commandsHandlersAssembly));
 
         services.AddScoped<Business.PersonalRoadmaps.IRoadmapWorkspaceModule, PersonalRoadmapModule>();
         services.AddHostedService<BuildRoadmapWorkspaceSnapshotWorker>();
-        services.AddHostedService<WorkspaceEventsProcessor>();
+        //services.AddHostedService<WorkspaceEventsProcessor>();
 
         services.AddScoped<IRoadmapWorkspaceEventRepository, RoadmapWorkspaceEventRepository>();
         services.AddScoped<IRoadmapWorkspaceRepository, RoadmapWorkspaceRepository>();
@@ -35,6 +37,13 @@ public static class PersonalRoadmapMediationModule
         {
             options.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         });
+
+        services.Configure<RoadmapWorkspaceActionConsumerOptions>(configuration.GetSection(RoadmapWorkspaceActionConsumerOptions.SectionName));
+        services.AddHostedService<RoadmapWorkspaceActionConsumer>();
+
+        services.Configure<RoadmapWorkspaceActionProducerOptions>(configuration.GetSection(RoadmapWorkspaceActionProducerOptions.SectionName));
+        services.AddSingleton<IRoadmapWorkspaceActionProducer, RoadmapWorkplaceActionProducer>();
+
 
         return services;
     }
