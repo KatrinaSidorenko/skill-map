@@ -69,15 +69,11 @@ internal class CreateIntermediateAssessmentHandler(
     }
     private List<LeaningItemAssessment> PickLearningItemsForAssessment(RoadmapSnapshot snapshot, int k, Random rnd)
     {
-        // 1. ВАЖЛИВО: Не видаляйте Skipped елементи з графа.
-        // Просто вважайте їх умовно "пройденими" (додайте в M), інакше вони заблокують шлях.
         var assessedItems = LearningRoadmapStatusesPropagation.PropagateLearningItemStatuses(snapshot);
-
         var assessedConnections = snapshot.LearningItemsConnections
             .Select(LearningItemsConnectionAssessment.FromLearningItemsConnectionSnapshot)
             .ToList();
 
-        // Додаємо Skipped у стартове M, щоб вони не блокували проходження графа
         var M = assessedItems
             .Where(t => t.Status == LearningStatus.Completed ||
                         t.Assumption == AssessmentAssumption.AssumedCompleted ||
@@ -125,19 +121,19 @@ internal class CreateIntermediateAssessmentHandler(
             if (availableSubTopics.Count <= 0) continue;
 
             NodeMeta bestNode = null;
-            double maxGain = -1;
+            var maxGain = double.MinValue;
 
             foreach (var node in availableSubTopics)
             {
                 int coveredCount = 0;
                 if (!C.Contains(node.Id)) coveredCount++;
 
-                foreach (var descId in node.Descendants)
+                foreach (var anccId in node.Ancestors)
                 {
-                    if (!C.Contains(descId)) coveredCount++;
+                    if (!C.Contains(anccId)) coveredCount++;
                 }
 
-                double gain = coveredCount * node.Impact;
+                var gain = coveredCount * node.Impact;
 
                 if (gain > maxGain)
                 {
@@ -148,7 +144,6 @@ internal class CreateIntermediateAssessmentHandler(
 
             if (bestNode != null)
             {
-                // Вибираємо найкращу підтему для тесту
                 selectedItems.Add(bestNode.Item);
 
                 C.Add(bestNode.Id);
@@ -158,11 +153,10 @@ internal class CreateIntermediateAssessmentHandler(
             }
             else
             {
-                break; // Захист від нескінченного циклу, якщо щось піде не так
+                break; 
             }
         }
 
-        // Fallback логіка
         if (selectedItems.Count < k)
         {
             var unusedSubtopics = assessedItems
@@ -188,6 +182,7 @@ internal class CreateIntermediateAssessmentHandler(
         public HashSet<string> Parents { get; set; } = new();
         public HashSet<string> Ancestors { get; } = new();
         public HashSet<string> Descendants { get; } = new();
+        public HashSet<string> Coverage => Ancestors.Union(Descendants).Union(new[] { Id }).ToHashSet();
 
         public NodeMeta(LeaningItemAssessment item)
         {

@@ -6,16 +6,28 @@ namespace SkillMap.Api.RoadmapAssessments.GetRoadmapStateSuggestions;
 public class RoadmapStateSuggestionsResponse
 {
     [JsonPropertyName("suggestedItems")]
-    public List<RoadmapStateSuggestionItemResponse> SuggestedItems { get; init; }
-    [JsonPropertyName("topicToSubtopicConnections")]
-    public Dictionary<string, List<string>> TopicToSubtopicConnections { get; init; }
-
+    public Dictionary<string, List<RoadmapStateSuggestionItemResponse>> SuggestedItemsByTopic { get; init; }
+    [JsonPropertyName("topics")]
+    public List<RoadmapStateSuggestionTopicResponse> Topics { get; init; }
     public static RoadmapStateSuggestionsResponse Create(RoadmapStateSuggestionsDto dto) => new()
     {
-        SuggestedItems = dto.SuggestedItems
-            .Select(RoadmapStateSuggestionItemResponse.Create)
-            .ToList(),
-        TopicToSubtopicConnections = dto.TopicToSubtopicConnections
+        SuggestedItemsByTopic = dto.SuggestionsByTopics.ToDictionary(
+            kv => kv.Key,
+            kv => kv.Value.Select(RoadmapStateSuggestionItemResponse.Create).ToList()),
+        Topics = dto.Topics.Select(RoadmapStateSuggestionTopicResponse.Create).ToList()
+    };
+}
+
+public class RoadmapStateSuggestionTopicResponse
+{
+    [JsonPropertyName("id")]
+    public string Id { get; init; }
+    [JsonPropertyName("title")]
+    public string Title { get; init; }
+    public static RoadmapStateSuggestionTopicResponse Create(TopicDto dto) => new()
+    {
+        Id = dto.Id,
+        Title = dto.Title
     };
 }
 

@@ -107,21 +107,6 @@ export function mapRoadmapToReactFlowForSaved(roadmap: SavedRoadmap): {
   return getLayoutedElements(nodes, edges, 'TB');
 }
 
-export function computeTopicStatus(
-  childStatuses: LearningStatus[],
-): LearningStatus {
-  if (childStatuses.length === 0) return 'notstarted';
-  // If every child has the exact same status, bubble it straight up.
-  // This prevents cascade loops for statuses like skip/repeat/upcoming.
-  const first = childStatuses[0];
-  if (childStatuses.every((s) => s === first)) return first;
-  if (childStatuses.every((s) => s === 'completed' || s === 'skip'))
-    return 'completed';
-  if (childStatuses.every((s) => s === 'notstarted' || s === 'upcoming'))
-    return 'notstarted';
-  return 'inprogress';
-}
-
 export const defaultPagination = {
   pageSize: 12,
   pageNumber: 1,

@@ -107,6 +107,12 @@ interface ILocalization {
     markAllCompleted: string;
     subtopicsProgress: string;
     complete: string;
+    actionRejectedCreateNode: string;
+    actionRejectedUpdateNode: string;
+    actionRejectedDeleteNode: string;
+    actionRejectedCreateEdge: string;
+    actionRejectedDeleteEdge: string;
+    actionRejectedUnknown: string;
   };
   roadmaps: {
     search: string;

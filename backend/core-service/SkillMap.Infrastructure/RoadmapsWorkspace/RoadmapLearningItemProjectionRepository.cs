@@ -12,8 +12,8 @@ internal class RoadmapLearningItemProjectionRepository : Repository<RoadmapLearn
     
     public async Task<(int TotalItems, int CompletedItems)> GetWorkspaceProgressAsync(long workspaceId, CancellationToken ct)
     {
-        var totalCount = await _dbSet.Where(p => p.RoadmapWorkspaceId == workspaceId && p.IsAvailable).CountAsync(ct);
-        var completedCount = await _dbSet.Where(p => p.RoadmapWorkspaceId == workspaceId && p.IsAvailable && p.Status == LearningStatus.Completed.ToStatusString()).CountAsync(ct);
+        var totalCount = await _dbSet.Where(p => p.RoadmapWorkspaceId == workspaceId && p.IsAvailable && p.Type == LearningItemType.SubTopic).CountAsync(ct);
+        var completedCount = await _dbSet.Where(p => p.RoadmapWorkspaceId == workspaceId && p.IsAvailable && p.Type == LearningItemType.SubTopic && (p.Status == LearningStatus.Completed.ToStatusString() || p.Status == LearningStatus.Skip.ToStatusString())).CountAsync(ct);
         return (totalCount, completedCount);
     }
 }

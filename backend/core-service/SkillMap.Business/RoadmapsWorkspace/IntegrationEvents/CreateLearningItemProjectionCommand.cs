@@ -5,12 +5,12 @@ using SkillMap.Shared.EventBus;
 
 namespace SkillMap.Business.RoadmapsWorkspace.IntegrationEvents;
 
-public record CreateLearningItemProjectionDto(string LearningItemId, bool? IsAvailable, LearningStatus? LearningStatus)
+public record CreateLearningItemProjectionDto(string LearningItemId, bool? IsAvailable, LearningStatus? LearningStatus, string? Type)
 {
     public RoadmapLearningProjection ToRoadmapLearningItemProjection(long workspaceId)
-        => new(workspaceId, LearningItemId, IsAvailable ?? true, (LearningStatus ?? Core.Constants.LearningStatus.NotStarted).ToStatusString());
+        => new(workspaceId, LearningItemId, IsAvailable ?? true, (LearningStatus ?? Core.Constants.LearningStatus.NotStarted).ToStatusString(), Type);
     public static CreateLearningItemProjectionDto ToProjectionDto(LearningItemSnapshot learningItemSnapshot)
-        => new(learningItemSnapshot.Id, true, learningItemSnapshot.Status);
+        => new(learningItemSnapshot.Id, true, learningItemSnapshot.Status, learningItemSnapshot.Type);
 }
 public record CreateLearningItemProjectionCommand(Guid Id, long WorkspaceId, List<CreateLearningItemProjectionDto> ProjectionDtos, DateTimeOffset OccurredDateTime) : IIntegrationEvent
 {

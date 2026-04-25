@@ -16,6 +16,7 @@ export const mockInProgressRoadmaps: SavedPlainRoadmap[] = [
     savedAt: '2025-01-01T00:00:00Z',
     status: 'inprogress',
     totalNodes: 20,
+    version: 0,
   },
   {
     id: '2',
@@ -27,6 +28,7 @@ export const mockInProgressRoadmaps: SavedPlainRoadmap[] = [
     savedAt: '2024-12-15T00:00:00Z',
     status: 'inprogress',
     totalNodes: 15,
+    version: 0,
   },
   {
     id: '3',
@@ -38,6 +40,7 @@ export const mockInProgressRoadmaps: SavedPlainRoadmap[] = [
     savedAt: '2024-11-20T00:00:00Z',
     status: 'inprogress',
     totalNodes: 30,
+    version: 0,
   },
 ];
 
@@ -52,7 +55,7 @@ export interface RecentTest {
 
 export const mockRecentTests: RecentTest[] = [
   {
-    attemptId: 'algorithms-basic',
+    testId: 'algorithms-basic',
     type: 'Algorithms – Basics',
     score: 88,
     maxScore: 100,
@@ -60,7 +63,7 @@ export const mockRecentTests: RecentTest[] = [
     status: 'completed',
   },
   {
-    attemptId: 'system-design-intro',
+    testId: 'system-design-intro',
     type: 'System Design – Intro',
     score: 71,
     maxScore: 80,
@@ -68,7 +71,7 @@ export const mockRecentTests: RecentTest[] = [
     status: 'completed',
   },
   {
-    attemptId: 'data-structures-intermediate',
+    testId: 'data-structures-intermediate',
     type: 'Data Structures – Intermediate',
     score: null,
     maxScore: 120,
@@ -76,7 +79,7 @@ export const mockRecentTests: RecentTest[] = [
     status: 'in_progress',
   },
   {
-    attemptId: 'react-fundamentals',
+    testId: 'react-fundamentals',
     type: 'React – Fundamentals',
     score: 55,
     maxScore: 100,
