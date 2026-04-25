@@ -35,7 +35,11 @@ public class RoadmapWorkplaceActionProducer : IRoadmapWorkspaceActionProducer, I
     public async Task PublishAsync(WorkspaceAction action, CancellationToken ct = default)
     {
         var key = action.WorkspaceId.ToString();
-        var value = JsonSerializer.Serialize(action);
+        var value = JsonSerializer.Serialize(action, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters = { new WorkspaceActionJsonConverter() }
+        });
 
         var message = new Message<string, string>
         {

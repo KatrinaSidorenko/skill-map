@@ -19,7 +19,6 @@ public static class PersonalRoadmapMediationModule
 
         services.AddScoped<Business.PersonalRoadmaps.IRoadmapWorkspaceModule, PersonalRoadmapModule>();
         services.AddHostedService<BuildRoadmapWorkspaceSnapshotWorker>();
-        //services.AddHostedService<WorkspaceEventsProcessor>();
 
         services.AddScoped<IRoadmapWorkspaceEventRepository, RoadmapWorkspaceEventRepository>();
         services.AddScoped<IRoadmapWorkspaceRepository, RoadmapWorkspaceRepository>();
@@ -28,7 +27,6 @@ public static class PersonalRoadmapMediationModule
         services.AddScoped<IRoadmapWorkspaceEditor, RoadmapWorkspaceEditor>();
 
         services.AddSingleton<IWorkspaceNotifier, WorkspaceNotifier>();
-        services.AddSingleton<IWorkspaceActionStream, WorkspaceActionStream>();
         services.AddSignalR(options =>
         {
             options.EnableDetailedErrors = true;
@@ -44,6 +42,7 @@ public static class PersonalRoadmapMediationModule
         services.Configure<RoadmapWorkspaceActionProducerOptions>(configuration.GetSection(RoadmapWorkspaceActionProducerOptions.SectionName));
         services.AddSingleton<IRoadmapWorkspaceActionProducer, RoadmapWorkplaceActionProducer>();
 
+        services.AddSingleton<IWorkspaceEventsProcessor, WorkspaceEventsProcessor>();
 
         return services;
     }

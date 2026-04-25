@@ -3,7 +3,6 @@
 using Confluent.Kafka;
 
 using LearningPlatform.Workspace.WebSockets.Contracts;
-using LearningPlatform.Workspace.WebSockets.Contracts.Serialization;
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -16,17 +15,17 @@ namespace SkillMap.Infrastructure.RoadmapsWorkspace;
 internal class RoadmapWorkspaceActionConsumer : BackgroundService, IRoadmapWorkspaceActionConsumer
 {
     private readonly RoadmapWorkspaceActionConsumerOptions _options;
-    private readonly IWorkspaceActionStream _actionStream;
+    private readonly IWorkspaceEventsProcessor _actionProcessor;
     private readonly ILogger<RoadmapWorkspaceActionConsumer> _logger;
     private readonly JsonSerializerOptions _jsonOptions;
 
     public RoadmapWorkspaceActionConsumer(
-      IOptions<RoadmapWorkspaceActionConsumerOptions> options,
-        IWorkspaceActionStream actionStream,
+        IOptions<RoadmapWorkspaceActionConsumerOptions> options,
+        IWorkspaceEventsProcessor actionStream,
         ILogger<RoadmapWorkspaceActionConsumer> logger)
     {
         _options = options.Value;
-        _actionStream = actionStream;
+        _actionProcessor = actionStream;
         _logger = logger;
         _jsonOptions = new JsonSerializerOptions
         {
@@ -72,10 +71,10 @@ internal class RoadmapWorkspaceActionConsumer : BackgroundService, IRoadmapWorks
                         continue;
                     }
 
-                    await _actionStream.EnqueueAction(action, ct);
+                    await _actionProcessor.ProcessAsync(action, ct);
                     consumer.Commit(result);
 
-                    _logger.LogDebug(
+                    _logger.LogInformation(
                          "Consumed and enqueued {ActionType} for workspace {WorkspaceId} from partition {Partition} offset {Offset}",
                       action.ActionType, action.WorkspaceId, result.Partition.Value, result.Offset.Value);
                 }
