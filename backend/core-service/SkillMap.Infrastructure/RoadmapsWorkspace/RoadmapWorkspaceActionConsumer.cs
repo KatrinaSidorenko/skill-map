@@ -15,17 +15,17 @@ namespace SkillMap.Infrastructure.RoadmapsWorkspace;
 internal class RoadmapWorkspaceActionConsumer : BackgroundService, IRoadmapWorkspaceActionConsumer
 {
     private readonly RoadmapWorkspaceActionConsumerOptions _options;
-    private readonly IWorkspaceEventsProcessor _actionProcessor;
+    private readonly IWorkspaceEventsReviewer _actionReviewer;
     private readonly ILogger<RoadmapWorkspaceActionConsumer> _logger;
     private readonly JsonSerializerOptions _jsonOptions;
 
     public RoadmapWorkspaceActionConsumer(
         IOptions<RoadmapWorkspaceActionConsumerOptions> options,
-        IWorkspaceEventsProcessor actionStream,
+        IWorkspaceEventsReviewer actionStream,
         ILogger<RoadmapWorkspaceActionConsumer> logger)
     {
         _options = options.Value;
-        _actionProcessor = actionStream;
+        _actionReviewer = actionStream;
         _logger = logger;
         _jsonOptions = new JsonSerializerOptions
         {
@@ -71,7 +71,8 @@ internal class RoadmapWorkspaceActionConsumer : BackgroundService, IRoadmapWorks
                         continue;
                     }
 
-                    await _actionProcessor.ProcessAsync(action, ct);
+                    // add retry logic here
+                    await _actionReviewer.ReviewAsync(action, ct);
                     consumer.Commit(result);
 
                     _logger.LogInformation(
@@ -91,12 +92,12 @@ internal class RoadmapWorkspaceActionConsumer : BackgroundService, IRoadmapWorks
                     if (result is not null)
                         consumer.Commit(result);
                 }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex,
-                    "Unexpected error consuming WorkspaceAction from partition {Partition} offset {Offset}.",
-                        result?.Partition.Value, result?.Offset.Value);
-                }
+                //catch (Exception ex)
+                //{
+                //    _logger.LogError(ex,
+                //    "Unexpected error consuming WorkspaceAction from partition {Partition} offset {Offset}.",
+                //        result?.Partition.Value, result?.Offset.Value);
+                //}
             }
         }
         finally
