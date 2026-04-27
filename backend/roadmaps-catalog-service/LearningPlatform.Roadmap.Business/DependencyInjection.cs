@@ -6,7 +6,7 @@ namespace LearningPlatform.Roadmap.Business;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddRoadmapModule(this IServiceCollection services)
+    public static IServiceCollection AddRoadmapBlueprintModule(this IServiceCollection services)
     {
         services.AddTransient<IRetriever, RoadmapRetriever>();
         services.AddScoped<IRoadmapBlueprintRepository, RoadmapBlueprintRepository>();

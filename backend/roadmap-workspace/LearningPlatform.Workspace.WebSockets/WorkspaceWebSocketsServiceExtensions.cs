@@ -23,8 +23,10 @@ public static class WorkspaceWebSocketsServiceExtensions
             //options.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         });
 
-        services.Configure<WorkspaceActionReviewedProducerOptions>(
-        configuration.GetSection(WorkspaceActionReviewedProducerOptions.SectionName));
+        services.Configure<RoadmapWorkspaceActionProducerOptions>(
+        configuration.GetSection(RoadmapWorkspaceActionProducerOptions.SectionName));
+        services.AddSingleton<IRoadmapWorkspaceActionProducer, RoadmapWorkspaceActionProducer>();
+
 
         services.Configure<WorkspaceActionReviewedConsumerOptions>(
         configuration.GetSection(WorkspaceActionReviewedConsumerOptions.SectionName));
