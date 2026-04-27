@@ -27,14 +27,13 @@ public static class PersonalRoadmapMediationModule
         services.Configure<RoadmapWorkspaceActionConsumerOptions>(configuration.GetSection(RoadmapWorkspaceActionConsumerOptions.SectionName));
         services.AddHostedService<RoadmapWorkspaceActionConsumer>();
 
-        services.Configure<RoadmapWorkspaceActionProducerOptions>(
-        configuration.GetSection(RoadmapWorkspaceActionProducerOptions.SectionName));
-        services.AddSingleton<IRoadmapWorkspaceActionProducer, RoadmapWorkspaceActionProducer>();
-       
+        services.Configure<WorkspaceActionReviewedProducerOptions>(
+        configuration.GetSection(WorkspaceActionReviewedProducerOptions.SectionName));
+
         services.AddSingleton<IRoadmapWorkspaceActionReviewedNotifier, RoadmapWorkspaceActionReviewedNotifier>();
         services.AddSingleton<IWorkspaceEventsReviewer, RoadmapWorkspaceEventsReviewer>();
 
-        services.AddWorkspaceWebSockets(configuration);
+        //services.AddWorkspaceWebSockets(configuration);
         return services;
     }
 }

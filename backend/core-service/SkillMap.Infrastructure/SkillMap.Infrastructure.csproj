@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\roadmap-workspace\LearningPlatform.Workspace.WebSockets\LearningPlatform.Workspace.WebSockets.csproj" />
+    <ProjectReference Include="..\..\roadmap-workspace\LearningPlatform.Workspace.WebSockets.Contracts\LearningPlatform.Workspace.WebSockets.Contracts.csproj" />
     <ProjectReference Include="..\..\shared\LearningPlatform.Shared.Caching\LearningPlatform.Shared.Caching.csproj" />
     <ProjectReference Include="..\SkillMap.Business\SkillMap.Business.csproj" />
     <ProjectReference Include="..\SkillMap.Persistence\SkillMap.Persistence.csproj" />
