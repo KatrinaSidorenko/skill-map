@@ -33,6 +33,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
+// todo: extract to gateway
 app.UseAuthentication();
 app.UseAuthorization();
 
