@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 
 using Confluent.Kafka;
 
@@ -9,15 +9,15 @@ using Microsoft.Extensions.Options;
 
 namespace LearningPlatform.Workspace.WebSockets;
 
-public class RoadmapWorkplaceActionProducer : IRoadmapWorkspaceActionProducer, IDisposable
+public class RoadmapWorkspaceActionProducer : IRoadmapWorkspaceActionProducer, IDisposable
 {
     private readonly RoadmapWorkspaceActionProducerOptions _options;
-    private readonly ILogger<RoadmapWorkplaceActionProducer> _logger;
+    private readonly ILogger<RoadmapWorkspaceActionProducer> _logger;
     private readonly IProducer<string, string> _producer;
 
-    public RoadmapWorkplaceActionProducer(
+    public RoadmapWorkspaceActionProducer(
         IOptions<RoadmapWorkspaceActionProducerOptions> options,
-        ILogger<RoadmapWorkplaceActionProducer> logger)
+        ILogger<RoadmapWorkspaceActionProducer> logger)
     {
         _options = options.Value;
         _logger = logger;

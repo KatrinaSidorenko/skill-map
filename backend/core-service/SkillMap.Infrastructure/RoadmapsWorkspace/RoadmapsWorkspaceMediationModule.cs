@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-
-using LearningPlatform.Workspace.WebSockets;
+﻿using LearningPlatform.Workspace.WebSockets;
 using LearningPlatform.Workspace.WebSockets.Contracts;
 
 using Microsoft.Extensions.Configuration;
@@ -26,24 +24,17 @@ public static class PersonalRoadmapMediationModule
         services.AddScoped<IRoadmapLearningItemProjectionRepository, RoadmapLearningItemProjectionRepository>();
         services.AddScoped<IRoadmapWorkspaceEditor, RoadmapWorkspaceEditor>();
 
-        services.AddSingleton<IWorkspaceNotifier, WorkspaceNotifier>();
-        services.AddSignalR(options =>
-        {
-            options.EnableDetailedErrors = true;
-        })
-        .AddJsonProtocol(options =>
-        {
-            options.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-        });
-
         services.Configure<RoadmapWorkspaceActionConsumerOptions>(configuration.GetSection(RoadmapWorkspaceActionConsumerOptions.SectionName));
         services.AddHostedService<RoadmapWorkspaceActionConsumer>();
 
-        services.Configure<RoadmapWorkspaceActionProducerOptions>(configuration.GetSection(RoadmapWorkspaceActionProducerOptions.SectionName));
-        services.AddSingleton<IRoadmapWorkspaceActionProducer, RoadmapWorkplaceActionProducer>();
+        services.Configure<RoadmapWorkspaceActionProducerOptions>(
+        configuration.GetSection(RoadmapWorkspaceActionProducerOptions.SectionName));
+        services.AddSingleton<IRoadmapWorkspaceActionProducer, RoadmapWorkspaceActionProducer>();
+       
+        services.AddSingleton<IRoadmapWorkspaceActionReviewedNotifier, RoadmapWorkspaceActionReviewedNotifier>();
+        services.AddSingleton<IWorkspaceEventsReviewer, RoadmapWorkspaceEventsReviewer>();
 
-        services.AddSingleton<IWorkspaceEventsProcessor, WorkspaceEventsProcessor>();
-
+        services.AddWorkspaceWebSockets(configuration);
         return services;
     }
 }

@@ -17,20 +17,21 @@ using SkillMap.Business.RoadmapsWorkspace.Features.WorkspaceEvents.UpdateLearnin
 
 namespace SkillMap.Infrastructure.RoadmapsWorkspace;
 
-public interface IWorkspaceEventsProcessor
+public interface IWorkspaceEventsReviewer
 {
-    Task ProcessAsync(WorkspaceAction action, CancellationToken stoppingToken);
+    Task ReviewAsync(WorkspaceAction action, CancellationToken stoppingToken);
 }
-internal class WorkspaceEventsProcessor(
-    ILogger<WorkspaceEventsProcessor> logger,
-    IWorkspaceNotifier notifier,
-    IServiceProvider serviceProvider) : IWorkspaceEventsProcessor
+internal class RoadmapWorkspaceEventsReviewer(
+    ILogger<RoadmapWorkspaceEventsReviewer> logger,
+    IRoadmapWorkspaceActionReviewedNotifier notifier,
+    IServiceProvider serviceProvider) : IWorkspaceEventsReviewer
 {
-    public async Task ProcessAsync(WorkspaceAction action, CancellationToken stoppingToken)
+    public async Task ReviewAsync(WorkspaceAction action, CancellationToken stoppingToken)
     {
         try
         {
             var (result, actualVersion) = await ProcessActionAsync(action, stoppingToken);
+            // we want to produce event the actions was reviewd
             if (result.Status == WorkspaceActionStatus.Applied)
             {
                 await notifier.NotifyActionConfirmed(action.WorkspaceId.ToString(), actualVersion, result.IdempotencyKey, stoppingToken);
