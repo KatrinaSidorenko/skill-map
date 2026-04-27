@@ -1,6 +1,5 @@
 using LearningPlatform.Shared.Api.Extensions;
 using LearningPlatform.Shared.Api.Middleware;
-using LearningPlatform.Shared.Caching;
 
 using SkillMap.Api;
 using SkillMap.Business;
@@ -21,17 +20,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGeneration();
 builder.Services.AddSwaggerGen();
 
-// todo: it is not good practice
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", policy =>
-              policy.WithOrigins(["http://localhost:3000"])
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials());
-});
-
-
 builder.Services.AddInfrastructureLayer(builder.Configuration);
 builder.Services.AddModules(builder.Configuration);
 
@@ -44,9 +32,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<ErrorHandlingMiddleware>();
-app.UseCors("AllowAll");
-
-app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
