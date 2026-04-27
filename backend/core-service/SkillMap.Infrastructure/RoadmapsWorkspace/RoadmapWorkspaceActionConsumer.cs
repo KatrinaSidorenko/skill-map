@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Runtime.InteropServices;
+using System.Text.Json;
 
 using Confluent.Kafka;
 
@@ -92,12 +93,14 @@ internal class RoadmapWorkspaceActionConsumer : BackgroundService, IRoadmapWorks
                     if (result is not null)
                         consumer.Commit(result);
                 }
-                //catch (Exception ex)
-                //{
-                //    _logger.LogError(ex,
-                //    "Unexpected error consuming WorkspaceAction from partition {Partition} offset {Offset}.",
-                //        result?.Partition.Value, result?.Offset.Value);
-                //}
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex,
+                    "Unexpected error consuming WorkspaceAction from partition {Partition} offset {Offset}.",
+                        result?.Partition.Value, result?.Offset.Value);
+                    // commit to  move forward
+                    // dead letter queue 
+                }
             }
         }
         finally
