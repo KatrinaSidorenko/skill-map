@@ -17,7 +17,5 @@ internal static class RoadmapsWorkspaceEndpoints
         app.MapGetRoadmapWorkspaceSummary();
         app.MapCreateRoadmapWorkspace();
         app.MapDeleteRoadmapWorkspace();
-
-        app.MapHub<WorkspaceHub>("api/hubs/workspace");
     }
 }

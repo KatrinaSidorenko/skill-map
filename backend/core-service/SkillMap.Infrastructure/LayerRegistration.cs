@@ -49,7 +49,7 @@ public static class LayerRegistration
         services.AddScoped<IAccountService, AccountService>();
         services.AddValidatorsFromAssemblies([typeof(IAccountService).Assembly]);
 
-        services.AddRoadmapModule();
+        services.AddRoadmapBlueprintModule();
         services.AddEventBus();
 
         // migrations
