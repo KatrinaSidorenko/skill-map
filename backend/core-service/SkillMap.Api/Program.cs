@@ -38,7 +38,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
 app.RegisterModules();
 
 app.Run();
