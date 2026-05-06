@@ -134,6 +134,15 @@ interface ILocalization {
     failedToStartNewAttempt: string;
     failedToDeleteSavedRoadmap: string;
     failedToLoadSavedRoadmap: string;
+    deleteDialogTitle: string;
+    deleteDialogSubtitle: string;
+    archive: string;
+    archiveDescription: string;
+    deleteTitle: string;
+    deleteDescription: string;
+    cancel: string;
+    deleteSuccess: string;
+    unsave: string;
   };
   assessment: {
     assessmentTest: string;

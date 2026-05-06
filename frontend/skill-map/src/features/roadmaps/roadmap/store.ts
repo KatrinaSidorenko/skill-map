@@ -16,6 +16,7 @@ type InitialState = {
   info: {
     isSaved: boolean;
     title: string;
+    workspaceId: string | null;
   } | null;
   nodes: Node[];
   edges: Edge[];
@@ -36,6 +37,7 @@ const roadmapSlice = createSlice({
       state.info = {
         isSaved: !!action.payload.isSaved,
         title: action.payload.title,
+        workspaceId: action.payload.workspaceId ?? null,
       };
       state.roadmapId = action.payload.id;
       const { nodes, edges } = mapRoadmapToReactFlowForSaved({
