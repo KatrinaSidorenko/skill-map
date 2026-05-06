@@ -28,9 +28,8 @@ public static class RoadmapWorkspaceSnapshotExtensions
         List<RoadmapWorkspaceEvent> events,
         CancellationToken cancellationToken)
     {
-        var orderedEvents = events.OrderBy(e => e.CreatedAt).ThenBy(e => e.Version);
         var aggregator = new RoadmapSnapshotAggregator(snapshot);
-        foreach (var rawEvent in orderedEvents)
+        foreach (var rawEvent in events.OrderBy(e => e.Version))
         {
             cancellationToken.ThrowIfCancellationRequested();
 

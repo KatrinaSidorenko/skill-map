@@ -13,6 +13,7 @@ using SkillMap.Shared.Results;
 namespace SkillMap.Infrastructure.RoadmapsWorkspace;
 
 public class RoadmapWorkspaceEditor(
+    IRepository<RoadmapWorkspaceSnapshot> snapshotsRepository,
     IRoadmapWorkspaceRepository workspaceRepository,
     IRoadmapWorkspaceEventRepository eventsRepository) : IRoadmapWorkspaceEditor
 {
@@ -20,7 +21,10 @@ public class RoadmapWorkspaceEditor(
     {
         var workspace = await workspaceRepository.GetFirstOrDefaultAsync(w => w.Id == workspaceId, cancellationToken)
             ?? throw new ResourceNotFoundException(nameof(RoadmapWorkspace), workspaceId.ToString());
-        var latestSnapshot = workspace.Snapshots.OrderByDescending(s => s.CreatedAt).FirstOrDefault()
+        var latestSnapshot = (await snapshotsRepository.GetAllAsync(s => s.RoadmapWorkspaceId == workspaceId,
+            orderBy: q => q.OrderByDescending(w => w.CreatedAt),
+            count: 1,
+            ct: cancellationToken)).FirstOrDefault()
             ?? throw new ResourceNotFoundException(nameof(RoadmapWorkspaceSnapshot), $"No snapshots found for workspace {workspaceId}");
 
         var snapshotContent = await latestSnapshot.GetRoadmapSnapshot(cancellationToken);
