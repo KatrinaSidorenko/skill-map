@@ -137,7 +137,16 @@
     "failedToLoadTestingHistory": "Failed to load testing history. Please try again later.",
     "failedToStartNewAttempt": "Failed to start a new attempt. Please try again later.",
     "failedToDeleteSavedRoadmap": "Failed to delete the saved roadmap. Please try again later.",
-    "failedToLoadSavedRoadmap": "Failed to load the saved roadmap. Please try again later."
+    "failedToLoadSavedRoadmap": "Failed to load the saved roadmap. Please try again later.",
+    "deleteDialogTitle": "Remove Saved Roadmap",
+    "deleteDialogSubtitle": "Choose how you want to remove this roadmap:",
+    "archive": "Archive",
+    "archiveDescription": "Archive this roadmap. Your progress will be saved and can be restored if you save it again.",
+    "deleteTitle": "Delete Permanently",
+    "deleteDescription": "Permanently remove this roadmap. All your progress will be lost.",
+    "cancel": "Cancel",
+    "deleteSuccess": "Roadmap has been removed successfully.",
+    "unsave": "Unsave"
   },
   "assessment": {
     "assessmentTest": "Assessment Test",

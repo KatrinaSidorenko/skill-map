@@ -79,11 +79,13 @@ export function RoadmapCard({ roadmap, handleClick }: RoadmapCardProps) {
 interface SavedRoadmapCardProps {
   roadmap: SavedPlainRoadmap;
   handleClick: (id: string) => void;
+  onDelete?: (roadmap: SavedPlainRoadmap) => void;
 }
 
 export function SavedRoadmapCard({
   roadmap,
   handleClick,
+  onDelete,
 }: SavedRoadmapCardProps) {
   const { getRoadmapTransaltions } = useLocalization();
   const statusColor = getStatusColor(roadmap.status);
@@ -107,6 +109,7 @@ export function SavedRoadmapCard({
           direction="row"
           p={2}
           transition="all 0.15s ease-in-out"
+          position="relative"
         >
           <ImageWrapper
             imageUrl={roadmap.imageUrl}
@@ -175,6 +178,25 @@ export function SavedRoadmapCard({
               {getRoadmapTransaltions('saved')} {formattedDate}
             </Text>
           </VStack>
+
+          {onDelete && (
+            <IconButton
+              aria-label="Delete Saved Roadmap"
+              size="sm"
+              variant="ghost"
+              colorScheme="red"
+              position="absolute"
+              bottom="8px"
+              right="16px"
+              zIndex={2}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(roadmap);
+              }}
+            >
+              <FiTrash2 />
+            </IconButton>
+          )}
         </Flex>
       </HoverCard.Trigger>
     </HoverCard.Root>

@@ -25,9 +25,12 @@ export const roadmapApi = createApi({
         params: { roadmapId: id },
       }),
     }),
-    deleteRoadmap: builder.mutation<void, { id: string }>({
-      query: ({ id }) => ({
-        url: `roadmaps-workspace/${id}`,
+    deleteRoadmap: builder.mutation<
+      void,
+      { id: string; isSoftDelete: boolean }
+    >({
+      query: ({ id, isSoftDelete }) => ({
+        url: `roadmaps-workspace/${id}?isSoftDelete=${isSoftDelete}`,
         method: 'DELETE',
       }),
     }),
