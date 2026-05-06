@@ -32,7 +32,10 @@ public static class LayerRegistration
 
         services.AddScoped<IUserManager, UserManager>();
         services.AddScoped<ITokenService, TokenService>();
+
+        services.Configure<PasswordHashOptions>(configuration.GetSection(PasswordHashOptions.SectionName));
         services.AddScoped<IPasswordHasher, PasswordHasher>();
+
         services.AddScoped<IResetAccountService, ResetAccountService>();
         services.AddTransient<IEmailService, MailkitEmailService>();
         services.Configure<EmailOptions>(configuration.GetSection(EmailOptions.SectionName));
