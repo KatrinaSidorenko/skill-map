@@ -22,6 +22,13 @@ public static class RoadmapWorkspaceSnapshotExtensions
         => (await snapshot.Content?.InGzipJsonObjectUtf8<RoadmapSnapshot>(ct)).EmptyOnNull(snapshot.RoadmapWorkspace.ActualRoadmapId);
     public static async Task SetRoadmapSnapshot(this RoadmapWorkspaceSnapshot snapshot, RoadmapSnapshot roadmapSnapshot, CancellationToken ct)
         => snapshot.SetContent(await roadmapSnapshot.GzipJsonObjectUtf8(ct));
+    public static RoadmapSnapshot GetEmptyRoadmapSnapshot(string roadmapId)
+        => new RoadmapSnapshot()
+        {
+            Id = roadmapId,
+            LearningItems = [],
+            LearningItemsConnections = []
+        };
 
     public static async Task<RoadmapSnapshot> ApplyEventsToSnapshot(
         this RoadmapSnapshot snapshot,

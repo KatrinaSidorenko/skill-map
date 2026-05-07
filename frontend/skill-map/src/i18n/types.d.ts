@@ -143,6 +143,23 @@ interface ILocalization {
     cancel: string;
     deleteSuccess: string;
     unsave: string;
+    editDialogTitle: string;
+    editDialogSubtitle: string;
+    titleLabel: string;
+    enterTitle: string;
+    descriptionLabel: string;
+    enterDescription: string;
+    imageUrlLabel: string;
+    enterImageUrl: string;
+    edit: string;
+    editSuccess: string;
+    failedToEditSavedRoadmap: string;
+    createEmptyDialogTitle: string;
+    createEmptyDialogSubtitle: string;
+    createEmptySuccess: string;
+    failedToCreateEmpty: string;
+    createRoadmap: string;
+    newRoadmap: string;
   };
   assessment: {
     assessmentTest: string;

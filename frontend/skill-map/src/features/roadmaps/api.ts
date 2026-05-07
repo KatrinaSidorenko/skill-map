@@ -34,6 +34,26 @@ export const roadmapApi = createApi({
         method: 'DELETE',
       }),
     }),
+    updateSavedRoadmap: builder.mutation<
+      void,
+      { id: string; payload: UpdateRoadmapWorkspaceRequest }
+    >({
+      query: ({ id, payload }) => ({
+        url: `roadmaps-workspace/${id}`,
+        method: 'PATCH',
+        body: payload,
+      }),
+    }),
+    createEmptyRoadmap: builder.mutation<
+      { id: string },
+      CreateEmptyRoadmapWorkspaceRequest
+    >({
+      query: (payload) => ({
+        url: `roadmaps-workspace/empty`,
+        method: 'POST',
+        body: payload,
+      }),
+    }),
     getSavedRoadmaps: builder.query<
       PaginationResponse<SavedPlainRoadmap>,
       SearchConfig
@@ -194,6 +214,8 @@ export const {
   useSaveRoadmapMutation,
   useGetSavedRoadmapQuery,
   useDeleteRoadmapMutation,
+  useUpdateSavedRoadmapMutation,
+  useCreateEmptyRoadmapMutation,
   useLazyGetLearningItemMaterialsQuery,
   useCreateRoadmapMutation,
   useLazyGetUserCreatedRoadmapsQuery,
