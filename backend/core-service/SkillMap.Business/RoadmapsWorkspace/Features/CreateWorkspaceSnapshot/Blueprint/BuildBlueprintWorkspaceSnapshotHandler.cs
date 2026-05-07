@@ -28,6 +28,16 @@ internal sealed class BuildBlueprintWorkspaceSnapshotHandler(
         var latestSnapshot = await snapshotsRepository.GetLatestSnapshot(request.WorkspaceId, cancellationToken);
         if (latestSnapshot == null)
         {
+            var initialVersion = RoadmapWorkspaceConstants.InitialVersion;
+            var initialSnapshot = new RoadmapWorkspaceSnapshot(request.WorkspaceId, null, initialVersion);
+            if (string.IsNullOrEmpty(request.RoadmapId))
+            {
+                initialSnapshot = new RoadmapWorkspaceSnapshot(request.WorkspaceId, null, initialVersion);
+                await initialSnapshot.SetRoadmapSnapshot(RoadmapWorkspaceSnapshotExtensions.GetEmptyRoadmapSnapshot(request.RoadmapId), cancellationToken);
+                await snapshotsRepository.AddAsync(initialSnapshot, cancellationToken);
+                await snapshotsRepository.SaveChangesAsync(cancellationToken);
+                return initialSnapshot.Id;
+            }
             var roadmapBlueprintResult = await roadmapBlueprintRepository.GetRoadmapById(request.RoadmapId, cancellationToken);
             if (roadmapBlueprintResult.IsFailed)
             {
@@ -38,7 +48,6 @@ internal sealed class BuildBlueprintWorkspaceSnapshotHandler(
             var roadmapBlueprint = roadmapBlueprintResult.Data;
             var roadmapSnapshot = roadmapBlueprint.MakeRoadmapSnapshot().EnsureNoCycleEdges(logger);
 
-            var initialSnapshot = new RoadmapWorkspaceSnapshot(request.WorkspaceId, null, RoadmapWorkspaceConstants.InitialVersion);
             await initialSnapshot.SetRoadmapSnapshot(roadmapSnapshot, cancellationToken);
             await snapshotsRepository.AddAsync(initialSnapshot, cancellationToken);
             await snapshotsRepository.SaveChangesAsync(cancellationToken);
@@ -49,7 +58,7 @@ internal sealed class BuildBlueprintWorkspaceSnapshotHandler(
 
             logger.LogInformation(
               "Created initial snapshot for workspace {WorkspaceId} with version {Version}",
-                   request.WorkspaceId, RoadmapWorkspaceConstants.InitialVersion);
+                   request.WorkspaceId, initialVersion);
 
             return initialSnapshot.Id;
         }

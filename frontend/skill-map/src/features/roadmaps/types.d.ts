@@ -104,6 +104,18 @@ interface UpdateUserRoadmapRequest {
   imageUrl?: string;
 }
 
+interface UpdateRoadmapWorkspaceRequest {
+  title?: string;
+  description?: string;
+  imageUrl?: string;
+}
+
+interface CreateEmptyRoadmapWorkspaceRequest {
+  title: string;
+  description?: string;
+  imageUrl?: string;
+}
+
 interface PublishRoadmapRequest {
   isPublic: boolean;
 }

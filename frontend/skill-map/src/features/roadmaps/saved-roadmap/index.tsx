@@ -3,14 +3,22 @@
 import { useState } from 'react';
 import { SavedRoadmapCard } from '@/components/roadmap/roadmapCard';
 import SearchContainer from '@/components/search-container';
-import { useLazyGetSavedRoadmapsQuery, useDeleteRoadmapMutation } from '../api';
-import { Flex } from '@chakra-ui/react';
+import {
+  useLazyGetSavedRoadmapsQuery,
+  useDeleteRoadmapMutation,
+  useUpdateSavedRoadmapMutation,
+  useCreateEmptyRoadmapMutation,
+} from '../api';
+import { Button, Flex, HStack } from '@chakra-ui/react';
 import { defaultPagination } from '../helpers';
 import useLocalization from '@/i18n/useLocalization';
 import { useRouter } from 'next/navigation';
 import { DeleteSavedRoadmapDialog } from '@/components/roadmap/deleteSavedRoadmapDialog';
+import { EditSavedRoadmapDialog } from '@/components/roadmap/editSavedRoadmapDialog';
+import { CreateSavedRoadmapDialog } from '@/components/roadmap/createSavedRoadmapDialog';
 import { toaster } from '@/components/ui/toaster';
 import { retrieveErrorData } from '@/store/helpers';
+import { FiPlus } from 'react-icons/fi';
 
 export default function SavedRoadmapsPage() {
   const router = useRouter();
@@ -18,12 +26,22 @@ export default function SavedRoadmapsPage() {
   const { getRoadmapsTranslations, getRoadmapTransaltions } = useLocalization();
   const [fetchSavedRoadmaps] = useLazyGetSavedRoadmapsQuery();
   const [deleteRoadmap, { isLoading: isDeleting }] = useDeleteRoadmapMutation();
+  const [updateSavedRoadmap, { isLoading: isUpdating }] =
+    useUpdateSavedRoadmapMutation();
+  const [createEmptyRoadmap, { isLoading: isCreating }] =
+    useCreateEmptyRoadmapMutation();
 
-  const [dialogState, setDialogState] = useState<{
+  const [deleteDialogState, setDeleteDialogState] = useState<{
     isOpen: boolean;
     selected: SavedPlainRoadmap | null;
   }>({ isOpen: false, selected: null });
 
+  const [editDialogState, setEditDialogState] = useState<{
+    isOpen: boolean;
+    selected: SavedPlainRoadmap | null;
+  }>({ isOpen: false, selected: null });
+
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const getSavedRoadmaps = async (params: {
@@ -44,20 +62,30 @@ export default function SavedRoadmapsPage() {
   };
 
   const handleDeleteClick = (roadmap: SavedPlainRoadmap) => {
-    setDialogState({ isOpen: true, selected: roadmap });
+    setDeleteDialogState({ isOpen: true, selected: roadmap });
   };
 
-  const handleDialogClose = () => {
+  const handleEditClick = (roadmap: SavedPlainRoadmap) => {
+    setEditDialogState({ isOpen: true, selected: roadmap });
+  };
+
+  const handleDeleteDialogClose = () => {
     if (!isDeleting) {
-      setDialogState({ isOpen: false, selected: null });
+      setDeleteDialogState({ isOpen: false, selected: null });
+    }
+  };
+
+  const handleEditDialogClose = () => {
+    if (!isUpdating) {
+      setEditDialogState({ isOpen: false, selected: null });
     }
   };
 
   const handleConfirmDelete = async (isSoftDelete: boolean) => {
-    if (!dialogState.selected) return;
+    if (!deleteDialogState.selected) return;
     try {
       await deleteRoadmap({
-        id: dialogState.selected.id,
+        id: deleteDialogState.selected.id,
         isSoftDelete,
       }).unwrap();
       toaster.create({
@@ -65,12 +93,63 @@ export default function SavedRoadmapsPage() {
         type: 'success',
         closable: true,
       });
-      setDialogState({ isOpen: false, selected: null });
+      setDeleteDialogState({ isOpen: false, selected: null });
       setRefreshKey((k) => k + 1);
     } catch (error) {
       const errorData = retrieveErrorData(error);
       toaster.create({
         title: getRoadmapTransaltions('failedToDeleteSavedRoadmap'),
+        type: 'error',
+        description: errorData?.message ?? 'Unexpected error',
+        closable: true,
+      });
+    }
+  };
+
+  const handleConfirmEdit = async (payload: UpdateRoadmapWorkspaceRequest) => {
+    if (!editDialogState.selected) return;
+    try {
+      await updateSavedRoadmap({
+        id: editDialogState.selected.id,
+        payload,
+      }).unwrap();
+      toaster.create({
+        title: getRoadmapTransaltions('editSuccess'),
+        type: 'success',
+        closable: true,
+      });
+      setEditDialogState({ isOpen: false, selected: null });
+      setRefreshKey((k) => k + 1);
+    } catch (error) {
+      const errorData = retrieveErrorData(error);
+      toaster.create({
+        title: getRoadmapTransaltions('failedToEditSavedRoadmap'),
+        type: 'error',
+        description: errorData?.message ?? 'Unexpected error',
+        closable: true,
+      });
+    }
+  };
+
+  const handleConfirmCreate = async (
+    payload: CreateEmptyRoadmapWorkspaceRequest,
+  ) => {
+    try {
+      const result = await createEmptyRoadmap(payload).unwrap();
+      toaster.create({
+        title: getRoadmapTransaltions('createEmptySuccess'),
+        type: 'success',
+        closable: true,
+      });
+      setCreateDialogOpen(false);
+      setRefreshKey((k) => k + 1);
+      if (result?.id) {
+        router.push(`/saved/roadmap/${result.id}`);
+      }
+    } catch (error) {
+      const errorData = retrieveErrorData(error);
+      toaster.create({
+        title: getRoadmapTransaltions('failedToCreateEmpty'),
         type: 'error',
         description: errorData?.message ?? 'Unexpected error',
         closable: true,
@@ -85,6 +164,19 @@ export default function SavedRoadmapsPage() {
         placeholder={getRoadmapsTranslations('search')}
         pageSize={pageSize}
         fetchData={getSavedRoadmaps}
+        rightHederElement={
+          <HStack>
+            <Button
+              size="sm"
+              colorPalette="green"
+              onClick={() => setCreateDialogOpen(true)}
+              loading={isCreating}
+            >
+              <FiPlus />
+              {getRoadmapTransaltions('newRoadmap')}
+            </Button>
+          </HStack>
+        }
         renderContent={(items) => (
           <Flex direction="column" gap={4}>
             {items.map((roadmap: SavedPlainRoadmap) => (
@@ -93,6 +185,7 @@ export default function SavedRoadmapsPage() {
                 roadmap={roadmap}
                 handleClick={handleCardClick}
                 onDelete={handleDeleteClick}
+                onEdit={handleEditClick}
               />
             ))}
           </Flex>
@@ -100,10 +193,27 @@ export default function SavedRoadmapsPage() {
       />
 
       <DeleteSavedRoadmapDialog
-        isOpen={dialogState.isOpen}
-        onClose={handleDialogClose}
+        isOpen={deleteDialogState.isOpen}
+        onClose={handleDeleteDialogClose}
         onConfirm={handleConfirmDelete}
         isLoading={isDeleting}
+      />
+
+      {editDialogState.selected && (
+        <EditSavedRoadmapDialog
+          isOpen={editDialogState.isOpen}
+          onClose={handleEditDialogClose}
+          onConfirm={handleConfirmEdit}
+          isLoading={isUpdating}
+          roadmap={editDialogState.selected}
+        />
+      )}
+
+      <CreateSavedRoadmapDialog
+        isOpen={createDialogOpen}
+        onClose={() => setCreateDialogOpen(false)}
+        onConfirm={handleConfirmCreate}
+        isLoading={isCreating}
       />
     </>
   );

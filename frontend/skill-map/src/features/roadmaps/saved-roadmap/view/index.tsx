@@ -9,10 +9,17 @@ import {
   Button,
   Separator,
   Progress,
-  Span,
   Badge,
+  Grid,
+  GridItem,
 } from '@chakra-ui/react';
-import { FiArrowRight, FiTrash2 } from 'react-icons/fi';
+import {
+  FiArrowRight,
+  FiEdit2,
+  FiTrash2,
+  FiClock,
+  FiTrendingUp,
+} from 'react-icons/fi';
 import { useRouter } from 'next/navigation';
 import useLocalization from '@/i18n/useLocalization';
 import { formatDistanceToNow } from 'date-fns';
@@ -22,6 +29,7 @@ import {
   useDeleteRoadmapMutation,
   useLazyGetPlainUserSavedRoadmapQuery,
   useLazyGetRoadmapTestingHistoryQuery,
+  useUpdateSavedRoadmapMutation,
 } from '../../api';
 import { useEffect, useState } from 'react';
 import { toaster } from '@/components/ui/toaster';
@@ -30,6 +38,7 @@ import { useRoadmapAssessment } from '@/features/assessment/useRoadmapAssessment
 import TestingHistory from '@/components/testing-history';
 import ImageWrapper from '@/components/ui/imageWrapper';
 import { DeleteSavedRoadmapDialog } from '@/components/roadmap/deleteSavedRoadmapDialog';
+import { EditSavedRoadmapDialog } from '@/components/roadmap/editSavedRoadmapDialog';
 
 export default function SavedRoadmapView({
   roadmap,
@@ -39,10 +48,15 @@ export default function SavedRoadmapView({
   const router = useRouter();
   const { getRoadmapTransaltions } = useLocalization();
   const statusColor = getStatusColor(roadmap.status);
+  const progress = getProgressInPercentage(roadmap.progress);
+
   const [deleteRoadmap, { isLoading: isDeletingRoadmap }] =
     useDeleteRoadmapMutation();
+  const [updateSavedRoadmap, { isLoading: isUpdatingRoadmap }] =
+    useUpdateSavedRoadmapMutation();
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   const {
     takeInitialTest,
@@ -88,6 +102,18 @@ export default function SavedRoadmapView({
     }
   };
 
+  const handleConfirmEdit = async (payload: UpdateRoadmapWorkspaceRequest) => {
+    try {
+      await updateSavedRoadmap({ id: roadmap.id, payload }).unwrap();
+      setEditDialogOpen(false);
+      toaster.success({ title: getRoadmapTransaltions('editSuccess') });
+    } catch {
+      toaster.error({
+        title: getRoadmapTransaltions('failedToEditSavedRoadmap'),
+      });
+    }
+  };
+
   const formattedDate = formatDistanceToNow(new Date(roadmap.savedAt), {
     addSuffix: true,
   });
@@ -95,23 +121,26 @@ export default function SavedRoadmapView({
   return (
     <>
       <Box mx="auto" p={{ base: 4, md: 6 }} maxW="1100px">
-        {/* Header Card */}
         <Box
-          bg="bg.section"
-          borderWidth="1px"
           borderRadius="2xl"
           overflow="hidden"
-          boxShadow="0 10px 30px rgba(0,0,0,0.06)"
+          borderWidth="1px"
+          borderColor="border.default"
+          boxShadow="sm"
+          bg="bg.panel"
         >
-          <Flex gap={6} align="stretch" flexWrap="wrap" p={{ base: 4, md: 6 }}>
+          <Box h="4px" bg={statusColor} />
+
+          <Flex
+            gap={0}
+            align="stretch"
+            flexWrap={{ base: 'wrap', md: 'nowrap' }}
+          >
             <Box
-              w={{ base: 'full', md: '320px' }}
-              h={{ base: '200px', md: '240px' }}
+              w={{ base: 'full', md: '260px' }}
+              h={{ base: '200px', md: 'auto' }}
               flexShrink={0}
-              borderRadius="xl"
               overflow="hidden"
-              borderWidth="1px"
-              bg="bg.page"
             >
               <ImageWrapper
                 imageUrl={roadmap.imageUrl}
@@ -126,95 +155,164 @@ export default function SavedRoadmapView({
               align="start"
               gap={4}
               flex="1"
-              minW={{ base: 'full', md: '360px' }}
+              p={{ base: 5, md: 6 }}
+              minW={0}
             >
-              <Box w="full">
+              <HStack
+                justify="space-between"
+                w="full"
+                align="start"
+                gap={4}
+                flexWrap="wrap"
+              >
                 <Text
-                  fontSize={{ base: 'xl', md: '2xl' }}
+                  fontSize={{ base: '2xl', md: '3xl' }}
                   fontWeight="800"
                   color="text.heading"
+                  lineHeight="1.2"
+                  flex="1"
+                  minW={0}
                 >
                   {roadmap.title}
                 </Text>
-                <Text
-                  mt={2}
+                <Badge
+                  colorPalette={statusColor
+                    .replace('.500', '')
+                    .replace('.400', '')}
+                  variant="subtle"
+                  px={3}
+                  py={1}
+                  borderRadius="full"
                   fontSize="sm"
-                  color="text.primary"
-                  opacity={0.85}
-                  lineHeight="1.6"
+                  fontWeight="600"
+                  textTransform="capitalize"
+                  flexShrink={0}
+                >
+                  {getRoadmapTransaltions(
+                    roadmap.status as keyof ILocalization['roadmap'],
+                  )}
+                </Badge>
+              </HStack>
+
+              {/* Description */}
+              {roadmap.description && (
+                <Text
+                  fontSize="sm"
+                  color="fg.muted"
+                  lineHeight="1.7"
+                  lineClamp={3}
                 >
                   {roadmap.description}
                 </Text>
-              </Box>
+              )}
 
-              {/* Status row */}
-              <HStack gap={3} wrap="wrap">
-                <HStack gap={2}>
-                  <Box w="10px" h="10px" borderRadius="full" bg={statusColor} />
-                  <Badge variant="subtle" colorPalette="gray">
-                    {getRoadmapTransaltions(
-                      roadmap.status as keyof ILocalization['roadmap'],
-                    )}
-                  </Badge>
-                </HStack>
+              {/* Stat chips */}
+              <Grid
+                templateColumns={{ base: '1fr', sm: 'repeat(2, 1fr)' }}
+                gap={3}
+                w="full"
+              >
+                {/* Progress stat */}
+                <GridItem>
+                  <Box
+                    bg="bg.subtle"
+                    borderRadius="lg"
+                    borderWidth="1px"
+                    borderColor="border.default"
+                    p={3}
+                  >
+                    <HStack gap={2} mb={2}>
+                      <Box color={statusColor}>
+                        <FiTrendingUp size={14} />
+                      </Box>
+                      <Text
+                        fontSize="xs"
+                        fontWeight="600"
+                        color="fg.muted"
+                        textTransform="uppercase"
+                        letterSpacing="wide"
+                      >
+                        {getRoadmapTransaltions('progress')}
+                      </Text>
+                    </HStack>
+                    <Progress.Root value={progress} size="sm">
+                      <HStack gap={2}>
+                        <Progress.Track
+                          flex="1"
+                          h="6px"
+                          borderRadius="full"
+                          bg="bg.muted"
+                        >
+                          <Progress.Range
+                            borderRadius="full"
+                            bg={statusColor}
+                            transition="width 0.4s ease"
+                          />
+                        </Progress.Track>
+                        <Text
+                          fontSize="sm"
+                          fontWeight="700"
+                          color="text.heading"
+                          minW="36px"
+                          textAlign="right"
+                        >
+                          {progress}%
+                        </Text>
+                      </HStack>
+                    </Progress.Root>
+                  </Box>
+                </GridItem>
 
-                <Text fontSize="sm" color="text.primary" opacity={0.7}>
-                  {getRoadmapTransaltions('saved')} {formattedDate}
-                </Text>
-              </HStack>
+                {/* Saved date stat */}
+                <GridItem>
+                  <Box
+                    bg="bg.subtle"
+                    borderRadius="lg"
+                    borderWidth="1px"
+                    borderColor="border.default"
+                    p={3}
+                  >
+                    <HStack gap={2} mb={2}>
+                      <Box color="fg.muted">
+                        <FiClock size={14} />
+                      </Box>
+                      <Text
+                        fontSize="xs"
+                        fontWeight="600"
+                        color="fg.muted"
+                        textTransform="uppercase"
+                        letterSpacing="wide"
+                      >
+                        {getRoadmapTransaltions('saved')}
+                      </Text>
+                    </HStack>
+                    <Text fontSize="sm" fontWeight="600" color="text.heading">
+                      {formattedDate}
+                    </Text>
+                  </Box>
+                </GridItem>
+              </Grid>
 
-              {/* Progress */}
-              <Box w="full">
-                <Progress.Root
-                  value={getProgressInPercentage(roadmap.progress)}
-                  maxW="full"
-                >
-                  <HStack gap={4} align="center">
-                    <Progress.Label
-                      fontSize="sm"
-                      color="text.primary"
-                      opacity={0.85}
-                    >
-                      {getRoadmapTransaltions('progress')}
-                    </Progress.Label>
-
-                    <Progress.Track
-                      flex="1"
-                      h="8px"
-                      borderRadius="full"
-                      bg="bg.page"
-                      borderWidth="1px"
-                      borderColor="border.default"
-                      overflow="hidden"
-                    >
-                      <Progress.Range
-                        bg="bg.primaryAccent"
-                        transition="width 0.3s ease"
-                      />
-                    </Progress.Track>
-
-                    <Progress.ValueText
-                      fontSize="sm"
-                      color="text.primary"
-                      opacity={0.85}
-                      minW="48px"
-                      textAlign="right"
-                    >
-                      {getProgressInPercentage(roadmap.progress)}%
-                    </Progress.ValueText>
-                  </HStack>
-                </Progress.Root>
-              </Box>
-
+              {/* Action buttons */}
               <Separator />
+              <HStack gap={2} flexWrap="wrap">
+                <Button
+                  size="sm"
+                  colorPalette="blue"
+                  onClick={handleOpenEditor}
+                >
+                  <FiArrowRight />
+                  {getRoadmapTransaltions('openInEditor')}
+                </Button>
 
-              {/* Actions */}
-              <HStack w="full" justify="flex-end" gap={3} flexWrap="wrap">
-                <Button size="sm" onClick={handleOpenEditor}>
-                  <HStack gap={2}>
-                    <FiArrowRight />
-                    <Span>{getRoadmapTransaltions('openInEditor')}</Span>
-                  </HStack>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setEditDialogOpen(true)}
+                  loading={isUpdatingRoadmap}
+                >
+                  <FiEdit2 />
+                  {getRoadmapTransaltions('edit')}
                 </Button>
 
                 <Button
@@ -224,9 +322,7 @@ export default function SavedRoadmapView({
                   onClick={() => setDeleteDialogOpen(true)}
                   loading={isDeletingRoadmap}
                 >
-                  <HStack gap={2}>
-                    <FiTrash2 />
-                  </HStack>
+                  <FiTrash2 />
                 </Button>
               </HStack>
             </VStack>
@@ -235,8 +331,15 @@ export default function SavedRoadmapView({
 
         <Separator my={{ base: 5, md: 8 }} />
 
-        {/* Testing History Card */}
-        <Box bg="bg.section" borderRadius="2xl" p={{ base: 4, md: 6 }}>
+        {/* Testing History */}
+        <Box
+          bg="bg.panel"
+          borderRadius="2xl"
+          borderWidth="1px"
+          borderColor="border.default"
+          p={{ base: 4, md: 6 }}
+          boxShadow="xs"
+        >
           <TestingHistory
             data={testingHistory}
             isLoading={isTestingHistoryLoading}
@@ -256,6 +359,14 @@ export default function SavedRoadmapView({
         onClose={() => setDeleteDialogOpen(false)}
         onConfirm={handleConfirmDelete}
         isLoading={isDeletingRoadmap}
+      />
+
+      <EditSavedRoadmapDialog
+        isOpen={editDialogOpen}
+        onClose={() => setEditDialogOpen(false)}
+        onConfirm={handleConfirmEdit}
+        isLoading={isUpdatingRoadmap}
+        roadmap={roadmap}
       />
     </>
   );

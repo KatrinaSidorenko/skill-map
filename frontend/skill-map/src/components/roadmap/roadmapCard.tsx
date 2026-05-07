@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  HoverCard,
   Text,
   VStack,
   Flex,
@@ -9,6 +8,7 @@ import {
   Box,
   Progress,
   IconButton,
+  Badge,
 } from '@chakra-ui/react';
 import { formatDistanceToNow } from 'date-fns';
 import useLocalization from '@/i18n/useLocalization';
@@ -16,7 +16,7 @@ import {
   getProgressInPercentage,
   getStatusColor,
 } from '@/features/roadmaps/helpers';
-import { FiEdit2, FiTrash2 } from 'react-icons/fi';
+import { FiEdit2, FiTrash2, FiClock } from 'react-icons/fi';
 import ImageWrapper from '@/components/ui/imageWrapper';
 
 interface RoadmapCardProps {
@@ -26,53 +26,49 @@ interface RoadmapCardProps {
 
 export function RoadmapCard({ roadmap, handleClick }: RoadmapCardProps) {
   return (
-    <HoverCard.Root>
-      <HoverCard.Trigger>
-        <Flex
-          onClick={() => handleClick(roadmap.id)}
-          cursor="pointer"
-          borderRadius="lg"
-          overflow="hidden"
-          bg="brand.50"
-          opacity={0.95}
-          boxShadow="sm"
-          _hover={{ boxShadow: 'md', transform: 'translateY(-2px)' }}
-          align="center"
-          direction="row"
-          p={2}
-          // height={'130px'}
-        >
-          <ImageWrapper
-            imageUrl={roadmap.imageUrl}
-            title={roadmap.title}
-            w="150px"
-            h="130px"
-            objectFit="cover"
-            borderRadius="md"
-            flexShrink={0}
-          />
+    <Flex
+      onClick={() => handleClick(roadmap.id)}
+      cursor="pointer"
+      borderRadius="xl"
+      overflow="hidden"
+      bg="bg.panel"
+      borderWidth="1px"
+      borderColor="border.default"
+      boxShadow="xs"
+      _hover={{ boxShadow: 'md', transform: 'translateY(-2px)', borderColor: 'border.emphasized' }}
+      align="center"
+      direction="row"
+      transition="all 0.18s ease"
+      minH="100px"
+    >
+      <ImageWrapper
+        imageUrl={roadmap.imageUrl}
+        title={roadmap.title}
+        w="120px"
+        h="100px"
+        objectFit="cover"
+        flexShrink={0}
+      />
 
-          <VStack gap={2} p={4} align="start">
-            <Text
-              fontSize="lg"
-              fontWeight="bold"
-              color="text.heading"
-              textAlign={'left'}
-            >
-              {roadmap.title}
-            </Text>
-            <Text
-              fontSize="sm"
-              color="gray.600"
-              lineClamp="2"
-              textAlign={'left'}
-            >
-              {roadmap.description}
-            </Text>
-          </VStack>
-        </Flex>
-      </HoverCard.Trigger>
-    </HoverCard.Root>
+      <VStack gap={1} px={4} py={3} align="start" flex="1" overflow="hidden">
+        <Text
+          fontSize="md"
+          fontWeight="700"
+          color="text.heading"
+          lineClamp={1}
+        >
+          {roadmap.title}
+        </Text>
+        <Text
+          fontSize="sm"
+          color="fg.muted"
+          lineClamp={2}
+          lineHeight="1.5"
+        >
+          {roadmap.description}
+        </Text>
+      </VStack>
+    </Flex>
   );
 }
 
@@ -80,115 +76,148 @@ interface SavedRoadmapCardProps {
   roadmap: SavedPlainRoadmap;
   handleClick: (id: string) => void;
   onDelete?: (roadmap: SavedPlainRoadmap) => void;
+  onEdit?: (roadmap: SavedPlainRoadmap) => void;
 }
 
 export function SavedRoadmapCard({
   roadmap,
   handleClick,
   onDelete,
+  onEdit,
 }: SavedRoadmapCardProps) {
   const { getRoadmapTransaltions } = useLocalization();
   const statusColor = getStatusColor(roadmap.status);
+  const progress = getProgressInPercentage(roadmap.progress);
   const formattedDate = formatDistanceToNow(new Date(roadmap.savedAt), {
     addSuffix: true,
   });
 
   return (
-    <HoverCard.Root>
-      <HoverCard.Trigger>
-        <Flex
-          onClick={() => handleClick(roadmap.id)}
-          cursor="pointer"
-          borderRadius="lg"
-          overflow="hidden"
-          bg="brand.50"
-          opacity={0.95}
-          boxShadow="sm"
-          _hover={{ boxShadow: 'md', transform: 'translateY(-2px)' }}
-          align="center"
-          direction="row"
-          p={2}
-          transition="all 0.15s ease-in-out"
-          position="relative"
-        >
-          <ImageWrapper
-            imageUrl={roadmap.imageUrl}
-            title={roadmap.title}
-            w="150px"
-            h="130px"
-            objectFit="cover"
-            borderRadius="md"
+    <Flex
+      onClick={() => handleClick(roadmap.id)}
+      cursor="pointer"
+      borderRadius="xl"
+      overflow="hidden"
+      bg="bg.panel"
+      borderWidth="1px"
+      borderColor="border.default"
+      boxShadow="xs"
+      _hover={{
+        boxShadow: 'md',
+        transform: 'translateY(-2px)',
+        borderColor: 'border.emphasized',
+        '& .card-actions': { opacity: 1 },
+      }}
+      align="stretch"
+      direction="row"
+      transition="all 0.18s ease"
+      position="relative"
+      minH="110px"
+    >
+      {/* Left status accent stripe */}
+      <Box w="4px" flexShrink={0} bg={statusColor} />
+
+      {/* Thumbnail */}
+      <ImageWrapper
+        imageUrl={roadmap.imageUrl}
+        title={roadmap.title}
+        w="110px"
+        h="110px"
+        objectFit="cover"
+        flexShrink={0}
+      />
+
+      {/* Content */}
+      <VStack gap={2} px={4} py={3} align="start" flex="1" overflow="hidden" justify="center">
+        {/* Title + Status badge */}
+        <HStack justify="space-between" width="100%" align="start" gap={3}>
+          <Text
+            fontSize="md"
+            fontWeight="700"
+            color="text.heading"
+            lineClamp={1}
+            flex="1"
+          >
+            {roadmap.title}
+          </Text>
+          <Badge
+            colorPalette={statusColor.replace('.500', '').replace('.400', '')}
+            variant="subtle"
+            fontSize="xs"
             flexShrink={0}
-          />
+            textTransform="capitalize"
+          >
+            {getRoadmapTransaltions(
+              roadmap.status as keyof ILocalization['roadmap'],
+            )}
+          </Badge>
+        </HStack>
 
-          <VStack gap={2} p={4} align="start" flex="1">
-            <HStack justify="space-between" width="100%">
-              <Text fontSize="lg" fontWeight="bold" color="text.heading">
-                {roadmap.title}
+        {/* Progress bar */}
+        <Box width="100%">
+          <Progress.Root value={progress} size="sm" maxW="full">
+            <HStack gap={2} align="center">
+              <Progress.Track flex="1" borderRadius="full" bg="bg.subtle" h="6px">
+                <Progress.Range
+                  borderRadius="full"
+                  bg={statusColor}
+                  transition="width 0.4s ease"
+                />
+              </Progress.Track>
+              <Text fontSize="xs" color="fg.muted" minW="32px" textAlign="right" fontVariantNumeric="tabular-nums">
+                {progress}%
               </Text>
-              <Flex align="center" gap={2} direction={'row'}>
-                <Box w="10px" h="10px" borderRadius="full" bg={statusColor} />
-                <Text fontSize="sm" color="gray.600" textTransform="capitalize">
-                  {getRoadmapTransaltions(
-                    roadmap.status as keyof ILocalization['roadmap'],
-                  )}
-                </Text>
-              </Flex>
             </HStack>
+          </Progress.Root>
+        </Box>
 
-            <Box width="100%">
-              <Progress.Root
-                value={getProgressInPercentage(roadmap.progress)}
-                maxW="full"
-              >
-                <HStack gap="4">
-                  <Progress.Label color="gray.600" fontSize="sm">
-                    {getRoadmapTransaltions('progress')}
-                  </Progress.Label>
-                  <Progress.Track
-                    flex="1"
-                    h="6px"
-                    borderRadius="full"
-                    bg="gray.200"
-                  >
-                    <Progress.Range
-                      bg={`${statusColor}.400`}
-                      transition="width 0.3s ease"
-                    />
-                  </Progress.Track>
-                  <Progress.ValueText
-                    fontSize="sm"
-                    color="gray.600"
-                    minW="40px"
-                    textAlign="right"
-                  >
-                    {getProgressInPercentage(roadmap.progress)}%
-                  </Progress.ValueText>
-                </HStack>
-              </Progress.Root>
-              <Text
-                fontSize="xs"
-                mt={1}
-                color="gray.500"
-                textAlign="right"
-              >{`${getProgressInPercentage(roadmap.progress)}%`}</Text>
-            </Box>
+        {/* Date */}
+        <HStack gap={1} color="fg.subtle">
+          <FiClock size={11} />
+          <Text fontSize="xs">
+            {formattedDate}
+          </Text>
+        </HStack>
+      </VStack>
 
-            <Text fontSize="xs" color="gray.500">
-              {getRoadmapTransaltions('saved')} {formattedDate}
-            </Text>
-          </VStack>
-
+      {/* Action buttons — fade in on hover */}
+      {(onDelete || onEdit) && (
+        <HStack
+          className="card-actions"
+          gap={1}
+          position="absolute"
+          bottom="8px"
+          right="8px"
+          zIndex={2}
+          opacity={0}
+          transition="opacity 0.15s ease"
+          bg="bg.panel"
+          borderRadius="md"
+          borderWidth="1px"
+          borderColor="border.default"
+          p="2px"
+          boxShadow="xs"
+        >
+          {onEdit && (
+            <IconButton
+              aria-label="Edit Saved Roadmap"
+              size="xs"
+              variant="ghost"
+              colorPalette="blue"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(roadmap);
+              }}
+            >
+              <FiEdit2 />
+            </IconButton>
+          )}
           {onDelete && (
             <IconButton
               aria-label="Delete Saved Roadmap"
-              size="sm"
+              size="xs"
               variant="ghost"
-              colorScheme="red"
-              position="absolute"
-              bottom="8px"
-              right="16px"
-              zIndex={2}
+              colorPalette="red"
               onClick={(e) => {
                 e.stopPropagation();
                 onDelete(roadmap);
@@ -197,9 +226,9 @@ export function SavedRoadmapCard({
               <FiTrash2 />
             </IconButton>
           )}
-        </Flex>
-      </HoverCard.Trigger>
-    </HoverCard.Root>
+        </HStack>
+      )}
+    </Flex>
   );
 }
 
@@ -217,78 +246,94 @@ export function RoadmapCardWithActions({
   onDelete,
 }: RoadmapCardWithActionsProps) {
   return (
-    <HoverCard.Root>
-      <HoverCard.Trigger>
-        <Flex
-          cursor="pointer"
-          borderRadius="lg"
-          overflow="hidden"
-          bg="brand.50"
-          opacity={0.95}
-          boxShadow="sm"
-          _hover={{ boxShadow: 'md', transform: 'translateY(-2px)' }}
-          align="center"
-          direction="row"
-          p={2}
-          position="relative"
+    <Flex
+      cursor="pointer"
+      borderRadius="xl"
+      overflow="hidden"
+      bg="bg.panel"
+      borderWidth="1px"
+      borderColor="border.default"
+      boxShadow="xs"
+      _hover={{
+        boxShadow: 'md',
+        transform: 'translateY(-2px)',
+        borderColor: 'border.emphasized',
+        '& .card-actions': { opacity: 1 },
+      }}
+      align="center"
+      direction="row"
+      transition="all 0.18s ease"
+      position="relative"
+      minH="100px"
+    >
+      <ImageWrapper
+        imageUrl={roadmap.imageUrl}
+        title={roadmap.title}
+        w="120px"
+        h="100px"
+        objectFit="cover"
+        flexShrink={0}
+        onClick={() => handleClick(roadmap.id)}
+      />
+
+      <VStack
+        gap={1}
+        px={4}
+        py={3}
+        align="start"
+        flex="1"
+        overflow="hidden"
+        onClick={() => handleClick(roadmap.id)}
+      >
+        <Text fontSize="md" fontWeight="700" color="text.heading" lineClamp={1}>
+          {roadmap.title}
+        </Text>
+        <Text fontSize="sm" color="fg.muted" lineClamp={2} lineHeight="1.5">
+          {roadmap.description}
+        </Text>
+      </VStack>
+
+      <HStack
+        className="card-actions"
+        gap={1}
+        position="absolute"
+        top="8px"
+        right="8px"
+        zIndex={2}
+        opacity={0}
+        transition="opacity 0.15s ease"
+        bg="bg.panel"
+        borderRadius="md"
+        borderWidth="1px"
+        borderColor="border.default"
+        p="2px"
+        boxShadow="xs"
+      >
+        <IconButton
+          aria-label="Edit Roadmap"
+          size="xs"
+          variant="ghost"
+          colorPalette="blue"
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit(roadmap);
+          }}
         >
-          {/* Image Section */}
-          <ImageWrapper
-            imageUrl={roadmap.imageUrl}
-            title={roadmap.title}
-            w="150px"
-            h="130px"
-            objectFit="cover"
-            borderRadius="md"
-            flexShrink={0}
-            onClick={() => handleClick(roadmap.id)}
-          />
-
-          {/* Content Section */}
-          <VStack
-            gap={2}
-            p={4}
-            align="start"
-            flex="1"
-            onClick={() => handleClick(roadmap.id)}
-          >
-            <Text fontSize="lg" fontWeight="bold" color="text.heading">
-              {roadmap.title}
-            </Text>
-            <Text fontSize="sm" color="gray.600" lineClamp={2} textAlign="left">
-              {roadmap.description}
-            </Text>
-          </VStack>
-
-          {/* Action Buttons */}
-          <HStack gap={2} position="absolute" top="8px" right="8px" zIndex={2}>
-            <IconButton
-              aria-label="Edit Roadmap"
-              size="sm"
-              variant="ghost"
-              colorScheme="blue"
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit(roadmap);
-              }}
-            >
-              <FiEdit2 />
-            </IconButton>
-            <IconButton
-              aria-label="Delete Roadmap"
-              size="sm"
-              variant="ghost"
-              colorScheme="red"
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(roadmap);
-              }}
-            >
-              <FiTrash2 />
-            </IconButton>
-          </HStack>
-        </Flex>
-      </HoverCard.Trigger>
-    </HoverCard.Root>
+          <FiEdit2 />
+        </IconButton>
+        <IconButton
+          aria-label="Delete Roadmap"
+          size="xs"
+          variant="ghost"
+          colorPalette="red"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(roadmap);
+          }}
+        >
+          <FiTrash2 />
+        </IconButton>
+      </HStack>
+    </Flex>
   );
 }
