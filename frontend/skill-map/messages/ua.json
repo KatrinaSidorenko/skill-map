@@ -110,7 +110,8 @@
     "actionRejectedDeleteNode": "Не вдалося видалити вузол. Сервер відхилив дію.",
     "actionRejectedCreateEdge": "Не вдалося створити зв'язок. Сервер відхилив дію.",
     "actionRejectedDeleteEdge": "Не вдалося видалити зв'язок. Сервер відхилив дію.",
-    "actionRejectedUnknown": "Сервер відхилив дію. Спробуйте ще раз."
+    "actionRejectedUnknown": "Сервер відхилив дію. Спробуйте ще раз.",
+    "recommendedResources": "Рекомендовані ресурси"
   },
   "roadmaps": {
     "search": "Пошук ...",

@@ -1,3 +1,5 @@
+'use client';
+
 import { useAppSelector } from '@/store/hooks';
 import { selectWorkspaceId, selectSelectedElement } from '../../store';
 import { useLazyGetLearningItemMaterialsQuery } from '@/features/roadmaps/api';
@@ -6,7 +8,6 @@ import {
   Badge,
   Box,
   HStack,
-  Separator,
   VStack,
   Text,
   Flex,
@@ -14,10 +15,135 @@ import {
   Icon,
   Link,
 } from '@chakra-ui/react';
-import { AiOutlineFileText, AiOutlineLink } from 'react-icons/ai';
-import { FaBook, FaVideo } from 'react-icons/fa';
-import { SiCoursera } from 'react-icons/si';
+import {
+  AiOutlineFileText,
+  AiOutlineLink,
+  AiOutlineBook,
+} from 'react-icons/ai';
+import { FaVideo } from 'react-icons/fa';
+import { MdSchool } from 'react-icons/md';
+import { FiExternalLink } from 'react-icons/fi';
 import useLocalization from '@/i18n/useLocalization';
+
+const TYPE_META: Record<
+  MaterialType,
+  { icon: React.ElementType; color: string; bg: string; label: string }
+> = {
+  article: {
+    icon: AiOutlineFileText,
+    color: 'blue.600',
+    bg: 'blue.50',
+    label: 'Article',
+  },
+  video: { icon: FaVideo, color: 'red.500', bg: 'red.50', label: 'Video' },
+  book: {
+    icon: AiOutlineBook,
+    color: 'orange.500',
+    bg: 'orange.50',
+    label: 'Book',
+  },
+  course: {
+    icon: MdSchool,
+    color: 'purple.600',
+    bg: 'purple.50',
+    label: 'Course',
+  },
+  other: {
+    icon: AiOutlineLink,
+    color: 'gray.500',
+    bg: 'gray.100',
+    label: 'Link',
+  },
+};
+
+function MaterialCard({ material }: { material: LearningItemMaterial }) {
+  const meta = TYPE_META[material.type] ?? TYPE_META.other;
+  const domain = material.url.replace(/^https?:\/\//, '').split('/')[0];
+
+  return (
+    <Link
+      href={material.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      _hover={{ textDecoration: 'none' }}
+      display="block"
+    >
+      <Flex
+        borderWidth="1px"
+        borderRadius="xl"
+        p={3}
+        gap={3}
+        align="flex-start"
+        bg="white"
+        _hover={{
+          borderColor: meta.color,
+          boxShadow: 'sm',
+          transform: 'translateY(-1px)',
+        }}
+        transition="all 0.15s ease"
+        cursor="pointer"
+      >
+        {/* Icon badge */}
+        <Flex
+          w="36px"
+          h="36px"
+          borderRadius="lg"
+          bg={meta.bg}
+          justify="center"
+          align="center"
+          flexShrink={0}
+          mt="1px"
+        >
+          <Icon as={meta.icon} boxSize={4} color={meta.color} />
+        </Flex>
+
+        {/* Text */}
+        <VStack align="start" gap={0.5} flex="1" overflow="hidden">
+          <HStack gap={1.5} w="full">
+            <Text
+              fontSize="sm"
+              fontWeight="600"
+              color="gray.800"
+              lineClamp={1}
+              flex="1"
+            >
+              {material.title}
+            </Text>
+            <Icon
+              as={FiExternalLink}
+              boxSize={3}
+              color="gray.400"
+              flexShrink={0}
+            />
+          </HStack>
+          <Text fontSize="xs" color="gray.400" lineClamp={1}>
+            {domain}
+          </Text>
+        </VStack>
+
+        {/* Type badge */}
+        <Badge
+          variant="subtle"
+          colorPalette={
+            meta.color.split('.')[0] as
+              | 'blue'
+              | 'red'
+              | 'orange'
+              | 'purple'
+              | 'gray'
+          }
+          fontSize="2xs"
+          textTransform="uppercase"
+          letterSpacing="wide"
+          flexShrink={0}
+          mt="2px"
+        >
+          {meta.label}
+        </Badge>
+      </Flex>
+    </Link>
+  );
+}
 
 export default function MaterialsContainer() {
   const { getEditorTranslations } = useLocalization();
@@ -34,100 +160,58 @@ export default function MaterialsContainer() {
 
   if (!selectedElement || !roadmapId) return null;
 
-  const materials = data ?? [];
-
-  const getIcon = (type: MaterialType) => {
-    switch (type) {
-      case 'article':
-        return <Icon as={AiOutlineFileText} boxSize={5} color="teal.500" />;
-      case 'video':
-        return <Icon as={FaVideo} boxSize={5} color="teal.500" />;
-      case 'book':
-        return <Icon as={FaBook} boxSize={5} color="teal.500" />;
-      case 'course':
-        return <Icon as={SiCoursera} boxSize={5} color="teal.500" />;
-      default:
-        return <Icon as={AiOutlineLink} boxSize={5} color="teal.500" />;
-    }
-  };
+  const materials = data?.materials ?? [];
+  const isLoadingAny = isLoading || isFetching;
 
   return (
-    <VStack align="stretch" gap={4} p={4} width="full">
-      <Text fontSize="sm" fontWeight="medium" color="gray.600">
-        {getEditorTranslations('resources')}
-      </Text>
+    <VStack align="stretch" gap={3} width="full">
+      {/* Section header */}
+      <HStack justify="space-between" align="center">
+        <Text fontSize="sm" fontWeight="600" color="gray.700">
+          {getEditorTranslations('recommendedResources')}
+        </Text>
+        {!isLoadingAny && materials.length > 0 && (
+          <Badge variant="subtle" colorPalette="gray" fontSize="xs">
+            {materials.length}
+          </Badge>
+        )}
+      </HStack>
 
-      {isLoading || isFetching ? (
-        <Flex justify="center" align="center" minH="100px">
-          <Spinner size="lg" color="teal.400" />
+      {isLoadingAny ? (
+        <Flex
+          justify="center"
+          align="center"
+          minH="80px"
+          borderWidth="1px"
+          borderRadius="xl"
+          borderStyle="dashed"
+          borderColor="gray.200"
+        >
+          <Spinner size="md" color="blue.400" />
         </Flex>
       ) : materials.length === 0 ? (
-        <Box
+        <Flex
+          direction="column"
+          justify="center"
+          align="center"
+          gap={1}
+          minH="80px"
           borderWidth="1px"
-          borderRadius="lg"
-          p={6}
-          textAlign="center"
-          color="gray.500"
+          borderRadius="xl"
+          borderStyle="dashed"
+          borderColor="gray.200"
           bg="gray.50"
         >
-          {getEditorTranslations('noMaterialsFound')}
-        </Box>
+          <Icon as={AiOutlineLink} boxSize={5} color="gray.300" />
+          <Text fontSize="xs" color="gray.400">
+            {getEditorTranslations('noMaterialsFound')}
+          </Text>
+        </Flex>
       ) : (
-        <VStack align="stretch" gap={3}>
-          {materials.map((material: LearningItemMaterial, index: number) => {
-            return (
-              <Box
-                key={material.id}
-                borderWidth="1px"
-                borderRadius="xl"
-                p={3}
-                bg="white"
-                shadow="sm"
-                _hover={{ shadow: 'md', transform: 'scale(1.01)' }}
-                transition="all 0.15s ease"
-              >
-                <HStack justify="space-between" align="center">
-                  <HStack gap={3} align="center">
-                    <Flex
-                      bg="gray.100"
-                      borderRadius="full"
-                      p={2}
-                      justify="center"
-                      align="center"
-                    >
-                      {getIcon(material.type)}
-                    </Flex>
-
-                    <VStack align="start" gap={0}>
-                      <Link
-                        target="_blank"
-                        href={material.url}
-                        fontWeight="medium"
-                        color="teal.600"
-                        _hover={{ textDecoration: 'underline' }}
-                      >
-                        {material.title}
-                      </Link>
-                      <Text fontSize="xs" color="gray.500">
-                        {material.url.replace(/^https?:\/\//, '')}
-                      </Text>
-                    </VStack>
-                  </HStack>
-
-                  <Badge
-                    variant="subtle"
-                    colorScheme="teal"
-                    fontSize="xs"
-                    textTransform="capitalize"
-                  >
-                    {material.type}
-                  </Badge>
-                </HStack>
-
-                {index < materials.length - 1 && <Separator mt={3} />}
-              </Box>
-            );
-          })}
+        <VStack align="stretch" gap={2}>
+          {materials.map((material: LearningItemMaterial) => (
+            <MaterialCard key={material.id} material={material} />
+          ))}
         </VStack>
       )}
     </VStack>
