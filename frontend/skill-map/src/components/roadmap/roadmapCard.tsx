@@ -43,13 +43,13 @@ export function RoadmapCard({ roadmap, handleClick }: RoadmapCardProps) {
       align="center"
       direction="row"
       transition="all 0.18s ease"
-      minH="100px"
+      minH="120px"
     >
       <ImageWrapper
         imageUrl={roadmap.imageUrl}
         title={roadmap.title}
         w="120px"
-        h="100px"
+        h="120px"
         objectFit="cover"
         flexShrink={0}
       />

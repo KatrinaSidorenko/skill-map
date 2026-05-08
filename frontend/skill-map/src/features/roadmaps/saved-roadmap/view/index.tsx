@@ -298,21 +298,11 @@ export default function SavedRoadmapView({
               <HStack gap={2} flexWrap="wrap">
                 <Button
                   size="sm"
-                  colorPalette="blue"
-                  onClick={handleOpenEditor}
-                >
-                  <FiArrowRight />
-                  {getRoadmapTransaltions('openInEditor')}
-                </Button>
-
-                <Button
-                  size="sm"
                   variant="outline"
                   onClick={() => setEditDialogOpen(true)}
                   loading={isUpdatingRoadmap}
                 >
                   <FiEdit2 />
-                  {getRoadmapTransaltions('edit')}
                 </Button>
 
                 <Button
@@ -323,6 +313,14 @@ export default function SavedRoadmapView({
                   loading={isDeletingRoadmap}
                 >
                   <FiTrash2 />
+                </Button>
+                <Button
+                  size="sm"
+                  colorPalette="blue"
+                  onClick={handleOpenEditor}
+                >
+                  <FiArrowRight />
+                  {getRoadmapTransaltions('openInEditor')}
                 </Button>
               </HStack>
             </VStack>

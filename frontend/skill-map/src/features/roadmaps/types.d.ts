@@ -44,6 +44,7 @@ interface Roadmap {
   workspaceId: string;
   title: string;
   description: string;
+  sourceLink?: string | null;
   isSaved?: boolean;
   items: RoadmapNode[];
   connections: RoadmapEdge[];

@@ -16,6 +16,8 @@ type InitialState = {
   info: {
     isSaved: boolean;
     title: string;
+    description: string;
+    sourceLink: string | null;
     workspaceId: string | null;
   } | null;
   nodes: Node[];
@@ -37,6 +39,8 @@ const roadmapSlice = createSlice({
       state.info = {
         isSaved: !!action.payload.isSaved,
         title: action.payload.title,
+        description: action.payload.description ?? '',
+        sourceLink: action.payload.sourceLink ?? null,
         workspaceId: action.payload.workspaceId ?? null,
       };
       state.roadmapId = action.payload.id;

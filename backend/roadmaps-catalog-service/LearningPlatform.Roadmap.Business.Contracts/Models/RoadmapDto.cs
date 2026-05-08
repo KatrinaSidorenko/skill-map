@@ -12,6 +12,8 @@ public class RoadmapDto
     public string Description { get; set; }
     [JsonProperty("isSaved")]
     public bool IsSaved { get; set; }
+    [JsonProperty("sourceLink")]
+    public string? SourceLink { get; set; }
     [JsonProperty("nodes")]
     public List<Node> Nodes { get; set; }
     [JsonProperty("edges")]

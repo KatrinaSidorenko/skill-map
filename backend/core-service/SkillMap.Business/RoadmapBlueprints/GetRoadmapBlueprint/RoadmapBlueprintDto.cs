@@ -17,6 +17,8 @@ public class RoadmapBlueprintDto
 
     [JsonProperty("isSaved")]
     public bool IsSaved { get; set; }
+    [JsonProperty("sourceLink")]
+    public string? SourceLink { get; set; }
 
     [JsonProperty("items")]
     public List<LearningItemDto> Items { get; set; }
@@ -33,7 +35,8 @@ public class RoadmapBlueprintDto
             Description = roadmapDto.Description,
             IsSaved = isSaved,
             Items = roadmapDto.Nodes.Select(LearningItemDto.Create).ToList(),
-            Connections = roadmapDto.Edges.Select(LearningConnectionDto.Create).ToList()
+            Connections = roadmapDto.Edges.Select(LearningConnectionDto.Create).ToList(),
+            SourceLink = roadmapDto.SourceLink
         };
     }
 }

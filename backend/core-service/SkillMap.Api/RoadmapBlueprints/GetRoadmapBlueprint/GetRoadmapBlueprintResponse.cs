@@ -28,6 +28,8 @@ public class RoadmapResponse
 
     [JsonProperty("description")]
     public string Description { get; set; }
+    [JsonProperty("sourceLink")]
+    public string SourceLink { get; set; }
 
     [JsonProperty("isSaved")]
     public bool IsSaved { get; set; }
@@ -46,6 +48,7 @@ public class RoadmapResponse
             Title = dto.Title,
             Description = dto.Description,
             IsSaved = dto.IsSaved,
+            SourceLink = "https://roadmap.sh/", // todo: remove hardcode
             Items = dto.Items.Select(RoadmapNode.Create).ToList(),
             Connections = dto.Connections.Select(RoadmapEdge.Create).ToList()
         };

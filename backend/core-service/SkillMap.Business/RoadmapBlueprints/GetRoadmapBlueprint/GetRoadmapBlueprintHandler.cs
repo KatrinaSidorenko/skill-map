@@ -21,7 +21,7 @@ internal sealed class GetRoadmapBlueprintHandler(IRoadmapBlueprintRepository rep
             throw new ResourceNotFoundException(nameof(RoadmapBlueprintDto), request.RoadmapId.ToString());
         }
         var isSaved = await roadmapWorkspaceRepository.IsWorkspaceActive(request.RoadmapId, request.UserId, cancellationToken);
-
+        result.Data.SourceLink = "https://roadmap.sh/"; // todo: get real source link
         return RoadmapBlueprintDto.Create(result.Data, isSaved);
     }
 }

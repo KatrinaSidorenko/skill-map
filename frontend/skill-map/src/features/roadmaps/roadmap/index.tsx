@@ -1,8 +1,18 @@
 'use client';
 
 import React, { useEffect, useCallback, useState } from 'react';
-import { VStack, Text, Flex, IconButton, Spinner } from '@chakra-ui/react';
-import { FaStar } from 'react-icons/fa';
+import {
+  VStack,
+  Text,
+  Flex,
+  IconButton,
+  Spinner,
+  Box,
+  Badge,
+  Link,
+  HStack,
+} from '@chakra-ui/react';
+import { FaStar, FaExternalLinkAlt } from 'react-icons/fa';
 import { FiStar } from 'react-icons/fi';
 import {
   ReactFlow,
@@ -55,7 +65,6 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
     }
   }, [data, dispatch, roadmapId]);
 
-  // ReactFlow handlers — synced to Redux
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => dispatch(setNodeChanges(changes)),
     [dispatch],
@@ -66,11 +75,9 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
     [dispatch],
   );
 
-  // Save roadmap (toggle favorite)
   const handleStarClick = async () => {
     if (!plainRoadmap) return;
     if (plainRoadmap.isSaved) {
-      // Already saved — open dialog to archive or delete
       setDeleteDialogOpen(true);
     } else {
       try {
@@ -113,58 +120,116 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
     }
   };
 
-  // Loading / error / empty states
   if (isLoading || isFetching) return <SpinnerScreen />;
   if (error) return <ErrorScreen />;
   if (!plainRoadmap) return <ContentNotFoundScreen />;
 
+  const isCustom = !plainRoadmap.sourceLink;
+
   return (
     <>
-      <VStack w="full" gap={8}>
-        {/* Header with title and save button */}
-        <Flex w="full" justify="space-between" align="center">
-          <Text fontSize="2xl" fontWeight="bold">
-            {plainRoadmap.title}
-          </Text>
-          <IconButton
-            aria-label={plainRoadmap.isSaved ? 'Unsave Roadmap' : 'Save Roadmap'}
-            size="sm"
-            onClick={handleStarClick}
-            disabled={isSavingRoadmap || isDeletingRoadmap}
-          >
-            {isSavingRoadmap || isDeletingRoadmap ? (
-              <Spinner color="blue.500" size="sm" />
-            ) : plainRoadmap.isSaved ? (
-              <FaStar />
-            ) : (
-              <FiStar />
-            )}
-          </IconButton>
-        </Flex>
+      <VStack w="full" gap={6} align="stretch">
+        {/* Header Card */}
+        <Box
+          borderWidth="1px"
+          borderRadius="2xl"
+          p={6}
+          bg="bg.subtle"
+          shadow="sm"
+        >
+          <Flex justify="space-between" align="flex-start" gap={4}>
+            <VStack align="flex-start" gap={3} flex={1}>
+              {/* Title row */}
+              <Flex align="center" gap={3} flexWrap="wrap">
+                <Text fontSize="2xl" fontWeight="bold" lineHeight="short">
+                  {plainRoadmap.title}
+                </Text>
+                {plainRoadmap.isSaved && (
+                  <Badge colorPalette="yellow" variant="subtle" fontSize="xs">
+                    Saved
+                  </Badge>
+                )}
+              </Flex>
+
+              {/* Description */}
+              {plainRoadmap.description && (
+                <Text color="fg.muted" fontSize="sm" lineHeight="tall">
+                  {plainRoadmap.description}
+                </Text>
+              )}
+
+              {/* Source info */}
+              <HStack gap={2} flexWrap="wrap">
+                <Badge
+                  colorPalette={isCustom ? 'purple' : 'blue'}
+                  variant="subtle"
+                  fontSize="xs"
+                >
+                  {isCustom ? 'Custom' : 'External'}
+                </Badge>
+                {!isCustom && (
+                  <Link
+                    href={plainRoadmap.sourceLink!}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    color="blue.500"
+                    fontSize="sm"
+                    display="inline-flex"
+                    alignItems="center"
+                    gap={1}
+                    _hover={{ textDecoration: 'underline' }}
+                  >
+                    View Source <FaExternalLinkAlt size={11} />
+                  </Link>
+                )}
+              </HStack>
+            </VStack>
+
+            {/* Save / Unsave button */}
+            <IconButton
+              aria-label={plainRoadmap.isSaved ? 'Unsave Roadmap' : 'Save Roadmap'}
+              size="sm"
+              variant="ghost"
+              onClick={handleStarClick}
+              disabled={isSavingRoadmap || isDeletingRoadmap}
+              flexShrink={0}
+            >
+              {isSavingRoadmap || isDeletingRoadmap ? (
+                <Spinner color="blue.500" size="sm" />
+              ) : plainRoadmap.isSaved ? (
+                <FaStar color="gold" />
+              ) : (
+                <FiStar />
+              )}
+            </IconButton>
+          </Flex>
+        </Box>
 
         {/* ReactFlow graph */}
-        <div style={{ width: '100%', height: '500px' }}>
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onInit={(instance) => {
-              instance.fitView();
-              setTimeout(() => {
-                if (nodes.length > 0) {
-                  const rootNode = nodes[0];
-                  instance.setCenter(rootNode.position.x, rootNode.position.y, {
-                    zoom: 1,
-                  });
-                }
-              }, 200);
-            }}
-          >
-            <Background />
-            <Controls />
-          </ReactFlow>
-        </div>
+        <Box borderWidth="1px" borderRadius="2xl" overflow="hidden" shadow="sm">
+          <div style={{ width: '100%', height: '520px' }}>
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onInit={(instance) => {
+                instance.fitView();
+                setTimeout(() => {
+                  if (nodes.length > 0) {
+                    const rootNode = nodes[0];
+                    instance.setCenter(rootNode.position.x, rootNode.position.y, {
+                      zoom: 1,
+                    });
+                  }
+                }, 200);
+              }}
+            >
+              <Background />
+              <Controls />
+            </ReactFlow>
+          </div>
+        </Box>
       </VStack>
 
       <DeleteSavedRoadmapDialog
@@ -175,4 +240,4 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
       />
     </>
   );
-}
+}
