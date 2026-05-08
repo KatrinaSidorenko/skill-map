@@ -14,6 +14,7 @@ internal static class RoadmapsWorkspaceApiPaths
     public const string DeleteLearningItemConnection = $"{RoadmapsWorkspaceRootApi}/delete-connection/{{userRoadmapId}}";
     public const string GetRoadmapWorkspace = $"{RoadmapsWorkspaceRootApi}/{{userRoadmapId}}";
     public const string GetRoadmapWorkspaceSummary = $"{RoadmapsWorkspaceRootApi}/{{userRoadmapId}}/summary";
+    public const string GetLearningItemMaterials = $"{RoadmapsWorkspaceRootApi}/{{userRoadmapId}}/items/{{learningItemId}}/materials";
     public const string DeleteRoadmapWorkspace = $"{RoadmapsWorkspaceRootApi}/{{userRoadmapId}}";
     public const string UpdateRoadmapWorkspace = $"{RoadmapsWorkspaceRootApi}/{{userRoadmapId}}";
     public const string CreateRoadmapWorkspace = $"{RoadmapsWorkspaceRootApi}";

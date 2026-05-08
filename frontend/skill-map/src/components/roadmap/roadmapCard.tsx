@@ -35,7 +35,11 @@ export function RoadmapCard({ roadmap, handleClick }: RoadmapCardProps) {
       borderWidth="1px"
       borderColor="border.default"
       boxShadow="xs"
-      _hover={{ boxShadow: 'md', transform: 'translateY(-2px)', borderColor: 'border.emphasized' }}
+      _hover={{
+        boxShadow: 'md',
+        transform: 'translateY(-2px)',
+        borderColor: 'border.emphasized',
+      }}
       align="center"
       direction="row"
       transition="all 0.18s ease"
@@ -51,20 +55,10 @@ export function RoadmapCard({ roadmap, handleClick }: RoadmapCardProps) {
       />
 
       <VStack gap={1} px={4} py={3} align="start" flex="1" overflow="hidden">
-        <Text
-          fontSize="md"
-          fontWeight="700"
-          color="text.heading"
-          lineClamp={1}
-        >
+        <Text fontSize="md" fontWeight="700" color="text.heading" lineClamp={1}>
           {roadmap.title}
         </Text>
-        <Text
-          fontSize="sm"
-          color="fg.muted"
-          lineClamp={2}
-          lineHeight="1.5"
-        >
+        <Text fontSize="sm" color="fg.muted" lineClamp={2} lineHeight="1.5">
           {roadmap.description}
         </Text>
       </VStack>
@@ -112,7 +106,7 @@ export function SavedRoadmapCard({
       direction="row"
       transition="all 0.18s ease"
       position="relative"
-      minH="110px"
+      minH="135px"
     >
       {/* Left status accent stripe */}
       <Box w="4px" flexShrink={0} bg={statusColor} />
@@ -121,14 +115,22 @@ export function SavedRoadmapCard({
       <ImageWrapper
         imageUrl={roadmap.imageUrl}
         title={roadmap.title}
-        w="110px"
-        h="110px"
+        w="135px"
+        h="135px"
         objectFit="cover"
         flexShrink={0}
       />
 
       {/* Content */}
-      <VStack gap={2} px={4} py={3} align="start" flex="1" overflow="hidden" justify="center">
+      <VStack
+        gap={2}
+        px={4}
+        py={3}
+        align="start"
+        flex="1"
+        overflow="hidden"
+        justify="center"
+      >
         {/* Title + Status badge */}
         <HStack justify="space-between" width="100%" align="start" gap={3}>
           <Text
@@ -157,14 +159,25 @@ export function SavedRoadmapCard({
         <Box width="100%">
           <Progress.Root value={progress} size="sm" maxW="full">
             <HStack gap={2} align="center">
-              <Progress.Track flex="1" borderRadius="full" bg="bg.subtle" h="6px">
+              <Progress.Track
+                flex="1"
+                borderRadius="full"
+                bg="bg.subtle"
+                h="6px"
+              >
                 <Progress.Range
                   borderRadius="full"
                   bg={statusColor}
                   transition="width 0.4s ease"
                 />
               </Progress.Track>
-              <Text fontSize="xs" color="fg.muted" minW="32px" textAlign="right" fontVariantNumeric="tabular-nums">
+              <Text
+                fontSize="xs"
+                color="fg.muted"
+                minW="32px"
+                textAlign="right"
+                fontVariantNumeric="tabular-nums"
+              >
                 {progress}%
               </Text>
             </HStack>
@@ -174,9 +187,7 @@ export function SavedRoadmapCard({
         {/* Date */}
         <HStack gap={1} color="fg.subtle">
           <FiClock size={11} />
-          <Text fontSize="xs">
-            {formattedDate}
-          </Text>
+          <Text fontSize="xs">{formattedDate}</Text>
         </HStack>
       </VStack>
 

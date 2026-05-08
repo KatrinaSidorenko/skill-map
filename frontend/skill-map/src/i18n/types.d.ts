@@ -113,6 +113,7 @@ interface ILocalization {
     actionRejectedCreateEdge: string;
     actionRejectedDeleteEdge: string;
     actionRejectedUnknown: string;
+    recommendedResources: string;
   };
   roadmaps: {
     search: string;

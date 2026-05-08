@@ -72,13 +72,12 @@ export const roadmapApi = createApi({
     }),
 
     getLearningItemMaterials: builder.query<
-      LearningItemMaterial[],
+      { materials: LearningItemMaterial[] },
       { roadmapId: string; itemId: string }
     >({
       query: ({ roadmapId, itemId }) => ({
-        url: `roadmaps/${roadmapId}/materials`,
+        url: `roadmaps-workspace/${roadmapId}/items/${itemId}/materials`,
         method: 'GET',
-        params: { itemId },
       }),
     }),
     createRoadmap: builder.mutation<{ id: string }, CreateDraftRoadmapPayload>({

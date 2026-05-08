@@ -116,7 +116,8 @@
     "actionRejectedDeleteNode": "Failed to delete node. The server rejected the action.",
     "actionRejectedCreateEdge": "Failed to create connection. Cycle was detected",
     "actionRejectedDeleteEdge": "Failed to delete connection. The server rejected the action.",
-    "actionRejectedUnknown": "The server rejected the action. Please try again."
+    "actionRejectedUnknown": "The server rejected the action. Please try again.",
+    "recommendedResources": "Recommended Resources"
   },
   "roadmaps": {
     "search": "Search ...",
