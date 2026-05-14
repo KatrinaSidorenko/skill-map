@@ -31,6 +31,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseInfrastructure();
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
 // todo: extract to gateway
