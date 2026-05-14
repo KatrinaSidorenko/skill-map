@@ -41,3 +41,8 @@ app.MapControllers();
 app.RegisterModules();
 
 app.Run();
+
+namespace SkillMap.Api
+{
+    public sealed class Program;
+}
