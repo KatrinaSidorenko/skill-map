@@ -22,7 +22,7 @@ internal sealed class RoadmapWorkspaceCreatedEventHandler(IRepository<InboxTask>
             WorkspaceId = notification.WorkspaceId,
             RoadmapId = notification.RoadmapId,
             IsInAuthorMode = notification.IsInAuthorMode,
-        }.JsonSerializeOrDefault(), TaskType.BuildWorkspaceSnapshot);
+        }.JsonSerializeOrDefault(), TaskType.BuildInitialWorkspaceSnapshot);
 
         await repository.AddAsync(task, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);

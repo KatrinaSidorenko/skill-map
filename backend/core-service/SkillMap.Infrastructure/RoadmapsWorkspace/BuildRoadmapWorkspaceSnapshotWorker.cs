@@ -16,6 +16,7 @@ namespace SkillMap.Infrastructure.RoadmapsWorkspace;
 internal sealed class BuildRoadmapWorkspaceSnapshotWorker : BackgroundService
 {
     private static readonly TimeSpan _delay = TimeSpan.FromMilliseconds(7000);
+    private static readonly HashSet<TaskType> _availableTaskType = [TaskType.BuildWorkspaceSnapshot, TaskType.BuildInitialWorkspaceSnapshot];
 
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<BuildRoadmapWorkspaceSnapshotWorker> _logger;
@@ -95,12 +96,10 @@ internal sealed class BuildRoadmapWorkspaceSnapshotWorker : BackgroundService
     }
 
     private async Task<InboxTask?> LookupForTask(IRepository<InboxTask> inboxRepository, CancellationToken cancellationToken)
-    {
-        return await inboxRepository.GetFirstOrDefaultAsync(
+        => await inboxRepository.GetFirstOrDefaultAsync(
             filter: t =>
-                t.TaskType == TaskType.BuildWorkspaceSnapshot &&
+                _availableTaskType.Contains(t.TaskType) &&
                 t.Status == Core.Tasks.TaskStatus.Pending &&
                 t.WorkerId == null,
             ct: cancellationToken);
-    }
 }
