@@ -129,8 +129,6 @@ export default function SavedRoadmapView({
           boxShadow="sm"
           bg="bg.panel"
         >
-          <Box h="4px" bg={statusColor} />
-
           <Flex
             gap={0}
             align="stretch"

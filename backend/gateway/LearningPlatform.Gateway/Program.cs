@@ -1,8 +1,10 @@
+using System.Text;
+using System.Threading.RateLimiting;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,29 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials());
+});
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("user_3_requests_per_day", context =>
+    {
+        var userId = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? context.Request.Headers["X-User-Id"].ToString();
+        if (string.IsNullOrEmpty(userId))
+        {
+            // todo: a bad case
+            userId = context.Connection.RemoteIpAddress?.ToString() ?? "anonymous";
+        }
+        return RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: userId,
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 3,
+                Window = TimeSpan.FromDays(1),
+                QueueLimit = 0,
+                AutoReplenishment = true
+            });
+    });
 });
 
 var jwtIssuer = builder.Configuration.GetSection("JwtSettings:Issuer").Get<string>();
@@ -49,7 +74,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // set custom request headers for authenticated users in future
-
+app.UseRateLimiter();
 app.MapReverseProxy();
 
 app.Run();

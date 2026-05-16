@@ -8,20 +8,42 @@ import {
   useGenerateRoadmapTestMutation,
 } from './api';
 import { DEFAULT_GENERATE_TEST_CONFIG } from './helper';
+import useLocalization from '@/i18n/useLocalization';
 
 interface UseRoadmapAssessmentOptions {
   onError?: (message: string) => void;
 }
 
+function isRateLimitError(error: unknown): boolean {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'status' in error &&
+    (error as { status: number }).status === 429
+  );
+}
+
 export function useRoadmapAssessment(options?: UseRoadmapAssessmentOptions) {
   const router = useRouter();
+  const { getTestingHistoryTranslations } = useLocalization();
   const [generateTest, { isLoading: isInitialGenerating }] =
     useGenerateRoadmapTestMutation();
   const [generateIntermediateTest, { isLoading: isIntermediateGenerating }] =
     useGenerateIntermediateRoadmapTestMutation();
   const [startAttempt] = useCreateStartTestTakeAttemptMutation();
 
-  const handleError = (message: string) => {
+  const handleError = (error: unknown, fallbackMessage: string) => {
+    if (isRateLimitError(error)) {
+      toaster.create({
+        title: getTestingHistoryTranslations('rateLimitTitle'),
+        description: getTestingHistoryTranslations('rateLimitDescription'),
+        type: 'error',
+        duration: 6000,
+        closable: true,
+      });
+      return;
+    }
+    const message = fallbackMessage;
     if (options?.onError) {
       options.onError(message);
     } else {
@@ -38,8 +60,8 @@ export function useRoadmapAssessment(options?: UseRoadmapAssessmentOptions) {
       const testId = await generateFn();
       const attempt = await startAttempt({ testId }).unwrap();
       router.push(`/assessment/attempt/${attempt.attemptId}`);
-    } catch {
-      handleError(errorMessage);
+    } catch (error) {
+      handleError(error, errorMessage);
     }
   };
 
@@ -66,14 +88,13 @@ export function useRoadmapAssessment(options?: UseRoadmapAssessmentOptions) {
     try {
       const attempt = await startAttempt({ testId }).unwrap();
       router.push(`/assessment/attempt/${attempt.attemptId}`);
-    } catch {
-      handleError('Failed to start new attempt');
+    } catch (error) {
+      handleError(error, 'Failed to start new attempt');
     }
   };
 
   /** Matches TestingHistory onContinueAttempt interface: navigates by resultId (in-progress attempt id) */
   const onContinueAttempt = ({
-    testId,
     attemptId,
   }: {
     testId: string;
@@ -82,9 +103,7 @@ export function useRoadmapAssessment(options?: UseRoadmapAssessmentOptions) {
     router.push(`/assessment/attempt/${attemptId}`);
   };
 
-  /** Matches TestingHistory onOpenAttempt interface: navigates to completed attempt result */
   const onOpenAttempt = ({
-    testId,
     attemptId,
   }: {
     testId: string;

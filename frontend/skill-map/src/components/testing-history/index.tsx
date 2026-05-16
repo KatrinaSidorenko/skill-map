@@ -120,7 +120,6 @@ export default function TestingHistory({
   onGenerateIntermediateTest,
   title,
 }: Props) {
-  console.log(data);
   const { getTestingHistoryTranslations } = useLocalization();
   const items = data?.items ?? [];
   const hasInitialTesting = isInitialTestingExist(data);
