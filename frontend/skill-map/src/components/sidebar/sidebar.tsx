@@ -2,7 +2,7 @@
 'use client';
 
 import React, { ReactNode } from 'react';
-import { Box, Flex, Icon, Text, Drawer, VStack } from '@chakra-ui/react';
+import { Box, Flex, Icon, Text, Drawer, VStack, Heading } from '@chakra-ui/react';
 import {
   FiHome,
   FiCompass,
@@ -10,7 +10,6 @@ import {
   FiSettings,
   FiLogOut,
 } from 'react-icons/fi';
-import { MdOutlineCreateNewFolder } from 'react-icons/md';
 import { IconType } from 'react-icons';
 import { useSidebar } from './sidebar-context';
 import { usePathname, useRouter } from 'next/navigation';
@@ -25,10 +24,8 @@ interface LinkItemProps {
 
 const LinkItems: Array<LinkItemProps> = [
   { name: 'Home', icon: FiHome, link: '/home' },
-  // { name: 'Trending', icon: FiTrendingUp },
   { name: 'Explore', icon: FiCompass, link: '/explore' },
   { name: 'Favourites', icon: FiStar, link: '/saved' },
-  //{ name: 'Create', icon: MdOutlineCreateNewFolder, link: '/sandbox' },
   { name: 'Settings', icon: FiSettings, link: '/settings' },
 ];
 
@@ -81,23 +78,50 @@ const SidebarContent = ({ isDrawer, activePath, ...rest }: SidebarProps) => {
     <Flex
       direction="column"
       align="center"
-      bg="sidebar.bg"
-      borderRight="1px"
+      bg="brand.800"
+      borderRight="none"
       w={isDrawer ? '60' : '20'}
       pos="fixed"
       h="full"
+      boxShadow="lg"
       {...rest}
     >
-      {/* ── Drawer logo ── */}
-      {isDrawer && (
-        <Flex h="16" alignItems="center" px="6" w="full" flexShrink={0}>
-          <Text fontSize="2xl" fontWeight="bold" color="text.heading">
-            Logo
-          </Text>
+      {/* ── Logo ── */}
+      {isDrawer ? (
+        <Flex h="16" alignItems="center" px="6" w="full" flexShrink={0} gap={3}>
+          <Box
+            w="28px"
+            h="28px"
+            borderRadius="md"
+            bg="brand.200"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            flexShrink={0}
+          >
+            <Box w="12px" h="12px" borderRadius="sm" bg="brand.800" />
+          </Box>
+          <Heading fontSize="lg" fontWeight="800" color="brand.200" letterSpacing="tight">
+            SkillMap
+          </Heading>
+        </Flex>
+      ) : (
+        <Flex h="16" alignItems="center" justifyContent="center" w="full" flexShrink={0}>
+          <Box
+            w="32px"
+            h="32px"
+            borderRadius="md"
+            bg="brand.200"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Box w="14px" h="14px" borderRadius="sm" bg="brand.800" />
+          </Box>
         </Flex>
       )}
 
-      {/* ── Nav items — centered vertically ── */}
+      {/* ── Nav items ── */}
       <Flex
         direction="column"
         justify="center"
@@ -106,7 +130,7 @@ const SidebarContent = ({ isDrawer, activePath, ...rest }: SidebarProps) => {
         w="full"
         px={2}
       >
-        <VStack gap={4} w={isDrawer ? 'full' : 'auto'} align="center">
+        <VStack gap={2} w={isDrawer ? 'full' : 'auto'} align="center">
           {LinkItems.map((link) => (
             <NavItem
               key={link.name}
@@ -122,7 +146,7 @@ const SidebarContent = ({ isDrawer, activePath, ...rest }: SidebarProps) => {
         </VStack>
       </Flex>
 
-      {/* ── Logout — pinned to bottom ── */}
+      {/* ── Logout ── */}
       <Box
         pb={4}
         flexShrink={0}
@@ -136,11 +160,12 @@ const SidebarContent = ({ isDrawer, activePath, ...rest }: SidebarProps) => {
           py={2}
           borderRadius="lg"
           cursor="pointer"
-          color="sidebar.text"
-          _hover={{ bg: 'red.50', color: 'red.500' }}
+          color="brand.100"
+          _hover={{ bg: 'red.900', color: 'red.300' }}
           transition="all 0.15s ease"
           onClick={() => logout()}
           w={isDrawer ? 'full' : 'auto'}
+          justify={isDrawer ? 'flex-start' : 'center'}
         >
           <Icon boxSize={5} as={FiLogOut} flexShrink={0} />
           {isDrawer && (
@@ -183,11 +208,11 @@ const NavItem = ({
       borderRadius="lg"
       cursor="pointer"
       role="group"
-      bg={isActive ? 'sidebar.active' : 'transparent'}
-      color={isActive ? 'text.onAccent' : 'sidebar.text'}
+      bg={isActive ? 'brand.200' : 'transparent'}
+      color={isActive ? 'brand.800' : 'brand.100'}
       _hover={{
-        bg: isActive ? 'brand.300' : 'sidebar.linkHover',
-        color: isActive ? 'text.onAccent' : 'text.primary',
+        bg: isActive ? 'brand.300' : 'brand.700',
+        color: isActive ? 'brand.800' : 'white',
       }}
       transition="all 0.15s ease"
       onClick={() => router.push(link || '/home')}

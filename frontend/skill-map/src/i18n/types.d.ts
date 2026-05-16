@@ -41,6 +41,19 @@ interface ILocalization {
     passwordsMustMatch: string;
     SE12: string;
     UIE11: string;
+    welcomeBack: string;
+    loginSubtitle: string;
+    createAccount: string;
+    registerSubtitle: string;
+    usernameMinLength3: string;
+    resetRequestSubtitle: string;
+    resetVerifySubtitle: string;
+    resetNewPasswordSubtitle: string;
+    brandTagline: string;
+    brandDescription: string;
+    featureRoadmaps: string;
+    featureTracking: string;
+    featureAssessments: string;
   };
   editor: {
     apply: string;
@@ -209,6 +222,28 @@ interface ILocalization {
   };
   general: {
     notFound: string;
+  };
+  profile: {
+    title: string;
+    profileInfo: string;
+    profileInfoDesc: string;
+    username: string;
+    enterUsername: string;
+    email: string;
+    enterEmail: string;
+    avatarUrl: string;
+    enterAvatarUrl: string;
+    saveChanges: string;
+    updateSuccess: string;
+    updateFailed: string;
+    security: string;
+    securityDesc: string;
+    resetPassword: string;
+    resetPasswordDesc: string;
+    sendResetLink: string;
+    resetEmailSent: string;
+    resetFailed: string;
+    avatar: string;
   };
   home: {
     greeting: string;

@@ -1,6 +1,6 @@
 'use client';
 import useLocalization from '@/i18n/useLocalization';
-import { VStack, Text, Link } from '@chakra-ui/react';
+import { VStack, Text, Link, Heading } from '@chakra-ui/react';
 import {
   useResetPasswordMutation,
   useSetNewPasswordMutation,
@@ -19,7 +19,6 @@ export default function ForgotPasswordComponent() {
   const { getAuthTranslations } = useLocalization();
 
   const [step, setStep] = useState<Step>('request');
-  const [email, setEmail] = useState<string>('');
   const [token, setToken] = useState<string>('');
 
   const [triggerReset, { isLoading: isResetting }] = useResetPasswordMutation();
@@ -30,7 +29,6 @@ export default function ForgotPasswordComponent() {
 
   // Step 1: request reset
   const onEmailSubmit = async (data: { email: string }) => {
-    setEmail(data.email);
     try {
       await triggerReset({ email: data.email }).unwrap();
       setStep('verify');
@@ -97,7 +95,17 @@ export default function ForgotPasswordComponent() {
   };
 
   return (
-    <VStack w="full" h="full" justify="center" px={12}>
+    <VStack w="full" gap={5}>
+      <VStack gap={1} align="flex-start" w="full" mb={2}>
+        <Heading size="lg" color="text.heading" fontWeight="800">
+          {getAuthTranslations('resetPassword')}
+        </Heading>
+        <Text fontSize="sm" color="text.muted">
+          {step === 'request' && getAuthTranslations('resetRequestSubtitle')}
+          {step === 'verify' && getAuthTranslations('resetVerifySubtitle')}
+          {step === 'newPassword' && getAuthTranslations('resetNewPasswordSubtitle')}
+        </Text>
+      </VStack>
       {step === 'request' && (
         <RequestResetForm
           onSubmit={onEmailSubmit}
@@ -121,10 +129,10 @@ export default function ForgotPasswordComponent() {
       )}
       {step === 'done' && (
         <>
-          <Text fontWeight="bold" textAlign="center">
+          <Text fontWeight="bold" textAlign="center" color="text.heading">
             {getAuthTranslations('passwordResetSuccess')}
           </Text>
-          <Link color="brand.300" href="/login" fontWeight="medium">
+          <Link color="brand.500" href="/login" fontWeight="semibold" fontSize="sm">
             {getAuthTranslations('loginHere')}
           </Link>
         </>

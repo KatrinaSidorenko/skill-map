@@ -8,13 +8,11 @@ import { Flex } from '@chakra-ui/react';
 
 export default function HomeLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <SidebarProvider>
       <SidebarLayout>
-        <Flex bg="bg.page" gap={4} height="100vh" direction="column">
+        <Flex bg="bg.page" gap={3} minHeight="100vh" direction="column">
           <Header />
           <Container>{children}</Container>
         </Flex>

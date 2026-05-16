@@ -19,6 +19,7 @@ internal class UserConfiguration : IEntityTypeConfiguration<AppUser>
         builder.Property(u => u.Email).HasColumnName("email").IsRequired().HasMaxLength(100);
         builder.Property(u => u.PasswordHash).HasColumnName("password_hash").IsRequired();
         builder.Property(u => u.Role).HasColumnName("role").IsRequired().HasMaxLength(20);
+        builder.Property(u => u.ImageUrl).HasColumnName("image_url").IsRequired(false).HasMaxLength(500);
 
         builder.HasIndex(u => u.Email).IsUnique();
     }

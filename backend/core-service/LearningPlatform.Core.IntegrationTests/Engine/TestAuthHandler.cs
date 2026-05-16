@@ -16,7 +16,7 @@ namespace LearningPlatform.Core.IntegrationTests.Engine;
 public class TestAuthHandler
     : AuthenticationHandler<AuthenticationSchemeOptions>
 {
-    public const string Schema = "Test";
+    public const string Scheme = "Test";
 
     public TestAuthHandler(
         IOptionsMonitor<AuthenticationSchemeOptions> options,
@@ -37,9 +37,9 @@ public class TestAuthHandler
             new Claim(ClaimTypes.Role, account.Role)
         };
 
-        var identity = new ClaimsIdentity(claims, Schema);
+        var identity = new ClaimsIdentity(claims, Scheme);
         var principal = new ClaimsPrincipal(identity);
-        var ticket = new AuthenticationTicket(principal, Schema);
+        var ticket = new AuthenticationTicket(principal, Scheme);
 
         return Task.FromResult(AuthenticateResult.Success(ticket));
     }

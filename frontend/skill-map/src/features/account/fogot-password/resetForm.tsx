@@ -1,4 +1,4 @@
-import { Button, Field, Input, Spinner, VStack } from '@chakra-ui/react';
+import { Button, Field, Input, VStack } from '@chakra-ui/react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -34,28 +34,29 @@ export function RequestResetForm({
       w="full"
       justify="center"
     >
-      <Field.Root required>
-        <Field.Label>
+      <Field.Root required invalid={!!errors.email}>
+        <Field.Label fontSize="sm" fontWeight="medium">
           {getAuthTranslations('email')} <Field.RequiredIndicator />
         </Field.Label>
         <Input
           placeholder={getAuthTranslations('enterEmail')}
           type="email"
+          size="md"
           {...register('email')}
         />
         {errors.email && (
-          <Field.HelperText color="red.500" fontSize="sm">
-            {errors.email.message}
-          </Field.HelperText>
+          <Field.ErrorText fontSize="xs">{errors.email.message}</Field.ErrorText>
         )}
       </Field.Root>
 
-      <Button type="submit" width="full" variant="outline" disabled={isLoading}>
-        {isLoading ? (
-          <Spinner color="blue.500" animationDuration="0.8s" size="sm" />
-        ) : (
-          getAuthTranslations('sendResetLink')
-        )}
+      <Button
+        type="submit"
+        colorPalette="brand"
+        size="sm"
+        w="full"
+        loading={isLoading}
+      >
+        {getAuthTranslations('sendResetLink')}
       </Button>
     </VStack>
   );

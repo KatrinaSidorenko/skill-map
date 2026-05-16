@@ -43,10 +43,9 @@ interface StatCardProps {
   label: string;
   value: string | number;
   icon: React.ElementType;
-  accent?: string;
 }
 
-function StatCard({ label, value, icon, accent = 'brand.500' }: StatCardProps) {
+function StatCard({ label, value, icon }: StatCardProps) {
   return (
     <Flex
       bg="bg.section"
@@ -54,22 +53,29 @@ function StatCard({ label, value, icon, accent = 'brand.500' }: StatCardProps) {
       p={5}
       gap={4}
       align="center"
-      boxShadow="sm"
+      boxShadow="0 1px 3px rgba(0,0,0,0.06)"
       flex={1}
       minW="140px"
+      borderWidth="1px"
+      borderColor="border.muted"
     >
       <Flex
-        bg="bg.accent"
+        bg="brand.800"
         borderRadius="lg"
         p={3}
         align="center"
         justify="center"
         flexShrink={0}
       >
-        <Icon as={icon} boxSize={6} color={accent} />
+        <Icon as={icon} boxSize={5} color="brand.200" />
       </Flex>
       <VStack align="start" gap={0}>
-        <Text fontSize="2xl" fontWeight="bold" color="text.heading" lineHeight="1.2">
+        <Text
+          fontSize="2xl"
+          fontWeight="800"
+          color="text.heading"
+          lineHeight="1.2"
+        >
           {value}
         </Text>
         <Text fontSize="xs" color="text.muted" fontWeight="medium">
@@ -109,7 +115,12 @@ function ProgressRow({ roadmap, progressLabel, onClick }: ProgressRowProps) {
           {progressLabel}: {pct}%
         </Text>
       </Flex>
-      <Progress.Root value={pct} size="sm" colorPalette="teal" borderRadius="full">
+      <Progress.Root
+        value={pct}
+        size="sm"
+        colorPalette="teal"
+        borderRadius="full"
+      >
         <Progress.Track borderRadius="full">
           <Progress.Range />
         </Progress.Track>
@@ -128,7 +139,9 @@ interface TestRowProps {
 
 function TestRow({ test, scoreLabel, inProgressLabel }: TestRowProps) {
   const isCompleted = test.status === 'completed' && test.score !== null;
-  const pct = isCompleted ? Math.round((test.score! / test.maxScore) * 100) : null;
+  const pct = isCompleted
+    ? Math.round((test.score! / test.maxScore) * 100)
+    : null;
 
   const scoreColor =
     pct === null ? 'gray' : pct >= 80 ? 'green' : pct >= 50 ? 'yellow' : 'red';
@@ -195,7 +208,11 @@ function QuickAction({ label, icon, onClick }: QuickActionProps) {
       px={6}
       gap={2}
       borderColor="border.muted"
-      _hover={{ bg: 'bg.accent', borderColor: 'border.focus' }}
+      borderWidth="1px"
+      borderRadius="xl"
+      bg="bg.section"
+      _hover={{ bg: 'brand.800', borderColor: 'brand.800', color: 'white' }}
+      transition="all 0.2s"
       flex={1}
       minW="100px"
     >
@@ -217,42 +234,27 @@ export default function HomePage() {
 
   return (
     <Stack gap={8} pb={8}>
-      {/* Greeting */}
-      <Box>
-        <Heading size="xl" color="text.heading" fontWeight="bold">
-          {t('greeting')},{' '}
-          <Text as="span" color="brand.500">
-            {user?.username ?? 'User'}
-          </Text>{' '}
-          👋
-        </Heading>
-      </Box>
-
       {/* Stats */}
       <Flex gap={4} wrap="wrap">
         <StatCard
           label={t('savedRoadmaps')}
           value={mockDashboardStats.savedRoadmaps}
           icon={FiBookmark}
-          accent="brand.500"
         />
         <StatCard
           label={t('testsCompleted')}
           value={mockDashboardStats.testsCompleted}
           icon={FiCheckCircle}
-          accent="green.500"
         />
         <StatCard
           label={t('averageScore')}
           value={`${mockDashboardStats.averageScore}${t('percent')}`}
           icon={FiTrendingUp}
-          accent="yellow.500"
         />
         <StatCard
           label={t('activeRoadmaps')}
           value={mockDashboardStats.activeRoadmaps}
           icon={FiActivity}
-          accent="teal.500"
         />
       </Flex>
 
@@ -312,36 +314,6 @@ export default function HomePage() {
           </Stack>
         </Box>
       </Grid>
-
-      {/* Quick Actions */}
-      <Box>
-        <Heading size="md" color="text.heading" mb={3}>
-          {t('quickActionsSection')}
-        </Heading>
-        <Separator mb={4} />
-        <HStack gap={3} wrap="wrap">
-          <QuickAction
-            label={t('exploreAction')}
-            icon={FiCompass}
-            onClick={() => router.push('/explore')}
-          />
-          <QuickAction
-            label={t('savedAction')}
-            icon={FiStar}
-            onClick={() => router.push('/saved')}
-          />
-          <QuickAction
-            label={t('createAction')}
-            icon={FiPlusCircle}
-            onClick={() => router.push('/sandbox')}
-          />
-          <QuickAction
-            label={t('sandboxAction')}
-            icon={FiBox}
-            onClick={() => router.push('/sandbox')}
-          />
-        </HStack>
-      </Box>
     </Stack>
   );
 }

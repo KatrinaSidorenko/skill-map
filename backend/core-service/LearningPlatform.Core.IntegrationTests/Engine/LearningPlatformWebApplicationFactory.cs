@@ -15,10 +15,10 @@ public class LearningPlatformWebApplicationFactory<T> : WebApplicationFactory<T>
         builder.ConfigureServices(services =>
         {
             services.AddScoped<ITestDataSeeder, TestDataSeeder>();
-            services.AddAuthentication(TestAuthHandler.Schema)
+            services.AddAuthentication(TestAuthHandler.Scheme)
                 .AddScheme<AuthenticationSchemeOptions,
                     TestAuthHandler>(
-                        TestAuthHandler.Schema,
+                        TestAuthHandler.Scheme,
                         _ => { });
         });
 
@@ -26,8 +26,8 @@ public class LearningPlatformWebApplicationFactory<T> : WebApplicationFactory<T>
         {
             services.PostConfigureAll<AuthenticationOptions>(options =>
             {
-                options.DefaultAuthenticateScheme = TestAuthHandler.Schema;
-                options.DefaultChallengeScheme = TestAuthHandler.Schema;
+                options.DefaultAuthenticateScheme = TestAuthHandler.Scheme;
+                options.DefaultChallengeScheme = TestAuthHandler.Scheme;
             });
         });
     }

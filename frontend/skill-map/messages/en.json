@@ -42,7 +42,22 @@
     "UIE1": "Invalid password",
     "UIE2": "Email already in use",
     "UIE11": "Invalid reset token",
-    "SE12": "Failed to send email. Please try again later."
+    "SE12": "Failed to send email. Please try again later.",
+
+    "welcomeBack": "Welcome back",
+    "loginSubtitle": "Sign in to continue your learning journey",
+    "createAccount": "Create an account",
+    "registerSubtitle": "Start mapping your learning path today",
+    "usernameMinLength3": "Username must be at least 3 characters long",
+    "setNewPasswordFailed": "Failed to set new password. Please try again.",
+    "resetRequestSubtitle": "Enter your email to receive a reset token",
+    "resetVerifySubtitle": "Enter the token sent to your email",
+    "resetNewPasswordSubtitle": "Choose a new secure password",
+    "brandTagline": "Chart your path to mastery",
+    "brandDescription": "Build structured learning roadmaps, track progress, and stay on track with personalised assessments.",
+    "featureRoadmaps": "Visual learning roadmaps",
+    "featureTracking": "Progress tracking & analytics",
+    "featureAssessments": "Adaptive knowledge assessments"
   },
   "editor": {
     "apply": "Apply",
@@ -216,6 +231,28 @@
   },
   "general": {
     "notFound": "Not Found"
+  },
+  "profile": {
+    "title": "Profile Settings",
+    "profileInfo": "Profile Information",
+    "profileInfoDesc": "Update your username, email and avatar.",
+    "username": "Username",
+    "enterUsername": "Enter username",
+    "email": "Email",
+    "enterEmail": "Enter email",
+    "avatarUrl": "Avatar URL",
+    "enterAvatarUrl": "Enter avatar image URL",
+    "saveChanges": "Save Changes",
+    "updateSuccess": "Profile updated successfully.",
+    "updateFailed": "Failed to update profile. Please try again.",
+    "security": "Security",
+    "securityDesc": "Change your password.",
+    "resetPassword": "Reset Password",
+    "resetPasswordDesc": "You will receive an email with instructions to reset your password.",
+    "sendResetLink": "Send Reset Link",
+    "resetEmailSent": "Reset email sent! Check your inbox.",
+    "resetFailed": "Failed to send reset email. Please try again.",
+    "avatar": "Avatar"
   },
   "home": {
     "greeting": "Welcome back",

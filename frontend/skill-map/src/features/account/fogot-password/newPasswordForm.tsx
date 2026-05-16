@@ -1,20 +1,12 @@
 'use client';
-import { Button, Field, Input, Spinner, VStack } from '@chakra-ui/react';
+import { Button, Field, VStack } from '@chakra-ui/react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { PasswordInput } from '@/components/ui/password-input';
 import { useState } from 'react';
 
-const schema = z
-  .object({
-    newPassword: z.string().min(6, 'Password must be at least 6 characters'),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: 'Passwords must match',
-  });
-type FormValues = z.infer<typeof schema>;
+type FormValues = { newPassword: string; confirmPassword: string };
 
 export function NewPasswordForm({
   onSubmit,
@@ -27,6 +19,7 @@ export function NewPasswordForm({
 }) {
   const [isPasswordVisible, setPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+
   const schema = z
     .object({
       newPassword: z.string().min(6, 'Password must be at least 6 characters'),
@@ -47,48 +40,42 @@ export function NewPasswordForm({
 
   return (
     <VStack as="form" onSubmit={handleSubmit(onSubmit)} gap={4} w="full">
-      <Field.Root required>
-        <Field.Label>
+      <Field.Root required invalid={!!errors.newPassword}>
+        <Field.Label fontSize="sm" fontWeight="medium">
           {getAuthTranslations('newPassword')} <Field.RequiredIndicator />
         </Field.Label>
         <PasswordInput
-          defaultValue="password"
           visible={isPasswordVisible}
           onVisibleChange={setPasswordVisible}
-          borderColor="brand.100"
           {...register('newPassword')}
         />
         {errors.newPassword && (
-          <Field.HelperText color="red.500" fontSize="sm">
-            {errors.newPassword.message}
-          </Field.HelperText>
+          <Field.ErrorText fontSize="xs">{errors.newPassword.message}</Field.ErrorText>
         )}
       </Field.Root>
 
-      <Field.Root required>
-        <Field.Label>
+      <Field.Root required invalid={!!errors.confirmPassword}>
+        <Field.Label fontSize="sm" fontWeight="medium">
           {getAuthTranslations('confirmPassword')} <Field.RequiredIndicator />
         </Field.Label>
         <PasswordInput
-          defaultValue="password"
           visible={isConfirmPasswordVisible}
           onVisibleChange={setConfirmPasswordVisible}
-          borderColor="brand.100"
           {...register('confirmPassword')}
         />
         {errors.confirmPassword && (
-          <Field.HelperText color="red.500" fontSize="sm">
-            {errors.confirmPassword.message}
-          </Field.HelperText>
+          <Field.ErrorText fontSize="xs">{errors.confirmPassword.message}</Field.ErrorText>
         )}
       </Field.Root>
 
-      <Button type="submit" width="full" variant="outline" disabled={isLoading}>
-        {isLoading ? (
-          <Spinner color="blue.500" animationDuration="0.8s" size="sm" />
-        ) : (
-          getAuthTranslations('setNewPassword')
-        )}
+      <Button
+        type="submit"
+        colorPalette="brand"
+        size="sm"
+        w="full"
+        loading={isLoading}
+      >
+        {getAuthTranslations('setNewPassword')}
       </Button>
     </VStack>
   );
