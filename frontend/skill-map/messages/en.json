@@ -217,6 +217,28 @@
   "general": {
     "notFound": "Not Found"
   },
+  "profile": {
+    "title": "Profile Settings",
+    "profileInfo": "Profile Information",
+    "profileInfoDesc": "Update your username, email and avatar.",
+    "username": "Username",
+    "enterUsername": "Enter username",
+    "email": "Email",
+    "enterEmail": "Enter email",
+    "avatarUrl": "Avatar URL",
+    "enterAvatarUrl": "Enter avatar image URL",
+    "saveChanges": "Save Changes",
+    "updateSuccess": "Profile updated successfully.",
+    "updateFailed": "Failed to update profile. Please try again.",
+    "security": "Security",
+    "securityDesc": "Change your password.",
+    "resetPassword": "Reset Password",
+    "resetPasswordDesc": "You will receive an email with instructions to reset your password.",
+    "sendResetLink": "Send Reset Link",
+    "resetEmailSent": "Reset email sent! Check your inbox.",
+    "resetFailed": "Failed to send reset email. Please try again.",
+    "avatar": "Avatar"
+  },
   "home": {
     "greeting": "Welcome back",
     "savedRoadmaps": "Saved Roadmaps",
