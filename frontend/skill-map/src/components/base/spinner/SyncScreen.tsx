@@ -14,12 +14,12 @@ export default function SyncScreen() {
       alignItems="center"
       justifyContent="center"
     >
-      <VStack gap={4}>
+      <VStack gap={5}>
         <Flex position="relative" alignItems="center" justifyContent="center">
           {/* Outer spinning ring */}
           <Spinner
-            color="blue.400"
-            animationDuration="1.2s"
+            color="brand.800"
+            animationDuration="1.1s"
             size="xl"
             borderWidth="3px"
           />
@@ -29,15 +29,15 @@ export default function SyncScreen() {
             alignItems="center"
             justifyContent="center"
           >
-            <IoCloudUploadOutline size={22} color="var(--chakra-colors-blue-400)" />
+            <IoCloudUploadOutline size={22} color="var(--chakra-colors-brand-200)" />
           </Flex>
         </Flex>
 
         <VStack gap={1}>
-          <Text fontWeight="semibold" fontSize="md" color="fg">
+          <Text fontWeight="700" fontSize="md" color="text.heading">
             Syncing your changes…
           </Text>
-          <Text fontSize="sm" color="fg.muted">
+          <Text fontSize="sm" color="text.muted">
             Sending offline edits to the server
           </Text>
         </VStack>
@@ -45,4 +45,3 @@ export default function SyncScreen() {
     </Flex>
   );
 }
-

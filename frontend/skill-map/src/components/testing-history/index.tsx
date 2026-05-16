@@ -204,6 +204,7 @@ export default function TestingHistory({
                   mt={2}
                   onClick={() => onGenerateInitialTest()}
                   loading={isInitialTestGenerating}
+                  size="sm"
                 >
                   {getTestingHistoryTranslations('generateInitialTest')}
                 </Button>

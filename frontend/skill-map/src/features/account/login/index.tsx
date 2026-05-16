@@ -6,8 +6,8 @@ import {
   Link,
   VStack,
   Text,
-  Box,
-  Spinner,
+  Heading,
+  Separator,
 } from '@chakra-ui/react';
 import { PasswordInput } from '@/components/ui/password-input';
 import { useState } from 'react';
@@ -57,78 +57,75 @@ export default function LoginComponent() {
   };
 
   return (
-    <VStack
-      gap={4}
-      w="full"
-      h="full"
-      justify="center"
-      px={12}
-      as="form"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <Field.Root required>
-        <Field.Label>
+    <VStack gap={5} w="full" as="form" onSubmit={handleSubmit(onSubmit)}>
+      <VStack gap={1} align="flex-start" w="full" mb={2}>
+        <Heading size="lg" color="text.heading" fontWeight="800">
+          {getAuthTranslations('welcomeBack')}
+        </Heading>
+        <Text fontSize="sm" color="text.muted">
+          {getAuthTranslations('loginSubtitle')}
+        </Text>
+      </VStack>
+
+      <Field.Root required invalid={!!errors.email} w="full">
+        <Field.Label fontSize="sm" fontWeight="medium">
           {getAuthTranslations('email')} <Field.RequiredIndicator />
         </Field.Label>
         <Input
           placeholder={getAuthTranslations('enterEmail')}
           type="email"
-          borderColor="brand.100"
+          size="md"
           {...register('email')}
         />
         {errors.email && (
-          <Field.HelperText fontSize="sm">
-            {errors.email.message}
-          </Field.HelperText>
+          <Field.ErrorText fontSize="xs">{errors.email.message}</Field.ErrorText>
         )}
       </Field.Root>
 
-      <Field.Root required>
-        <Field.Label>
+      <Field.Root required invalid={!!errors.password} w="full">
+        <Field.Label fontSize="sm" fontWeight="medium">
           {getAuthTranslations('password')} <Field.RequiredIndicator />
         </Field.Label>
         <PasswordInput
-          defaultValue="password"
           visible={visible}
           onVisibleChange={setVisible}
-          borderColor="brand.100"
           {...register('password')}
         />
         {errors.password && (
-          <Field.HelperText fontSize="sm">
-            {errors.password.message}
-          </Field.HelperText>
+          <Field.ErrorText fontSize="xs">{errors.password.message}</Field.ErrorText>
         )}
       </Field.Root>
 
+      <Link
+        color="brand.500"
+        href="/forgot-password"
+        fontWeight="medium"
+        fontSize="sm"
+        alignSelf="flex-end"
+        mt={-2}
+      >
+        {getAuthTranslations('forgotPassword')}
+      </Link>
+
       <Button
         type="submit"
-        width="full"
-        variant="outline"
-        mt={8}
-        disabled={isLoading}
+        colorPalette="brand"
+        size="sm"
+        w="full"
+        loading={isLoading}
+        mt={2}
       >
-        {isLoading ? (
-          <Spinner color="blue.500" animationDuration="0.8s" size="sm" />
-        ) : (
-          getAuthTranslations('login')
-        )}
+        {getAuthTranslations('login')}
       </Button>
 
-      <Text textAlign="center">
-        <Link color="brand.300" href="/forgot-password" fontWeight="medium">
-          {getAuthTranslations('forgotPassword')}
+      <Separator />
+
+      <Text fontSize="sm" color="text.muted" textAlign="center">
+        {getAuthTranslations('noAccount')}{' '}
+        <Link color="brand.500" href="/register" fontWeight="semibold">
+          {getAuthTranslations('signUpHere')}
         </Link>
       </Text>
-
-      <Box mt={6}>
-        <Text textAlign="center">
-          {getAuthTranslations('noAccount')}{' '}
-          <Link color="brand.300" href="/register" fontWeight="medium">
-            {getAuthTranslations('signUpHere')}
-          </Link>
-        </Text>
-      </Box>
     </VStack>
   );
 }

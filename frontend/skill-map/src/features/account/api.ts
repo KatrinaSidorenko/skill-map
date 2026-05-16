@@ -54,6 +54,27 @@ export const accountApi = createApi({
         method: 'GET',
       }),
     }),
+    getProfile: builder.query<AppUser, void>({
+      query: () => ({
+        url: '/profile',
+        method: 'GET',
+      }),
+      onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+        const { data } = await queryFulfilled;
+        dispatch(setUser(data));
+      },
+    }),
+    updateProfile: builder.mutation<AppUser, UpdateProfileRequest>({
+      query: (request) => ({
+        url: '/profile',
+        method: 'PATCH',
+        body: request,
+      }),
+      onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+        const { data } = await queryFulfilled;
+        dispatch(setUser(data));
+      },
+    }),
   }),
 });
 
@@ -64,4 +85,7 @@ export const {
   useResetPasswordMutation,
   useVerifyTokenMutation,
   useSetNewPasswordMutation,
+  useLazyGetProfileQuery,
+  useGetProfileQuery,
+  useUpdateProfileMutation,
 } = accountApi;

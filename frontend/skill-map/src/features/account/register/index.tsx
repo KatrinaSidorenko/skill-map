@@ -6,8 +6,8 @@ import {
   Link,
   VStack,
   Text,
-  Box,
-  Spinner,
+  Heading,
+  Separator,
 } from '@chakra-ui/react';
 import { PasswordInput } from '@/components/ui/password-input';
 import { useState } from 'react';
@@ -35,7 +35,7 @@ export default function RegisterComponent() {
   const accountCreationSchema = z.object({
     email: z.string(),
     password: z.string().min(6, getAuthTranslations('passwordMinLength')),
-    username: z.string().min(3, 'Username must be at least 3 characters long'),
+    username: z.string().min(3, getAuthTranslations('usernameMinLength3')),
     role: z.string().default('User') as z.ZodType<Role>,
   });
 
@@ -43,11 +43,10 @@ export default function RegisterComponent() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<RegisterSchema>({
-    resolver: zodResolver(accountCreationSchema),
-  });
+  } = useForm<RegisterSchema>({ resolver: zodResolver(accountCreationSchema) });
 
   const [userRegister, { isLoading }] = useRegisterMutation();
+
   const onSubmit = async (data: RegisterSchema) => {
     const registerAction = async () => {
       await userRegister({
@@ -58,94 +57,83 @@ export default function RegisterComponent() {
       }).unwrap();
       router.push('/login');
     };
-
     await triggerWrapper(registerAction());
   };
 
   return (
-    <VStack
-      gap={4}
-      w="full"
-      h="full"
-      justify="center"
-      px={12}
-      as="form"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <Field.Root required>
-        <Field.Label>
+    <VStack gap={5} w="full" as="form" onSubmit={handleSubmit(onSubmit)}>
+      <VStack gap={1} align="flex-start" w="full" mb={2}>
+        <Heading size="lg" color="text.heading" fontWeight="800">
+          {getAuthTranslations('createAccount')}
+        </Heading>
+        <Text fontSize="sm" color="text.muted">
+          {getAuthTranslations('registerSubtitle')}
+        </Text>
+      </VStack>
+
+      <Field.Root required invalid={!!errors.username} w="full">
+        <Field.Label fontSize="sm" fontWeight="medium">
           {getAuthTranslations('username')} <Field.RequiredIndicator />
         </Field.Label>
         <Input
           placeholder={getAuthTranslations('eneterUsername')}
           type="text"
-          borderColor="brand.100"
+          size="md"
           {...register('username')}
         />
         {errors.username && (
-          <Field.HelperText fontSize="sm">
-            {errors.username.message}
-          </Field.HelperText>
+          <Field.ErrorText fontSize="xs">{errors.username.message}</Field.ErrorText>
         )}
       </Field.Root>
 
-      <Field.Root required>
-        <Field.Label>
+      <Field.Root required invalid={!!errors.email} w="full">
+        <Field.Label fontSize="sm" fontWeight="medium">
           {getAuthTranslations('email')} <Field.RequiredIndicator />
         </Field.Label>
         <Input
           placeholder={getAuthTranslations('enterEmail')}
           type="email"
-          borderColor="brand.100"
+          size="md"
           {...register('email')}
         />
         {errors.email && (
-          <Field.HelperText fontSize="sm">
-            {errors.email.message}
-          </Field.HelperText>
+          <Field.ErrorText fontSize="xs">{errors.email.message}</Field.ErrorText>
         )}
       </Field.Root>
 
-      <Field.Root required>
-        <Field.Label>
+      <Field.Root required invalid={!!errors.password} w="full">
+        <Field.Label fontSize="sm" fontWeight="medium">
           {getAuthTranslations('password')} <Field.RequiredIndicator />
         </Field.Label>
         <PasswordInput
-          defaultValue="password"
           visible={visible}
           onVisibleChange={setVisible}
-          borderColor="brand.100"
           {...register('password')}
         />
         {errors.password && (
-          <Field.HelperText fontSize="sm">
-            {errors.password.message}
-          </Field.HelperText>
+          <Field.ErrorText fontSize="xs">{errors.password.message}</Field.ErrorText>
         )}
       </Field.Root>
 
       <Button
         type="submit"
-        width="full"
-        variant="outline"
-        mt={8}
-        disabled={isLoading}
+        colorPalette="brand"
+        size="sm"
+        w="full"
+        loading={isLoading}
+        mt={2}
       >
-        {isLoading ? (
-          <Spinner color="blue.500" animationDuration="0.8s" size="sm" />
-        ) : (
-          getAuthTranslations('register')
-        )}
+        {getAuthTranslations('register')}
       </Button>
 
-      <Box mt={6}>
-        <Text textAlign="center">
-          {getAuthTranslations('haveAccount')}{' '}
-          <Link color="brand.300" href="/login" fontWeight="medium">
-            {getAuthTranslations('loginHere')}
-          </Link>
-        </Text>
-      </Box>
+      <Separator />
+
+      <Text fontSize="sm" color="text.muted" textAlign="center">
+        {getAuthTranslations('haveAccount')}{' '}
+        <Link color="brand.500" href="/login" fontWeight="semibold">
+          {getAuthTranslations('loginHere')}
+        </Link>
+      </Text>
     </VStack>
   );
 }

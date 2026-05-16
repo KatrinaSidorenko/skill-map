@@ -2,7 +2,7 @@ interface AppUser {
   id: string;
   email: string;
   username: string;
-  avatarUrl?: string;
+  imageUrl?: string;
 }
 
 type Role = 'User' | 'Mentor' | 'Admin';
@@ -31,4 +31,10 @@ interface SetNewPasswordRequest {
 
 interface PasswordResetRequest {
   email: string;
+}
+
+interface UpdateProfileRequest {
+  username?: string;
+  email?: string;
+  imageUrl?: string;
 }

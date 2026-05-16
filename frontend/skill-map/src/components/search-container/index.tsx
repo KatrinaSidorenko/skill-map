@@ -9,13 +9,12 @@ import {
   Input,
   InputGroup,
   Spinner,
-  Stack,
   Text,
 } from '@chakra-ui/react';
 import { LuSearch } from 'react-icons/lu';
+import { AiOutlineArrowLeft, AiOutlineArrowRight } from 'react-icons/ai';
 import ErrorScreen from '@/components/base/error';
 import SpinnerScreen from '@/components/base/spinner';
-import { AiOutlineArrowLeft, AiOutlineArrowRight } from 'react-icons/ai';
 import ContentNotFoundScreen from '../base/notfound';
 import useLocalization from '@/i18n/useLocalization';
 
@@ -63,7 +62,6 @@ export default function SearchContainer<T>({
         pageSize,
         query: search,
       });
-      console.log(result);
       setItems(result.items);
       setTotalPages(Math.max(1, Math.ceil(result.total / pageSize)));
       setError(null);
@@ -99,30 +97,54 @@ export default function SearchContainer<T>({
       alignItems="center"
       justifyContent="flex-start"
     >
-      <HStack justify="space-between" mb={8} width={'full'} px={4} pt={4}>
+      {/* Search bar */}
+      <HStack justify="space-between" mb={6} width="full" px={1} pt={2}>
         {leftHeaderElement}
         <InputGroup
-          borderRadius="md"
-          bg="bg.page"
-          boxShadow="sm"
-          width={{ base: 'full', md: '400px' }}
+          borderRadius="xl"
+          bg="bg.section"
+          boxShadow="0 1px 3px rgba(0,0,0,0.06)"
+          width={{ base: 'full', md: '380px' }}
           endElement={
-            <LuSearch onClick={handleSearch} style={{ cursor: 'pointer' }} />
+            <LuSearch
+              onClick={handleSearch}
+              style={{ cursor: 'pointer', color: 'var(--chakra-colors-brand-500)' }}
+            />
           }
         >
           <Input
             placeholder={placeholder}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            borderRadius="xl"
+            borderColor="border.muted"
+            _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
+            fontSize="sm"
           />
         </InputGroup>
         {rightHederElement}
       </HStack>
 
-      <Box flex="1" w="full" px={4}>
-        {isFetching && items.length === 0 ? (
-          <Flex justifyContent="center" py={8}>
-            <Spinner />
+      {/* Content area */}
+      <Box flex="1" w="full" px={1} position="relative">
+        {isFetching ? (
+          /* Overlay spinner while re-fetching */
+          <Flex
+            w="full"
+            minH="40vh"
+            alignItems="center"
+            justifyContent="center"
+            direction="column"
+            gap={3}
+          >
+            <Flex position="relative" alignItems="center" justifyContent="center">
+              <Spinner color="brand.800" animationDuration="0.9s" size="lg" borderWidth="3px" />
+              <Flex position="absolute" alignItems="center" justifyContent="center">
+                <Box w="14px" h="14px" borderRadius="sm" bg="brand.200" />
+              </Flex>
+            </Flex>
+            <Text fontSize="sm" color="text.muted">Loading…</Text>
           </Flex>
         ) : items.length > 0 ? (
           renderContent(items)
@@ -131,24 +153,41 @@ export default function SearchContainer<T>({
         )}
       </Box>
 
-      <Flex alignItems="center" justifyContent="center" gap={4} py={6}>
+      {/* Pagination */}
+      <Flex alignItems="center" justifyContent="center" gap={3} py={6}>
         <Button
           onClick={handlePrev}
           disabled={page === 1 || isFetching}
           size="sm"
+          variant="outline"
+          borderRadius="lg"
+          borderColor="border.muted"
+          _hover={{ bg: 'brand.800', borderColor: 'brand.800', color: 'white' }}
         >
           <AiOutlineArrowLeft />
         </Button>
 
-        <Text fontSize="sm" color="gray.600">
-          {getRoadmapsTranslations('page')} {page}{' '}
-          {getRoadmapsTranslations('of')} {totalPages}
-        </Text>
+        <Flex
+          px={4}
+          py={1}
+          bg="bg.section"
+          borderRadius="lg"
+          borderWidth="1px"
+          borderColor="border.muted"
+        >
+          <Text fontSize="sm" color="text.heading" fontWeight="600">
+            {getRoadmapsTranslations('page')} {page} {getRoadmapsTranslations('of')} {totalPages}
+          </Text>
+        </Flex>
 
         <Button
           onClick={handleNext}
           disabled={page >= totalPages || isFetching}
           size="sm"
+          variant="outline"
+          borderRadius="lg"
+          borderColor="border.muted"
+          _hover={{ bg: 'brand.800', borderColor: 'brand.800', color: 'white' }}
         >
           <AiOutlineArrowRight />
         </Button>

@@ -42,7 +42,22 @@
     "UIE1": "Invalid password",
     "UIE2": "Email already in use",
     "UIE11": "Invalid reset token",
-    "SE12": "Failed to send email. Please try again later."
+    "SE12": "Failed to send email. Please try again later.",
+
+    "welcomeBack": "Welcome back",
+    "loginSubtitle": "Sign in to continue your learning journey",
+    "createAccount": "Create an account",
+    "registerSubtitle": "Start mapping your learning path today",
+    "usernameMinLength3": "Username must be at least 3 characters long",
+    "setNewPasswordFailed": "Failed to set new password. Please try again.",
+    "resetRequestSubtitle": "Enter your email to receive a reset token",
+    "resetVerifySubtitle": "Enter the token sent to your email",
+    "resetNewPasswordSubtitle": "Choose a new secure password",
+    "brandTagline": "Chart your path to mastery",
+    "brandDescription": "Build structured learning roadmaps, track progress, and stay on track with personalised assessments.",
+    "featureRoadmaps": "Visual learning roadmaps",
+    "featureTracking": "Progress tracking & analytics",
+    "featureAssessments": "Adaptive knowledge assessments"
   },
   "editor": {
     "apply": "Apply",

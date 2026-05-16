@@ -39,6 +39,10 @@ export default function useLocalization() {
     return translation(`home.${key}`);
   };
 
+  const getProfileTranslations = (key: keyof ILocalization['profile']) => {
+    return translation(`profile.${key}`);
+  };
+
   return {
     getHeaderTranslations,
     getAuthTranslations,
@@ -49,5 +53,6 @@ export default function useLocalization() {
     getAssessmentTranslations,
     getTestingHistoryTranslations,
     getHomeTranslations,
+    getProfileTranslations,
   };
 }

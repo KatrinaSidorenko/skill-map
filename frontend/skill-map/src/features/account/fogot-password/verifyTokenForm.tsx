@@ -1,4 +1,4 @@
-import { Button, Field, Input, Spinner, VStack } from '@chakra-ui/react';
+import { Button, Field, Input, VStack } from '@chakra-ui/react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -28,28 +28,29 @@ export function VerifyTokenForm({
 
   return (
     <VStack as="form" onSubmit={handleSubmit(onSubmit)} gap={4} w="full">
-      <Field.Root required>
-        <Field.Label>
+      <Field.Root required invalid={!!errors.token}>
+        <Field.Label fontSize="sm" fontWeight="medium">
           {getAuthTranslations('token')} <Field.RequiredIndicator />
         </Field.Label>
         <Input
           placeholder={getAuthTranslations('enterToken')}
           type="text"
+          size="md"
           {...register('token')}
         />
         {errors.token && (
-          <Field.HelperText color="red.500" fontSize="sm">
-            {errors.token.message}
-          </Field.HelperText>
+          <Field.ErrorText fontSize="xs">{errors.token.message}</Field.ErrorText>
         )}
       </Field.Root>
 
-      <Button type="submit" width="full" variant="outline" disabled={isLoading}>
-        {isLoading ? (
-          <Spinner color="blue.500" animationDuration="0.8s" size="sm" />
-        ) : (
-          getAuthTranslations('verifyToken')
-        )}
+      <Button
+        type="submit"
+        colorPalette="brand"
+        size="sm"
+        w="full"
+        loading={isLoading}
+      >
+        {getAuthTranslations('verifyToken')}
       </Button>
     </VStack>
   );
