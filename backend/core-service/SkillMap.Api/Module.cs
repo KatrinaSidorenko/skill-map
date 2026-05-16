@@ -6,6 +6,7 @@ internal record Module(string Value)
     internal static readonly Module PersonalRoadmaps = new("PersonalRoadmaps");
     internal static readonly Module RoadmapBlueprints = new("RoadmapBlueprints");
     internal static readonly Module RoadmapAssessments = new("RoadmapAssessments");
+    internal static readonly Module UserAccount = new("UserAccount");
 
     public static implicit operator string(Module module) => module.Value;
 }
