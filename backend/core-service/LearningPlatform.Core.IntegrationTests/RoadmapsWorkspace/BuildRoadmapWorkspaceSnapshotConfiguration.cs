@@ -6,6 +6,6 @@ internal class BuildRoadmapWorkspaceSnapshotConfiguration : IOptionsConfiguratio
 {
     public Dictionary<string, string?> Get() => new Dictionary<string, string?>
     {
-        {"BuildRoadmapWorkspaceSnapshotWorkerOptions:ScheduleInterval", "00:00:05" }
+        {"BuildRoadmapWorkspaceSnapshotWorker:ScheduleIntervalInMilliseconds", "2000" }
     };
 }

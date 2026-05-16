@@ -20,6 +20,7 @@ internal static class CreateEmptyRoadmapWorkspaceEndpoint
 
         return Results.Created($"{RoadmapsWorkspaceApiPaths.GetRoadmapWorkspace.Replace("{userRoadmapId}", workspaceId.ToString())}", workspaceId);
     })
+        .RequireAuthorization()
         .ValidateRequest<CreateEmptyRoadmapWorkspaceRequestValidator>()
         .Produces<long>(StatusCodes.Status201Created)
         .Produces(StatusCodes.Status400BadRequest)

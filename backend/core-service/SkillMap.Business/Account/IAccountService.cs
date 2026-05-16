@@ -5,6 +5,7 @@ namespace SkillMap.Business.Account;
 
 public interface IAccountService
 {
+    Task<bool> UserExists(long userId, CancellationToken ct);
     Task<Result<UserDto>> Login(LoginCommand loginDto, CancellationToken ct);
     Task<Result<bool>> Register(UserRegistrationDto userDto, CancellationToken ct);
     Task<Result<bool>> ResetPassword(string email, CancellationToken ct);

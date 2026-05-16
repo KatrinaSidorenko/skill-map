@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Security.Authentication;
+using System.Security.Claims;
 
 using Microsoft.AspNetCore.Http;
 
@@ -32,7 +33,7 @@ public class UserManager : IUserManager
 
         if (id == null || string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email))
         {
-            throw new ArgumentNullException("User claims are not valid");
+            throw new AuthenticationException("User claims are not valid");
         }
 
         return new AppUser
@@ -45,5 +46,5 @@ public class UserManager : IUserManager
     }
 
     public long GetCurrentUserId()
-        => GetCurrentUser()?.Id ?? throw new ArgumentNullException("User claims are not valid");
+        => GetCurrentUser()?.Id ?? throw new AuthenticationException("User claims are not valid");
 }
