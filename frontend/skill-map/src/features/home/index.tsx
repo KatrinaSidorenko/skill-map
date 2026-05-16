@@ -314,36 +314,6 @@ export default function HomePage() {
           </Stack>
         </Box>
       </Grid>
-
-      {/* Quick Actions */}
-      <Box>
-        <Heading size="md" color="text.heading" mb={3}>
-          {t('quickActionsSection')}
-        </Heading>
-        <Separator mb={4} />
-        <HStack gap={3} wrap="wrap">
-          <QuickAction
-            label={t('exploreAction')}
-            icon={FiCompass}
-            onClick={() => router.push('/explore')}
-          />
-          <QuickAction
-            label={t('savedAction')}
-            icon={FiStar}
-            onClick={() => router.push('/saved')}
-          />
-          <QuickAction
-            label={t('createAction')}
-            icon={FiPlusCircle}
-            onClick={() => router.push('/sandbox')}
-          />
-          <QuickAction
-            label={t('sandboxAction')}
-            icon={FiBox}
-            onClick={() => router.push('/sandbox')}
-          />
-        </HStack>
-      </Box>
     </Stack>
   );
 }
