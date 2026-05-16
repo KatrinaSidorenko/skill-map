@@ -4,6 +4,7 @@ using LearningPlatform.Roadmap.Business;
 using LearningPlatform.RoadmapTests.Contracts;
 using LearningPlatform.Shared.Caching;
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -13,6 +14,7 @@ using SkillMap.Business.Account;
 using SkillMap.Business.RoadmapsWorkspace;
 using SkillMap.Core.PersonalizedRoadmaps;
 using SkillMap.Infrastructure.Account;
+using SkillMap.Infrastructure.Database;
 using SkillMap.Infrastructure.Email;
 using SkillMap.Infrastructure.EventBus;
 using SkillMap.Infrastructure.PersonalizedRoadmaps;
@@ -65,5 +67,11 @@ public static class LayerRegistration
         services.AddCaching();
 
         return services;
+    }
+
+    public static IApplicationBuilder UseInfrastructure(this IApplicationBuilder app)
+    {
+        app.UseAutomaticMigrations();
+        return app;
     }
 }

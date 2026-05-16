@@ -31,6 +31,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseInfrastructure();
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
 // todo: extract to gateway
@@ -41,3 +42,8 @@ app.MapControllers();
 app.RegisterModules();
 
 app.Run();
+
+namespace SkillMap.Api
+{
+    public sealed class Program;
+}

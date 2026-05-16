@@ -16,6 +16,11 @@ public class AccountService(
     IResetAccountService resetAccountService,
     IPasswordHasher passwordHasher) : IAccountService
 {
+    public async Task<bool> UserExists(long userId, CancellationToken ct)
+    {
+        var user = await userRepository.GetByIdAsync(userId, ct);
+        return user is not null;
+    }
     public async Task<Result<UserDto>> Login(LoginCommand loginCommand, CancellationToken ct)
     {
         var validationResult = await loginValidator.ValidateAsync(loginCommand, ct);

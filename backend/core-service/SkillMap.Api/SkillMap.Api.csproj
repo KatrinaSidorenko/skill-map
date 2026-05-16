@@ -16,6 +16,10 @@
     </PackageReference>
   </ItemGroup>
 
+    <ItemGroup>
+        <InternalsVisibleTo Include="LearningPlatform.Core.IntegrationTests" />
+    </ItemGroup>
+    
   <ItemGroup>
     <ProjectReference Include="..\..\shared\LearningPlatform.Shared.Api\LearningPlatform.Shared.Api.csproj" />
     <ProjectReference Include="..\SkillMap.Business\SkillMap.Business.csproj" />

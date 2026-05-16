@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using SkillMap.Business.RoadmapsWorkspace;
 using SkillMap.Infrastructure.RoadmapsWorkspace;
+using SkillMap.Infrastructure.RoadmapsWorkspace.BuildRoadmapWorkspaceSnapshot;
 
 namespace SkillMap.Infrastructure.PersonalizedRoadmaps;
 public static class PersonalRoadmapMediationModule
@@ -16,6 +17,8 @@ public static class PersonalRoadmapMediationModule
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(commandsHandlersAssembly));
 
         services.AddScoped<Business.PersonalRoadmaps.IRoadmapWorkspaceModule, PersonalRoadmapModule>();
+
+        services.Configure<BuildRoadmapWorkspaceSnapshotWorkerOptions>(configuration.GetSection(BuildRoadmapWorkspaceSnapshotWorkerOptions.SectionName));
         services.AddHostedService<BuildRoadmapWorkspaceSnapshotWorker>();
 
         services.AddScoped<IRoadmapWorkspaceEventRepository, RoadmapWorkspaceEventRepository>();
@@ -33,7 +36,6 @@ public static class PersonalRoadmapMediationModule
         services.AddSingleton<IRoadmapWorkspaceActionReviewedNotifier, RoadmapWorkspaceActionReviewedNotifier>();
         services.AddSingleton<IWorkspaceEventsReviewer, RoadmapWorkspaceEventsReviewer>();
 
-        //services.AddWorkspaceWebSockets(configuration);
         return services;
     }
 }

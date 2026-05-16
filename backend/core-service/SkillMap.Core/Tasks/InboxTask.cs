@@ -13,6 +13,7 @@ public enum TaskStatus
 public enum TaskType
 {
     BuildWorkspaceSnapshot = 0,
+    BuildInitialWorkspaceSnapshot = 1,
 }
 
 public class InboxTaskOutput

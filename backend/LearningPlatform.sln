@@ -51,6 +51,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningPlatform.Gateway", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningPlatform.Workspace.WebSockets.Service", "roadmap-workspace\LearningPlatform.Workspace.WebSockets.Service\LearningPlatform.Workspace.WebSockets.Service.csproj", "{710C3108-B6B4-4921-A1B6-376CA62FAAB4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningPlatform.Core.IntegrationTests", "core-service\LearningPlatform.Core.IntegrationTests\LearningPlatform.Core.IntegrationTests.csproj", "{81C49C42-7EC1-4EC9-B8BB-6A138CB06608}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,6 +127,10 @@ Global
 		{710C3108-B6B4-4921-A1B6-376CA62FAAB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{710C3108-B6B4-4921-A1B6-376CA62FAAB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{710C3108-B6B4-4921-A1B6-376CA62FAAB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81C49C42-7EC1-4EC9-B8BB-6A138CB06608}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81C49C42-7EC1-4EC9-B8BB-6A138CB06608}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81C49C42-7EC1-4EC9-B8BB-6A138CB06608}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81C49C42-7EC1-4EC9-B8BB-6A138CB06608}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -153,6 +159,7 @@ Global
 		{2846BB78-C771-4614-B992-916614BEA904} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{65892AB0-2FD6-488E-A7BA-E91EC99D0E44} = {2846BB78-C771-4614-B992-916614BEA904}
 		{710C3108-B6B4-4921-A1B6-376CA62FAAB4} = {A2B7A6F9-4512-4BA4-8EAA-B8A4E036928A}
+		{81C49C42-7EC1-4EC9-B8BB-6A138CB06608} = {CCE2F5E8-64E2-4E99-AE39-06358169212A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3044A960-D773-46CB-9347-147499DCD200}
