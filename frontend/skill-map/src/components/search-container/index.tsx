@@ -25,16 +25,12 @@ interface SearchContainerProps<T> {
     pageNumber: number;
     pageSize: number;
     query: string | null;
-  }) => Promise<{ items: T[]; total: number }>;
+  }) => Promise<{ items: T[] }>;
   renderContent: (items: T[]) => ReactNode;
   rightHederElement?: ReactNode;
   leftHeaderElement?: ReactNode;
 }
 
-/**
- * Generic Search + Pagination container.
- * Handles search, pagination, loading and error states.
- */
 export default function SearchContainer<T>({
   placeholder = 'Search...',
   pageSize = 10,
@@ -46,7 +42,7 @@ export default function SearchContainer<T>({
   const { getRoadmapsTranslations } = useLocalization();
   const [page, setPage] = useState(1);
   const [items, setItems] = useState<T[]>([]);
-  const [totalPages, setTotalPages] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState<string | null>('');
 
@@ -63,7 +59,7 @@ export default function SearchContainer<T>({
         query: search,
       });
       setItems(result.items);
-      setTotalPages(Math.max(1, Math.ceil(result.total / pageSize)));
+      setHasMore(result.items.length === pageSize);
       setError(null);
     } catch (err) {
       console.error(err);
@@ -85,7 +81,7 @@ export default function SearchContainer<T>({
   };
 
   const handlePrev = () => page > 1 && setPage((p) => p - 1);
-  const handleNext = () => page < totalPages && setPage((p) => p + 1);
+  const handleNext = () => hasMore && setPage((p) => p + 1);
 
   if (error) return <ErrorScreen />;
   if (isLoading && page === 1) return <SpinnerScreen />;
@@ -93,7 +89,7 @@ export default function SearchContainer<T>({
   return (
     <Flex
       direction="column"
-      minH="100%"
+      h="80vh"
       alignItems="center"
       justifyContent="flex-start"
     >
@@ -108,7 +104,10 @@ export default function SearchContainer<T>({
           endElement={
             <LuSearch
               onClick={handleSearch}
-              style={{ cursor: 'pointer', color: 'var(--chakra-colors-brand-500)' }}
+              style={{
+                cursor: 'pointer',
+                color: 'var(--chakra-colors-brand-500)',
+              }}
             />
           }
         >
@@ -119,7 +118,10 @@ export default function SearchContainer<T>({
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             borderRadius="xl"
             borderColor="border.muted"
-            _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
+            _focus={{
+              borderColor: 'brand.500',
+              boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
+            }}
             fontSize="sm"
           />
         </InputGroup>
@@ -138,13 +140,28 @@ export default function SearchContainer<T>({
             direction="column"
             gap={3}
           >
-            <Flex position="relative" alignItems="center" justifyContent="center">
-              <Spinner color="brand.800" animationDuration="0.9s" size="lg" borderWidth="3px" />
-              <Flex position="absolute" alignItems="center" justifyContent="center">
+            <Flex
+              position="relative"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Spinner
+                color="brand.800"
+                animationDuration="0.9s"
+                size="lg"
+                borderWidth="3px"
+              />
+              <Flex
+                position="absolute"
+                alignItems="center"
+                justifyContent="center"
+              >
                 <Box w="14px" h="14px" borderRadius="sm" bg="brand.200" />
               </Flex>
             </Flex>
-            <Text fontSize="sm" color="text.muted">Loading…</Text>
+            <Text fontSize="sm" color="text.muted">
+              Loading…
+            </Text>
           </Flex>
         ) : items.length > 0 ? (
           renderContent(items)
@@ -176,13 +193,13 @@ export default function SearchContainer<T>({
           borderColor="border.muted"
         >
           <Text fontSize="sm" color="text.heading" fontWeight="600">
-            {getRoadmapsTranslations('page')} {page} {getRoadmapsTranslations('of')} {totalPages}
+            {getRoadmapsTranslations('page')} {page}
           </Text>
         </Flex>
 
         <Button
           onClick={handleNext}
-          disabled={page >= totalPages || isFetching}
+          disabled={!hasMore || isFetching}
           size="sm"
           variant="outline"
           borderRadius="lg"

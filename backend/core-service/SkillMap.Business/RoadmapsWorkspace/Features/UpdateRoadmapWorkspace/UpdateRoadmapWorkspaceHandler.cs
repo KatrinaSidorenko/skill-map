@@ -14,14 +14,14 @@ internal sealed class UpdateRoadmapWorkspaceHandler(IRoadmapWorkspaceRepository 
     {
         var workspace = await repository.GetUserActiveWorkspace(request.WorkspaceId, cancellationToken);
 
-        var current = workspace.Metadata;
+        if (request.Title is not null)
+            workspace.UpdateTitle(request.Title);
 
-        var updated = new RoadmapWorkspaceMetadata(
-        request.Title ?? current.Title,
-        request.Description ?? current.Description,
-        request.ImageUrl ?? current.ImageUrl);
+        if (request.Description is not null)
+            workspace.UpdateDescription(request.Description);
 
-        workspace.SetMetadata(updated);
+        if (request.ImageUrl is not null)
+            workspace.UpdateImageUrl(request.ImageUrl);
 
         await repository.UpdateAsync(workspace, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);

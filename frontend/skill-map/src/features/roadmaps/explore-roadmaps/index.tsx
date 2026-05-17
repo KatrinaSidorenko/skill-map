@@ -23,7 +23,6 @@ export default function ExploreRoadmapsPage() {
     const { data } = await fetchRoadmaps({ pageNumber, pageSize, query });
     return {
       items: data?.items ?? [],
-      total: data?.total ?? 0,
     };
   };
 

@@ -28,9 +28,9 @@ internal sealed class GetRoadmapWorkspaceSummaryHandler(IRoadmapWorkspaceReposit
 
         return RoadmapWorkspaceSummaryDto.Create(
             workspace.Id,
-            title: workspace.Metadata?.Title ?? string.Empty,
-            description: workspace.Metadata?.Description ?? string.Empty,
-            imageUrl: workspace.Metadata?.ImageUrl ?? string.Empty,
+            title: workspace.Title,
+            description: workspace.Description ?? string.Empty,
+            imageUrl: workspace.ImageUrl ?? string.Empty,
             workspace.CreatedAt,
             status,
             progress);

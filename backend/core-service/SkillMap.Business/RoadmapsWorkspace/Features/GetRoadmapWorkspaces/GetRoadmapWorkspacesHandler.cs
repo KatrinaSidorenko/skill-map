@@ -13,15 +13,18 @@ using SkillMap.Shared.Models;
 namespace SkillMap.Business.RoadmapsWorkspace.Features.GetRoadmapWorkspaces;
 
 [UsedImplicitly]
-internal sealed class GetRoadmapWorkspacesHandler(IRoadmapWorkspaceRepository repository, IRoadmapLearningItemProjectionRepository roadmapLearningItemStatusRepository)
-    : IRequestHandler<GetRoadmapWorkspacesQuery, PaginationResult<RoadmapWorkspaceSummaryDto>>
+internal sealed class GetRoadmapWorkspacesHandler(IRoadmapWorkspaceRepository repository) : IRequestHandler<GetRoadmapWorkspacesQuery, PaginationResult<RoadmapWorkspaceSummaryDto>>
 {
     public async Task<PaginationResult<RoadmapWorkspaceSummaryDto>> Handle(GetRoadmapWorkspacesQuery request, CancellationToken cancellationToken)
     {
-        var userWorkspaces = await repository.GetUserActiveNonAuthoredWorkspacesWithSnapshots(
+        var userWorkspaces = await repository.GetUserActiveNonAuthoredWorkspacesWithProjections(
             request.UserId,
             request.FilteringParams.PaginationParams.PageNumber,
             request.FilteringParams.PaginationParams.PageSize,
+            filter: !string.IsNullOrEmpty(request.FilteringParams.SearchTerm)
+                ? w => w.Title.ToLower().Contains(request.FilteringParams.SearchTerm.ToLower())
+                : null,
+            orderBy: w => w.OrderByDescending(workspace => workspace.CreatedAt),
             cancellationToken);
 
         var result = new List<RoadmapWorkspaceSummaryDto>();
@@ -30,13 +33,12 @@ internal sealed class GetRoadmapWorkspacesHandler(IRoadmapWorkspaceRepository re
             var totalItems = workspace.LearningItemProjections.Count;
             var completedItems = workspace.LearningItemProjections.Count(p => p.Status == LearningStatus.Completed.ToStatusString());
             var (progress, status) = RoadmapWorkspaceSnapshotExtensions.CalculateSnapshotMetadata(totalItems, completedItems);
-            if (workspace.Metadata == null) { continue; }
 
             result.Add(RoadmapWorkspaceSummaryDto.Create(
                 workspace.Id,
-                title: workspace.Metadata?.Title ?? string.Empty,
-                description: workspace.Metadata?.Description ?? string.Empty,
-                imageUrl: workspace.Metadata?.ImageUrl ?? string.Empty,
+                title: workspace.Title,
+                description: workspace.Description ?? string.Empty,
+                imageUrl: workspace.ImageUrl ?? string.Empty,
                 workspace.CreatedAt,
                 status,
                 progress));

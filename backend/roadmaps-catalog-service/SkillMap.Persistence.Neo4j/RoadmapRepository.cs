@@ -203,6 +203,7 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
             var query = $@"
                 MATCH (r:{RoadmapLabelConstants.ROADMAP})
                 WHERE {whereClause}
+                ORDER BY r.title ASC
                 RETURN r
                 SKIP $skip
                 LIMIT $limit";
@@ -228,28 +229,28 @@ internal class RoadmapRepository : BaseRepository, IRoadmapRepository
             });
 
             // --- Count query ---
-            var countQuery = $@"
-                MATCH (r:{RoadmapLabelConstants.ROADMAP})
-                WHERE {whereClause}
-                RETURN count(r) AS total";
+            //var countQuery = $@"
+            //    MATCH (r:{RoadmapLabelConstants.ROADMAP})
+            //    WHERE {whereClause}
+            //    RETURN count(r) AS total";
 
-            var totalCount = await session.ExecuteReadAsync(async tx =>
-            {
-                var result = await tx.RunAsync(countQuery, new
-                {
-                    ids = roadmapIds,
-                    searchTerm = @params.SearchTerm
-                });
-                await result.FetchAsync();
-                return result.Current["total"].As<int>();
-            });
+            //var totalCount = await session.ExecuteReadAsync(async tx =>
+            //{
+            //    var result = await tx.RunAsync(countQuery, new
+            //    {
+            //        ids = roadmapIds,
+            //        searchTerm = @params.SearchTerm
+            //    });
+            //    await result.FetchAsync();
+            //    return result.Current["total"].As<int>();
+            //});
 
-            await session.CloseAsync();
+            //await session.CloseAsync();
 
             return Result.Success(new PaginationResult<NodeDto>
             {
                 Result = response,
-                TotalCount = totalCount
+                //TotalCount = totalCount
             });
         }
         catch (Exception ex)

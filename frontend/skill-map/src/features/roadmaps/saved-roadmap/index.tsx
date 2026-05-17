@@ -53,7 +53,6 @@ export default function SavedRoadmapsPage() {
     const { data } = await fetchSavedRoadmaps({ pageNumber, pageSize, query });
     return {
       items: data?.items ?? [],
-      total: data?.total ?? 0,
     };
   };
 

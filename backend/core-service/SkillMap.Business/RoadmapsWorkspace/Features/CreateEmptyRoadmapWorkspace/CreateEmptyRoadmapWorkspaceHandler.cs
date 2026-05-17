@@ -17,7 +17,7 @@ internal sealed class CreateEmptyRoadmapWorkspaceHandler(
     public async Task<long> Handle(CreateEmptyRoadmapWorkspaceCommand request, CancellationToken cancellationToken)
     {
         var roadmapWorkspace = new RoadmapWorkspace(request.UserId, roadmapId: null, personalRoadmapId: null);
-        roadmapWorkspace.SetMetadata(new RoadmapWorkspaceMetadata(request.Title, request.Description, request.ImageUrl));
+        roadmapWorkspace.SetMetadata(request.Title, request.Description, request.ImageUrl);
 
         await repository.AddAsync(roadmapWorkspace, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);

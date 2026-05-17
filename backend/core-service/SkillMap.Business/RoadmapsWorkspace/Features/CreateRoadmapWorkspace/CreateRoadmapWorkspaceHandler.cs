@@ -31,7 +31,7 @@ internal sealed class CreateRoadmapWorkspaceHandler(IRepository<RoadmapWorkspace
         if (blueprintResult.IsFailed) throw new InvalidOperationException($"Failed to get roadmap blueprint for roadmap id {request.RoadmapId}. Error: {blueprintResult.Message}");
 
         var blueprint = blueprintResult.Data.Result.Single();
-        roadmapWorkspace.SetMetadata(new RoadmapWorkspaceMetadata(blueprint.Title, blueprint.Description, blueprint.ImageUrl));
+        roadmapWorkspace.SetMetadata(blueprint.Title, blueprint.Description, blueprint.ImageUrl);
 
         await repository.AddAsync(roadmapWorkspace, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);

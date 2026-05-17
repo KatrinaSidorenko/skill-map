@@ -38,9 +38,9 @@ internal sealed class RoadmapWorkspacePublishedEventHandler(
         var snapshotContent = await latestSnapshot.GetRoadmapSnapshot(cancellationToken);
         var newRoadmapSnapshot = await snapshotContent.ApplyEventsToSnapshot(eventsList, cancellationToken);
         var blueprint = newRoadmapSnapshot.ToCreateBlueprint(
-            title: workspace.Metadata.Title,
-            description: workspace.Metadata.Description,
-            imageUrl: workspace.Metadata.ImageUrl,
+            title: workspace.Title,
+            description: workspace.Description,
+            imageUrl: workspace.ImageUrl,
             authorId: notification.AuthorId,
             version: eventsList.OrderByDescending(e => e.Version).First().Version);
         await roadmapBlueprintRepository.CreateFullRoadmap(blueprint, cancellationToken);
