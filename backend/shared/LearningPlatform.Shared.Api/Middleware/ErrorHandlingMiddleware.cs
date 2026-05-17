@@ -36,6 +36,7 @@ public class ErrorHandlingMiddleware(RequestDelegate next, ILogger<ErrorHandling
             ArgumentException argEx => new ExceptionResponse(HttpStatusCode.BadRequest, argEx.Message),
             LearningPlatformException lpe => new ExceptionResponse(lpe.ToStatusCode(), lpe.Message),
             InvalidOperationException invOpEx => new ExceptionResponse(HttpStatusCode.InternalServerError, invOpEx.Message),
+            NoContentException _ => new ExceptionResponse(HttpStatusCode.NoContent, "No content."),
             _ => new ExceptionResponse(HttpStatusCode.InternalServerError, "Internal server error.")
         };
 

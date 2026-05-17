@@ -212,6 +212,8 @@ interface ILocalization {
     generateInitialTest: string;
     rateLimitTitle: string;
     rateLimitDescription: string;
+    noContentTitle: string;
+    noContentDescription: string;
     best: string;
     max: string;
     attempts: string;

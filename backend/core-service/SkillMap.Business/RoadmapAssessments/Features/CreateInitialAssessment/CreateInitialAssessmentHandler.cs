@@ -11,6 +11,7 @@ using SkillMap.Business.RoadmapsWorkspace;
 using SkillMap.Core.Constants;
 using SkillMap.Core.RoadmapAssessments;
 using SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots;
+using SkillMap.Shared.Results;
 
 namespace SkillMap.Business.RoadmapAssessments.Features.CreateInitialAssessment;
 
@@ -21,13 +22,16 @@ internal class CreateInitialAssessmentHandler(
     IRepository<RoadmapAssessment> repository)
     : IRequestHandler<CreateInitialAssessmentCommand, long>
 {
-    private const int DefaultTotalQuestions = 10;
     private const RoadmapAssessmentType TestType = RoadmapAssessmentType.Initial;
 
     public async Task<long> Handle(CreateInitialAssessmentCommand request, CancellationToken cancellationToken)
     {
         var snapshot = await workspaceEditor.GetActualRoadmapSnapshot(request.WorkspaceId, cancellationToken);
-        var selectedTopics = PickLearningItemsForAssessment(snapshot, DefaultTotalQuestions);
+        if (!snapshot.HasEnoughDataToCreateAssessment())
+        {
+            throw new NoContentException();
+        }
+        var selectedTopics = PickLearningItemsForAssessment(snapshot, RoadmapAssessmentConstant.DefaultQuestionsAmount);
 
         var creationSettings = selectedTopics.ToDictionary(
                t => t.Id,

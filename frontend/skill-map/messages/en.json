@@ -218,6 +218,8 @@
     "generateInitialTest": "Generate initial test",
     "rateLimitTitle": "Daily limit reached",
     "rateLimitDescription": "You have reached the maximum number of test generations for today. Please try again tomorrow.",
+    "noContentTitle": "Not enough data",
+    "noContentDescription": "There is not enough content in this roadmap to generate a test. Please add more topics and try again.",
     "best": "Best",
     "max": "Max",
     "attempts": "Attempts",

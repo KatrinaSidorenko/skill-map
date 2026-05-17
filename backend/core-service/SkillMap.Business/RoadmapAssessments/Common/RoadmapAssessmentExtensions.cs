@@ -1,4 +1,5 @@
 ﻿using SkillMap.Core.RoadmapAssessments;
+using SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots;
 using SkillMap.Shared.Gzip;
 
 using RoadmapTestDao = SkillMap.Core.RoadmapAssessments.RoadmapAssessmentContent;
@@ -47,4 +48,7 @@ public static class RoadmapAssessmentExtensions
         userTestResult.ScoredPoints = testResult.AchievedPoints;
         userTestResult.ResultData = await testResult.GzipJsonObjectUtf8(ct);
     }
+
+    public static bool HasEnoughDataToCreateAssessment(this RoadmapSnapshot roadmapSnapshot)
+        => roadmapSnapshot.LearningItems != null && roadmapSnapshot.LearningItems.Any() && roadmapSnapshot.LearningItems.Count >= RoadmapAssessmentConstant.DefaultQuestionsAmount;
 }

@@ -23,6 +23,10 @@ function isRateLimitError(error: unknown): boolean {
   );
 }
 
+function isNoContentResult(value: unknown): boolean {
+  return value === undefined || value === null || value === '';
+}
+
 export function useRoadmapAssessment(options?: UseRoadmapAssessmentOptions) {
   const router = useRouter();
   const { getTestingHistoryTranslations } = useLocalization();
@@ -58,6 +62,16 @@ export function useRoadmapAssessment(options?: UseRoadmapAssessmentOptions) {
   ) => {
     try {
       const testId = await generateFn();
+      if (isNoContentResult(testId)) {
+        toaster.create({
+          title: getTestingHistoryTranslations('noContentTitle'),
+          description: getTestingHistoryTranslations('noContentDescription'),
+          type: 'info',
+          duration: 7000,
+          closable: true,
+        });
+        return;
+      }
       const attempt = await startAttempt({ testId }).unwrap();
       router.push(`/assessment/attempt/${attempt.attemptId}`);
     } catch (error) {

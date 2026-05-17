@@ -11,6 +11,7 @@ using SkillMap.Business.RoadmapsWorkspace;
 using SkillMap.Core.Constants;
 using SkillMap.Core.RoadmapAssessments;
 using SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots;
+using SkillMap.Shared.Results;
 
 namespace SkillMap.Business.RoadmapAssessments.Features.CreateIntermediateAssessment;
 
@@ -21,14 +22,17 @@ internal class CreateIntermediateAssessmentHandler(
     IRepository<RoadmapAssessment> repository)
     : IRequestHandler<CreateIntermediateAssessmentCommand, long>
 {
-    private const int DefaultTotalQuestions = 10;
     private const RoadmapAssessmentType TestType = RoadmapAssessmentType.Intermediate;
     private readonly Random _rnd = new();
 
     public async Task<long> Handle(CreateIntermediateAssessmentCommand request, CancellationToken cancellationToken)
     {
         var snapshot = await workspaceEditor.GetActualRoadmapSnapshot(request.WorkspaceId, cancellationToken);
-        var selectedSubtopics = PickLearningItemsForAssessment(snapshot, DefaultTotalQuestions, _rnd);
+        if (!snapshot.HasEnoughDataToCreateAssessment())
+        {
+            throw new NoContentException();
+        }
+        var selectedSubtopics = PickLearningItemsForAssessment(snapshot, RoadmapAssessmentConstant.DefaultQuestionsAmount, _rnd);
         var creationSettings = selectedSubtopics.ToDictionary(
             s => s.Id,
             s => new TopicQuestionsSettingDto
