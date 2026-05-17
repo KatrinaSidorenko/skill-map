@@ -75,6 +75,12 @@ export const accountApi = createApi({
         dispatch(setUser(data));
       },
     }),
+    getDashboard: builder.query<UserDashboard, void>({
+      query: () => ({
+        url: '/dashboard',
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -88,4 +94,5 @@ export const {
   useLazyGetProfileQuery,
   useGetProfileQuery,
   useUpdateProfileMutation,
+  useGetDashboardQuery,
 } = accountApi;

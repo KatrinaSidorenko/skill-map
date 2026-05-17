@@ -38,3 +38,39 @@ interface UpdateProfileRequest {
   email?: string;
   imageUrl?: string;
 }
+
+interface DashboardStats {
+  savedRoadmaps: number;
+  activeRoadmaps: number;
+  testsCompleted: number;
+  averageScore: number;
+}
+
+interface InProgressRoadmap {
+  workspaceId: string;
+  title: string;
+  description?: string;
+  imageUrl?: string;
+  progress: number;
+  savedAt: string;
+  status: string;
+  totalNodes: number;
+}
+
+interface RecentAssessmentAttempt {
+  attemptId: string;
+  assessmentId: string;
+  type: string;
+  score: number | null;
+  maxScore: number;
+  startedAt: string;
+  completedAt: string | null;
+  status: string;
+}
+
+interface UserDashboard {
+  stats: DashboardStats;
+  inProgressRoadmaps: InProgressRoadmap[];
+  recentTests: RecentAssessmentAttempt[];
+}
+

@@ -8,7 +8,6 @@ import {
   Flex,
   Grid,
   Heading,
-  HStack,
   Icon,
   Progress,
   Separator,
@@ -21,23 +20,12 @@ import {
   FiCheckCircle,
   FiTrendingUp,
   FiActivity,
-  FiCompass,
-  FiStar,
-  FiPlusCircle,
-  FiBox,
 } from 'react-icons/fi';
 import { useRouter } from 'next/navigation';
-import { useAppSelector } from '@/store/hooks';
-import { selectUser } from '@/features/account/store';
 import useLocalization from '@/i18n/useLocalization';
-import {
-  mockDashboardStats,
-  mockInProgressRoadmaps,
-  mockRecentTests,
-  type RecentTest,
-} from './mock';
-
-// ─── Stat Card ────────────────────────────────────────────────────────────────
+import { useGetDashboardQuery } from '@/features/account/api';
+import SpinnerScreen from '@/components/base/spinner';
+import ErrorScreen from '@/components/base/error';
 
 interface StatCardProps {
   label: string;
@@ -89,13 +77,13 @@ function StatCard({ label, value, icon }: StatCardProps) {
 // ─── Progress Row ─────────────────────────────────────────────────────────────
 
 interface ProgressRowProps {
-  roadmap: SavedPlainRoadmap;
+  roadmap: InProgressRoadmap;
   progressLabel: string;
-  onClick: (id: string) => void;
+  onClick: (workspaceId: string) => void;
 }
 
 function ProgressRow({ roadmap, progressLabel, onClick }: ProgressRowProps) {
-  const pct = Math.min(100, Math.max(0, roadmap.progress));
+  const pct = Math.min(100, Math.max(0, Math.round(roadmap.progress * 100)));
   return (
     <Box
       bg="bg.section"
@@ -105,7 +93,7 @@ function ProgressRow({ roadmap, progressLabel, onClick }: ProgressRowProps) {
       cursor="pointer"
       _hover={{ boxShadow: 'md', transform: 'translateY(-1px)' }}
       transition="all 0.15s"
-      onClick={() => onClick(roadmap.id)}
+      onClick={() => onClick(roadmap.workspaceId)}
     >
       <Flex justify="space-between" mb={2}>
         <Text fontWeight="semibold" color="text.heading" fontSize="sm">
@@ -132,7 +120,7 @@ function ProgressRow({ roadmap, progressLabel, onClick }: ProgressRowProps) {
 // ─── Recent Test Row ──────────────────────────────────────────────────────────
 
 interface TestRowProps {
-  test: RecentTest;
+  test: RecentAssessmentAttempt;
   scoreLabel: string;
   inProgressLabel: string;
 }
@@ -189,71 +177,44 @@ function TestRow({ test, scoreLabel, inProgressLabel }: TestRowProps) {
   );
 }
 
-// ─── Quick Action Button ──────────────────────────────────────────────────────
-
-interface QuickActionProps {
-  label: string;
-  icon: React.ElementType;
-  onClick: () => void;
-}
-
-function QuickAction({ label, icon, onClick }: QuickActionProps) {
-  return (
-    <Button
-      variant="outline"
-      onClick={onClick}
-      flexDir="column"
-      h="auto"
-      py={4}
-      px={6}
-      gap={2}
-      borderColor="border.muted"
-      borderWidth="1px"
-      borderRadius="xl"
-      bg="bg.section"
-      _hover={{ bg: 'brand.800', borderColor: 'brand.800', color: 'white' }}
-      transition="all 0.2s"
-      flex={1}
-      minW="100px"
-    >
-      <Icon as={icon} boxSize={5} color="brand.500" />
-      <Text fontSize="xs" fontWeight="semibold" color="text.heading">
-        {label}
-      </Text>
-    </Button>
-  );
-}
-
-// ─── Dashboard Page ───────────────────────────────────────────────────────────
-
 export default function HomePage() {
   const router = useRouter();
-  const user = useAppSelector(selectUser);
   const { getHomeTranslations } = useLocalization();
   const t = getHomeTranslations;
 
+  const {
+    data: dashboard,
+    isLoading,
+    isError,
+    refetch,
+  } = useGetDashboardQuery();
+
+  if (isLoading) return <SpinnerScreen />;
+  if (isError || !dashboard) return <ErrorScreen onRetry={refetch} />;
+
+  const { stats, inProgressRoadmaps, recentTests } = dashboard;
+
   return (
-    <Stack gap={8} pb={8}>
-      {/* Stats */}
+    <Stack gap={8} pb={8} h="80vh">
       <Flex gap={4} wrap="wrap">
         <StatCard
           label={t('savedRoadmaps')}
-          value={mockDashboardStats.savedRoadmaps}
+          value={stats.savedRoadmaps}
           icon={FiBookmark}
         />
         <StatCard
           label={t('testsCompleted')}
-          value={mockDashboardStats.testsCompleted}
+          value={stats.testsCompleted}
           icon={FiCheckCircle}
         />
         <StatCard
           label={t('averageScore')}
-          value={`${mockDashboardStats.averageScore}${t('percent')}`}
+          value={`${Math.round(stats.averageScore)}${t('percent')}`}
           icon={FiTrendingUp}
         />
         <StatCard
           label={t('activeRoadmaps')}
-          value={mockDashboardStats.activeRoadmaps}
+          value={stats.activeRoadmaps}
           icon={FiActivity}
         />
       </Flex>
@@ -276,18 +237,20 @@ export default function HomePage() {
             </Button>
           </Flex>
           <Separator mb={4} />
-          {mockInProgressRoadmaps.length === 0 ? (
+          {inProgressRoadmaps.length === 0 ? (
             <Text color="text.muted" fontSize="sm">
               {t('noInProgress')}
             </Text>
           ) : (
             <Stack gap={3}>
-              {mockInProgressRoadmaps.map((roadmap) => (
+              {inProgressRoadmaps.map((roadmap) => (
                 <ProgressRow
-                  key={roadmap.id}
+                  key={roadmap.workspaceId}
                   roadmap={roadmap}
                   progressLabel={t('progress')}
-                  onClick={(id) => router.push(`/saved/roadmap/${id}`)}
+                  onClick={(workspaceId) =>
+                    router.push(`/saved/roadmap/${workspaceId}`)
+                  }
                 />
               ))}
             </Stack>
@@ -302,16 +265,22 @@ export default function HomePage() {
             </Heading>
           </Flex>
           <Separator mb={4} />
-          <Stack gap={3}>
-            {mockRecentTests.map((test) => (
-              <TestRow
-                key={test.testId}
-                test={test}
-                scoreLabel={t('score')}
-                inProgressLabel={t('inProgress')}
-              />
-            ))}
-          </Stack>
+          {recentTests.length === 0 ? (
+            <Text color="text.muted" fontSize="sm">
+              —
+            </Text>
+          ) : (
+            <Stack gap={3}>
+              {recentTests.map((test) => (
+                <TestRow
+                  key={test.attemptId}
+                  test={test}
+                  scoreLabel={t('score')}
+                  inProgressLabel={t('inProgress')}
+                />
+              ))}
+            </Stack>
+          )}
         </Box>
       </Grid>
     </Stack>

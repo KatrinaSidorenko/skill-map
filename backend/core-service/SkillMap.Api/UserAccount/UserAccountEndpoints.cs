@@ -1,3 +1,4 @@
+using SkillMap.Api.UserAccount.GetUserDashboard;
 using SkillMap.Api.UserAccount.GetUserProfile;
 using SkillMap.Api.UserAccount.UpdateUserProfile;
 
@@ -9,5 +10,6 @@ internal static class UserAccountEndpoints
     {
         app.MapGetUserProfile();
         app.MapUpdateUserProfile();
+        app.MapGetUserDashboard();
     }
 }

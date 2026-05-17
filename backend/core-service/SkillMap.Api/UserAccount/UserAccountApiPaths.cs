@@ -6,4 +6,5 @@ internal static class UserAccountApiPaths
 
     internal const string GetUserProfile = Base + "/profile";
     internal const string UpdateUserProfile = Base + "/profile";
+    internal const string GetUserDashboard = Base + "/dashboard";
 }

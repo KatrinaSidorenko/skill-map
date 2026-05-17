@@ -3,6 +3,7 @@
 using Microsoft.EntityFrameworkCore;
 
 using SkillMap.Business.RoadmapsWorkspace;
+using SkillMap.Core.RoadmapAssessments;
 using SkillMap.Core.RoadmapsWorkspace;
 using SkillMap.Persistence;
 
@@ -47,4 +48,14 @@ internal class RoadmapWorkspaceRepository : Repository<RoadmapWorkspace>, IRoadm
             .Where(w => w.Id == workspaceId && w.IsActive && !w.IsInAuthorMode)
             .Include(w => w.LearningItemProjections.Where(li => li.IsAvailable))
             .FirstOrDefaultAsync(ct);
+
+    public async Task<List<RoadmapWorkspace>> GetUserWorkspacesWithAssessments(long userId, CancellationToken ct)
+     => await _dbSet
+        .AsNoTracking()
+        .Where(w => w.AuthorId == userId && w.IsActive && !w.IsInAuthorMode)
+        .Include(w => w.LearningItemProjections.Where(li => li.IsAvailable))
+        .Include(w => w.Assessments)
+        .ThenInclude(a => a.Attempts)
+        .OrderByDescending(w => w.CreatedAt)
+        .ToListAsync(ct);
 }

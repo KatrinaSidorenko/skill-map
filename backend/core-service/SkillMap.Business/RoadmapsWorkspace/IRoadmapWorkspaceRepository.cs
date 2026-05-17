@@ -10,4 +10,5 @@ public interface IRoadmapWorkspaceRepository : IRepository<RoadmapWorkspace>
     Task<RoadmapWorkspace> GetUserActiveWorkspace(long workspaceId, CancellationToken ct);
     Task<List<RoadmapWorkspace>> GetUserBlueprintWorkspaces(long userId, CancellationToken ct);
     Task<bool> IsWorkspaceActive(string roadmapId, long userId, CancellationToken ct);
+    Task<List<RoadmapWorkspace>> GetUserWorkspacesWithAssessments(long userId, CancellationToken ct);
 }
