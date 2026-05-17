@@ -19,7 +19,7 @@ export default function useLocalization() {
     return translation(`roadmaps.${key}`);
   };
 
-  const getRoadmapTransaltions = (key: keyof ILocalization['roadmap']) => {
+  const getRoadmapTranslations = (key: keyof ILocalization['roadmap']) => {
     return translation(`roadmap.${key}`);
   };
 
@@ -27,11 +27,15 @@ export default function useLocalization() {
     return translation(`general.${key}`);
   };
 
-  const getAssessmentTranslations = (key: keyof ILocalization['assessment']) => {
+  const getAssessmentTranslations = (
+    key: keyof ILocalization['assessment'],
+  ) => {
     return translation(`assessment.${key}`);
   };
 
-  const getTestingHistoryTranslations = (key: keyof ILocalization['testingHistory']) => {
+  const getTestingHistoryTranslations = (
+    key: keyof ILocalization['testingHistory'],
+  ) => {
     return translation(`testingHistory.${key}`);
   };
 
@@ -48,7 +52,7 @@ export default function useLocalization() {
     getAuthTranslations,
     getEditorTranslations,
     getRoadmapsTranslations,
-    getRoadmapTransaltions,
+    getRoadmapTranslations,
     getGeneralTranslations,
     getAssessmentTranslations,
     getTestingHistoryTranslations,

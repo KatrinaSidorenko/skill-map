@@ -46,7 +46,7 @@ export default function SavedRoadmapView({
   roadmap: SavedPlainRoadmap;
 }) {
   const router = useRouter();
-  const { getRoadmapTransaltions } = useLocalization();
+  const { getRoadmapTranslations } = useLocalization();
   const statusColor = getStatusColor(roadmap.status);
   const progress = getProgressInPercentage(roadmap.progress);
 
@@ -80,7 +80,7 @@ export default function SavedRoadmapView({
       .unwrap()
       .catch(() => {
         toaster.error({
-          title: getRoadmapTransaltions('failedToLoadTestingHistory'),
+          title: getRoadmapTranslations('failedToLoadTestingHistory'),
         });
       });
   }, [roadmap.id, getRoadmapTestingHistory]);
@@ -93,11 +93,11 @@ export default function SavedRoadmapView({
     try {
       await deleteRoadmap({ id: roadmap.id, isSoftDelete }).unwrap();
       setDeleteDialogOpen(false);
-      toaster.success({ title: getRoadmapTransaltions('deleteSuccess') });
+      toaster.success({ title: getRoadmapTranslations('deleteSuccess') });
       router.push('/saved');
     } catch {
       toaster.error({
-        title: getRoadmapTransaltions('failedToDeleteSavedRoadmap'),
+        title: getRoadmapTranslations('failedToDeleteSavedRoadmap'),
       });
     }
   };
@@ -106,10 +106,10 @@ export default function SavedRoadmapView({
     try {
       await updateSavedRoadmap({ id: roadmap.id, payload }).unwrap();
       setEditDialogOpen(false);
-      toaster.success({ title: getRoadmapTransaltions('editSuccess') });
+      toaster.success({ title: getRoadmapTranslations('editSuccess') });
     } catch {
       toaster.error({
-        title: getRoadmapTransaltions('failedToEditSavedRoadmap'),
+        title: getRoadmapTranslations('failedToEditSavedRoadmap'),
       });
     }
   };
@@ -186,7 +186,7 @@ export default function SavedRoadmapView({
                   textTransform="capitalize"
                   flexShrink={0}
                 >
-                  {getRoadmapTransaltions(
+                  {getRoadmapTranslations(
                     roadmap.status as keyof ILocalization['roadmap'],
                   )}
                 </Badge>
@@ -230,7 +230,7 @@ export default function SavedRoadmapView({
                         textTransform="uppercase"
                         letterSpacing="wide"
                       >
-                        {getRoadmapTransaltions('progress')}
+                        {getRoadmapTranslations('progress')}
                       </Text>
                     </HStack>
                     <Progress.Root value={progress} size="sm">
@@ -281,7 +281,7 @@ export default function SavedRoadmapView({
                         textTransform="uppercase"
                         letterSpacing="wide"
                       >
-                        {getRoadmapTransaltions('saved')}
+                        {getRoadmapTranslations('saved')}
                       </Text>
                     </HStack>
                     <Text fontSize="sm" fontWeight="600" color="text.heading">
@@ -318,7 +318,7 @@ export default function SavedRoadmapView({
                   onClick={handleOpenEditor}
                 >
                   <FiArrowRight />
-                  {getRoadmapTransaltions('openInEditor')}
+                  {getRoadmapTranslations('openInEditor')}
                 </Button>
               </HStack>
             </VStack>
@@ -371,14 +371,14 @@ export default function SavedRoadmapView({
 export function SavedRoadmapViewWrapper({ roadmapId }: { roadmapId: string }) {
   const [triggerGetRoadmap, { isLoading, data: savedRoadmap }] =
     useLazyGetPlainUserSavedRoadmapQuery();
-  const { getRoadmapTransaltions } = useLocalization();
+  const { getRoadmapTranslations } = useLocalization();
   useEffect(() => {
     if (roadmapId) {
       triggerGetRoadmap(roadmapId)
         .unwrap()
         .catch(() => {
           toaster.error({
-            title: getRoadmapTransaltions('failedToLoadSavedRoadmap'),
+            title: getRoadmapTranslations('failedToLoadSavedRoadmap'),
           });
         });
     }

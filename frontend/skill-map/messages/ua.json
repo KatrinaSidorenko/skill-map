@@ -173,7 +173,17 @@
     "createEmptySuccess": "Дорожню карту успішно створено.",
     "failedToCreateEmpty": "Не вдалося створити дорожню карту. Спробуйте ще раз.",
     "createRoadmap": "Створити карту",
-    "newRoadmap": "Нова карта"
+    "newRoadmap": "Нова карта",
+    "custom": "Власна",
+    "external": "Зовнішня",
+    "viewSource": "Переглянути джерело",
+    "saveRoadmap": "Зберегти карту",
+    "unsaveRoadmap": "Відмінити збереження",
+    "saveRoadmapFailed": "Помилка збереження карти",
+    "saveRoadmapSuccess": "Карту збережено!",
+    "saveRoadmapInfo": "Ваша карта копіюється і незабаром з'явиться у розділі «Збережені».",
+    "unsaveSuccess": "Карту видалено зі збережених.",
+    "unsaveFailed": "Не вдалося видалити карту."
   },
   "assessment": {
     "assessmentTest": "Тест оцінювання",
@@ -226,7 +236,14 @@
     "SE6": "Не знайдено"
   },
   "general": {
-    "notFound": "Не знайдено"
+    "notFound": "Не знайдено",
+    "notFoundDescription": "Немає результатів за вашим запитом.",
+    "loading": "Завантаження…",
+    "fetchingContent": "Отримуємо ваш контент",
+    "somethingWentWrong": "Щось пішло не так",
+    "unableToLoad": "Не вдалося завантажити контент. Спробуйте ще раз.",
+    "tryAgain": "Спробувати ще раз",
+    "goHome": "На головну"
   },
   "home": {
     "greeting": "З поверненням",

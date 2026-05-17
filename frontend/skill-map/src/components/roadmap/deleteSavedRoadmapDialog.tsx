@@ -25,7 +25,7 @@ export function DeleteSavedRoadmapDialog({
   onConfirm,
   isLoading,
 }: DeleteSavedRoadmapDialogProps) {
-  const { getRoadmapTransaltions } = useLocalization();
+  const { getRoadmapTranslations } = useLocalization();
 
   return (
     <Dialog.Root
@@ -40,13 +40,13 @@ export function DeleteSavedRoadmapDialog({
           <Dialog.Content maxW="md" p={2}>
             <Dialog.Header>
               <Dialog.Title fontWeight="bold" fontSize="lg">
-                {getRoadmapTransaltions('deleteDialogTitle')}
+                {getRoadmapTranslations('deleteDialogTitle')}
               </Dialog.Title>
             </Dialog.Header>
 
             <Dialog.Body>
               <Text color="gray.600" mb={4}>
-                {getRoadmapTransaltions('deleteDialogSubtitle')}
+                {getRoadmapTranslations('deleteDialogSubtitle')}
               </Text>
 
               <VStack gap={3} align="stretch">
@@ -68,11 +68,19 @@ export function DeleteSavedRoadmapDialog({
                       <FiArchive />
                     </Box>
                     <VStack align="start" gap={0}>
-                      <Text fontWeight="semibold" color="blue.700" _dark={{ color: 'blue.200' }}>
-                        {getRoadmapTransaltions('archive')}
+                      <Text
+                        fontWeight="semibold"
+                        color="blue.700"
+                        _dark={{ color: 'blue.200' }}
+                      >
+                        {getRoadmapTranslations('archive')}
                       </Text>
-                      <Text fontSize="sm" color="gray.600" _dark={{ color: 'gray.400' }}>
-                        {getRoadmapTransaltions('archiveDescription')}
+                      <Text
+                        fontSize="sm"
+                        color="gray.600"
+                        _dark={{ color: 'gray.400' }}
+                      >
+                        {getRoadmapTranslations('archiveDescription')}
                       </Text>
                     </VStack>
                   </HStack>
@@ -96,11 +104,19 @@ export function DeleteSavedRoadmapDialog({
                       <FiTrash2 />
                     </Box>
                     <VStack align="start" gap={0}>
-                      <Text fontWeight="semibold" color="red.700" _dark={{ color: 'red.200' }}>
-                        {getRoadmapTransaltions('deleteTitle')}
+                      <Text
+                        fontWeight="semibold"
+                        color="red.700"
+                        _dark={{ color: 'red.200' }}
+                      >
+                        {getRoadmapTranslations('deleteTitle')}
                       </Text>
-                      <Text fontSize="sm" color="gray.600" _dark={{ color: 'gray.400' }}>
-                        {getRoadmapTransaltions('deleteDescription')}
+                      <Text
+                        fontSize="sm"
+                        color="gray.600"
+                        _dark={{ color: 'gray.400' }}
+                      >
+                        {getRoadmapTranslations('deleteDescription')}
                       </Text>
                     </VStack>
                   </HStack>
@@ -115,7 +131,7 @@ export function DeleteSavedRoadmapDialog({
                 disabled={isLoading}
                 size="sm"
               >
-                {getRoadmapTransaltions('cancel')}
+                {getRoadmapTranslations('cancel')}
               </Button>
             </Dialog.Footer>
           </Dialog.Content>
@@ -124,4 +140,3 @@ export function DeleteSavedRoadmapDialog({
     </Dialog.Root>
   );
 }
-

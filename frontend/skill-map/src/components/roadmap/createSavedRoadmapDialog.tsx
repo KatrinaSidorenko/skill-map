@@ -27,7 +27,7 @@ export function CreateSavedRoadmapDialog({
   onConfirm,
   isLoading,
 }: CreateSavedRoadmapDialogProps) {
-  const { getRoadmapTransaltions } = useLocalization();
+  const { getRoadmapTranslations } = useLocalization();
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -72,19 +72,19 @@ export function CreateSavedRoadmapDialog({
           <Dialog.Content maxW="lg" p={2}>
             <Dialog.Header>
               <Dialog.Title fontWeight="bold" fontSize="lg">
-                {getRoadmapTransaltions('createEmptyDialogTitle')}
+                {getRoadmapTranslations('createEmptyDialogTitle')}
               </Dialog.Title>
             </Dialog.Header>
 
             <Dialog.Body>
               <Text color="gray.500" fontSize="sm" mb={5}>
-                {getRoadmapTransaltions('createEmptyDialogSubtitle')}
+                {getRoadmapTranslations('createEmptyDialogSubtitle')}
               </Text>
 
               <VStack gap={4} align="stretch">
                 <Field.Root invalid={titleError}>
                   <Field.Label fontSize="sm" fontWeight="semibold">
-                    {getRoadmapTransaltions('titleLabel')}{' '}
+                    {getRoadmapTranslations('titleLabel')}{' '}
                     <Text as="span" color="red.400">
                       *
                     </Text>
@@ -95,24 +95,24 @@ export function CreateSavedRoadmapDialog({
                       setTitle(e.target.value);
                       if (e.target.value.trim()) setTitleError(false);
                     }}
-                    placeholder={getRoadmapTransaltions('enterTitle')}
+                    placeholder={getRoadmapTranslations('enterTitle')}
                     disabled={isLoading}
                   />
                   {titleError && (
                     <Field.ErrorText>
-                      {getRoadmapTransaltions('enterTitle')}
+                      {getRoadmapTranslations('enterTitle')}
                     </Field.ErrorText>
                   )}
                 </Field.Root>
 
                 <Field.Root>
                   <Field.Label fontSize="sm" fontWeight="semibold">
-                    {getRoadmapTransaltions('descriptionLabel')}
+                    {getRoadmapTranslations('descriptionLabel')}
                   </Field.Label>
                   <Textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder={getRoadmapTransaltions('enterDescription')}
+                    placeholder={getRoadmapTranslations('enterDescription')}
                     rows={3}
                     disabled={isLoading}
                   />
@@ -120,12 +120,12 @@ export function CreateSavedRoadmapDialog({
 
                 <Field.Root>
                   <Field.Label fontSize="sm" fontWeight="semibold">
-                    {getRoadmapTransaltions('imageUrlLabel')}
+                    {getRoadmapTranslations('imageUrlLabel')}
                   </Field.Label>
                   <Input
                     value={imageUrl}
                     onChange={(e) => setImageUrl(e.target.value)}
-                    placeholder={getRoadmapTransaltions('enterImageUrl')}
+                    placeholder={getRoadmapTranslations('enterImageUrl')}
                     disabled={isLoading}
                   />
                 </Field.Root>
@@ -140,7 +140,7 @@ export function CreateSavedRoadmapDialog({
                   disabled={isLoading}
                   size="sm"
                 >
-                  {getRoadmapTransaltions('cancel')}
+                  {getRoadmapTranslations('cancel')}
                 </Button>
                 <Button
                   colorPalette="green"
@@ -148,7 +148,7 @@ export function CreateSavedRoadmapDialog({
                   loading={isLoading}
                   size="sm"
                 >
-                  {getRoadmapTransaltions('createRoadmap')}
+                  {getRoadmapTranslations('createRoadmap')}
                 </Button>
               </HStack>
             </Dialog.Footer>
@@ -158,4 +158,3 @@ export function CreateSavedRoadmapDialog({
     </Dialog.Root>
   );
 }
-

@@ -44,11 +44,13 @@ import {
   updateSavedStatus,
 } from './store';
 import { DeleteSavedRoadmapDialog } from '@/components/roadmap/deleteSavedRoadmapDialog';
+import useLocalization from '@/i18n/useLocalization';
 
 export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
   const dispatch = useAppDispatch();
   const { nodes, edges } = useAppSelector(selectRoadmap);
   const plainRoadmap = useAppSelector(selectRoadmapInfo);
+  const { getRoadmapTranslations } = useLocalization();
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
@@ -83,12 +85,19 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
       try {
         await saveRoadmapTrigger({ id: roadmapId }).unwrap();
         dispatch(updateSavedStatus());
+        toaster.create({
+          title: getRoadmapTranslations('saveRoadmapSuccess'),
+          description: getRoadmapTranslations('saveRoadmapInfo'),
+          type: 'success',
+          closable: true,
+          duration: 6000,
+        });
       } catch (error) {
         const errorData = retrieveErrorData(error);
         toaster.create({
-          title: 'Save Roadmap Failed',
+          title: getRoadmapTranslations('saveRoadmapFailed'),
           type: 'error',
-          description: errorData?.message ?? 'Unexpected error',
+          description: errorData?.message ?? '',
           closable: true,
         });
       }
@@ -105,16 +114,16 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
       dispatch(updateSavedStatus());
       setDeleteDialogOpen(false);
       toaster.create({
-        title: 'Roadmap removed from saved.',
+        title: getRoadmapTranslations('unsaveSuccess'),
         type: 'success',
         closable: true,
       });
     } catch (error) {
       const errorData = retrieveErrorData(error);
       toaster.create({
-        title: 'Failed to remove roadmap.',
+        title: getRoadmapTranslations('unsaveFailed'),
         type: 'error',
-        description: errorData?.message ?? 'Unexpected error',
+        description: errorData?.message ?? '',
         closable: true,
       });
     }
@@ -146,7 +155,7 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
                 </Text>
                 {plainRoadmap.isSaved && (
                   <Badge colorPalette="yellow" variant="subtle" fontSize="xs">
-                    Saved
+                    {getRoadmapTranslations('saved')}
                   </Badge>
                 )}
               </Flex>
@@ -165,7 +174,9 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
                   variant="subtle"
                   fontSize="xs"
                 >
-                  {isCustom ? 'Custom' : 'External'}
+                  {isCustom
+                    ? getRoadmapTranslations('custom')
+                    : getRoadmapTranslations('external')}
                 </Badge>
                 {!isCustom && (
                   <Link
@@ -179,7 +190,8 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
                     gap={1}
                     _hover={{ textDecoration: 'underline' }}
                   >
-                    View Source <FaExternalLinkAlt size={11} />
+                    {getRoadmapTranslations('viewSource')}{' '}
+                    <FaExternalLinkAlt size={11} />
                   </Link>
                 )}
               </HStack>
@@ -187,7 +199,11 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
 
             {/* Save / Unsave button */}
             <IconButton
-              aria-label={plainRoadmap.isSaved ? 'Unsave Roadmap' : 'Save Roadmap'}
+              aria-label={
+                plainRoadmap.isSaved
+                  ? getRoadmapTranslations('unsaveRoadmap')
+                  : getRoadmapTranslations('saveRoadmap')
+              }
               size="sm"
               variant="ghost"
               onClick={handleStarClick}
@@ -218,9 +234,13 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
                 setTimeout(() => {
                   if (nodes.length > 0) {
                     const rootNode = nodes[0];
-                    instance.setCenter(rootNode.position.x, rootNode.position.y, {
-                      zoom: 1,
-                    });
+                    instance.setCenter(
+                      rootNode.position.x,
+                      rootNode.position.y,
+                      {
+                        zoom: 1,
+                      },
+                    );
                   }
                 }, 200);
               }}
@@ -240,4 +260,4 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
       />
     </>
   );
-}
+}

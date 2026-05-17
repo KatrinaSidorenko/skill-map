@@ -79,7 +79,7 @@ export function SavedRoadmapCard({
   onDelete,
   onEdit,
 }: SavedRoadmapCardProps) {
-  const { getRoadmapTransaltions } = useLocalization();
+  const { getRoadmapTranslations } = useLocalization();
   const statusColor = getStatusColor(roadmap.status);
   const progress = getProgressInPercentage(roadmap.progress);
   const formattedDate = formatDistanceToNow(new Date(roadmap.savedAt), {
@@ -149,7 +149,7 @@ export function SavedRoadmapCard({
             flexShrink={0}
             textTransform="capitalize"
           >
-            {getRoadmapTransaltions(
+            {getRoadmapTranslations(
               roadmap.status as keyof ILocalization['roadmap'],
             )}
           </Badge>

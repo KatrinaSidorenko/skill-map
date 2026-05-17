@@ -29,7 +29,7 @@ export function EditSavedRoadmapDialog({
   isLoading,
   roadmap,
 }: EditSavedRoadmapDialogProps) {
-  const { getRoadmapTransaltions } = useLocalization();
+  const { getRoadmapTranslations } = useLocalization();
 
   const [title, setTitle] = useState(roadmap.title);
   const [description, setDescription] = useState(roadmap.description);
@@ -64,36 +64,36 @@ export function EditSavedRoadmapDialog({
           <Dialog.Content maxW="lg" p={2}>
             <Dialog.Header>
               <Dialog.Title fontWeight="bold" fontSize="lg">
-                {getRoadmapTransaltions('editDialogTitle')}
+                {getRoadmapTranslations('editDialogTitle')}
               </Dialog.Title>
             </Dialog.Header>
 
             <Dialog.Body>
               <Text color="gray.500" fontSize="sm" mb={5}>
-                {getRoadmapTransaltions('editDialogSubtitle')}
+                {getRoadmapTranslations('editDialogSubtitle')}
               </Text>
 
               <VStack gap={4} align="stretch">
                 <Field.Root>
                   <Field.Label fontSize="sm" fontWeight="semibold">
-                    {getRoadmapTransaltions('titleLabel')}
+                    {getRoadmapTranslations('titleLabel')}
                   </Field.Label>
                   <Input
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder={getRoadmapTransaltions('enterTitle')}
+                    placeholder={getRoadmapTranslations('enterTitle')}
                     disabled={isLoading}
                   />
                 </Field.Root>
 
                 <Field.Root>
                   <Field.Label fontSize="sm" fontWeight="semibold">
-                    {getRoadmapTransaltions('descriptionLabel')}
+                    {getRoadmapTranslations('descriptionLabel')}
                   </Field.Label>
                   <Textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder={getRoadmapTransaltions('enterDescription')}
+                    placeholder={getRoadmapTranslations('enterDescription')}
                     rows={3}
                     disabled={isLoading}
                   />
@@ -101,12 +101,12 @@ export function EditSavedRoadmapDialog({
 
                 <Field.Root>
                   <Field.Label fontSize="sm" fontWeight="semibold">
-                    {getRoadmapTransaltions('imageUrlLabel')}
+                    {getRoadmapTranslations('imageUrlLabel')}
                   </Field.Label>
                   <Input
                     value={imageUrl}
                     onChange={(e) => setImageUrl(e.target.value)}
-                    placeholder={getRoadmapTransaltions('enterImageUrl')}
+                    placeholder={getRoadmapTranslations('enterImageUrl')}
                     disabled={isLoading}
                   />
                 </Field.Root>
@@ -121,7 +121,7 @@ export function EditSavedRoadmapDialog({
                   disabled={isLoading}
                   size="sm"
                 >
-                  {getRoadmapTransaltions('cancel')}
+                  {getRoadmapTranslations('cancel')}
                 </Button>
                 <Button
                   colorPalette="blue"
@@ -129,7 +129,7 @@ export function EditSavedRoadmapDialog({
                   loading={isLoading}
                   size="sm"
                 >
-                  {getRoadmapTransaltions('edit')}
+                  {getRoadmapTranslations('edit')}
                 </Button>
               </HStack>
             </Dialog.Footer>
@@ -139,4 +139,3 @@ export function EditSavedRoadmapDialog({
     </Dialog.Root>
   );
 }
-

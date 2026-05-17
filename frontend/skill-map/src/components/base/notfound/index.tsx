@@ -23,7 +23,7 @@ export default function ContentNotFoundScreen() {
             {getGeneralTranslations('notFound')}
           </Text>
           <Text fontSize="sm" color="text.muted">
-            No results match your search criteria.
+            {getGeneralTranslations('notFoundDescription')}
           </Text>
         </VStack>
       </VStack>

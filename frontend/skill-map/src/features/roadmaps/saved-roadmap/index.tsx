@@ -23,7 +23,7 @@ import { FiPlus } from 'react-icons/fi';
 export default function SavedRoadmapsPage() {
   const router = useRouter();
   const { pageSize } = defaultPagination;
-  const { getRoadmapsTranslations, getRoadmapTransaltions } = useLocalization();
+  const { getRoadmapsTranslations, getRoadmapTranslations } = useLocalization();
   const [fetchSavedRoadmaps] = useLazyGetSavedRoadmapsQuery();
   const [deleteRoadmap, { isLoading: isDeleting }] = useDeleteRoadmapMutation();
   const [updateSavedRoadmap, { isLoading: isUpdating }] =
@@ -89,7 +89,7 @@ export default function SavedRoadmapsPage() {
         isSoftDelete,
       }).unwrap();
       toaster.create({
-        title: getRoadmapTransaltions('deleteSuccess'),
+        title: getRoadmapTranslations('deleteSuccess'),
         type: 'success',
         closable: true,
       });
@@ -98,7 +98,7 @@ export default function SavedRoadmapsPage() {
     } catch (error) {
       const errorData = retrieveErrorData(error);
       toaster.create({
-        title: getRoadmapTransaltions('failedToDeleteSavedRoadmap'),
+        title: getRoadmapTranslations('failedToDeleteSavedRoadmap'),
         type: 'error',
         description: errorData?.message ?? 'Unexpected error',
         closable: true,
@@ -114,7 +114,7 @@ export default function SavedRoadmapsPage() {
         payload,
       }).unwrap();
       toaster.create({
-        title: getRoadmapTransaltions('editSuccess'),
+        title: getRoadmapTranslations('editSuccess'),
         type: 'success',
         closable: true,
       });
@@ -123,7 +123,7 @@ export default function SavedRoadmapsPage() {
     } catch (error) {
       const errorData = retrieveErrorData(error);
       toaster.create({
-        title: getRoadmapTransaltions('failedToEditSavedRoadmap'),
+        title: getRoadmapTranslations('failedToEditSavedRoadmap'),
         type: 'error',
         description: errorData?.message ?? 'Unexpected error',
         closable: true,
@@ -137,7 +137,7 @@ export default function SavedRoadmapsPage() {
     try {
       const result = await createEmptyRoadmap(payload).unwrap();
       toaster.create({
-        title: getRoadmapTransaltions('createEmptySuccess'),
+        title: getRoadmapTranslations('createEmptySuccess'),
         type: 'success',
         closable: true,
       });
@@ -149,7 +149,7 @@ export default function SavedRoadmapsPage() {
     } catch (error) {
       const errorData = retrieveErrorData(error);
       toaster.create({
-        title: getRoadmapTransaltions('failedToCreateEmpty'),
+        title: getRoadmapTranslations('failedToCreateEmpty'),
         type: 'error',
         description: errorData?.message ?? 'Unexpected error',
         closable: true,
@@ -173,7 +173,7 @@ export default function SavedRoadmapsPage() {
               loading={isCreating}
             >
               <FiPlus />
-              {getRoadmapTransaltions('newRoadmap')}
+              {getRoadmapTranslations('newRoadmap')}
             </Button>
           </HStack>
         }

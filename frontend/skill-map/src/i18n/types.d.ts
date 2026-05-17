@@ -174,6 +174,16 @@ interface ILocalization {
     failedToCreateEmpty: string;
     createRoadmap: string;
     newRoadmap: string;
+    custom: string;
+    external: string;
+    viewSource: string;
+    saveRoadmap: string;
+    unsaveRoadmap: string;
+    saveRoadmapFailed: string;
+    saveRoadmapSuccess: string;
+    saveRoadmapInfo: string;
+    unsaveSuccess: string;
+    unsaveFailed: string;
   };
   assessment: {
     assessmentTest: string;
@@ -224,6 +234,13 @@ interface ILocalization {
   };
   general: {
     notFound: string;
+    notFoundDescription: string;
+    loading: string;
+    fetchingContent: string;
+    somethingWentWrong: string;
+    unableToLoad: string;
+    tryAgain: string;
+    goHome: string;
   };
   profile: {
     title: string;

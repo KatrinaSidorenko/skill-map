@@ -179,7 +179,17 @@
     "createEmptySuccess": "Roadmap created successfully.",
     "failedToCreateEmpty": "Failed to create roadmap. Please try again.",
     "createRoadmap": "Create Roadmap",
-    "newRoadmap": "New Roadmap"
+    "newRoadmap": "New Roadmap",
+    "custom": "Custom",
+    "external": "External",
+    "viewSource": "View Source",
+    "saveRoadmap": "Save Roadmap",
+    "unsaveRoadmap": "Unsave Roadmap",
+    "saveRoadmapFailed": "Save Roadmap Failed",
+    "saveRoadmapSuccess": "Roadmap saved!",
+    "saveRoadmapInfo": "Your roadmap is being copied and will appear in your Saved Roadmaps shortly.",
+    "unsaveSuccess": "Roadmap removed from saved.",
+    "unsaveFailed": "Failed to remove roadmap."
   },
   "assessment": {
     "assessmentTest": "Assessment Test",
@@ -232,7 +242,14 @@
     "SE6": "Not found"
   },
   "general": {
-    "notFound": "Not Found"
+    "notFound": "Not Found",
+    "notFoundDescription": "No results match your search criteria.",
+    "loading": "Loading…",
+    "fetchingContent": "Fetching your content",
+    "somethingWentWrong": "Something went wrong",
+    "unableToLoad": "Unable to load content. Please try again.",
+    "tryAgain": "Try Again",
+    "goHome": "Go Home"
   },
   "profile": {
     "title": "Profile Settings",

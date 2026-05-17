@@ -177,7 +177,7 @@ internal static class LearningRoadmapStatusesPropagation
                 var suggestsCompleted = 
                     suggestion.SuggestedStatus == LearningStatus.Completed || 
                     suggestion.SuggestedStatus == LearningStatus.InProgress ||
-                    suggestion.SuggestedStatus == LearningStatus.Upcoming ||
+                   // suggestion.SuggestedStatus == LearningStatus.Upcoming ||
                     suggestion.Assumption == AssessmentAssumption.AssumedCompleted;
 
                 if (suggestsCompleted && !areAllParentsCompleted)
