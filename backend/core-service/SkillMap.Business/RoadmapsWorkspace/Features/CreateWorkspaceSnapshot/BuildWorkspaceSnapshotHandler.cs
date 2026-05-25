@@ -13,17 +13,17 @@ using SkillMap.Business.RoadmapsWorkspace.IntegrationEvents;
 using SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots;
 using SkillMap.Shared.EventBus;
 
-namespace SkillMap.Business.RoadmapsWorkspace.Features.CreateWorkspaceSnapshot.Blueprint;
+namespace SkillMap.Business.RoadmapsWorkspace.Features.CreateWorkspaceSnapshot;
 
 [UsedImplicitly]
-internal sealed class BuildBlueprintWorkspaceSnapshotHandler(
+internal sealed class BuildWorkspaceSnapshotHandler(
     IRoadmapBlueprintRepository roadmapBlueprintRepository,
     IRoadmapWorkspaceSnapshotRepository snapshotsRepository,
     IRoadmapWorkspaceEventRepository eventsRepository,
     IEventBus eventBus,
-    ILogger<BuildBlueprintWorkspaceSnapshotHandler> logger) : IRequestHandler<BuildBlueprintWorkspaceSnapshotCommand, long>
+    ILogger<BuildWorkspaceSnapshotHandler> logger) : IRequestHandler<BuildWorkspaceSnapshotCommand, long>
 {
-    public async Task<long> Handle(BuildBlueprintWorkspaceSnapshotCommand request, CancellationToken cancellationToken)
+    public async Task<long> Handle(BuildWorkspaceSnapshotCommand request, CancellationToken cancellationToken)
     {
         var latestSnapshot = await snapshotsRepository.GetLatestSnapshot(request.WorkspaceId, cancellationToken);
         if (latestSnapshot != null)
@@ -49,6 +49,7 @@ internal sealed class BuildBlueprintWorkspaceSnapshotHandler(
             return newWorkspaceSnapshot.Id;
         }
 
+        // todo: extract to separate handler
         var initialVersion = RoadmapWorkspaceConstants.InitialVersion;
         var initialSnapshot = new RoadmapWorkspaceSnapshot(request.WorkspaceId, null, initialVersion);
         if (request.RoadmapId.IsEmptyInitialSnapshot())
