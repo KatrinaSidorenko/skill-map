@@ -1,8 +1,14 @@
+using System.Threading;
+
 using JetBrains.Annotations;
 
 using MediatR;
 
+using Microsoft.Extensions.Logging;
+
 using SkillMap.Business.Abstractions;
+using SkillMap.Business.RoadmapsWorkspace.Common;
+using SkillMap.Business.RoadmapsWorkspace.Features.CreateWorkspaceSnapshot.Blueprint;
 using SkillMap.Business.RoadmapsWorkspace.IntegrationEvents;
 using SkillMap.Core.RoadmapsWorkspace;
 using SkillMap.Shared.EventBus;
@@ -12,17 +18,33 @@ namespace SkillMap.Business.RoadmapsWorkspace.Features.CreateEmptyRoadmapWorkspa
 [UsedImplicitly]
 internal sealed class CreateEmptyRoadmapWorkspaceHandler(
     IRepository<RoadmapWorkspace> repository,
-    IEventBus eventBus) : IRequestHandler<CreateEmptyRoadmapWorkspaceCommand, long>
+    IMediator mediator,
+    ILogger<CreateEmptyRoadmapWorkspaceHandler> logger) : IRequestHandler<CreateEmptyRoadmapWorkspaceCommand, long>
 {
     public async Task<long> Handle(CreateEmptyRoadmapWorkspaceCommand request, CancellationToken cancellationToken)
     {
-        var roadmapWorkspace = new RoadmapWorkspace(request.UserId, roadmapId: null, personalRoadmapId: null);
+        var roadmapWorkspace = new RoadmapWorkspace(request.UserId, roadmapId: RoadmapWorkspaceConstants.EmptyWorkspaceKey, personalRoadmapId: null);
         roadmapWorkspace.SetMetadata(request.Title, request.Description, request.ImageUrl);
 
-        await repository.AddAsync(roadmapWorkspace, cancellationToken);
-        await repository.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await repository.AddAsync(roadmapWorkspace, cancellationToken);
+            await repository.SaveChangesAsync(cancellationToken);
 
-        await eventBus.PublishAsync(RoadmapWorkspaceCreatedEvent.Create(roadmapWorkspace.Id, roadmapId: null, isInAuthorMode: false), cancellationToken);
+            var command = new BuildBlueprintWorkspaceSnapshotCommand(roadmapWorkspace.Id, roadmapWorkspace.RoadmapId);
+            await mediator.Send(command, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            if (roadmapWorkspace is not null)
+            {
+                await repository.DeleteAsync(roadmapWorkspace.Id, cancellationToken);
+                await repository.SaveChangesAsync(cancellationToken);
+            }
+
+            logger.LogError(ex, "An error occurred while creating roadmap workspace for user {UserId} and roadmap {RoadmapId}", request.UserId, request.RoadmapId);
+            throw;
+        }
 
         return roadmapWorkspace.Id;
     }
