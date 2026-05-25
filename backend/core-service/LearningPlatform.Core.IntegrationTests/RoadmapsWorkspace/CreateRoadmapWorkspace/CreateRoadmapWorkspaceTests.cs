@@ -7,9 +7,6 @@ using LearningPlatform.Core.IntegrationTests.Engine.Database;
 
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-
-using Org.BouncyCastle.Crypto;
-
 using Shouldly;
 
 using SkillMap.Api;

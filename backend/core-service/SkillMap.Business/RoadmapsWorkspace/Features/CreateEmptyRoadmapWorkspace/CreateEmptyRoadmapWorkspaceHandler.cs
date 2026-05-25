@@ -8,8 +8,7 @@ using Microsoft.Extensions.Logging;
 
 using SkillMap.Business.Abstractions;
 using SkillMap.Business.RoadmapsWorkspace.Common;
-using SkillMap.Business.RoadmapsWorkspace.Features.CreateWorkspaceSnapshot.Blueprint;
-using SkillMap.Business.RoadmapsWorkspace.IntegrationEvents;
+using SkillMap.Business.RoadmapsWorkspace.Features.CreateWorkspaceSnapshot;
 using SkillMap.Core.RoadmapsWorkspace;
 using SkillMap.Shared.EventBus;
 
@@ -31,7 +30,7 @@ internal sealed class CreateEmptyRoadmapWorkspaceHandler(
             await repository.AddAsync(roadmapWorkspace, cancellationToken);
             await repository.SaveChangesAsync(cancellationToken);
 
-            var command = new BuildBlueprintWorkspaceSnapshotCommand(roadmapWorkspace.Id, roadmapWorkspace.RoadmapId);
+            var command = new BuildWorkspaceSnapshotCommand(roadmapWorkspace.Id, roadmapWorkspace.RoadmapId);
             await mediator.Send(command, cancellationToken);
         }
         catch (Exception ex)
