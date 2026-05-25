@@ -18,8 +18,7 @@
     <ProjectReference Include="..\SkillMap.Core\SkillMap.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="PersonalRoadmaps\Features\SuppressPersonalRoadmap\" />
-  </ItemGroup>
-
+    <ItemGroup>
+        <InternalsVisibleTo Include="LearningPlatform.Core.UnitTests" />
+    </ItemGroup>
 </Project>

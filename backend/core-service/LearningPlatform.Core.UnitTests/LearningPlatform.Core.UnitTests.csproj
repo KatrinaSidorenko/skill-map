@@ -20,4 +20,12 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="RoadmapsWorkspace\CreateEmptyRoadmapWorkspace\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SkillMap.Business\SkillMap.Business.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -42,7 +42,7 @@ internal sealed class CreateEmptyRoadmapWorkspaceHandler(
                 await repository.SaveChangesAsync(cancellationToken);
             }
 
-            logger.LogError(ex, "An error occurred while creating roadmap workspace for user {UserId} and roadmap {RoadmapId}", request.UserId, request.RoadmapId);
+            logger.LogError(ex, "An error occurred while creating roadmap workspace for user {UserId} and roadmap {RoadmapId}", request.UserId, RoadmapWorkspaceConstants.EmptyWorkspaceKey);
             throw;
         }
 
