@@ -153,4 +153,7 @@ public static class RoadmapWorkspaceSnapshotExtensions
             LearningItemsConnections = snapshot.LearningItemsConnections.Where(c => !edgeIdsToRemove.Contains(c.Id)).ToList()
         };
     }
+
+    public static bool IsEmptyInitialSnapshot(this string roadmapId)
+        => string.IsNullOrEmpty(roadmapId) || roadmapId == RoadmapWorkspaceConstants.EmptyWorkspaceKey;
 }
