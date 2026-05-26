@@ -269,6 +269,67 @@ public class BuildWorkspaceSnapshotTests
         result.LearningItemsConnections.Should().BeEquivalentTo(snapshot.LearningItemsConnections);
     }
 
+  
+    [Theory]
+    [InlineData("")]
+    [InlineData(RoadmapWorkspaceConstants.EmptyWorkspaceKey)]
+    public async Task Given_NoExistingSnapshot_And_EmptyRoadmapId_When_BuildSnapshot_Then_CreatesEmptyInitialSnapshot(string roadmapId)
+    {
+        // Arrange
+        var ct = CancellationToken.None;
+        var (workspaceId, _) = BuildWorkspaceSnapshotFakers.CreateRoadmapIdentifiers();
+        _snapshotRepoMock
+            .Setup(r => r.GetLatestSnapshot(workspaceId, ct))
+            .ReturnsAsync((RoadmapWorkspaceSnapshot?)null);
+        RoadmapWorkspaceSnapshot? capturedSnapshot = null;
+        _snapshotRepoMock
+            .Setup(r => r.AddAsync(It.IsAny<RoadmapWorkspaceSnapshot>(), ct))
+            .Callback<RoadmapWorkspaceSnapshot, CancellationToken>((s, _) => capturedSnapshot = s)
+            .ReturnsAsync(true);
+
+        var command = new BuildWorkspaceSnapshotCommand(workspaceId, roadmapId);
+
+        // Act
+        var snapshotId = await _handler.Handle(command, ct);
+
+        // Assert
+        _snapshotRepoMock.Verify(r => r.AddAsync(It.IsAny<RoadmapWorkspaceSnapshot>(), ct), Times.Once);
+        _snapshotRepoMock.Verify(r => r.SaveChangesAsync(ct), Times.Once);
+
+        capturedSnapshot.Should().NotBeNull();
+        capturedSnapshot!.RoadmapWorkspaceId.Should().Be(workspaceId);
+        capturedSnapshot.Version.Should().Be(RoadmapWorkspaceConstants.InitialVersion);
+
+        var content = await capturedSnapshot.WithNavigationWorkspace(workspaceId).GetRoadmapSnapshot(ct);
+        content.LearningItems.Should().BeEmpty();
+        content.LearningItemsConnections.Should().BeEmpty();
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(RoadmapWorkspaceConstants.EmptyWorkspaceKey)]
+    public async Task Given_NoExistingSnapshot_And_EmptyRoadmapId_When_BuildSnapshot_Then_BlueprintRepositoryIsNeverCalled(string roadmapId)
+    {
+        // Arrange
+        var ct = CancellationToken.None;
+        var (workspaceId, _) = BuildWorkspaceSnapshotFakers.CreateRoadmapIdentifiers();
+        _snapshotRepoMock
+                  .Setup(r => r.GetLatestSnapshot(workspaceId, ct))
+                  .ReturnsAsync((RoadmapWorkspaceSnapshot?)null);
+        _snapshotRepoMock
+               .Setup(r => r.AddAsync(It.IsAny<RoadmapWorkspaceSnapshot>(), ct))
+               .ReturnsAsync(true);
+
+        var command = new BuildWorkspaceSnapshotCommand(workspaceId, roadmapId);
+
+        // Act
+        await _handler.Handle(command, ct);
+
+        // Assert
+        _blueprintRepoMock.Verify(r => r.GetRoadmapById(It.IsAny<string>(), It.IsAny<CancellationToken>(), It.IsAny<bool>()), Times.Never);
+        _eventBusMock.Verify(r => r.PublishAsync(It.IsAny<IIntegrationEvent>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
     private static async Task<RoadmapWorkspaceSnapshot> CreateSnapshotWithRoadmapAsync(
         long workspaceId, string roadmapId, CancellationToken ct)
     {
