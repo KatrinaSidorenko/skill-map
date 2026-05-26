@@ -20,5 +20,6 @@
 
     <ItemGroup>
         <InternalsVisibleTo Include="LearningPlatform.Core.UnitTests" />
+        <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
     </ItemGroup>
 </Project>

@@ -2,6 +2,10 @@ using Bogus;
 
 using SkillMap.Business.RoadmapsWorkspace.Common;
 using SkillMap.Business.RoadmapsWorkspace.Features.WorkspaceEvents.AddLearningItem;
+using SkillMap.Business.RoadmapsWorkspace.Features.WorkspaceEvents.CreateLearningItemConnection;
+using SkillMap.Business.RoadmapsWorkspace.Features.WorkspaceEvents.DeleteLearningItem;
+using SkillMap.Business.RoadmapsWorkspace.Features.WorkspaceEvents.DeleteLearningItemConnection;
+using SkillMap.Business.RoadmapsWorkspace.Features.WorkspaceEvents.UpdateLearningItem;
 using SkillMap.Core.Constants;
 using SkillMap.Core.PersonalizedRoadmaps;
 using SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots;
@@ -53,7 +57,7 @@ internal static class BuildWorkspaceSnapshotFakers
         };
     }
 
-    public static AddLearningItemCommand FakeAddLearningItemCommand(long workspaceId, int version) =>
+    public static AddLearningItemCommand FakeAddLearningItemCommand(long workspaceId, int baseVersion = RoadmapWorkspaceConstants.InitialVersion) =>
         new Faker<AddLearningItemCommand>()
             .CustomInstantiator(f => new AddLearningItemCommand(
                 WorkspaceId: workspaceId,
@@ -62,7 +66,54 @@ internal static class BuildWorkspaceSnapshotFakers
                 Description: f.Lorem.Sentence(),
                 Status: LearningStatus.NotStarted.ToStatusString(),
                 Type: LearningItemType.Topic,
-                BaseVersion: version,
+                BaseVersion: baseVersion,
+                IdempotencyKey: f.Random.Guid().ToString()
+            ))
+            .Generate();
+
+    public static UpdateLearningItemCommand FakeUpdateLearningItemCommand(long workspaceId, string itemId, int baseVersion) =>
+        new Faker<UpdateLearningItemCommand>()
+            .CustomInstantiator(f => new UpdateLearningItemCommand(
+                WorkspaceId: workspaceId,
+                Id: itemId,
+                Title: f.Lorem.Word(),
+                Description: f.Lorem.Sentence(),
+                Status: LearningStatus.InProgress.ToStatusString(),
+                Type: LearningItemType.Topic,
+                BaseVersion: baseVersion,
+                IdempotencyKey: f.Random.Guid().ToString()
+            ))
+            .Generate();
+
+    public static DeleteLearningItemCommand FakeDeleteLearningItemCommand(long workspaceId, string itemId, List<string> connectionIds, int baseVersion) =>
+        new Faker<DeleteLearningItemCommand>()
+            .CustomInstantiator(f => new DeleteLearningItemCommand(
+                WorkspaceId: workspaceId,
+                Id: itemId,
+                IncidentConnectionIds: connectionIds,
+                BaseVersion: baseVersion,
+                IdempotencyKey: f.Random.Guid().ToString()
+            ))
+            .Generate();
+
+    public static CreateLearningItemConnectionCommand FakeCreateConnectionCommand(long workspaceId, string fromId, string toId, int baseVersion) =>
+        new Faker<CreateLearningItemConnectionCommand>()
+            .CustomInstantiator(f => new CreateLearningItemConnectionCommand(
+                WorkspaceId: workspaceId,
+                Id: f.Random.Guid().ToString(),
+                Source: fromId,
+                Target: toId,
+                BaseVersion: baseVersion,
+                IdempotencyKey: f.Random.Guid().ToString()
+            ))
+            .Generate();
+
+    public static DeleteLearningItemConnectionCommand FakeDeleteConnectionCommand(long workspaceId, string connectionId, int baseVersion) =>
+        new Faker<DeleteLearningItemConnectionCommand>()
+            .CustomInstantiator(f => new DeleteLearningItemConnectionCommand(
+                WorkspaceId: workspaceId,
+                Id: connectionId,
+                BaseVersion: baseVersion,
                 IdempotencyKey: f.Random.Guid().ToString()
             ))
             .Generate();
