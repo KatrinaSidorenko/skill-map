@@ -1,12 +1,11 @@
 using LearningPlatform.Core.IntegrationTests.Engine.Configuration;
-
 using LearningPlatform.Workspace.WebSockets.Contracts;
 
-namespace LearningPlatform.Core.IntegrationTests.RoadmapsWorkspace.CreateRoadmapWorkspaceSnapshot;
+namespace LearningPlatform.Core.IntegrationTests.RoadmapsWorkspace;
 
 internal sealed class WorkspaceActionReviewedProducerKafkaConfiguration : IOptionsConfiguration
 {
-    public const string TopicName = "workspace-action-reviewed";
+    public const string TopicName = KafkaTopics.WorkspaceActionReviewed;
 
     private readonly string _bootstrapServers;
 

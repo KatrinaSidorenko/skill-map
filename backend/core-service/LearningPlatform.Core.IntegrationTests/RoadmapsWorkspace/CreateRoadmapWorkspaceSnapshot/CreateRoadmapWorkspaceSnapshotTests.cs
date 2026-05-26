@@ -19,14 +19,19 @@ public class CreateRoadmapWorkspaceSnapshotTests : IClassFixture<LearningPlatfor
 {
     private readonly WebApplicationFactory<SkillMap.Api.Program> _configuredFactory;
     private readonly HttpClient _applicationHttpClient;
+    private readonly KafkaContainer _kafkaContainer;
 
     public CreateRoadmapWorkspaceSnapshotTests(
         LearningPlatformWebApplicationFactory<SkillMap.Api.Program> webApplicationFactory,
-        DatabaseContainer databaseContainer)
+        DatabaseContainer databaseContainer,
+        KafkaContainer kafkaContainer)
     {
+        _kafkaContainer = kafkaContainer;
         _configuredFactory = webApplicationFactory
             .WithContainerDatabaseConfigured(new RoadmapsWorkspaceDatabaseConfiguration(databaseContainer.ConnectionString!))
-            .WithOptionsConfiguration(new BuildRoadmapWorkspaceSnapshotConfiguration());
+            .WithOptionsConfiguration(new BuildRoadmapWorkspaceSnapshotConfiguration())
+            .WithOptionsConfiguration(new WorkspaceActionsConsumerKafkaConfiguration(kafkaContainer.BootstrapServers))
+            .WithOptionsConfiguration(new WorkspaceActionReviewedProducerKafkaConfiguration(kafkaContainer.BootstrapServers));
 
         _applicationHttpClient = _configuredFactory.CreateClient();
     }
