@@ -1,0 +1,50 @@
+# Dependency directories
+node_modules
+.pnp
+.pnp.js
+
+# Next.js build output
+.next
+out
+build
+
+# Environment variables
+.env*.local
+
+# Git and OS files
+.git
+.gitignore
+.DS_Store
+
+# IDE and Editor configurations
+.idea
+.vscode
+*.swp
+*.swo
+
+# Docker files
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# Unused package manager lockfiles (Since we strictly use Yarn)
+package-lock.json
+pnpm-lock.yaml
+
+# Linting caches and Prettier (Keep .eslintrc so 'yarn build' doesn't fail)
+.eslintcache
+.prettierrc*
+.prettierignore
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Documentation and Tests (Optional but recommended)
+README.md
+LICENSE
+__tests__
+coverage
+cypress
