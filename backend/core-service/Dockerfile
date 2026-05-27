@@ -13,6 +13,8 @@ COPY ["roadmaps-catalog-service/SkillMap.Persistence.Neo4j/SkillMap.Persistence.
 
 COPY ["roadmap-tests/LearningPlatform.RoadmapTests.Contracts/LearningPlatform.RoadmapTests.Contracts.csproj", "roadmap-tests/LearningPlatform.RoadmapTests.Contracts/"]
 
+COPY ["roadmap-workspace/LearningPlatform.Workspace.WebSockets.Contracts/LearningPlatform.Workspace.WebSockets.Contracts.csproj", "roadmap-workspace/LearningPlatform.Workspace.WebSockets.Contracts/"]
+
 COPY ["shared/LearningPlatform.Shared.Api/LearningPlatform.Shared.Api.csproj", "shared/LearningPlatform.Shared.Api/"]
 COPY ["shared/LearningPlatform.Shared.Caching/LearningPlatform.Shared.Caching.csproj", "shared/LearningPlatform.Shared.Caching/"]
 COPY ["shared/SkillMap.Shared/SkillMap.Shared.csproj", "shared/SkillMap.Shared/"]
@@ -30,9 +32,11 @@ WORKDIR /app
 # RUN pwd #debugging
 COPY --from=publish /app/publish .
 
-# pass environment variables
-# for swagger
-ENV ASPNETCORE_ENVIRONMENT=Development
-ENV ASPNETCORE_URLS=http://*:8080 
+ARG ASPNETCORE_ENVIRONMENT
+ARG ASPNETCORE_URLS
+
+ENV ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
+ENV ASPNETCORE_URLS=$ASPNETCORE_URLS
+
 EXPOSE 8080
 ENTRYPOINT ["dotnet", "SkillMap.Api.dll"]
