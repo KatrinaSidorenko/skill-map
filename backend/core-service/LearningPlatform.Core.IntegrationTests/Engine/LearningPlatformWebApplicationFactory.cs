@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using LearningPlatform.Core.IntegrationTests.Engine.MessageBroker;
+
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -15,6 +17,7 @@ public class LearningPlatformWebApplicationFactory<T> : WebApplicationFactory<T>
         builder.ConfigureServices(services =>
         {
             services.AddScoped<ITestDataSeeder, TestDataSeeder>();
+            services.AddScoped<IKafkaTopicProvisioner, KafkaTopicProvisioner>();
             services.AddAuthentication(TestAuthHandler.Scheme)
                 .AddScheme<AuthenticationSchemeOptions,
                     TestAuthHandler>(

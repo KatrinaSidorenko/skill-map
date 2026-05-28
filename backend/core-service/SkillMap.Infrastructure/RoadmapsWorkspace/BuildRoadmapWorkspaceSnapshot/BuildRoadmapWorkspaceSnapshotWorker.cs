@@ -6,8 +6,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using SkillMap.Business.Abstractions;
+using SkillMap.Business.RoadmapsWorkspace.Features.CreateWorkspaceSnapshot;
 using SkillMap.Business.RoadmapsWorkspace.Features.CreateWorkspaceSnapshot.Author;
-using SkillMap.Business.RoadmapsWorkspace.Features.CreateWorkspaceSnapshot.Blueprint;
 using SkillMap.Core.Tasks;
 using SkillMap.Core.Tasks.Input;
 using SkillMap.Shared.Extensions;
@@ -66,7 +66,7 @@ internal sealed class BuildRoadmapWorkspaceSnapshotWorker : BackgroundService
                 }
                 else
                 {
-                    var command = new BuildBlueprintWorkspaceSnapshotCommand(input.WorkspaceId, input.RoadmapId);
+                    var command = new BuildWorkspaceSnapshotCommand(input.WorkspaceId, input.RoadmapId);
                     result = await mediator.Send(command, stoppingToken);
                 }
 

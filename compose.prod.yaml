@@ -1,0 +1,23 @@
+# Production override – pulls images from the registry, no source builds
+#
+# Usage:
+#   docker compose -f compose.yaml -f compose.prod.yaml --env-file .env up -d
+#
+# Provides: registry images; only nginx exposes ports to the host
+
+services:
+
+  core-service:
+    image: ${REGISTRY}/skillmap_core-service:${IMAGE_TAG}
+
+  roadmap-tests-service:
+    image: ${REGISTRY}/skillmap_assessment-service:${IMAGE_TAG}
+
+  roadmap-workspace-service:
+    image: ${REGISTRY}/skillmap_workspace-service:${IMAGE_TAG}
+
+  gateway:
+    image: ${REGISTRY}/skillmap_gateway:${IMAGE_TAG}
+
+  frontend:
+    image: ${REGISTRY}/skillmap_frontend:${IMAGE_TAG}
