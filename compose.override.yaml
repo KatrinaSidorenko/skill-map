@@ -1,0 +1,44 @@
+# Dev override – auto-loaded by Docker Compose alongside compose.yaml
+#
+# Usage:
+#   docker compose --env-file .env.dev up -d --build
+#
+# Provides: local builds from source + host port bindings for direct access
+
+services:
+
+  core-service:
+    build:
+      context: ./backend
+      dockerfile: core-service/Dockerfile
+    ports:
+      - "${CORE_SERVICE_PORT}:8080"
+
+  roadmap-tests-service:
+    build:
+      context: ./backend
+      dockerfile: roadmap-tests/Dockerfile
+    ports:
+      - "${ROADMAP_TESTS_PORT}:8080"
+
+  roadmap-workspace-service:
+    build:
+      context: ./backend
+      dockerfile: roadmap-workspace/Dockerfile
+    ports:
+      - "${ROADMAP_WORKSPACE_PORT}:8080"
+
+  gateway:
+    build:
+      context: ./backend
+      dockerfile: gateway/Dockerfile
+    ports:
+      - "${GATEWAY_PORT}:8080"
+
+  frontend:
+    build:
+      context: ./frontend/skill-map
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_WS_URL: ${NEXT_PUBLIC_WS_URL}
