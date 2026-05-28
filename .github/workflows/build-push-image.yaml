@@ -28,8 +28,8 @@ jobs:
           file: ./backend/core-service/Dockerfile
           push: true
           tags: | 
-            skillmap_core-service:${{ github.sha }}
-            skillmap_core-service:latest
+            ${{ secrets.DOCKER_USERNAME }}/skillmap_core-service:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/skillmap_core-service:latest
       - name: Build and push assessment-service image
         uses: docker/build-push-action@v3      
         with:
