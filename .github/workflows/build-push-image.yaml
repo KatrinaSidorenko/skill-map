@@ -24,7 +24,8 @@ jobs:
       - name: Build and push core-service image
         uses: docker/build-push-action@v3
         with:
-          context: ./backend/core-service
+          context: ./backend
+          file: ./backend/core-service/Dockerfile
           push: true
           tags: | 
             skillmap_core-service:${{ github.sha }}
@@ -32,7 +33,8 @@ jobs:
       - name: Build and push assessment-service image
         uses: docker/build-push-action@v3      
         with:
-          context: ./backend/assessment-service
+          context: ./backend
+          file: ./backend/assessment-service/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/skillmap_assessment-service:${{ github.sha }}
@@ -40,7 +42,8 @@ jobs:
       - name: Build and push workspace-service image
         uses: docker/build-push-action@v3
         with:
-          context: ./backend/workspace-service
+          context: ./backend
+          file: ./backend/workspace-service/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/skillmap_workspace-service:${{ github.sha }}
@@ -48,7 +51,8 @@ jobs:
       - name: Build and push gateway image
         uses: docker/build-push-action@v3
         with:
-          context: ./backend/gateway
+          context: ./backend
+          file: ./backend/gateway/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/skillmap_gateway:${{ github.sha }}
@@ -56,7 +60,8 @@ jobs:
       - name: Build and push frontend image
         uses: docker/build-push-action@v3
         with:
-          context: ./frontend
+          context: ./frontend/skill-map
+          file: ./frontend/skill-map/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/skillmap_frontend:${{ github.sha }}
