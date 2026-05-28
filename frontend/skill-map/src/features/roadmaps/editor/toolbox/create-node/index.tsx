@@ -82,12 +82,14 @@ const createNodeDialog = createOverlay<{
             <Dialog.Footer>
               <HStack justify="flex-end" w="full">
                 <Button
+                  size="sm"
                   variant="ghost"
                   onClick={() => rest.onOpenChange?.({ open: false })}
                 >
                   {getEditorTranslations('cancel')}
                 </Button>
                 <Button
+                  size="sm"
                   colorScheme="teal"
                   onClick={() => {
                     onCreate({ label, description, status, nodeType });
