@@ -8,16 +8,16 @@
 services:
 
   core-service:
-    image: ${REGISTRY}/core-service:${IMAGE_TAG}
+    image: ${REGISTRY}/skillmap_core-service:${IMAGE_TAG}
 
   roadmap-tests-service:
-    image: ${REGISTRY}/roadmap-tests-service:${IMAGE_TAG}
+    image: ${REGISTRY}/skillmap_assessment-service:${IMAGE_TAG}
 
   roadmap-workspace-service:
-    image: ${REGISTRY}/roadmap-workspace-service:${IMAGE_TAG}
+    image: ${REGISTRY}/skillmap_workspace-service:${IMAGE_TAG}
 
   gateway:
-    image: ${REGISTRY}/gateway:${IMAGE_TAG}
+    image: ${REGISTRY}/skillmap_gateway:${IMAGE_TAG}
 
   frontend:
-    image: ${REGISTRY}/frontend:${IMAGE_TAG}
+    image: ${REGISTRY}/skillmap_frontend:${IMAGE_TAG}
