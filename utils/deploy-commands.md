@@ -20,10 +20,10 @@ docker exec -it skillmap-kafka-broker kafka-topics --create --topic roadmap-work
 
 docker exec -it skillmap-kafka-broker kafka-topics --create --topic workspace-action-reviewed --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
 
-docker exec -it skillmap-dev-kafka-broker-1  kafka-topics 
+docker exec -it skillmap-kafka-broker-1  kafka-topics 
 --create --topic roadmap-workspace-actions --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1 
 
-docker exec -it skillmap-dev-kafka-broker-1  kafka-topics  --create --topic workspace-action-reviewed --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1 
+docker exec -it skillmap-kafka-broker-1  kafka-topics  --create --topic workspace-action-reviewed --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1 
 
 docker compose -f compose.dev.yaml --env-file .env.dev up -d --build
 
