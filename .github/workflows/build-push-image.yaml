@@ -34,7 +34,7 @@ jobs:
         uses: docker/build-push-action@v3      
         with:
           context: ./backend
-          file: ./backend/assessment-service/Dockerfile
+          file: ./backend/roadmap-tests/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/skillmap_assessment-service:${{ github.sha }}
@@ -43,7 +43,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: ./backend
-          file: ./backend/workspace-service/Dockerfile
+          file: ./backend/roadmap-workspace/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/skillmap_workspace-service:${{ github.sha }}
