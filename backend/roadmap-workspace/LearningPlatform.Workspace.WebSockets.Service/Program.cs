@@ -5,5 +5,5 @@ builder.Services.AddWorkspaceWebSockets(builder.Configuration);
 
 var app = builder.Build();
 //app.UseAuthorization();
-app.MapHub<WorkspaceHub>("api/hubs/workspace");
+app.MapHub<WorkspaceHub>("ws/hubs/workspace");
 app.Run();
