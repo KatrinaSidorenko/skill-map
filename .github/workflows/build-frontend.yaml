@@ -11,6 +11,7 @@ on:
     paths:
       - "frontend/skill-map/**"
       - ".github/workflows/build-frontend.yaml"
+  workflow_call:
 
 jobs:
   frontend-build:

@@ -1,5 +1,4 @@
 name: build and push images to Docker Hub
-
 on:
   push:
     branches: [ "main" ]
@@ -13,6 +12,12 @@ on:
         required: true
 
 jobs:
+  backend-build:
+    uses: ./.github/workflows/build-backend.yml
+
+  frontend-build:
+    uses: ./.github/workflows/build-frontend.yaml
+    
   build-and-push:
     needs: [backend-build, frontend-build]
     runs-on: ubuntu-latest
