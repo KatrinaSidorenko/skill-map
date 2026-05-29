@@ -24,8 +24,9 @@ import {
 } from './queueService';
 import { toaster } from '@/components/ui/toaster';
 import useLocalization from '@/i18n/useLocalization';
+import { env } from 'next-runtime-env';
 
-const HUB_URL = `${process.env.NEXT_PUBLIC_WS_URL}/hubs/workspace`;
+const HUB_URL = `${env('NEXT_PUBLIC_WS_URL')}/hubs/workspace`;
 
 /** How long (ms) a rejected edge stays red before being removed from the canvas */
 const REJECTED_EDGE_TTL = 1_500;

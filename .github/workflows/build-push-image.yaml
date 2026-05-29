@@ -63,9 +63,6 @@ jobs:
         with:
           context: ./frontend/skill-map
           file: ./frontend/skill-map/Dockerfile
-          build-args: |
-            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL || 'http://localhost:81/api' }}
-            NEXT_PUBLIC_WS_URL=${{ secrets.NEXT_PUBLIC_WS_URL || 'http://localhost:81/ws' }}
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/skillmap_frontend:${{ github.sha }}

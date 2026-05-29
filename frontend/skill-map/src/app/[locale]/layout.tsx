@@ -6,6 +6,8 @@ import { ReduxProvider } from '@/store/providers';
 import { firaCode, inter, nunito } from '@/theme/fonts';
 import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { notFound } from 'next/navigation';
+import { PublicEnvScript } from 'next-runtime-env';
+
 
 export default async function RootLayout({
   children,
@@ -25,6 +27,7 @@ export default async function RootLayout({
       suppressHydrationWarning
       lang={locale}
     >
+      <PublicEnvScript />
       <body suppressHydrationWarning>
         <NextIntlClientProvider>
           <ReduxProvider>
