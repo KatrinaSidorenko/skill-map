@@ -28,8 +28,11 @@ docker exec -it skillmap-kafka-broker-1  kafka-topics --bootstrap-server localho
 
 docker ps
 docker stop $(docker ps -q)
+docker rmi $(docker images -a -q)
+
 
 docker compose -f compose.dev.yaml --env-file .env.dev up -d --build
+docker compose -f compose.yaml -f compose.prod.yaml --env-file .env up -d
 
 ## FE
 docker build --build-arg NEXT_PUBLIC_API_URL=https://localhost:7066/api -t skillmap-fe .
