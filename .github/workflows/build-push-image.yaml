@@ -1,6 +1,7 @@
 name: build and push images to Docker Hub
-workflow_dispatch:
+
 on:
+  workflow_dispatch:
   push:
     branches: [ "main" ]
   pull_request:
