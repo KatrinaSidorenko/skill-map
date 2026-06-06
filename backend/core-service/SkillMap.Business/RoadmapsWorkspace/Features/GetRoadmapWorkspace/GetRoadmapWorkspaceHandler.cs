@@ -11,7 +11,7 @@ internal sealed class GetRoadmapWorkspaceHandler(IRoadmapWorkspaceEditor workspa
 {
     public async Task<RoadmapWorkspaceDto> Handle(GetRoadmapWorkspaceQuery request, CancellationToken cancellationToken)
     {
-        var targetSnapshotContent = await workspaceEditor.GetActualRoadmapSnapshot(request.WorkspaceId, cancellationToken);
+        var targetSnapshotContent = await workspaceEditor.GetActualRoadmapWorkspaceSnapshot(request.WorkspaceId, cancellationToken);
         return RoadmapWorkspaceDto.Create(request.WorkspaceId, targetSnapshotContent, targetSnapshotContent.Version);
     }
 }

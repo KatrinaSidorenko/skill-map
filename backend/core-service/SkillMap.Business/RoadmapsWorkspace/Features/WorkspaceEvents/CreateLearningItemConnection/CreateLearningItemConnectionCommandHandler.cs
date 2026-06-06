@@ -17,7 +17,7 @@ internal sealed class CreateLearningItemConnectionCommandHandler(
 {
     public async Task Handle(CreateLearningItemConnectionCommand command, CancellationToken cancellationToken)
     {
-        var actualSnapshot = await roadmapWorkspaceEditor.GetActualRoadmapSnapshot(command.WorkspaceId, cancellationToken);
+        var actualSnapshot = await roadmapWorkspaceEditor.GetActualRoadmapWorkspaceSnapshot(command.WorkspaceId, cancellationToken);
         var @event = command.ToRoadmapWorkspaceEvent();
         var candidateSnapshot = await actualSnapshot.ApplyEventsToSnapshot([@event], cancellationToken);
         if (TopologicalSort.HasCycle(candidateSnapshot))
