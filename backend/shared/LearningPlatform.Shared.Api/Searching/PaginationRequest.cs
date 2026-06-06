@@ -7,9 +7,9 @@ namespace LearningPlatform.Shared.Api.Searching;
 public class PaginationRequest
 {
     [JsonProperty("pageNumber")]
-    public int PageNumber { get; set; } = 1;
+    public int? PageNumber { get; set; } = 1;
     [JsonProperty("pageSize")]
-    public int PageSize { get; set; } = 10;
+    public int? PageSize { get; set; } = 10;
 
-    public PaginationParams ToParams() => new PaginationParams(PageNumber, PageSize);
+    public PaginationParams ToParams() => new PaginationParams(PageNumber ?? 1, PageSize ?? 10);
 }

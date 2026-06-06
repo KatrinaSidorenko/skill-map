@@ -9,5 +9,5 @@ public class FilteringRequest : PaginationRequest
     [JsonProperty("query")]
     public string? Query { get; set; }
 
-    public new FilteringParams ToParams() => new FilteringParams(Query, new PaginationParams(PageNumber, PageSize));
+    public new FilteringParams ToParams() => new FilteringParams(Query, new PaginationParams(PageNumber ?? 1, PageSize ?? 10));
 }
