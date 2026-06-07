@@ -8,5 +8,5 @@ namespace LearningPlatform.RoadmapTests.Service.Application.Abstractions;
 
 public interface IQuestionSource
 {
-    Task<GenerationResult<List<QuestionDto>>> Generate(TopicDto topic, TopicQuestionsSettingDto settings, CancellationToken ct);
+    Task<GenerationResult<List<QuestionDto>>> GetUniqueQuestionsForTopic(TopicDto topic, TopicQuestionsSettingDto settings, CancellationToken ct);
 }

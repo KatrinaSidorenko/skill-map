@@ -11,7 +11,7 @@ namespace LearningPlatform.RoadmapTests.Service.Application;
 public interface ISimpleQuestionSource : IQuestionSource { }
 public sealed class SimpleQuestionSource : ISimpleQuestionSource
 {
-    public async Task<GenerationResult<List<QuestionDto>>> Generate(
+    public async Task<GenerationResult<List<QuestionDto>>> GetUniqueQuestionsForTopic(
         TopicDto topic,
         TopicQuestionsSettingDto settings,
         CancellationToken ct)

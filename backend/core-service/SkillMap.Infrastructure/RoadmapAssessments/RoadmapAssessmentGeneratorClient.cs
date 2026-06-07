@@ -64,10 +64,17 @@ public sealed class RoadmapAssessmentGeneratorClient : IQuestionsGenerator
         => await _resiliencePipeline.ExecuteAsync<(Topic Topic, TopicQuestionsDto? Questions)>((ct) => GenerateQuestionsForTopicValueTask(topicWithSetting, ct));
 
     public async Task<List<TopicQuestionsDto>> GenerateQuestionsForTopics(List<(Topic Topic, TopicQuestionsSettingDto Setting)> topicsWithGenerationSetting, CancellationToken ct)
+        => await GenerateQuestionsForTopicsConcurrent(topicsWithGenerationSetting, ct);
+    private async Task<List<TopicQuestionsDto>> GenerateQuestionsForTopicsConcurrent(List<(Topic Topic, TopicQuestionsSettingDto Setting)> topicsWithGenerationSetting, CancellationToken ct)
     {
         var tasks = topicsWithGenerationSetting.Select(ts => GenerateQuestionsForTopicWithRetry(ts, ct));
         var generatedTopicQuestions = await Task.WhenAll(tasks);
         var failedTopicQuestionGeneration = generatedTopicQuestions.Where(r => r.Questions == null).ToList();
         return generatedTopicQuestions.Where(r => r.Questions != null).Select(r => r.Questions!).ToList();
+    }
+
+    private async Task<List<TopicQuestionsDto>> GenerateQuestionsForTopicsBunch(List<(Topic Topic, TopicQuestionsSettingDto Setting)> topicsWithGenerationSetting, CancellationToken ct)
+    {
+        throw new NotImplementedException();
     }
 }

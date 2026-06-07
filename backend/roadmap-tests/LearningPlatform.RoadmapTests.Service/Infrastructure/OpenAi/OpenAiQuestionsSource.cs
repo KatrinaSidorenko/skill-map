@@ -13,6 +13,8 @@ using Newtonsoft.Json;
 using OpenAI;
 using OpenAI.Chat;
 
+using Polly;
+
 using SkillMap.Shared.Options;
 
 using AnswerDto = LearningPlatform.RoadmapTests.Service.Application.Models.AnswerDto;
@@ -20,11 +22,22 @@ using QuestionDto = LearningPlatform.RoadmapTests.Service.Application.Models.Que
 
 namespace LearningPlatform.RoadmapTests.Service.Infrastructure.OpenAi;
 
-
-
-public sealed class OpenAiQuestionsSource(OpenAIClient client, IOptions<OpenAiOptions> options) : IOpenAiQuestionSource
+public sealed class OpenAiQuestionsSource : IOpenAiQuestionSource
 {
-    public async Task<GenerationResult<List<QuestionDto>>> Generate(TopicDto topic, TopicQuestionsSettingDto settings, CancellationToken ct)
+    public const string ResiliencePipelineKey = "OpenAiClient";
+    private readonly OpenAIClient _client;
+    private readonly IOptions<OpenAiOptions> _options;
+    private readonly ResiliencePipeline _resiliencePipeline;
+    public OpenAiQuestionsSource(OpenAIClient client, IOptions<OpenAiOptions> options, IServiceProvider serviceProvider)
+    {
+        _client = client;
+        _options = options;
+        _resiliencePipeline = serviceProvider.GetRequiredKeyedService<ResiliencePipeline>(ResiliencePipelineKey);
+    }
+  
+    public async Task<GenerationResult<List<QuestionDto>>> GetUniqueQuestionsForTopic(TopicDto topic, TopicQuestionsSettingDto settings, CancellationToken ct)
+            => await GetUniqueQuestionsForTopicWithRetry(topic, settings, ct);
+    private async Task<GenerationResult<List<QuestionDto>>> GetUniqueQuestionsForTopicInner(TopicDto topic, TopicQuestionsSettingDto settings, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
 
@@ -32,7 +45,7 @@ public sealed class OpenAiQuestionsSource(OpenAIClient client, IOptions<OpenAiOp
         ArgumentNullException.ThrowIfNull(settings);
 
         var (systemPrompt, userPrompt) = PromptBuilder.Build(topic, settings);
-        var chatClient = client.GetChatClient(options.Value.Model);
+        var chatClient = _client.GetChatClient(_options.Value.Model);
         var response = await chatClient.CompleteChatAsync(
             messages: new[]
             {
@@ -46,7 +59,6 @@ public sealed class OpenAiQuestionsSource(OpenAIClient client, IOptions<OpenAiOp
             },
             cancellationToken: ct
         );
-
         var initialResponseValidation = response.ValidateResponse<List<QuestionDto>>();
         if (initialResponseValidation is not null && !initialResponseValidation.IsSuccessful) { return initialResponseValidation; }
 
@@ -56,4 +68,9 @@ public sealed class OpenAiQuestionsSource(OpenAIClient client, IOptions<OpenAiOp
         var generatedQuestions = contentValidation.Data.Questions.Where(q => q.IsValidQuestion(settings)).ToList();
         return new GenerationResult<List<QuestionDto>>(generatedQuestions.Select(q => q.ToQuestionDto()).ToList());
     }
+    private async ValueTask<GenerationResult<List<QuestionDto>>> GetUniqueQuestionsForTopicValueTask(TopicDto topic, TopicQuestionsSettingDto settings, CancellationToken ct)
+        => await GetUniqueQuestionsForTopicInner(topic, settings, ct);
+    private async Task<GenerationResult<List<QuestionDto>>> GetUniqueQuestionsForTopicWithRetry(TopicDto topic, TopicQuestionsSettingDto settings, CancellationToken ct)
+        => await _resiliencePipeline.ExecuteAsync(ct => GetUniqueQuestionsForTopicValueTask(topic, settings, ct));
+
 }

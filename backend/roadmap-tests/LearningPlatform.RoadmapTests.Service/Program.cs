@@ -13,6 +13,8 @@ using Microsoft.Extensions.Options;
 using OpenAI;
 
 using SkillMap.Shared.Options;
+using Polly;
+using Polly.CircuitBreaker;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +37,29 @@ builder.Services.AddScoped<ISimpleQuestionSource, SimpleQuestionSource>();
 builder.Services.AddScoped<ICacheQuestionSource, CacheQuestionSource>();
 builder.Services.AddScoped<IDatabaseQuestionSource, DatabaseQuestionSource>();
 builder.Services.AddScoped<IQuestionSource, CompositeQuestionProvider>();
+
+builder.Services.AddResiliencePipeline(OpenAiQuestionsSource.ResiliencePipelineKey, (builder) =>
+{
+    builder.AddCircuitBreaker(new CircuitBreakerStrategyOptions
+    {
+        FailureRatio = 0.5,
+        SamplingDuration = TimeSpan.FromSeconds(10),
+        MinimumThroughput = 8,
+        BreakDuration = TimeSpan.FromSeconds(30),
+        ShouldHandle = (outcome) =>
+        {
+            if (outcome.Outcome.Exception is null)
+                return ValueTask.FromResult(false);
+
+            if (outcome.Outcome.Exception is ArgumentException 
+                || outcome.Outcome.Exception is OperationCanceledException)
+                return ValueTask.FromResult(false);
+
+            return ValueTask.FromResult(true);
+        }
+    });
+});
+   
 
 builder.Services.Configure<OpenAiOptions>(builder.Configuration.GetSection(OpenAiOptions.SectionName));
 builder.Services.AddSingleton(sp =>

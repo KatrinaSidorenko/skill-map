@@ -21,9 +21,9 @@ public static class RoadmapAssessmentMediationModule
                 BackoffType = DelayBackoffType.Exponential,
                 MaxDelay = TimeSpan.FromSeconds(4),
                 MaxRetryAttempts = 2,
-                ShouldHandle = (@out) =>
+                ShouldHandle = (outcome) =>
                 {
-                    if (@out.Outcome.Result is null) { return new ValueTask<bool>(Task.FromResult(true)); }
+                    if (outcome.Outcome.Result is null) { return new ValueTask<bool>(Task.FromResult(true)); }
                     return new ValueTask<bool>(Task.FromResult(false));
                 }
             }).AddTimeout(TimeSpan.FromSeconds(4));
