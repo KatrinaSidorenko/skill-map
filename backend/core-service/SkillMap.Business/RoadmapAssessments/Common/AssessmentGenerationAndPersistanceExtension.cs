@@ -25,10 +25,10 @@ internal static class AssessmentGenerationAndPersistanceExtension
     }
     private static (Topic Topic, TopicQuestionsSettingDto) CreateLearningItemQuestionSettings(LeaningItemAssessment learningItem, TopicQuestionsSettingDto topicQuestionsSetting)
         => (new Topic(learningItem.Id, learningItem.Title, learningItem.Description), topicQuestionsSetting);
-    public static async Task<List<TopicQuestionsDto>> GenerateQuestions(this ITopicQuestionsGenerator questionsGenerator, List<LeaningItemAssessment> item, Dictionary<string, TopicQuestionsSettingDto> questionSettingsByLearningItem, CancellationToken ct)
+    public static async Task<List<TopicQuestionsDto>> GenerateAssessmentQuestions(this IQuestionsGenerator questionsGenerator, List<LeaningItemAssessment> item, Dictionary<string, TopicQuestionsSettingDto> questionSettingsByLearningItem, CancellationToken ct)
     {
         var learningItemQuestionSettings = item.Select(i => CreateLearningItemQuestionSettings(i, questionSettingsByLearningItem[i.Id])).ToList();
-        return await questionsGenerator.GenerateTopicsQuestions(learningItemQuestionSettings, ct);
+        return await questionsGenerator.GenerateQuestionsForTopics(learningItemQuestionSettings, ct);
     }
 
     private static async Task<long> SaveAssessment(this IRepository<RoadmapAssessment> repository,
@@ -77,7 +77,7 @@ internal static class AssessmentGenerationAndPersistanceExtension
         CancellationToken ct)
         => await SaveAssessment(repository, workspaceId, roadmapId, RoadmapAssessmentType.Intermediate, questionSettingsByLearningItem, createdLearningItemQuestions, ct);
 
-    private static async Task<long> GenerateAndSaveAssessment(this ITopicQuestionsGenerator questionsGenerator,
+    private static async Task<long> GenerateAndSaveAssessment(this IQuestionsGenerator questionsGenerator,
         IRepository<RoadmapAssessment> repository,
         long workspaceId, string roadmapId,
         RoadmapAssessmentType assessmentType,
@@ -85,18 +85,18 @@ internal static class AssessmentGenerationAndPersistanceExtension
         CancellationToken ct)
     {
         var questionSettingsByLearningItem = learningItemsForAssessment.ToDictionary(i => i.Id, CreateQuestionSetting);
-        var createdLearningItemQuestions = await questionsGenerator.GenerateQuestions(learningItemsForAssessment, questionSettingsByLearningItem, ct);
+        var createdLearningItemQuestions = await questionsGenerator.GenerateAssessmentQuestions(learningItemsForAssessment, questionSettingsByLearningItem, ct);
         return await SaveAssessment(repository, workspaceId, roadmapId, assessmentType, questionSettingsByLearningItem, createdLearningItemQuestions, ct);
     }
 
-    public static async Task<long> GenerateAndSaveInitialAssessment(this ITopicQuestionsGenerator questionsGenerator,
+    public static async Task<long> GenerateAndSaveInitialAssessment(this IQuestionsGenerator questionsGenerator,
         IRepository<RoadmapAssessment> repository,
         long workspaceId, string roadmapId,
         List<LeaningItemAssessment> learningItemsForAssessment,
         CancellationToken ct)
         => await GenerateAndSaveAssessment(questionsGenerator, repository, workspaceId, roadmapId, RoadmapAssessmentType.Initial, learningItemsForAssessment, ct);
 
-    public static async Task<long> GenerateAndSaveIntermediateAssessment(this ITopicQuestionsGenerator questionsGenerator,
+    public static async Task<long> GenerateAndSaveIntermediateAssessment(this IQuestionsGenerator questionsGenerator,
         IRepository<RoadmapAssessment> repository,
         long workspaceId, string roadmapId,
         List<LeaningItemAssessment> learningItemsForAssessment,

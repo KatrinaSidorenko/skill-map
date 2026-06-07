@@ -19,7 +19,7 @@ namespace SkillMap.Business.RoadmapAssessments.Features.CreateInitialAssessment;
 [UsedImplicitly]
 internal class CreateInitialAssessmentHandler(
     IRoadmapWorkspaceEditor workspaceEditor,
-    ITopicQuestionsGenerator questionsGenerator,
+    IQuestionsGenerator questionsGenerator,
     IRepository<RoadmapAssessment> repository)
     : IRequestHandler<CreateInitialAssessmentCommand, long>
 {

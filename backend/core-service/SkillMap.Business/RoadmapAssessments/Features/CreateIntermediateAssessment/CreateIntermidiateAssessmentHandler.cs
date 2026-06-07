@@ -18,7 +18,7 @@ namespace SkillMap.Business.RoadmapAssessments.Features.CreateIntermediateAssess
 [UsedImplicitly]
 internal class CreateIntermediateAssessmentHandler(
     IRoadmapWorkspaceEditor workspaceEditor,
-    ITopicQuestionsGenerator questionsGenerator,
+    IQuestionsGenerator questionsGenerator,
     IRepository<RoadmapAssessment> repository)
     : IRequestHandler<CreateIntermediateAssessmentCommand, long>
 {
