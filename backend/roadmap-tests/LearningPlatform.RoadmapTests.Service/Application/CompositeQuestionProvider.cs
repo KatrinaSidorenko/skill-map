@@ -30,7 +30,7 @@ public sealed class CompositeQuestionProvider : IQuestionSource
 
         _pipeline = new List<IQuestionSource>
         {
-            cacheGenerator,     // 1. Check Memory (Instant)
+            //cacheGenerator,     // 1. Check Memory (Instant)
             //databaseGenerator,  // 2. Check SQL (Fast)
             openAiGenerator,    // 3. Generate New (Slow, $$)
         };
@@ -60,7 +60,7 @@ public sealed class CompositeQuestionProvider : IQuestionSource
             {
                 var result = await generator.GetUniqueQuestionsForTopic(topic, stepSettings, ct);
 
-                if (!result.IsSuccessful || !result.HasData)
+                if (!result.IsSuccessful || !result.HasData || result.Data?.Count == 0)
                 {
                     _logger.LogWarning(
                          "Generator {Type} failed with reason: {Reason}",

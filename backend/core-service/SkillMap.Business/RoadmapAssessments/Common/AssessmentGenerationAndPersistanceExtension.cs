@@ -36,7 +36,6 @@ internal static class AssessmentGenerationAndPersistanceExtension
         RoadmapAssessmentType assessmentType,
         Dictionary<string, TopicQuestionsSettingDto> questionSettingsByLearningItem,
         List<TopicQuestionsDto> createdLearningItemQuestions,
-
         CancellationToken ct)
     {
         var assessment = new RoadmapAssessmentDto

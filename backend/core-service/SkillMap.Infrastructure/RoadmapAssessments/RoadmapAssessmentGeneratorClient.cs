@@ -69,7 +69,6 @@ public sealed class RoadmapAssessmentGeneratorClient : IQuestionsGenerator
     {
         var tasks = topicsWithGenerationSetting.Select(ts => GenerateQuestionsForTopicWithRetry(ts, ct));
         var generatedTopicQuestions = await Task.WhenAll(tasks);
-        var failedTopicQuestionGeneration = generatedTopicQuestions.Where(r => r.Questions == null).ToList();
         return generatedTopicQuestions.Where(r => r.Questions != null).Select(r => r.Questions!).ToList();
     }
 

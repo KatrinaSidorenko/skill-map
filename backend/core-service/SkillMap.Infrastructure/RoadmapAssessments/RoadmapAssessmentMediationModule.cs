@@ -26,7 +26,7 @@ public static class RoadmapAssessmentMediationModule
                     if (outcome.Outcome.Result is null) { return new ValueTask<bool>(Task.FromResult(true)); }
                     return new ValueTask<bool>(Task.FromResult(false));
                 }
-            }).AddTimeout(TimeSpan.FromSeconds(4));
+            }).AddTimeout(TimeSpan.FromSeconds(60));
         });
         return services;
     }

@@ -13,6 +13,7 @@ internal static class GetRoadmapWorkspaceEndpoint
         var result = await roadmapWorkspaceModule.ExecuteCommandAsync(new GetRoadmapWorkspaceQuery(userRoadmapId), cancellationToken);
         return Results.Ok(GetRoadmapWorkspaceResponse.Create(result));
     })
+        .RequireAuthorization()
         .Produces<GetRoadmapWorkspaceResponse>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status404NotFound)
         .Produces(StatusCodes.Status500InternalServerError);

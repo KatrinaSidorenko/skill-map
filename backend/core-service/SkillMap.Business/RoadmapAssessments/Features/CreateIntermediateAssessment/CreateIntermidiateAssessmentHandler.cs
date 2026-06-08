@@ -29,7 +29,7 @@ internal class CreateIntermediateAssessmentHandler(
         var workspaceSnapshot = await workspaceEditor.GetActualRoadmapWorkspaceSnapshot(request.WorkspaceId, cancellationToken);
         if (!workspaceSnapshot.HasEnoughDataToCreateAssessment()) throw new NoContentException();
         var learningItemsForAssessment = PickLearningItemsForAssessment(workspaceSnapshot, RoadmapAssessmentConstant.DefaultQuestionsAmount, _rnd);
-        return await questionsGenerator.GenerateAndSaveInitialAssessment(repository, request.WorkspaceId, workspaceSnapshot.Id, learningItemsForAssessment, cancellationToken);
+        return await questionsGenerator.GenerateAndSaveIntermediateAssessment(repository, request.WorkspaceId, workspaceSnapshot.Id, learningItemsForAssessment, cancellationToken);
     }
     private List<LeaningItemAssessment> PickLearningItemsForAssessment(RoadmapSnapshot snapshot, int k, Random rnd)
     {
