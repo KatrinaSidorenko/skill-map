@@ -17,7 +17,7 @@ namespace LearningPlatform.RoadmapTests.Service.Infrastructure.Database;
 
 public class DatabaseQuestionSource(ITopicQuestionsRepository topicQuestionsRepository) : IDatabaseQuestionSource
 {
-    public async Task<GenerationResult<List<QuestionDto>>> Generate(TopicDto topic, TopicQuestionsSettingDto settings, CancellationToken ct)
+    public async Task<GenerationResult<List<QuestionDto>>> GetUniqueQuestionsForTopic(TopicDto topic, TopicQuestionsSettingDto settings, CancellationToken ct)
     {
         var difficultyLevel = settings.DifficultyLevel.ToDifficultyString();
         var searchId = topic.Id.Trim();

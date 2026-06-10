@@ -3,6 +3,11 @@ using LearningPlatform.RoadmapTests.Service.Application.Abstractions;
 using LearningPlatform.RoadmapTests.Service.Application.Models;
 using LearningPlatform.RoadmapTests.Service.Infrastructure.Common;
 
+using Microsoft.Extensions.Options;
+
+using Polly;
+using Polly.Fallback;
+
 using SkillMap.Shared.Extensions;
 
 using QuestionDto = LearningPlatform.RoadmapTests.Service.Application.Models.QuestionDto;
@@ -14,12 +19,12 @@ public sealed class CompositeQuestionProvider : IQuestionSource
     private readonly List<IQuestionSource> _pipeline;
     private readonly ILogger<CompositeQuestionProvider> _logger;
 
+
     public CompositeQuestionProvider(
         ILogger<CompositeQuestionProvider> logger,
         ICacheQuestionSource cacheGenerator,
         IDatabaseQuestionSource databaseGenerator,
-        IOpenAiQuestionSource openAiGenerator,
-        ISimpleQuestionSource simpleGenerator)
+        IOpenAiQuestionSource openAiGenerator)
     {
         _logger = logger;
 
@@ -28,23 +33,24 @@ public sealed class CompositeQuestionProvider : IQuestionSource
             //cacheGenerator,     // 1. Check Memory (Instant)
             //databaseGenerator,  // 2. Check SQL (Fast)
             openAiGenerator,    // 3. Generate New (Slow, $$)
-            simpleGenerator     // 4. Last Resort (Free, Low Quality)
         };
     }
 
-    public async Task<GenerationResult<List<QuestionDto>>> Generate(
-        TopicDto topic,
-        TopicQuestionsSettingDto settings,
-        CancellationToken ct)
+  
+
+    public async Task<GenerationResult<List<QuestionDto>>> GetUniqueQuestionsForTopic(TopicDto topic, TopicQuestionsSettingDto settings, CancellationToken ct)
+        => await GenerateWithIdentifiers(topic, settings, ct);
+    private async Task<GenerationResult<List<QuestionDto>>> InnerGenerate(TopicDto topic, TopicQuestionsSettingDto settings, CancellationToken ct)
     {
         var finalQuestions = new List<QuestionDto>();
         var uniqueTracker = new HashSet<int>();
+        var targetQuestionsAmount = settings.QuestionsCount;
 
         foreach (var generator in _pipeline)
         {
             ct.ThrowIfCancellationRequested();
 
-            var needed = settings.QuestionsCount - finalQuestions.Count;
+            var needed = targetQuestionsAmount - finalQuestions.Count;
             if (needed <= 0) { break; }
 
             var stepSettings = settings.DeepCopy();
@@ -52,9 +58,9 @@ public sealed class CompositeQuestionProvider : IQuestionSource
 
             try
             {
-                var result = await generator.Generate(topic, stepSettings, ct);
+                var result = await generator.GetUniqueQuestionsForTopic(topic, stepSettings, ct);
 
-                if (!result.IsSuccessful && !result.HasData)
+                if (!result.IsSuccessful || !result.HasData || result.Data?.Count == 0)
                 {
                     _logger.LogWarning(
                          "Generator {Type} failed with reason: {Reason}",
@@ -62,15 +68,7 @@ public sealed class CompositeQuestionProvider : IQuestionSource
                     continue;
                 }
 
-                foreach (var q in result.Data)
-                {
-                    if (finalQuestions.Count >= settings.QuestionsCount) break;
-
-                    if (uniqueTracker.Add(q.Text.GetHashCode()))
-                    {
-                        finalQuestions.Add(q);
-                    }
-                }
+                finalQuestions.AddRange(result.Data.Where(q => uniqueTracker.Add(q.Text.GetHashCode())));
 
                 _logger.LogInformation(
                     "Generator {Type} provided {Count} questions. Total: {Total}/{Target}",
@@ -83,5 +81,27 @@ public sealed class CompositeQuestionProvider : IQuestionSource
         }
 
         return new GenerationResult<List<QuestionDto>>(finalQuestions);
+    }
+
+    private async Task<GenerationResult<List<QuestionDto>>> GenerateWithIdentifiers(
+        TopicDto topic,
+        TopicQuestionsSettingDto settings,
+        CancellationToken ct)
+    {
+        var result = await InnerGenerate(topic, settings, ct);
+        if (!result.IsSuccessful || !result.HasData)
+        {
+            return new GenerationResult<List<QuestionDto>>(result.Reason);
+        }
+        var questionsWithIds = result.Data.Select(q =>
+        {
+            q.Id = Guid.NewGuid().ToStringWithoutHyphens();
+            q.Answers.ForEach(a =>
+            {
+                a.Id = Guid.NewGuid().ToStringWithoutHyphens();
+            });
+            return q;
+        }).ToList();
+        return new GenerationResult<List<QuestionDto>>(questionsWithIds);
     }
 }

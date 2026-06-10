@@ -8,7 +8,7 @@ namespace LearningPlatform.RoadmapTests.Service.Infrastructure.Cache;
 
 public class CacheQuestionSource(ICacheService cacheService) : ICacheQuestionSource
 {
-    public async Task<GenerationResult<List<Application.Models.QuestionDto>>> Generate(TopicDto topic, TopicQuestionsSettingDto settings, CancellationToken ct)
+    public async Task<GenerationResult<List<Application.Models.QuestionDto>>> GetUniqueQuestionsForTopic(TopicDto topic, TopicQuestionsSettingDto settings, CancellationToken ct)
     {
         return new GenerationResult<List<Application.Models.QuestionDto>>([]);
     }

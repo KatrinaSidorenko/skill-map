@@ -37,25 +37,3 @@ public static class GenerateTopicInputValidator
             : null;
     }
 }
-//public sealed class GenerateTopicQuestionsRequestValidator
-//    : AbstractValidator<GenerateTopicQuestionsRequest>
-//{
-//    public GenerateTopicQuestionsRequestValidator()
-//    {
-//        RuleFor(x => x.Topic)
-//            .NotNull()
-//            .WithMessage("Topic is required");
-
-//        RuleFor(x => x.Settings)
-//            .NotNull()
-//            .WithMessage("Settings are required");
-
-//        RuleFor(x => x.Settings.QuestionsCount)
-//            .GreaterThan(0)
-//            .WithMessage("QuestionsCount must be greater than zero");
-
-//        RuleFor(x => x.Settings.Types)
-//            .NotEmpty()
-//            .WithMessage("At least one question type must be specified");
-//    }
-//}

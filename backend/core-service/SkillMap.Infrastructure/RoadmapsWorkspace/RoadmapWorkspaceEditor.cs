@@ -27,7 +27,7 @@ public class RoadmapWorkspaceEditor(
             ?? throw new ResourceNotFoundException(nameof(RoadmapWorkspaceSnapshot), $"No snapshots found for workspace {workspaceId}");
         return latestSnapshot;
     }
-    public async Task<RoadmapSnapshot> GetActualRoadmapSnapshot(long workspaceId, CancellationToken cancellationToken)
+    public async Task<RoadmapSnapshot> GetActualRoadmapWorkspaceSnapshot(long workspaceId, CancellationToken cancellationToken)
     {
         var workspace = await workspaceRepository.GetFirstOrDefaultAsync(w => w.Id == workspaceId, cancellationToken)
             ?? throw new ResourceNotFoundException(nameof(RoadmapWorkspace), workspaceId.ToString());

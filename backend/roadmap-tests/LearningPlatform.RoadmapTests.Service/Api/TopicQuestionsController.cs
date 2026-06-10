@@ -35,11 +35,7 @@ public class TopicQuestionsController : ControllerBase
             return BadRequest(validation);
         }
 
-        var result = await _service.GenerateTopicQuestions(
-            request.Topic,
-            request.Settings,
-            ct);
-
+        var result = await _service.GenerateTopicQuestions(request.Topic, request.Settings, ct);
         return Ok(result);
     }
 }

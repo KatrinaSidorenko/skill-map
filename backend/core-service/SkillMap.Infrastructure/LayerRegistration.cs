@@ -18,8 +18,8 @@ using SkillMap.Infrastructure.Database;
 using SkillMap.Infrastructure.Email;
 using SkillMap.Infrastructure.EventBus;
 using SkillMap.Infrastructure.PersonalizedRoadmaps;
+using SkillMap.Infrastructure.RoadmapAssessments;
 using SkillMap.Infrastructure.RoadmapsWorkspace;
-using SkillMap.Infrastructure.RoadmapTest;
 using SkillMap.Persistence;
 using SkillMap.Persistence.Neo4j;
 using SkillMap.Shared.Options;
@@ -43,7 +43,7 @@ public static class LayerRegistration
         services.Configure<EmailOptions>(configuration.GetSection(EmailOptions.SectionName));
         services.Configure<RoadmapTestingServiceOptions>(configuration.GetSection(RoadmapTestingServiceOptions.SectionName));
 
-        services.AddHttpClient<ITopicQuestionsGenerator, RoadmapTestGeneratorClient>(
+        services.AddHttpClient<IQuestionsGenerator, RoadmapAssessmentGeneratorClient>(
             (sp, client) =>
             {
                 var options = sp.GetRequiredService<IOptions<RoadmapTestingServiceOptions>>();

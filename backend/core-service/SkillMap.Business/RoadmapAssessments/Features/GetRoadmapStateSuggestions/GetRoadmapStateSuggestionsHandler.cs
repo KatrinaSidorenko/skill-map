@@ -27,7 +27,7 @@ internal class GetRoadmapStateSuggestionsHandler(
             ?? throw new ResourceNotFoundException(nameof(AssessmentAttempt), $"Attempt with id {request.AttemptId} not found.");
         var assessment = await assessmentRepository.GetByIdAsync(attempt.AssessmentId, cancellationToken)
             ?? throw new ResourceNotFoundException(nameof(RoadmapAssessment), $"Assessment with id {attempt.AssessmentId} not found.");
-        var workspaceSnapshot = await workspaceEditor.GetActualRoadmapSnapshot(assessment.RoadmapWorkspaceId, cancellationToken)
+        var workspaceSnapshot = await workspaceEditor.GetActualRoadmapWorkspaceSnapshot(assessment.RoadmapWorkspaceId, cancellationToken)
             ?? throw new ResourceNotFoundException(nameof(RoadmapWorkspace), $"Roadmap workspace with id {assessment.RoadmapWorkspaceId} not found.");
 
         var attemptContent = await attempt.GetAssessmentAttemptResult(cancellationToken);

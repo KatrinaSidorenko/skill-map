@@ -97,6 +97,20 @@ const config = defineConfig({
       color: 'brand.400',
       minHeight: '100vh',
     },
+    'p, span, h1, h2, h3, h4, h5, h6, a, label, li, td, th, blockquote, code, pre': {
+      userSelect: 'text',
+      _selection: {
+        bg: 'brand.100',
+        color: 'brand.800',
+      },
+    },
+    'input, textarea, [contenteditable]': {
+      userSelect: 'text',
+      _selection: {
+        bg: 'brand.100',
+        color: 'brand.800',
+      },
+    },
   },
 });
 
