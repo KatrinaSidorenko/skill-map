@@ -132,7 +132,9 @@
     "actionRejectedCreateEdge": "Failed to create connection. Cycle was detected",
     "actionRejectedDeleteEdge": "Failed to delete connection. The server rejected the action.",
     "actionRejectedUnknown": "The server rejected the action. Please try again.",
-    "recommendedResources": "Recommended Resources"
+    "recommendedResources": "Recommended Resources",
+    "changeImage": "Change Image",
+    "uploadImage": "Upload Image"
   },
   "roadmaps": {
     "search": "Search ...",
@@ -169,7 +171,7 @@
     "enterTitle": "Enter title",
     "descriptionLabel": "Description",
     "enterDescription": "Enter description",
-    "imageUrlLabel": "Image URL",
+    "imageUrlLabel": "Cover Image",
     "enterImageUrl": "Enter image URL",
     "edit": "Edit",
     "editSuccess": "Roadmap updated successfully.",
@@ -189,7 +191,9 @@
     "saveRoadmapSuccess": "Roadmap saved!",
     "saveRoadmapInfo": "Your roadmap is being copied and will appear in your Saved Roadmaps shortly.",
     "unsaveSuccess": "Roadmap removed from saved.",
-    "unsaveFailed": "Failed to remove roadmap."
+    "unsaveFailed": "Failed to remove roadmap.",
+    "changeImage": "Change Image",
+    "uploadImage": "Upload Image"
   },
   "assessment": {
     "assessmentTest": "Assessment Test",
@@ -273,7 +277,12 @@
     "sendResetLink": "Send Reset Link",
     "resetEmailSent": "Reset email sent! Check your inbox.",
     "resetFailed": "Failed to send reset email. Please try again.",
-    "avatar": "Avatar"
+    "avatar": "Avatar",
+    "invalidImageType": "Invalid Image Type",
+    "imageTooLarge": "Image Too Large",
+    "changeAvatar": "Change Avatar",
+    "uploadAvatar": "Upload Avatar",
+    "removeAvatar": "Remove"
   },
   "home": {
     "greeting": "Welcome back",

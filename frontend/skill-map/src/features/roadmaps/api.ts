@@ -36,22 +36,22 @@ export const roadmapApi = createApi({
     }),
     updateSavedRoadmap: builder.mutation<
       void,
-      { id: string; payload: UpdateRoadmapWorkspaceRequest }
+      { id: string; formData: FormData }
     >({
-      query: ({ id, payload }) => ({
+      query: ({ id, formData }) => ({
         url: `roadmaps-workspace/${id}`,
         method: 'PATCH',
-        body: payload,
+        body: formData,
       }),
     }),
     createEmptyRoadmap: builder.mutation<
       { id: string },
-      CreateEmptyRoadmapWorkspaceRequest
+      FormData
     >({
-      query: (payload) => ({
+      query: (formData) => ({
         url: `roadmaps-workspace/empty`,
         method: 'POST',
-        body: payload,
+        body: formData,
       }),
     }),
     getSavedRoadmaps: builder.query<
@@ -154,12 +154,12 @@ export const roadmapApi = createApi({
     }),
     updateUserRoadmap: builder.mutation<
       void,
-      { id: string; payload: UpdateUserRoadmapRequest }
+      { id: string; formData: FormData }
     >({
-      query: ({ id, payload }) => ({
+      query: ({ id, formData }) => ({
         url: `personal-roadmaps/${id}`,
         method: 'PUT',
-        body: payload,
+        body: formData,
       }),
     }),
     publishPersonalRoadmap: builder.mutation<

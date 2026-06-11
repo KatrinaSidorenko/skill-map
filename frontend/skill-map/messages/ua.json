@@ -126,7 +126,9 @@
     "actionRejectedCreateEdge": "Не вдалося створити зв'язок. Сервер відхилив дію.",
     "actionRejectedDeleteEdge": "Не вдалося видалити зв'язок. Сервер відхилив дію.",
     "actionRejectedUnknown": "Сервер відхилив дію. Спробуйте ще раз.",
-    "recommendedResources": "Рекомендовані ресурси"
+    "recommendedResources": "Рекомендовані ресурси",
+    "changeImage": "Змінити зображення",
+    "uploadImage": "Завантажити зображення"
   },
   "roadmaps": {
     "search": "Пошук ...",
@@ -183,7 +185,9 @@
     "saveRoadmapSuccess": "Карту збережено!",
     "saveRoadmapInfo": "Ваша карта копіюється і незабаром з'явиться у розділі «Збережені».",
     "unsaveSuccess": "Карту видалено зі збережених.",
-    "unsaveFailed": "Не вдалося видалити карту."
+    "unsaveFailed": "Не вдалося видалити карту.",
+    "changeImage": "Змінити зображення",
+    "uploadImage": "Завантажити зображення"
   },
   "assessment": {
     "assessmentTest": "Тест оцінювання",
@@ -288,6 +292,11 @@
     "sendResetLink": "Надіслати посилання",
     "resetEmailSent": "Лист надіслано! Перевірте свою пошту.",
     "resetFailed": "Не вдалося надіслати лист. Спробуйте ще раз.",
-    "avatar": "Аватар"
+    "avatar": "Аватар",
+    "invalidImageType": "Невірний тип файлу",
+    "imageTooLarge": "Файл занадто великий",
+    "changeAvatar": "Змінити аватар",
+    "uploadAvatar": "Завантажити аватар",
+    "removeAvatar": "Видалити"
   }
 }

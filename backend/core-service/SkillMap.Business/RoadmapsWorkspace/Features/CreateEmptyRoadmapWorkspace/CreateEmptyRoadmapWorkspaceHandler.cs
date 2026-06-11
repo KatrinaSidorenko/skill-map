@@ -18,12 +18,14 @@ namespace SkillMap.Business.RoadmapsWorkspace.Features.CreateEmptyRoadmapWorkspa
 internal sealed class CreateEmptyRoadmapWorkspaceHandler(
     IRepository<RoadmapWorkspace> repository,
     IMediator mediator,
+    IRoadmapWorkspaceImageService roadmapWorkspaceImageService,
     ILogger<CreateEmptyRoadmapWorkspaceHandler> logger) : IRequestHandler<CreateEmptyRoadmapWorkspaceCommand, long>
 {
     public async Task<long> Handle(CreateEmptyRoadmapWorkspaceCommand request, CancellationToken cancellationToken)
     {
         var roadmapWorkspace = new RoadmapWorkspace(request.UserId, roadmapId: RoadmapWorkspaceConstants.EmptyWorkspaceKey, personalRoadmapId: null);
-        roadmapWorkspace.SetMetadata(request.Title, request.Description, request.ImageUrl);
+        var imageUploadResult = request.ImageFile != null ? await roadmapWorkspaceImageService.UploadImageAsync(request.ImageFile, cancellationToken) : null;
+        roadmapWorkspace.SetMetadata(request.Title, request.Description, imageUploadResult?.RelativePath);
 
         try
         {

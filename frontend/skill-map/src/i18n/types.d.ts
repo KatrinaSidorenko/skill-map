@@ -127,6 +127,8 @@ interface ILocalization {
     actionRejectedDeleteEdge: string;
     actionRejectedUnknown: string;
     recommendedResources: string;
+    changeImage: string;
+    uploadImage: string;
   };
   roadmaps: {
     search: string;
@@ -184,6 +186,8 @@ interface ILocalization {
     saveRoadmapInfo: string;
     unsaveSuccess: string;
     unsaveFailed: string;
+    changeImage: string;
+    uploadImage: string;
   };
   assessment: {
     assessmentTest: string;
@@ -265,6 +269,11 @@ interface ILocalization {
     resetEmailSent: string;
     resetFailed: string;
     avatar: string;
+    invalidImageType: string;
+    imageTooLarge: string;
+    changeAvatar: string;
+    uploadAvatar: string;
+    removeAvatar: string;
   };
   home: {
     greeting: string;

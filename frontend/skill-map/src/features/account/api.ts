@@ -64,11 +64,11 @@ export const accountApi = createApi({
         dispatch(setUser(data));
       },
     }),
-    updateProfile: builder.mutation<AppUser, UpdateProfileRequest>({
-      query: (request) => ({
+    updateProfile: builder.mutation<AppUser, FormData>({
+      query: (formData) => ({
         url: '/profile',
         method: 'PATCH',
-        body: request,
+        body: formData,
       }),
       onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
         const { data } = await queryFulfilled;
