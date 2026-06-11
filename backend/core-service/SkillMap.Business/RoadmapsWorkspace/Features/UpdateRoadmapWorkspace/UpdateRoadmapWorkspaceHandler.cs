@@ -2,13 +2,10 @@ using JetBrains.Annotations;
 
 using MediatR;
 
-using SkillMap.Business.RoadmapsWorkspace;
-using SkillMap.Core.RoadmapsWorkspace;
-
 namespace SkillMap.Business.RoadmapsWorkspace.Features.UpdateRoadmapWorkspace;
 
 [UsedImplicitly]
-internal sealed class UpdateRoadmapWorkspaceHandler(IRoadmapWorkspaceRepository repository) : IRequestHandler<UpdateRoadmapWorkspaceCommand>
+internal sealed class UpdateRoadmapWorkspaceHandler(IRoadmapWorkspaceRepository repository, IRoadmapWorkspaceImageService roadmapWorkspaceImageService) : IRequestHandler<UpdateRoadmapWorkspaceCommand>
 {
     public async Task Handle(UpdateRoadmapWorkspaceCommand request, CancellationToken cancellationToken)
     {
@@ -20,8 +17,11 @@ internal sealed class UpdateRoadmapWorkspaceHandler(IRoadmapWorkspaceRepository 
         if (request.Description is not null)
             workspace.UpdateDescription(request.Description);
 
-        if (request.ImageUrl is not null)
-            workspace.UpdateImageUrl(request.ImageUrl);
+        if (request.ImageFile is not null)
+        {
+            var uploadResult = await roadmapWorkspaceImageService.UploadImageAsync(request.ImageFile, cancellationToken);
+            workspace.UpdateImageUrl(uploadResult.RelativePath);
+        }
 
         await repository.UpdateAsync(workspace, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
