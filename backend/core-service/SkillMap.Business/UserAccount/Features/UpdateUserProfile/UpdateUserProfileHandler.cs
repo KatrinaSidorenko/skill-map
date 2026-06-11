@@ -22,6 +22,7 @@ public class UpdateUserProfileHandler(IRepository<AppUser> userRepository, IProf
 
         if (request.HardFile is not null)
         {
+            // todo: the logic for previos image
             var uploadResult = await profileImageService.UploadImageAsync(request.HardFile, cancellationToken);
             user.ImageUrl = uploadResult.RelativePath;
         }

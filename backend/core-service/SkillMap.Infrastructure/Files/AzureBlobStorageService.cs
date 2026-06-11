@@ -112,7 +112,7 @@ internal class AzureBlobStorageService : IBlobStorageService
         }
     }
 
-    private async Task EnsureContainerExists(BlobContainerClient containerClient, CancellationToken ct) => await containerClient.CreateIfNotExistsAsync(cancellationToken: ct);
+    private async Task EnsureContainerExists(BlobContainerClient containerClient, CancellationToken ct) => await containerClient.CreateIfNotExistsAsync(publicAccessType: PublicAccessType.Blob, cancellationToken: ct);
     private string ComposeRelativePath(string containerName, string fileName) => $"{containerName}/{fileName}";
     private string CreateUniqueFilename(string filename) => $"{Guid.NewGuid().ToString("N")}_{filename}";
 

@@ -19,7 +19,10 @@ internal abstract class ImageFileService : IImagesFileService
     }
 
     protected virtual async Task<string> GetImageAbsoluteUriInnerAsync(string relativePath, CancellationToken ct)
-        => await _blobStorageService.GetAbsoluteFileUriAsync(_containerName, relativePath, ct);
+    {
+        var filename = relativePath.Split('/').LastOrDefault() ?? throw new ArgumentException($"The provided relative path '{relativePath}' is invalid.", nameof(relativePath));
+        return await _blobStorageService.GetAbsoluteFileUriAsync(_containerName, filename, ct);
+    }
     protected virtual async Task<SaveImageResult> UploadImageInnerAsync(HardFile file, CancellationToken ct)
     {
         // maybe add some retries

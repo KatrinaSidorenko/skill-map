@@ -15,15 +15,9 @@ public class FilesValidator
     }
 
     // todo: can be written as builder
-    public bool IsValid(IFormFile file, out string errorMessage)
+    private bool IsValidInner(IFormFile file, out string errorMessage)
     {
         errorMessage = string.Empty;
-
-        if (file == null || file.Length == 0)
-        {
-            errorMessage = "File is empty or missing.";
-            return false;
-        }
 
         if (file.Length > _maxSizeBytes)
         {
@@ -62,6 +56,24 @@ public class FilesValidator
         }
 
         return true;
+    }
+    public bool IsValidWithEmptyAllowed(IFormFile? file, out string errorMessage)
+    {
+        if (file == null || file.Length == 0)
+        {
+            errorMessage = string.Empty;
+            return true;
+        }
+        return IsValidInner(file, out errorMessage);
+    }
+    public bool IsValid(IFormFile file, out string errorMessage)
+    {
+        if (file == null || file.Length == 0)
+        {
+            errorMessage = string.Empty;
+            return false;
+        }
+        return IsValidInner(file, out errorMessage);
     }
 }
 

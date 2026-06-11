@@ -19,8 +19,7 @@ internal static class UpdateUserProfileEndpoint
             CancellationToken cancellationToken) =>
         {
             var userId = userManager.GetCurrentUserId();
-            // todo: extrcat to handler
-            var isFileValid = FilesValidatorExtensions.CreateImageFilesValidator().IsValid(imageFile, out _);
+            var isFileValid = FilesValidatorExtensions.CreateImageFilesValidator().IsValidWithEmptyAllowed(imageFile, out _);
             if (!isFileValid)
             {
                 return Results.BadRequest("Invalid image file.");
