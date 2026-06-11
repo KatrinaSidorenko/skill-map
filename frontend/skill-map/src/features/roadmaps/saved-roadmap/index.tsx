@@ -137,8 +137,12 @@ export default function SavedRoadmapsPage() {
   const handleConfirmCreate = async (
     payload: CreateEmptyRoadmapWorkspaceRequest,
   ) => {
+    const formData = new FormData();
+    formData.append('title', payload.title);
+    if (payload.description) formData.append('description', payload.description);
+    if (payload.imageFile) formData.append('imageFile', payload.imageFile);
     try {
-      const result = await createEmptyRoadmap(payload).unwrap();
+      const result = await createEmptyRoadmap(formData).unwrap();
       toaster.create({
         title: getRoadmapTranslations('createEmptySuccess'),
         type: 'success',

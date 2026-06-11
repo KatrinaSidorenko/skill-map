@@ -46,12 +46,12 @@ export const roadmapApi = createApi({
     }),
     createEmptyRoadmap: builder.mutation<
       { id: string },
-      CreateEmptyRoadmapWorkspaceRequest
+      FormData
     >({
-      query: (payload) => ({
+      query: (formData) => ({
         url: `roadmaps-workspace/empty`,
         method: 'POST',
-        body: payload,
+        body: formData,
       }),
     }),
     getSavedRoadmaps: builder.query<

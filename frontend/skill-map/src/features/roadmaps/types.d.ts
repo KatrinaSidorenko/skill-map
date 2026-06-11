@@ -114,7 +114,7 @@ interface UpdateRoadmapWorkspaceRequest {
 interface CreateEmptyRoadmapWorkspaceRequest {
   title: string;
   description?: string;
-  imageUrl?: string;
+  imageFile?: File;
 }
 
 interface PublishRoadmapRequest {
