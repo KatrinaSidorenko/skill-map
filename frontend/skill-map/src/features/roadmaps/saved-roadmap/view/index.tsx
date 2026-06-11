@@ -102,9 +102,13 @@ export default function SavedRoadmapView({
     }
   };
 
-  const handleConfirmEdit = async (payload: UpdateRoadmapWorkspaceRequest) => {
+  const handleConfirmEdit = async (payload: import('@/components/roadmap/editSavedRoadmapDialog').EditSavedRoadmapPayload) => {
+    const formData = new FormData();
+    if (payload.title) formData.append('title', payload.title);
+    if (payload.description) formData.append('description', payload.description);
+    if (payload.imageFile) formData.append('imageFile', payload.imageFile);
     try {
-      await updateSavedRoadmap({ id: roadmap.id, payload }).unwrap();
+      await updateSavedRoadmap({ id: roadmap.id, formData }).unwrap();
       setEditDialogOpen(false);
       toaster.success({ title: getRoadmapTranslations('editSuccess') });
     } catch {

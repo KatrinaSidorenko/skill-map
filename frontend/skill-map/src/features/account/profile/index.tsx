@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Box,
   VStack,
@@ -15,6 +15,7 @@ import {
   Field,
   Stack,
 } from '@chakra-ui/react';
+import { FiUpload, FiX } from 'react-icons/fi';
 import { useForm } from 'react-hook-form';
 import { useAppSelector } from '@/store/hooks';
 import { selectUser } from '../store';
@@ -31,10 +32,12 @@ import useLocalization from '@/i18n/useLocalization';
 import { VerifyTokenForm } from '../fogot-password/verifyTokenForm';
 import { NewPasswordForm } from '../fogot-password/newPasswordForm';
 
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
+
 interface ProfileFormValues {
   username: string;
   email: string;
-  avatarUrl: string;
 }
 
 type ResetStep = 'idle' | 'verify' | 'newPassword' | 'done';
@@ -50,46 +53,82 @@ export default function ProfilePage() {
   const [setNewPassword, { isLoading: isSettingPassword }] = useSetNewPasswordMutation();
 
   const [avatarPreview, setAvatarPreview] = useState<string>('');
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [resetStep, setResetStep] = useState<ResetStep>('idle');
   const [resetToken, setResetToken] = useState<string>('');
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
     register,
     handleSubmit,
     reset,
-    watch,
     formState: { errors, isDirty },
   } = useForm<ProfileFormValues>({
-    defaultValues: { username: '', email: '', avatarUrl: '' },
+    defaultValues: { username: '', email: '' },
   });
-
-  const watchedAvatarUrl = watch('avatarUrl');
 
   useEffect(() => {
     if (profile) {
       reset({
         username: profile.username ?? '',
         email: profile.email ?? '',
-        avatarUrl: profile.imageUrl ?? '',
       });
       setAvatarPreview(profile.imageUrl ?? '');
     }
   }, [profile, reset]);
 
-  useEffect(() => {
-    setAvatarPreview(watchedAvatarUrl);
-  }, [watchedAvatarUrl]);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      toaster.create({
+        title: getProfileTranslations('invalidImageType'),
+        description: 'Only .jpg, .jpeg, and .png files are allowed.',
+        type: 'warning',
+        closable: true,
+      });
+      return;
+    }
+    if (file.size > MAX_IMAGE_SIZE) {
+      toaster.create({
+        title: getProfileTranslations('imageTooLarge'),
+        description: 'File size must be 5 MB or less.',
+        type: 'warning',
+        closable: true,
+      });
+      return;
+    }
+
+    setAvatarFile(file);
+    setAvatarPreview(URL.createObjectURL(file));
+    // reset file input so same file can be re-selected
+    e.target.value = '';
+  };
+
+  const handleRemoveAvatar = () => {
+    setAvatarFile(null);
+    setAvatarPreview(profile?.imageUrl ?? '');
+  };
 
   const onSubmit = async (data: ProfileFormValues) => {
-    const payload: UpdateProfileRequest = {};
-    if (data.username !== (profile?.username ?? '')) payload.username = data.username || undefined;
-    if (data.email !== (profile?.email ?? '')) payload.email = data.email || undefined;
-    if (data.avatarUrl !== (profile?.imageUrl ?? '')) payload.imageUrl = data.avatarUrl || undefined;
+    const formData = new FormData();
+    if (data.username !== (profile?.username ?? '')) {
+      formData.append('username', data.username);
+    }
+    if (data.email !== (profile?.email ?? '')) {
+      formData.append('email', data.email);
+    }
+    if (avatarFile) {
+      formData.append('imageFile', avatarFile);
+    }
 
-    if (Object.keys(payload).length === 0) return;
+    if ([...formData.entries()].length === 0) return;
 
     try {
-      await updateProfile(payload).unwrap();
+      await updateProfile(formData).unwrap();
+      setAvatarFile(null);
       toaster.create({
         title: getProfileTranslations('updateSuccess'),
         type: 'success',
@@ -181,26 +220,58 @@ export default function ProfilePage() {
         <Card.Body>
           <form onSubmit={handleSubmit(onSubmit)}>
             <VStack gap={6} align="stretch">
-              {/* Avatar preview */}
+              {/* Avatar preview + upload */}
               <HStack gap={6} align="center">
                 <Avatar.Root size="2xl" shape="rounded">
                   <Avatar.Fallback name={user?.username ?? 'U'} />
                   <Avatar.Image src={avatarPreview || 'https://avatar.iran.liara.run/public'} />
                 </Avatar.Root>
-                <Stack flex={1} gap={1}>
+                <Stack flex={1} gap={2}>
                   <Text fontWeight="semibold" color="text.primary">{user?.username}</Text>
                   <Text fontSize="sm" color="text.muted">{user?.email}</Text>
+                  <HStack gap={2} flexWrap="wrap">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".jpg,.jpeg,.png"
+                      style={{ display: 'none' }}
+                      onChange={handleFileChange}
+                    />
+                    <Button
+                      size="xs"
+                      variant="outline"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUpdating}
+                    >
+                      <FiUpload />
+                      {avatarFile
+                        ? getProfileTranslations('changeAvatar')
+                        : getProfileTranslations('uploadAvatar')}
+                    </Button>
+                    {avatarFile && (
+                      <Button
+                        size="xs"
+                        variant="ghost"
+                        colorPalette="red"
+                        onClick={handleRemoveAvatar}
+                        disabled={isUpdating}
+                      >
+                        <FiX />
+                        {getProfileTranslations('removeAvatar')}
+                      </Button>
+                    )}
+                  </HStack>
+                  {avatarFile && (
+                    <Text fontSize="xs" color="text.muted">{avatarFile.name}</Text>
+                  )}
+                  <Text fontSize="xs" color="text.muted">
+                    JPG, JPEG, PNG — max 5 MB
+                  </Text>
                 </Stack>
               </HStack>
 
               <Separator />
 
-              <Field.Root invalid={!!errors.avatarUrl}>
-                <Field.Label fontSize="sm" fontWeight="medium" color="text.primary">
-                  {getProfileTranslations('avatarUrl')}
-                </Field.Label>
-                <Input placeholder={getProfileTranslations('enterAvatarUrl')} size="md" {...register('avatarUrl')} />
-              </Field.Root>
 
               <Field.Root invalid={!!errors.username}>
                 <Field.Label fontSize="sm" fontWeight="medium" color="text.primary">
@@ -221,7 +292,7 @@ export default function ProfilePage() {
                 colorPalette="brand"
                 size="sm"
                 loading={isUpdating}
-                disabled={!isDirty || isUpdating || isLoadingProfile}
+                disabled={(!isDirty && !avatarFile) || isUpdating || isLoadingProfile}
                 alignSelf="flex-start"
               >
                 {getProfileTranslations('saveChanges')}

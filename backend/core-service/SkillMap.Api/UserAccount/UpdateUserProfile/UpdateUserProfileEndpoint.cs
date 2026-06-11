@@ -12,12 +12,14 @@ internal static class UpdateUserProfileEndpoint
 {
     internal static void MapUpdateUserProfile(this IEndpointRouteBuilder app) => app.MapPatch(UserAccountApiPaths.UpdateUserProfile, async (
             [FromForm] IFormFile? imageFile,
-            [FromForm] UpdateUserProfileRequest request,
+            [FromForm] string? username,
+            [FromForm] string? email,
             IUserManager userManager,
             IMediator mediator,
             CancellationToken cancellationToken) =>
         {
             var userId = userManager.GetCurrentUserId();
+            // todo: extrcat to handler
             var isFileValid = FilesValidatorExtensions.CreateImageFilesValidator().IsValid(imageFile, out _);
             if (!isFileValid)
             {
@@ -25,7 +27,7 @@ internal static class UpdateUserProfileEndpoint
             }
 
             var hardFile = await imageFile.ToHardFileAsync(cancellationToken);
-            await mediator.Send(new UpdateUserProfileCommand(userId, request.UserName, request.Email, hardFile), cancellationToken);
+            await mediator.Send(new UpdateUserProfileCommand(userId, username, email, hardFile), cancellationToken);
             return Results.NoContent();
         })
         .RequireAuthorization()
