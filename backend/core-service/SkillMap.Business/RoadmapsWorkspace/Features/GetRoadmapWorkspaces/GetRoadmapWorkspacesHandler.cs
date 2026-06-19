@@ -14,7 +14,7 @@ using SkillMap.Shared.Models;
 namespace SkillMap.Business.RoadmapsWorkspace.Features.GetRoadmapWorkspaces;
 
 [UsedImplicitly]
-internal sealed class GetRoadmapWorkspacesHandler(IRoadmapWorkspaceRepository repository, IRoadmapWorkspaceImageService roadmapWorkspaceImageService) : IRequestHandler<GetRoadmapWorkspacesQuery, PaginationResult<RoadmapWorkspaceSummaryDto>>
+internal sealed class GetRoadmapWorkspacesHandler(IRoadmapWorkspaceRepository repository, IRoadmapWorkspaceImagesService roadmapWorkspaceImageService) : IRequestHandler<GetRoadmapWorkspacesQuery, PaginationResult<RoadmapWorkspaceSummaryDto>>
 {
     public async Task<PaginationResult<RoadmapWorkspaceSummaryDto>> Handle(GetRoadmapWorkspacesQuery request, CancellationToken cancellationToken)
     {

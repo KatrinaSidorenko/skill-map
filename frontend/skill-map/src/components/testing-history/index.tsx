@@ -147,7 +147,7 @@ export default function TestingHistory({
 
   return (
     <Box>
-      <Flex align="center" justify="space-between" mb={4}>
+      <Flex align="center" justify="space-between" mb={4} gap={3} flexWrap="wrap">
         <HStack gap={3}>
           <Box w="10px" h="10px" borderRadius="full" bg="bg.primaryAccent" />
           <Text fontSize="lg" fontWeight="800" color="text.heading">
@@ -155,7 +155,7 @@ export default function TestingHistory({
           </Text>
         </HStack>
 
-        <HStack gap={3}>
+        <HStack gap={3} flexWrap="wrap">
           {onGenerateIntermediateTest &&
             data?.isIntermediateAssessmentAvailable && (
               <Button
@@ -250,6 +250,7 @@ export default function TestingHistory({
                       align="center"
                       justify="space-between"
                       gap={4}
+                      wrap="wrap"
                     >
                       <HStack gap={3} minW={0}>
                         <Box
@@ -341,8 +342,8 @@ export default function TestingHistory({
                         <Separator />
 
                         {/* Actions */}
-                        <HStack justify="space-between" wrap="wrap" gap={3}>
-                          <HStack gap={2} wrap="wrap">
+                        <HStack justify="space-between" wrap="wrap" gap={3} align="start">
+                          <HStack gap={2} wrap="wrap" flex="1">
                             {t.last &&
                               attemptStatus(t.last) === 'in_progress' && (
                                 <Button
@@ -507,12 +508,12 @@ export default function TestingHistory({
                                       </Stack>
                                     </Box>
 
-                                    <VStack
-                                      align="end"
-                                      gap={2}
-                                      minW="200px"
-                                      flex="1 1 220px"
-                                    >
+                                     <VStack
+                                       align="end"
+                                       gap={2}
+                                       minW={{ base: 'full', sm: '200px' }}
+                                       flex="1 1 200px"
+                                     >
                                       <HStack
                                         gap={2}
                                         wrap="wrap"

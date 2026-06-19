@@ -8,7 +8,7 @@ using SkillMap.Core.RoadmapsWorkspace;
 namespace SkillMap.Business.RoadmapsWorkspace.Features.DeleteRoadmapFork;
 
 [UsedImplicitly]
-internal sealed class DeleteRoadmapWorkspaceHandler(IRepository<RoadmapWorkspace> repository, IRoadmapWorkspaceImageService roadmapWorkspaceImageService) : IRequestHandler<DeleteWorkspaceCommand>
+internal sealed class DeleteRoadmapWorkspaceHandler(IRepository<RoadmapWorkspace> repository, IRoadmapWorkspaceImagesService roadmapWorkspaceImageService) : IRequestHandler<DeleteWorkspaceCommand>
 {
     public async Task Handle(DeleteWorkspaceCommand request, CancellationToken cancellationToken)
     {

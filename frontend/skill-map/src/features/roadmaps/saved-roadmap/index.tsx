@@ -50,7 +50,7 @@ export default function SavedRoadmapsPage() {
     query: string | null;
   }) => {
     const { pageNumber, pageSize, query } = params;
-    const { data } = await fetchSavedRoadmaps({ pageNumber, pageSize, query });
+    const { data } = await fetchSavedRoadmaps({ pageNumber, pageSize, query }, false);
     return {
       items: data?.items ?? [],
     };
@@ -94,6 +94,7 @@ export default function SavedRoadmapsPage() {
       });
       setDeleteDialogState({ isOpen: false, selected: null });
       setRefreshKey((k) => k + 1);
+      router.refresh();
     } catch (error) {
       const errorData = retrieveErrorData(error);
       toaster.create({
@@ -123,6 +124,7 @@ export default function SavedRoadmapsPage() {
       });
       setEditDialogState({ isOpen: false, selected: null });
       setRefreshKey((k) => k + 1);
+      router.refresh();
     } catch (error) {
       const errorData = retrieveErrorData(error);
       toaster.create({

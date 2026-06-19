@@ -132,6 +132,7 @@ services:
       PasswordHashOptions__DegreeOfParallelism: ${PWD_HASH_PARALLELISM}
       # BuildRoadmapWorkspaceSnapshotWorker
       BuildRoadmapWorkspaceSnapshotWorker__ScheduleIntervalInMilliseconds: ${SNAPSHOT_WORKER_INTERVAL_MS}
+      AzureBlobStorage__ConnectionString: ${AZURE_BLOB_STORAGE_CONNECTION}
     depends_on:
       core-db:
         condition: service_healthy
@@ -247,6 +248,19 @@ services:
       - skillmap-network
     restart: unless-stopped
 
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite:latest
+    ports:
+      - "0.0.0.0:10000:10000" # Blob service
+      - "0.0.0.0:10001:10001" # Queue service
+      - "0.0.0.0:10002:10002" # Table service
+    volumes:
+      - azurite_data:/data
+    command: azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --location /data --skipApiVersionCheck
+    networks:
+      - skillmap-network
+    restart: unless-stopped
+
 networks:
   skillmap-network:
     driver: bridge
@@ -255,3 +269,4 @@ volumes:
   kafka-data: {}
   core-db-data: {}
   neo4j-data: {}
+  azurite_data: {}

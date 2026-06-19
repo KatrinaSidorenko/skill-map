@@ -42,8 +42,10 @@ import { EditSavedRoadmapDialog } from '@/components/roadmap/editSavedRoadmapDia
 
 export default function SavedRoadmapView({
   roadmap,
+  onRefetch,
 }: {
   roadmap: SavedPlainRoadmap;
+  onRefetch?: () => void;
 }) {
   const router = useRouter();
   const { getRoadmapTranslations } = useLocalization();
@@ -102,15 +104,19 @@ export default function SavedRoadmapView({
     }
   };
 
-  const handleConfirmEdit = async (payload: import('@/components/roadmap/editSavedRoadmapDialog').EditSavedRoadmapPayload) => {
+  const handleConfirmEdit = async (
+    payload: import('@/components/roadmap/editSavedRoadmapDialog').EditSavedRoadmapPayload,
+  ) => {
     const formData = new FormData();
     if (payload.title) formData.append('title', payload.title);
-    if (payload.description) formData.append('description', payload.description);
+    if (payload.description)
+      formData.append('description', payload.description ?? '');
     if (payload.imageFile) formData.append('imageFile', payload.imageFile);
     try {
       await updateSavedRoadmap({ id: roadmap.id, formData }).unwrap();
       setEditDialogOpen(false);
       toaster.success({ title: getRoadmapTranslations('editSuccess') });
+      onRefetch?.();
     } catch {
       toaster.error({
         title: getRoadmapTranslations('failedToEditSavedRoadmap'),
@@ -376,6 +382,11 @@ export function SavedRoadmapViewWrapper({ roadmapId }: { roadmapId: string }) {
   const [triggerGetRoadmap, { isLoading, data: savedRoadmap }] =
     useLazyGetPlainUserSavedRoadmapQuery();
   const { getRoadmapTranslations } = useLocalization();
+
+  const refetch = () => {
+    triggerGetRoadmap(roadmapId, false);
+  };
+
   useEffect(() => {
     if (roadmapId) {
       triggerGetRoadmap(roadmapId)
@@ -396,5 +407,5 @@ export function SavedRoadmapViewWrapper({ roadmapId }: { roadmapId: string }) {
     return <SpinnerScreen />;
   }
 
-  return <SavedRoadmapView roadmap={savedRoadmap} />;
+  return <SavedRoadmapView roadmap={savedRoadmap} onRefetch={refetch} />;
 }

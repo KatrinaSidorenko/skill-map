@@ -20,9 +20,9 @@ docker exec -it skillmap-kafka-broker kafka-topics --create --topic roadmap-work
 
 docker exec -it skillmap-kafka-broker kafka-topics --create --topic workspace-action-reviewed --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
 
-docker exec -it skillmap-kafka-broker-1  kafka-topics --create --topic roadmap-workspace-actions --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1 
+docker exec -it skillmap-kafka-broker  kafka-topics --create --topic roadmap-workspace-actions --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1 
 
-docker exec -it skillmap-kafka-broker-1  kafka-topics --create --topic workspace-action-reviewed --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1 
+docker exec -it sskillmap-kafka-broker  kafka-topics --create --topic workspace-action-reviewed --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1 
 
 docker exec -it skillmap-kafka-broker-1  kafka-topics --bootstrap-server localhost:9092 --list
 
@@ -42,9 +42,14 @@ docker run -p 3000:3000 --name skillmap-fe skillmap-fe
 
 ## Neo4j
 docker run --rm `
-  --volumes-from skillmap-dev-roadmap-catalog-db-1 `
+  --volumes-from roadmap-blueprints-db-1 `
   -v "C:\Users\Lenovo\Desktop\restore:/backup" `
-  neo4j:5.9 `
+  neo4j:5.24 `
   neo4j-admin database load neo4j --from-path=/backup --overwrite-destination=true
 
-docker run --rm `  --volumes-from skillmap-dev-roadmap-blueprints-db-1 `  -v "C:\Users\Lenovo\Desktop\restore:/backup" `  neo4j:5.24 `  neo4j-admin database load neo4j --from-path=/backup --overwrite-destination=true
+
+docker run --rm `  --volumes-from roadmap-blueprints-db-1 `  -v "C:\Users\Lenovo\Desktop\restore:/backup" `  neo4j:5.24 `  neo4j-admin database load neo4j --from-path=/backup --overwrite-destination=true
+
+ssh hetzner.skillmap "docker run --rm --volumes-from skillmap-roadmap-blueprints-db-1 -v "C:\Users\Lenovo\Desktop\restore:/backup" neo4j:5.24  neo4j-admin database load neo4j --from-path=/backup --overwrite-destination=true"
+
+ssh hetzner.skillmap "mkdir -p /tmp/neo4j-restore" && scp "C:\Users\Lenovo\Desktop\restore\neo4j.dump" hetzner.skillmap:/tmp/neo4j-restore/neo4j.dump && ssh hetzner.skillmap "docker run --rm --volumes-from skillmap-roadmap-blueprints-db-1 -v /tmp/neo4j-restore:/backup neo4j:5.24 neo4j-admin database load neo4j --from-path=/backup --overwrite-destination=true && rm -rf /tmp/neo4j-restore"

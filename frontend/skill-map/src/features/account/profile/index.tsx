@@ -31,6 +31,7 @@ import { retrieveErrorData } from '@/store/helpers';
 import useLocalization from '@/i18n/useLocalization';
 import { VerifyTokenForm } from '../fogot-password/verifyTokenForm';
 import { NewPasswordForm } from '../fogot-password/newPasswordForm';
+import { useRouter } from 'next/navigation';
 
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -43,14 +44,17 @@ interface ProfileFormValues {
 type ResetStep = 'idle' | 'verify' | 'newPassword' | 'done';
 
 export default function ProfilePage() {
+  const router = useRouter();
   const { getProfileTranslations, getAuthTranslations } = useLocalization();
   const user = useAppSelector(selectUser);
 
   const { data: profile, isLoading: isLoadingProfile } = useGetProfileQuery();
   const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation();
-  const [resetPassword, { isLoading: isResetting }] = useResetPasswordMutation();
+  const [resetPassword, { isLoading: isResetting }] =
+    useResetPasswordMutation();
   const [verifyToken, { isLoading: isVerifying }] = useVerifyTokenMutation();
-  const [setNewPassword, { isLoading: isSettingPassword }] = useSetNewPasswordMutation();
+  const [setNewPassword, { isLoading: isSettingPassword }] =
+    useSetNewPasswordMutation();
 
   const [avatarPreview, setAvatarPreview] = useState<string>('');
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -180,15 +184,22 @@ export default function ProfilePage() {
     }
   };
 
-  const handleSetNewPassword = async (data: { newPassword: string; confirmPassword: string }) => {
+  const handleSetNewPassword = async (data: {
+    newPassword: string;
+    confirmPassword: string;
+  }) => {
     try {
-      await setNewPassword({ token: resetToken, password: data.newPassword }).unwrap();
+      await setNewPassword({
+        token: resetToken,
+        password: data.newPassword,
+      }).unwrap();
       setResetStep('done');
       toaster.create({
         title: getAuthTranslations('passwordResetSuccess'),
         type: 'success',
         closable: true,
       });
+      router.replace('/login');
     } catch (error) {
       const errorData = retrieveErrorData(error);
       toaster.create({
@@ -207,7 +218,12 @@ export default function ProfilePage() {
       </Heading>
 
       {/* Profile Info Card */}
-      <Card.Root mb={6} bg="bg.card" borderColor="border.subtle" borderWidth="1px">
+      <Card.Root
+        mb={6}
+        bg="bg.card"
+        borderColor="border.subtle"
+        borderWidth="1px"
+      >
         <Card.Header pb={2}>
           <Heading size="md" color="text.heading">
             {getProfileTranslations('profileInfo')}
@@ -224,11 +240,19 @@ export default function ProfilePage() {
               <HStack gap={6} align="center">
                 <Avatar.Root size="2xl" shape="rounded">
                   <Avatar.Fallback name={user?.username ?? 'U'} />
-                  <Avatar.Image src={avatarPreview || 'https://avatar.iran.liara.run/public'} />
+                  <Avatar.Image
+                    src={
+                      avatarPreview || 'https://avatar.iran.liara.run/public'
+                    }
+                  />
                 </Avatar.Root>
                 <Stack flex={1} gap={2}>
-                  <Text fontWeight="semibold" color="text.primary">{user?.username}</Text>
-                  <Text fontSize="sm" color="text.muted">{user?.email}</Text>
+                  <Text fontWeight="semibold" color="text.primary">
+                    {user?.username}
+                  </Text>
+                  <Text fontSize="sm" color="text.muted">
+                    {user?.email}
+                  </Text>
                   <HStack gap={2} flexWrap="wrap">
                     <input
                       ref={fileInputRef}
@@ -262,7 +286,9 @@ export default function ProfilePage() {
                     )}
                   </HStack>
                   {avatarFile && (
-                    <Text fontSize="xs" color="text.muted">{avatarFile.name}</Text>
+                    <Text fontSize="xs" color="text.muted">
+                      {avatarFile.name}
+                    </Text>
                   )}
                   <Text fontSize="xs" color="text.muted">
                     JPG, JPEG, PNG — max 5 MB
@@ -272,19 +298,35 @@ export default function ProfilePage() {
 
               <Separator />
 
-
               <Field.Root invalid={!!errors.username}>
-                <Field.Label fontSize="sm" fontWeight="medium" color="text.primary">
+                <Field.Label
+                  fontSize="sm"
+                  fontWeight="medium"
+                  color="text.primary"
+                >
                   {getProfileTranslations('username')}
                 </Field.Label>
-                <Input placeholder={getProfileTranslations('enterUsername')} size="md" {...register('username', { required: true })} />
+                <Input
+                  placeholder={getProfileTranslations('enterUsername')}
+                  size="md"
+                  {...register('username', { required: true })}
+                />
               </Field.Root>
 
               <Field.Root invalid={!!errors.email}>
-                <Field.Label fontSize="sm" fontWeight="medium" color="text.primary">
+                <Field.Label
+                  fontSize="sm"
+                  fontWeight="medium"
+                  color="text.primary"
+                >
                   {getProfileTranslations('email')}
                 </Field.Label>
-                <Input placeholder={getProfileTranslations('enterEmail')} type="email" size="md" {...register('email', { required: true })} />
+                <Input
+                  placeholder={getProfileTranslations('enterEmail')}
+                  type="email"
+                  size="md"
+                  {...register('email', { required: true })}
+                />
               </Field.Root>
 
               <Button
@@ -292,7 +334,9 @@ export default function ProfilePage() {
                 colorPalette="brand"
                 size="sm"
                 loading={isUpdating}
-                disabled={(!isDirty && !avatarFile) || isUpdating || isLoadingProfile}
+                disabled={
+                  (!isDirty && !avatarFile) || isUpdating || isLoadingProfile
+                }
                 alignSelf="flex-start"
               >
                 {getProfileTranslations('saveChanges')}

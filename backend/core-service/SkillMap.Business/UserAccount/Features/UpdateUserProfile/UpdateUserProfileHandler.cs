@@ -20,14 +20,22 @@ public class UpdateUserProfileHandler(IRepository<AppUser> userRepository, IProf
         if (request.Email is not null)
             user.Email = request.Email;
 
+        var prevUserProfileImageUrl = user.ImageUrl;
         if (request.HardFile is not null)
         {
-            // todo: the logic for previos image
             var uploadResult = await profileImageService.UploadImageAsync(request.HardFile, cancellationToken);
             user.ImageUrl = uploadResult.RelativePath;
         }
 
         await userRepository.UpdateAsync(user, cancellationToken);
         await userRepository.SaveChangesAsync(cancellationToken);
+
+        if (request.HardFile is null) return;
+        var deleteResult = await profileImageService.DeleteImageAsync(prevUserProfileImageUrl, cancellationToken);
+        if (!deleteResult)
+        {
+            // todo: Log the failure to delete the old image, but continue with the update
+            // as the new image will still be uploaded and set for the user.
+        }
     }
 }
