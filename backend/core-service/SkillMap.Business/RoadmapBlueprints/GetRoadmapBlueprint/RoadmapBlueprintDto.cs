@@ -8,6 +8,8 @@ public class RoadmapBlueprintDto
 {
     [JsonProperty("id")]
     public string Id { get; set; }
+    [JsonProperty("workspaceId")]
+    public string WorkspaceId { get; set; }
 
     [JsonProperty("title")]
     public string Title { get; set; }
@@ -26,11 +28,12 @@ public class RoadmapBlueprintDto
     [JsonProperty("connections")]
     public List<LearningConnectionDto> Connections { get; set; }
 
-    public static RoadmapBlueprintDto Create(RoadmapDto roadmapDto, bool isSaved)
+    public static RoadmapBlueprintDto Create(RoadmapDto roadmapDto, bool isSaved, string workspaceId)
     {
         return new RoadmapBlueprintDto
         {
             Id = roadmapDto.Id,
+            WorkspaceId = workspaceId,
             Title = roadmapDto.Title,
             Description = roadmapDto.Description,
             IsSaved = isSaved,

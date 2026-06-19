@@ -18,7 +18,7 @@ export const roadmapApi = createApi({
         method: 'GET',
       }),
     }),
-    saveRoadmap: builder.mutation<void, { id: string }>({
+    saveRoadmap: builder.mutation<string, { id: string }>({
       query: ({ id }) => ({
         url: `roadmaps-workspace`,
         method: 'POST',

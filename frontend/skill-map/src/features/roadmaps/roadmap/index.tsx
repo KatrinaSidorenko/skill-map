@@ -42,6 +42,7 @@ import {
   setNodeChanges,
   setPlainRoadmap,
   updateSavedStatus,
+  setWorkspaceId,
 } from './store';
 import { DeleteSavedRoadmapDialog } from '@/components/roadmap/deleteSavedRoadmapDialog';
 import useLocalization from '@/i18n/useLocalization';
@@ -83,8 +84,11 @@ export default function RoadmapPage({ roadmapId }: { roadmapId: string }) {
       setDeleteDialogOpen(true);
     } else {
       try {
-        await saveRoadmapTrigger({ id: roadmapId }).unwrap();
+        const workspaceId = await saveRoadmapTrigger({
+          id: roadmapId,
+        }).unwrap();
         dispatch(updateSavedStatus());
+        dispatch(setWorkspaceId(workspaceId));
         toaster.create({
           title: getRoadmapTranslations('saveRoadmapSuccess'),
           description: getRoadmapTranslations('saveRoadmapInfo'),

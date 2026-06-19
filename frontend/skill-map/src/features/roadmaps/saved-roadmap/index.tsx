@@ -110,7 +110,7 @@ export default function SavedRoadmapsPage() {
     if (!editDialogState.selected) return;
     const formData = new FormData();
     if (payload.title) formData.append('title', payload.title);
-    if (payload.description) formData.append('description', payload.description);
+    formData.append('description', payload.description ?? '');
     if (payload.imageFile) formData.append('imageFile', payload.imageFile);
     try {
       await updateSavedRoadmap({

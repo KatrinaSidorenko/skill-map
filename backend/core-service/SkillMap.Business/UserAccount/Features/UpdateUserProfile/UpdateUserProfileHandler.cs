@@ -3,6 +3,7 @@ using MediatR;
 using SkillMap.Api.UserAccount;
 using SkillMap.Business.Abstractions;
 using SkillMap.Core.User;
+using SkillMap.Shared.Results;
 
 namespace SkillMap.Business.UserAccount.Features.UpdateUserProfile;
 
@@ -13,12 +14,24 @@ public class UpdateUserProfileHandler(IRepository<AppUser> userRepository, IProf
     {
         var user = await userRepository.GetByIdAsync(request.UserId, cancellationToken)
               ?? throw new KeyNotFoundException($"User with id {request.UserId} not found");
+        //var userWithRequ
+        //if (user is not null)
+        //{
+        //    return ResultType.UserWithSuchEmailAlreadyExists<bool>(appUser.Email);
+        //}
+
 
         if (request.UserName is not null)
             user.UserName = request.UserName;
 
         if (request.Email is not null)
-            user.Email = request.Email;
+        {
+            var userWithRequestedEmail = await userRepository.GetFirstOrDefaultAsync(u => u.Email.ToLower() == request.Email.Trim().ToLower(), cancellationToken);
+            if (userWithRequestedEmail is not null)
+            {
+                throw new ArgumentException($"User with email {request.Email} already exists");
+            }
+        }
 
         var prevUserProfileImageUrl = user.ImageUrl;
         if (request.HardFile is not null)

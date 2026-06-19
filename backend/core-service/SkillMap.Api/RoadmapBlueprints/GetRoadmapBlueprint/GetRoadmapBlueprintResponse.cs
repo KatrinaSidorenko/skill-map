@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 using Newtonsoft.Json;
 
 using SkillMap.Business.RoadmapBlueprints.GetRoadmapBlueprint;
@@ -22,6 +24,8 @@ public class RoadmapResponse
 {
     [JsonProperty("id")]
     public string Id { get; set; }
+    [JsonPropertyName("workspaceId")]
+    public string WorkspaceId { get; set; }
 
     [JsonProperty("title")]
     public string Title { get; set; }
@@ -45,6 +49,7 @@ public class RoadmapResponse
         return new RoadmapResponse
         {
             Id = dto.Id,
+            WorkspaceId = dto.WorkspaceId,
             Title = dto.Title,
             Description = dto.Description,
             IsSaved = dto.IsSaved,

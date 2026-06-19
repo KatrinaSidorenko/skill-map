@@ -44,7 +44,7 @@ export function EditSavedRoadmapDialog({
   const { getRoadmapTranslations } = useLocalization();
 
   const [title, setTitle] = useState(roadmap.title);
-  const [description, setDescription] = useState(roadmap.description);
+  const [description, setDescription] = useState(roadmap.description ?? '');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState(roadmap.imageUrl ?? '');
   const [titleTouched, setTitleTouched] = useState(false);
@@ -56,7 +56,7 @@ export function EditSavedRoadmapDialog({
   useEffect(() => {
     if (isOpen) {
       setTitle(roadmap.title);
-      setDescription(roadmap.description);
+      setDescription(roadmap.description ?? '');
       setImageFile(null);
       setImagePreview(roadmap.imageUrl ?? '');
       setTitleTouched(false);
@@ -94,7 +94,7 @@ export function EditSavedRoadmapDialog({
   const handleSubmit = async () => {
     await onConfirm({
       title: title.trim(),
-      description: description || undefined,
+      description: description,
       imageFile: imageFile ?? undefined,
     });
   };

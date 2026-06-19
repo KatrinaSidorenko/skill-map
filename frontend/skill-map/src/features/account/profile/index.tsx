@@ -67,10 +67,14 @@ export default function ProfilePage() {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isDirty },
   } = useForm<ProfileFormValues>({
     defaultValues: { username: '', email: '' },
+    mode: 'onBlur',
   });
+
+  const usernameValue = watch('username');
 
   useEffect(() => {
     if (profile) {
@@ -140,9 +144,15 @@ export default function ProfilePage() {
       });
     } catch (error) {
       const errorData = retrieveErrorData(error);
+      const isBadRequest =
+        typeof error === 'object' &&
+        error !== null &&
+        'status' in error &&
+        error.status === 400;
       toaster.create({
-        title: getProfileTranslations('updateFailed'),
-        description: errorData?.message ?? '',
+        title: isBadRequest && errorData?.message
+          ? errorData.message
+          : getProfileTranslations('updateFailed'),
         type: 'error',
         closable: true,
       });
@@ -309,8 +319,16 @@ export default function ProfilePage() {
                 <Input
                   placeholder={getProfileTranslations('enterUsername')}
                   size="md"
-                  {...register('username', { required: true })}
+                  {...register('username', {
+                    required: true,
+                    validate: (v) => v.trim().length > 0,
+                  })}
                 />
+                {errors.username && (
+                  <Field.ErrorText>
+                    {getProfileTranslations('enterUsername')}
+                  </Field.ErrorText>
+                )}
               </Field.Root>
 
               <Field.Root invalid={!!errors.email}>
@@ -335,7 +353,11 @@ export default function ProfilePage() {
                 size="sm"
                 loading={isUpdating}
                 disabled={
-                  (!isDirty && !avatarFile) || isUpdating || isLoadingProfile
+                  (!isDirty && !avatarFile) ||
+                  !usernameValue?.trim() ||
+                  !!errors.username ||
+                  isUpdating ||
+                  isLoadingProfile
                 }
                 alignSelf="flex-start"
               >

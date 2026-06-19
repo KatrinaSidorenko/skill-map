@@ -109,8 +109,7 @@ export default function SavedRoadmapView({
   ) => {
     const formData = new FormData();
     if (payload.title) formData.append('title', payload.title);
-    if (payload.description)
-      formData.append('description', payload.description ?? '');
+    formData.append('description', payload.description ?? '');
     if (payload.imageFile) formData.append('imageFile', payload.imageFile);
     try {
       await updateSavedRoadmap({ id: roadmap.id, formData }).unwrap();
