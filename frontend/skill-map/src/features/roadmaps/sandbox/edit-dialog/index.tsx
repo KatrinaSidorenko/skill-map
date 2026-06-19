@@ -307,7 +307,7 @@ export const RoadmapDialog = (props) => {
                 >
                   {getEditorTranslations('cancel')}
                 </Button>
-                <AccentButton size="sm" onClick={handleSubmit} minW="24">
+                <AccentButton size="sm" onClick={handleSubmit} minW="24" disabled={!title.trim() || isLoading}>
                   {isLoading ? (
                     <Spinner size="sm" />
                   ) : mode === 'edit' ? (

@@ -47,6 +47,9 @@ export function EditSavedRoadmapDialog({
   const [description, setDescription] = useState(roadmap.description);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState(roadmap.imageUrl ?? '');
+  const [titleTouched, setTitleTouched] = useState(false);
+
+  const titleError = titleTouched && !title.trim();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -56,6 +59,7 @@ export function EditSavedRoadmapDialog({
       setDescription(roadmap.description);
       setImageFile(null);
       setImagePreview(roadmap.imageUrl ?? '');
+      setTitleTouched(false);
     }
   }, [isOpen, roadmap]);
 
@@ -89,7 +93,7 @@ export function EditSavedRoadmapDialog({
 
   const handleSubmit = async () => {
     await onConfirm({
-      title: title || undefined,
+      title: title.trim(),
       description: description || undefined,
       imageFile: imageFile ?? undefined,
     });
@@ -118,16 +122,25 @@ export function EditSavedRoadmapDialog({
               </Text>
 
               <VStack gap={4} align="stretch">
-                <Field.Root>
+                <Field.Root invalid={titleError}>
                   <Field.Label fontSize="sm" fontWeight="semibold">
-                    {getRoadmapTranslations('titleLabel')}
+                    {getRoadmapTranslations('titleLabel')}{' '}
+                    <Text as="span" color="red.400">*</Text>
                   </Field.Label>
                   <Input
                     value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    onChange={(e) => {
+                      setTitle(e.target.value);
+                      setTitleTouched(true);
+                    }}
                     placeholder={getRoadmapTranslations('enterTitle')}
                     disabled={isLoading}
                   />
+                  {titleError && (
+                    <Field.ErrorText>
+                      {getRoadmapTranslations('enterTitle')}
+                    </Field.ErrorText>
+                  )}
                 </Field.Root>
 
                 <Field.Root>
@@ -229,6 +242,7 @@ export function EditSavedRoadmapDialog({
                   colorPalette="blue"
                   onClick={handleSubmit}
                   loading={isLoading}
+                  disabled={!title.trim() || isLoading}
                   size="sm"
                 >
                   {getRoadmapTranslations('edit')}

@@ -39,7 +39,9 @@ export function CreateSavedRoadmapDialog({
   const [description, setDescription] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState('');
-  const [titleError, setTitleError] = useState(false);
+  const [titleTouched, setTitleTouched] = useState(false);
+
+  const titleError = titleTouched && !title.trim();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -49,7 +51,7 @@ export function CreateSavedRoadmapDialog({
     setDescription('');
     setImageFile(null);
     setImagePreview('');
-    setTitleError(false);
+    setTitleTouched(false);
     onClose();
   };
 
@@ -82,10 +84,6 @@ export function CreateSavedRoadmapDialog({
   };
 
   const handleSubmit = async () => {
-    if (!title.trim()) {
-      setTitleError(true);
-      return;
-    }
     await onConfirm({
       title: title.trim(),
       description: description.trim() || undefined,
@@ -95,7 +93,7 @@ export function CreateSavedRoadmapDialog({
     setDescription('');
     setImageFile(null);
     setImagePreview('');
-    setTitleError(false);
+    setTitleTouched(false);
   };
 
   return (
@@ -132,7 +130,7 @@ export function CreateSavedRoadmapDialog({
                     value={title}
                     onChange={(e) => {
                       setTitle(e.target.value);
-                      if (e.target.value.trim()) setTitleError(false);
+                      setTitleTouched(true);
                     }}
                     placeholder={getRoadmapTranslations('enterTitle')}
                     disabled={isLoading}
@@ -243,6 +241,7 @@ export function CreateSavedRoadmapDialog({
                   colorPalette="green"
                   onClick={handleSubmit}
                   loading={isLoading}
+                  disabled={!title.trim() || isLoading}
                   size="sm"
                 >
                   {getRoadmapTranslations('createRoadmap')}
