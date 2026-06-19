@@ -36,7 +36,7 @@ public static class PersonalRoadmapMediationModule
         services.AddSingleton<IRoadmapWorkspaceActionReviewedNotifier, RoadmapWorkspaceActionReviewedNotifier>();
         services.AddSingleton<IWorkspaceEventsReviewer, RoadmapWorkspaceEventsReviewer>();
 
-        services.AddScoped<IRoadmapWorkspaceImageService, RoadmapWorkspaceImageService>();
+        services.AddScoped<IRoadmapWorkspaceImagesService, RoadmapWorkspaceImageService>();
 
         return services;
     }

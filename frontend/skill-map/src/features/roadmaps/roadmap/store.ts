@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
   addEdge,
   applyEdgeChanges,
@@ -73,6 +73,11 @@ const roadmapSlice = createSlice({
         state.info.isSaved = !state.info.isSaved;
       }
     },
+    setWorkspaceId: (state, action: PayloadAction<string | null>) => {
+      if (state.info) {
+        state.info.workspaceId = action.payload;
+      }
+    },
   },
 });
 
@@ -83,14 +88,14 @@ export const {
   setEdge,
   setPlainRoadmap,
   updateSavedStatus,
+  setWorkspaceId,
 } = roadmapSlice.actions;
 
-export const selectRoadmap = (state: { roadmapSlice: InitialState }) => {
-  return {
-    nodes: state.roadmapSlice.nodes,
-    edges: state.roadmapSlice.edges,
-  };
-};
+export const selectRoadmap = createSelector(
+  (state: { roadmapSlice: InitialState }) => state.roadmapSlice.nodes,
+  (state: { roadmapSlice: InitialState }) => state.roadmapSlice.edges,
+  (nodes, edges) => ({ nodes, edges }),
+);
 
 export const selectRoadmapId = (state: { roadmapSlice: InitialState }) =>
   state.roadmapSlice.roadmapId;

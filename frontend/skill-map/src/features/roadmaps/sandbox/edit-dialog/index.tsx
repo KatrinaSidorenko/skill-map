@@ -18,7 +18,11 @@ import { useState, useEffect, useRef } from 'react';
 import { FiImage, FiUpload, FiX } from 'react-icons/fi';
 import { toaster } from '@/components/ui/toaster';
 import useLocalization from '@/i18n/useLocalization';
-import { useCreateRoadmapMutation, useUpdateUserRoadmapMutation } from '../../api';
+import {
+  useCreateRoadmapMutation,
+  useUpdateUserRoadmapMutation,
+} from '../../api';
+import { useRouter } from 'next/navigation';
 
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -45,6 +49,7 @@ const AccentButton = (props: any) => <Button {...props} variant="accent" />;
 
 // @ts-expect-error (chakra-ui-dialog-overlay): No types available
 export const RoadmapDialog = (props) => {
+  const router = useRouter();
   const { mode = 'create', roadmap, onSuccess, ...rest } = props;
   const { getEditorTranslations } = useLocalization();
 
@@ -56,7 +61,8 @@ export const RoadmapDialog = (props) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [createRoadmap, { isLoading: isCreating }] = useCreateRoadmapMutation();
-  const [updateRoadmap, { isLoading: isUpdating }] = useUpdateUserRoadmapMutation();
+  const [updateRoadmap, { isLoading: isUpdating }] =
+    useUpdateUserRoadmapMutation();
 
   useEffect(() => {
     if (mode === 'edit' && roadmap) {
@@ -101,7 +107,7 @@ export const RoadmapDialog = (props) => {
   };
 
   const handleSubmit = async () => {
-    if (!title.trim() || !description.trim()) {
+    if (!title.trim()) {
       toaster.create({
         title: getEditorTranslations('validationError'),
         type: 'warning',
@@ -115,21 +121,22 @@ export const RoadmapDialog = (props) => {
       if (mode === 'edit') {
         const formData = new FormData();
         formData.append('title', title);
-        formData.append('description', description);
+        formData.append('description', description ?? '');
         if (imageFile) {
           formData.append('imageFile', imageFile);
         }
         await updateRoadmap({ id: roadmap.id, formData }).unwrap();
       } else {
-        await createRoadmap({ title, description }).unwrap();
+        await createRoadmap({ title, description: description ?? '' }).unwrap();
       }
       rest.onOpenChange?.({ open: false });
-      onSuccess?.({ title, description });
+      router.refresh();
     } catch {
       toaster.create({
-        title: mode === 'edit'
-          ? getEditorTranslations('failedToUpdateRoadmap')
-          : getEditorTranslations('failedToCreateRoadmap'),
+        title:
+          mode === 'edit'
+            ? getEditorTranslations('failedToUpdateRoadmap')
+            : getEditorTranslations('failedToCreateRoadmap'),
         type: 'error',
         closable: true,
       });
@@ -173,14 +180,19 @@ export const RoadmapDialog = (props) => {
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder={getEditorTranslations('enterNodeLabel')}
                     borderColor="border.muted"
-                    _focus={{ borderColor: 'border.focus', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
+                    _focus={{
+                      borderColor: 'border.focus',
+                      boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
+                    }}
                     borderRadius="lg"
                   />
                 </Box>
 
                 {/* Description */}
                 <Box>
-                  <FieldLabel>{getEditorTranslations('description')}</FieldLabel>
+                  <FieldLabel>
+                    {getEditorTranslations('description')}
+                  </FieldLabel>
                   <Textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
@@ -188,7 +200,10 @@ export const RoadmapDialog = (props) => {
                     rows={3}
                     resize="none"
                     borderColor="border.muted"
-                    _focus={{ borderColor: 'border.focus', boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)' }}
+                    _focus={{
+                      borderColor: 'border.focus',
+                      boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
+                    }}
                     borderRadius="lg"
                   />
                 </Box>
@@ -198,7 +213,9 @@ export const RoadmapDialog = (props) => {
                   <>
                     <Separator borderColor="border.muted" />
                     <Box>
-                      <FieldLabel>{getEditorTranslations('imageUrl')}</FieldLabel>
+                      <FieldLabel>
+                        {getEditorTranslations('imageUrl')}
+                      </FieldLabel>
                       <input
                         ref={fileInputRef}
                         type="file"
@@ -221,7 +238,11 @@ export const RoadmapDialog = (props) => {
                             <img
                               src={imagePreview}
                               alt="preview"
-                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                              }}
                             />
                           </Box>
                         )}
@@ -237,7 +258,9 @@ export const RoadmapDialog = (props) => {
                           disabled={isLoading}
                         >
                           <FiUpload />
-                          {imageFile ? getEditorTranslations('changeImage') : getEditorTranslations('uploadImage')}
+                          {imageFile
+                            ? getEditorTranslations('changeImage')
+                            : getEditorTranslations('uploadImage')}
                         </Button>
                         {imageFile && (
                           <Button
@@ -255,7 +278,9 @@ export const RoadmapDialog = (props) => {
                         )}
                       </HStack>
                       {imageFile && (
-                        <Text fontSize="xs" color="text.muted" mt={1}>{imageFile.name}</Text>
+                        <Text fontSize="xs" color="text.muted" mt={1}>
+                          {imageFile.name}
+                        </Text>
                       )}
                       <Text fontSize="xs" color="text.muted" mt={1}>
                         JPG, JPEG, PNG — max 5 MB
@@ -282,11 +307,7 @@ export const RoadmapDialog = (props) => {
                 >
                   {getEditorTranslations('cancel')}
                 </Button>
-                <AccentButton
-                  size="sm"
-                  onClick={handleSubmit}
-                  minW="24"
-                >
+                <AccentButton size="sm" onClick={handleSubmit} minW="24" disabled={!title.trim() || isLoading}>
                   {isLoading ? (
                     <Spinner size="sm" />
                   ) : mode === 'edit' ? (

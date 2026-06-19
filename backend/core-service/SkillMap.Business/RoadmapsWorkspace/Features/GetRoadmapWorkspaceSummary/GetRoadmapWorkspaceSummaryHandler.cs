@@ -15,7 +15,7 @@ using SkillMap.Shared.Results;
 namespace SkillMap.Business.RoadmapsWorkspace.Features.GetRoadmapWorkspaceSummary;
 
 [UsedImplicitly]
-internal sealed class GetRoadmapWorkspaceSummaryHandler(IRoadmapWorkspaceRepository repository, IRoadmapWorkspaceImageService roadmapWorkspaceImageService)
+internal sealed class GetRoadmapWorkspaceSummaryHandler(IRoadmapWorkspaceRepository repository, IRoadmapWorkspaceImagesService roadmapWorkspaceImageService)
     : IRequestHandler<GetRoadmapWorkspaceSummaryQuery, RoadmapWorkspaceSummaryDto>
 {
     public async Task<RoadmapWorkspaceSummaryDto> Handle(GetRoadmapWorkspaceSummaryQuery request, CancellationToken cancellationToken)

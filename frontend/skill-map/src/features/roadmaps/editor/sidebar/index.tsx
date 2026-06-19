@@ -25,6 +25,7 @@ import NodeTypeSelect from './node-type-select';
 import useLocalization from '@/i18n/useLocalization';
 import useEventQueue from '../queue/useEventQueue';
 import MaterialsContainer from './materials';
+import { toaster } from '@/components/ui/toaster';
 
 interface NodeSidebarProps {
   open: boolean;
@@ -44,6 +45,7 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<string>('notstarted');
   const [nodeType, setNodeType] = useState<LearningItemType>('subtopic');
+  const [labelTouched, setLabelTouched] = useState(false);
 
   const originalRef = useRef({
     label: '',
@@ -65,6 +67,7 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
     setDescription(persisted.description);
     setStatus(persisted.status);
     setNodeType(persisted.nodeType);
+    setLabelTouched(false);
   }, [node]);
 
   const meta = node && 'position' in node ? topicMeta[node.id] : undefined;
@@ -74,6 +77,16 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
   const handleSave = () => {
     if (!node || !roadmapId) return;
     if (!('position' in node)) return;
+
+    if (!label.trim()) {
+      toaster.create({
+        title: getEditorTranslations('validationError'),
+        type: 'warning',
+        description: getEditorTranslations('fillRequiredFields'),
+        closable: true,
+      });
+      return;
+    }
 
     const rfNode = node as Node;
     const orig = originalRef.current;
@@ -149,13 +162,21 @@ export default function NodeSidebar({ open, onOpenChange }: NodeSidebarProps) {
             <VStack align="stretch" gap={2}>
               <Text fontSize="sm" fontWeight="medium" color="gray.600">
                 {getEditorTranslations('label')}
+                <Text as="span" color="red.500" ml={1}>*</Text>
               </Text>
               <Input
                 size="sm"
                 value={label}
-                onChange={(e) => setLabel(e.target.value)}
+                onChange={(e) => { setLabel(e.target.value); setLabelTouched(true); }}
                 placeholder={getEditorTranslations('enterNodeLabel')}
+                borderColor={labelTouched && label.trim() === '' ? 'red.400' : undefined}
+                _focus={labelTouched && label.trim() === '' ? { borderColor: 'red.500', boxShadow: '0 0 0 1px var(--chakra-colors-red-500)' } : undefined}
               />
+              {labelTouched && label.trim() === '' && (
+                <Text fontSize="xs" color="red.500">
+                  {getEditorTranslations('fillRequiredFields')}
+                </Text>
+              )}
             </VStack>
 
             {/* Description */}

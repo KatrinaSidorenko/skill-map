@@ -18,7 +18,7 @@ namespace SkillMap.Business.RoadmapsWorkspace.Features.CreateEmptyRoadmapWorkspa
 internal sealed class CreateEmptyRoadmapWorkspaceHandler(
     IRepository<RoadmapWorkspace> repository,
     IMediator mediator,
-    IRoadmapWorkspaceImageService roadmapWorkspaceImageService,
+    IRoadmapWorkspaceImagesService roadmapWorkspaceImageService,
     ILogger<CreateEmptyRoadmapWorkspaceHandler> logger) : IRequestHandler<CreateEmptyRoadmapWorkspaceCommand, long>
 {
     public async Task<long> Handle(CreateEmptyRoadmapWorkspaceCommand request, CancellationToken cancellationToken)

@@ -16,6 +16,11 @@ internal class RoadmapWorkspaceRepository : Repository<RoadmapWorkspace>, IRoadm
         => await _dbSet.AsNoTracking().Where(w => w.AuthorId == userId && w.IsActive && !w.IsInAuthorMode && w.RoadmapId != null).ToListAsync(ct);
     public async Task<bool> IsWorkspaceActive(string roadmapId, long userId, CancellationToken ct)
         => await _dbSet.AsNoTracking().AnyAsync(w => w.RoadmapId == roadmapId && w.AuthorId == userId && w.IsActive && !w.IsInAuthorMode, ct);
+    public async Task<(bool IsActive, string? WorkspaceId)> GetWorkspaceStatus(string roadmapId, long userId, CancellationToken ct)
+    {
+        var workspace = await _dbSet.AsNoTracking().FirstOrDefaultAsync(w => w.RoadmapId == roadmapId && w.AuthorId == userId && w.IsActive && !w.IsInAuthorMode, ct);
+        return (workspace != null, workspace?.Id.ToString());
+    }   
     public async Task<List<RoadmapWorkspace>> GetUserActiveNonAuthoredWorkspacesWithProjections(
         long userId,
         int pageNumber,

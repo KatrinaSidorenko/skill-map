@@ -65,7 +65,12 @@ internal class AzureBlobStorageService : IBlobStorageService
         {
             if (await blobClient.ExistsAsync(ct))
             {
-                return blobClient.Uri.AbsoluteUri;
+                var uri = blobClient.Uri.AbsoluteUri;
+                if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+                {
+                    uri = uri.Replace("http://azurite:10000", "http://127.0.0.1:10000");
+                }
+                return uri;
             }
             else
             {
