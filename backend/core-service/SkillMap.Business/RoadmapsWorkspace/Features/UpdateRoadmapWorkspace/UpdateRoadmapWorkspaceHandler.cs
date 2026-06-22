@@ -29,6 +29,7 @@ internal sealed class UpdateRoadmapWorkspaceHandler(IRoadmapWorkspaceRepository 
         await repository.SaveChangesAsync(cancellationToken);
 
         if (request.ImageFile is null) return; 
+        if (string.IsNullOrEmpty(workspacePrevImageUrl)) return;
         // todo: can be extrcated to seperate service
         var deleteImageResult = await roadmapWorkspaceImageService.DeleteImageAsync(workspacePrevImageUrl, cancellationToken);
         if (!deleteImageResult)

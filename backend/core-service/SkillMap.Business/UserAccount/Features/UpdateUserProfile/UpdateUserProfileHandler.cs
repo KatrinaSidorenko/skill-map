@@ -14,12 +14,6 @@ public class UpdateUserProfileHandler(IRepository<AppUser> userRepository, IProf
     {
         var user = await userRepository.GetByIdAsync(request.UserId, cancellationToken)
               ?? throw new KeyNotFoundException($"User with id {request.UserId} not found");
-        //var userWithRequ
-        //if (user is not null)
-        //{
-        //    return ResultType.UserWithSuchEmailAlreadyExists<bool>(appUser.Email);
-        //}
-
 
         if (request.UserName is not null)
             user.UserName = request.UserName;
@@ -31,6 +25,7 @@ public class UpdateUserProfileHandler(IRepository<AppUser> userRepository, IProf
             {
                 throw new ArgumentException($"User with email {request.Email} already exists");
             }
+            user.Email = request.Email;
         }
 
         var prevUserProfileImageUrl = user.ImageUrl;
@@ -44,6 +39,7 @@ public class UpdateUserProfileHandler(IRepository<AppUser> userRepository, IProf
         await userRepository.SaveChangesAsync(cancellationToken);
 
         if (request.HardFile is null) return;
+        if (string.IsNullOrEmpty(prevUserProfileImageUrl)) return;
         var deleteResult = await profileImageService.DeleteImageAsync(prevUserProfileImageUrl, cancellationToken);
         if (!deleteResult)
         {

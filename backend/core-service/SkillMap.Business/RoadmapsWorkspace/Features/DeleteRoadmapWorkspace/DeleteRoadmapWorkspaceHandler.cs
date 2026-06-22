@@ -26,12 +26,12 @@ internal sealed class DeleteRoadmapWorkspaceHandler(IRepository<RoadmapWorkspace
 
         await repository.SaveChangesAsync(cancellationToken);
 
-        if (!request.IsSoftDelete)
+        if (!request.IsSoftDelete && !string.IsNullOrEmpty(workspace.ImageUrl))
         {
             var isSuccess = await roadmapWorkspaceImageService.DeleteImageAsync(workspace.ImageUrl, cancellationToken);
             if (!isSuccess)
             {
-                // log error + some retuyr or dead letter box
+                // log error + some return or dead letter box
             }
         }
 

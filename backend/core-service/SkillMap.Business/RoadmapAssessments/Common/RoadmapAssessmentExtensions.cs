@@ -1,4 +1,5 @@
-﻿using SkillMap.Core.RoadmapAssessments;
+﻿using SkillMap.Core.Constants;
+using SkillMap.Core.RoadmapAssessments;
 using SkillMap.Core.RoadmapsWorkspace.RoadmapSnapshots;
 using SkillMap.Shared.Gzip;
 
@@ -50,5 +51,5 @@ public static class RoadmapAssessmentExtensions
     }
 
     public static bool HasEnoughDataToCreateAssessment(this RoadmapSnapshot roadmapSnapshot)
-        => roadmapSnapshot.LearningItems != null && roadmapSnapshot.LearningItems.Any() && roadmapSnapshot.LearningItems.Count >= RoadmapAssessmentConstant.DefaultQuestionsAmount;
+        => roadmapSnapshot.LearningItems != null && roadmapSnapshot.LearningItems.Any() && roadmapSnapshot.LearningItems.Where(l => l.Type == LearningItemType.SubTopic).Count() >= RoadmapAssessmentConstant.DefaultQuestionsAmount;
 }

@@ -33,6 +33,7 @@ public class RecentAssessmentAttemptDto
 {
     public string AttemptId { get; init; }
     public string AssessmentId { get; init; }
+    public string Title { get; init; }
     public string Type { get; init; }
     public double? Score { get; init; }
     public double MaxScore { get; init; }
