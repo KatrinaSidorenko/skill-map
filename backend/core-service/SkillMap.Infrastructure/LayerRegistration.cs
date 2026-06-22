@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
+using SkillMap.Api.UserAccount;
 using SkillMap.Business.Abstractions;
 using SkillMap.Business.Account;
 using SkillMap.Business.RoadmapsWorkspace;
@@ -17,9 +18,10 @@ using SkillMap.Infrastructure.Account;
 using SkillMap.Infrastructure.Database;
 using SkillMap.Infrastructure.Email;
 using SkillMap.Infrastructure.EventBus;
+using SkillMap.Infrastructure.Files;
 using SkillMap.Infrastructure.PersonalizedRoadmaps;
+using SkillMap.Infrastructure.RoadmapAssessments;
 using SkillMap.Infrastructure.RoadmapsWorkspace;
-using SkillMap.Infrastructure.RoadmapTest;
 using SkillMap.Persistence;
 using SkillMap.Persistence.Neo4j;
 using SkillMap.Shared.Options;
@@ -32,6 +34,7 @@ public static class LayerRegistration
     {
         services.AddJwt(configuration);
 
+        // ACCOUNT MODULE
         services.AddScoped<IUserManager, UserManager>();
         services.AddScoped<ITokenService, TokenService>();
 
@@ -39,11 +42,13 @@ public static class LayerRegistration
         services.AddScoped<IPasswordHasher, PasswordHasher>();
 
         services.AddScoped<IResetAccountService, ResetAccountService>();
+        services.AddScoped<IProfileImagesService, ProfileImagesService>();
+
         services.AddTransient<IEmailService, MailkitEmailService>();
         services.Configure<EmailOptions>(configuration.GetSection(EmailOptions.SectionName));
         services.Configure<RoadmapTestingServiceOptions>(configuration.GetSection(RoadmapTestingServiceOptions.SectionName));
 
-        services.AddHttpClient<ITopicQuestionsGenerator, RoadmapTestGeneratorClient>(
+        services.AddHttpClient<IQuestionsGenerator, RoadmapAssessmentGeneratorClient>(
             (sp, client) =>
             {
                 var options = sp.GetRequiredService<IOptions<RoadmapTestingServiceOptions>>();
@@ -57,7 +62,6 @@ public static class LayerRegistration
         services.AddRoadmapBlueprintModule();
         services.AddEventBus();
 
-        // migrations
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
         services.AddNeo4jPersistence(configuration);
@@ -65,6 +69,7 @@ public static class LayerRegistration
         services.AddPersistenceLayer(configuration);
 
         services.AddCaching();
+        services.AddBlobStorage(configuration);
 
         return services;
     }

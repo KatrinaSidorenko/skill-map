@@ -82,7 +82,9 @@ export function RoadmapView() {
     updateRoadmapDialog.open('updateRoadmapDialog', {
       roadmap: roadmapView,
       onSuccess: (r: Partial<PlainRoadmapView>) => {
-        dispatch(updateRoadmapView(r));
+        dispatch(
+          updateRoadmapView({ title: r.title, description: r.description }),
+        );
         toaster.create({
           title: getEditorTranslations('roadmapUpdated'),
           type: 'success',

@@ -92,6 +92,8 @@ public class RecentAssessmentAttemptResponse
 
     [JsonPropertyName("assessmentId")]
     public string AssessmentId { get; init; }
+    [JsonPropertyName("title")]
+    public string Title { get; init; }
 
     [JsonPropertyName("type")]
     public string Type { get; init; }
@@ -115,6 +117,7 @@ public class RecentAssessmentAttemptResponse
     {
         AttemptId = dto.AttemptId,
         AssessmentId = dto.AssessmentId,
+        Title = dto.Title,
         Type = dto.Type,
         Score = dto.Score,
         MaxScore = dto.MaxScore,

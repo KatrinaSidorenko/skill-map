@@ -78,7 +78,9 @@ export default function LoginComponent() {
           {...register('email')}
         />
         {errors.email && (
-          <Field.ErrorText fontSize="xs">{errors.email.message}</Field.ErrorText>
+          <Field.ErrorText fontSize="xs">
+            {errors.email.message}
+          </Field.ErrorText>
         )}
       </Field.Root>
 
@@ -92,7 +94,9 @@ export default function LoginComponent() {
           {...register('password')}
         />
         {errors.password && (
-          <Field.ErrorText fontSize="xs">{errors.password.message}</Field.ErrorText>
+          <Field.ErrorText fontSize="xs">
+            {errors.password.message}
+          </Field.ErrorText>
         )}
       </Field.Root>
 

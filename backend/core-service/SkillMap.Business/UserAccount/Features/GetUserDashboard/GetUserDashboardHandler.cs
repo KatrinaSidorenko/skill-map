@@ -12,7 +12,7 @@ namespace SkillMap.Business.UserAccount.Features.GetUserDashboard;
 public class GetUserDashboardHandler(IRoadmapWorkspaceRepository workspaceRepository)
     : IRequestHandler<GetUserDashboardQuery, UserDashboardDto>
 {
-    private const int RecentTestsLimit = 10;
+    private const int RecentTestsLimit = 6;
 
     public async Task<UserDashboardDto> Handle(GetUserDashboardQuery request, CancellationToken cancellationToken)
     {
@@ -63,11 +63,13 @@ public class GetUserDashboardHandler(IRoadmapWorkspaceRepository workspaceReposi
             : 0;
 
         var recentTests = allAttempts
-            .Take(RecentTestsLimit)
+           .OrderByDescending(x => x.Attempt.StartedAt)
+           .Take(RecentTestsLimit)
            .Select(x => new RecentAssessmentAttemptDto
            {
                AttemptId = x.Attempt.Id.ToString(),
                AssessmentId = x.Assessment.Id.ToString(),
+               Title = $"{x.Assessment.RoadmapFork.Title.ToLower()}-{x.Assessment.TestType.ToLower().ToString()}",
                Type = x.Assessment.TestType,
                Score = x.Attempt.CompletedAt.HasValue ? x.Attempt.ScoredPoints : null,
                MaxScore = x.Attempt.MaxPoints,

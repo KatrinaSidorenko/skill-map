@@ -3,5 +3,5 @@
 namespace SkillMap.Business.RoadmapsWorkspace;
 public interface IRoadmapWorkspaceEditor
 {
-    Task<RoadmapSnapshot> GetActualRoadmapSnapshot(long workspaceId, CancellationToken cancellationToken);
+    Task<RoadmapSnapshot> GetActualRoadmapWorkspaceSnapshot(long workspaceId, CancellationToken cancellationToken);
 }

@@ -14,7 +14,7 @@ import { defaultPagination } from '../helpers';
 import useLocalization from '@/i18n/useLocalization';
 import { useRouter } from 'next/navigation';
 import { DeleteSavedRoadmapDialog } from '@/components/roadmap/deleteSavedRoadmapDialog';
-import { EditSavedRoadmapDialog } from '@/components/roadmap/editSavedRoadmapDialog';
+import { EditSavedRoadmapDialog, EditSavedRoadmapPayload } from '@/components/roadmap/editSavedRoadmapDialog';
 import { CreateSavedRoadmapDialog } from '@/components/roadmap/createSavedRoadmapDialog';
 import { toaster } from '@/components/ui/toaster';
 import { retrieveErrorData } from '@/store/helpers';
@@ -50,7 +50,7 @@ export default function SavedRoadmapsPage() {
     query: string | null;
   }) => {
     const { pageNumber, pageSize, query } = params;
-    const { data } = await fetchSavedRoadmaps({ pageNumber, pageSize, query });
+    const { data } = await fetchSavedRoadmaps({ pageNumber, pageSize, query }, false);
     return {
       items: data?.items ?? [],
     };
@@ -94,6 +94,7 @@ export default function SavedRoadmapsPage() {
       });
       setDeleteDialogState({ isOpen: false, selected: null });
       setRefreshKey((k) => k + 1);
+      router.refresh();
     } catch (error) {
       const errorData = retrieveErrorData(error);
       toaster.create({
@@ -105,12 +106,16 @@ export default function SavedRoadmapsPage() {
     }
   };
 
-  const handleConfirmEdit = async (payload: UpdateRoadmapWorkspaceRequest) => {
+  const handleConfirmEdit = async (payload: EditSavedRoadmapPayload) => {
     if (!editDialogState.selected) return;
+    const formData = new FormData();
+    if (payload.title) formData.append('title', payload.title);
+    formData.append('description', payload.description ?? '');
+    if (payload.imageFile) formData.append('imageFile', payload.imageFile);
     try {
       await updateSavedRoadmap({
         id: editDialogState.selected.id,
-        payload,
+        formData,
       }).unwrap();
       toaster.create({
         title: getRoadmapTranslations('editSuccess'),
@@ -119,6 +124,7 @@ export default function SavedRoadmapsPage() {
       });
       setEditDialogState({ isOpen: false, selected: null });
       setRefreshKey((k) => k + 1);
+      router.refresh();
     } catch (error) {
       const errorData = retrieveErrorData(error);
       toaster.create({
@@ -133,8 +139,12 @@ export default function SavedRoadmapsPage() {
   const handleConfirmCreate = async (
     payload: CreateEmptyRoadmapWorkspaceRequest,
   ) => {
+    const formData = new FormData();
+    formData.append('title', payload.title);
+    if (payload.description) formData.append('description', payload.description);
+    if (payload.imageFile) formData.append('imageFile', payload.imageFile);
     try {
-      const result = await createEmptyRoadmap(payload).unwrap();
+      const result = await createEmptyRoadmap(formData).unwrap();
       toaster.create({
         title: getRoadmapTranslations('createEmptySuccess'),
         type: 'success',

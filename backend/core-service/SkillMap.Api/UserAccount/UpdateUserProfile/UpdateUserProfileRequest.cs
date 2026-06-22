@@ -9,7 +9,4 @@ public class UpdateUserProfileRequest
 
     [JsonPropertyName("email")]
     public string? Email { get; set; }
-
-    [JsonPropertyName("imageUrl")]
-    public string? ImageUrl { get; set; }
 }

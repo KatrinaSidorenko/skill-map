@@ -60,6 +60,7 @@ interface InProgressRoadmap {
 interface RecentAssessmentAttempt {
   attemptId: string;
   assessmentId: string;
+  title: string;
   type: string;
   score: number | null;
   maxScore: number;
@@ -73,4 +74,3 @@ interface UserDashboard {
   inProgressRoadmaps: InProgressRoadmap[];
   recentTests: RecentAssessmentAttempt[];
 }
-

@@ -35,6 +35,7 @@ public static class RoadmapAssessmentStateHelper
             (LearningStatus.NotStarted, AssessmentAssumption.AssumedInProgress, AssessmentStatus.Failed) => LearningStatus.InProgress,
             (LearningStatus.NotStarted, _, AssessmentStatus.Failed) => LearningStatus.Upcoming,
 
+
             (LearningStatus.InProgress, _, AssessmentStatus.Failed) => LearningStatus.InProgress,
             (LearningStatus.Upcoming, _, AssessmentStatus.Failed) => LearningStatus.InProgress,
 

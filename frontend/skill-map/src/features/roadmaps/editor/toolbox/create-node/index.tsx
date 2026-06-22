@@ -8,6 +8,7 @@ import {
   Text,
   Portal,
   Dialog,
+  Field,
   createOverlay,
 } from '@chakra-ui/react';
 import { useState } from 'react';
@@ -31,7 +32,19 @@ const createNodeDialog = createOverlay<{
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<string[]>(['notstarted']);
   const [nodeType, setNodeType] = useState<LearningItemType>('topic');
+  const [labelTouched, setLabelTouched] = useState(false);
   const { getEditorTranslations } = useLocalization();
+
+  const labelError = labelTouched && !label.trim();
+
+  const handleClose = () => {
+    setLabel('');
+    setDescription('');
+    setStatus(['notstarted']);
+    setNodeType('topic');
+    setLabelTouched(false);
+    rest.onOpenChange?.({ open: false });
+  };
 
   return (
     <Dialog.Root {...rest}>
@@ -46,16 +59,25 @@ const createNodeDialog = createOverlay<{
             </Dialog.Header>
             <Dialog.Body spaceY="4">
               <VStack align="stretch" gap={4}>
-                <Box>
-                  <Text fontSize="sm" mb={1}>
-                    {getEditorTranslations('label')}
-                  </Text>
+                <Field.Root invalid={labelError}>
+                  <Field.Label fontSize="sm" fontWeight="medium">
+                    {getEditorTranslations('label')}{' '}
+                    <Text as="span" color="red.500">*</Text>
+                  </Field.Label>
                   <Input
                     value={label}
-                    onChange={(e) => setLabel(e.target.value)}
+                    onChange={(e) => {
+                      setLabel(e.target.value);
+                      setLabelTouched(true);
+                    }}
                     placeholder={getEditorTranslations('enterNodeLabel')}
                   />
-                </Box>
+                  {labelError && (
+                    <Field.ErrorText>
+                      {getEditorTranslations('fillRequiredFields')}
+                    </Field.ErrorText>
+                  )}
+                </Field.Root>
 
                 <Box>
                   <Text fontSize="sm" mb={1}>
@@ -84,16 +106,17 @@ const createNodeDialog = createOverlay<{
                 <Button
                   size="sm"
                   variant="ghost"
-                  onClick={() => rest.onOpenChange?.({ open: false })}
+                  onClick={handleClose}
                 >
                   {getEditorTranslations('cancel')}
                 </Button>
                 <Button
                   size="sm"
                   colorScheme="teal"
+                  disabled={!label.trim()}
                   onClick={() => {
                     onCreate({ label, description, status, nodeType });
-                    rest.onOpenChange?.({ open: false });
+                    handleClose();
                   }}
                 >
                   {getEditorTranslations('create')}

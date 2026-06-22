@@ -151,7 +151,7 @@ function TestRow({ test, scoreLabel, inProgressLabel }: TestRowProps) {
       />
       <Box flex={1} minW={0}>
         <Text fontWeight="semibold" color="text.heading" fontSize="sm" truncate>
-          {test.type}
+          {test.title}
         </Text>
         <Text fontSize="xs" color="text.muted">
           {test.completedAt

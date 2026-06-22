@@ -61,7 +61,7 @@ export default function Toolbox({ onToggleSidebar }: ToolboxProps) {
         id: nodeId,
         position: viewportCenter,
         data: {
-          label: data.label || 'Untitled Node',
+          label: data.label,
           description: data.description,
           status: data.status,
           nodeType: data.nodeType,
@@ -72,7 +72,7 @@ export default function Toolbox({ onToggleSidebar }: ToolboxProps) {
         workspaceId,
         {
           id: nodeId,
-          title: data.label || 'Untitled Node',
+          title: data.label,
           description: data.description,
           status: (data.status[0] || 'notstarted') as LearningStatus,
           type: data.nodeType,

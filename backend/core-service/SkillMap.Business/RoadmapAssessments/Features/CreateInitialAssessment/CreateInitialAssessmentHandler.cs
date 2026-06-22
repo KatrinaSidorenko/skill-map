@@ -7,6 +7,7 @@ using MediatR;
 
 using SkillMap.Business.Abstractions;
 using SkillMap.Business.RoadmapAssessments.Common;
+using SkillMap.Business.RoadmapAssessments.Features.CreateIntermediateAssessment;
 using SkillMap.Business.RoadmapsWorkspace;
 using SkillMap.Core.Constants;
 using SkillMap.Core.RoadmapAssessments;
@@ -18,62 +19,16 @@ namespace SkillMap.Business.RoadmapAssessments.Features.CreateInitialAssessment;
 [UsedImplicitly]
 internal class CreateInitialAssessmentHandler(
     IRoadmapWorkspaceEditor workspaceEditor,
-    ITopicQuestionsGenerator questionsGenerator,
+    IQuestionsGenerator questionsGenerator,
     IRepository<RoadmapAssessment> repository)
     : IRequestHandler<CreateInitialAssessmentCommand, long>
 {
-    private const RoadmapAssessmentType TestType = RoadmapAssessmentType.Initial;
-
     public async Task<long> Handle(CreateInitialAssessmentCommand request, CancellationToken cancellationToken)
     {
-        var snapshot = await workspaceEditor.GetActualRoadmapSnapshot(request.WorkspaceId, cancellationToken);
-        if (!snapshot.HasEnoughDataToCreateAssessment())
-        {
-            throw new NoContentException();
-        }
-        var selectedTopics = PickLearningItemsForAssessment(snapshot, RoadmapAssessmentConstant.DefaultQuestionsAmount);
-
-        var creationSettings = selectedTopics.ToDictionary(
-               t => t.Id,
-                    t => new TopicQuestionsSettingDto
-                    {
-                        DifficultyLevel = Difficulty.Medium,
-                        QuestionsCount = 1,
-                        Types = RoadmapAssessmentConstant.SupportedQuestionTypes.ToList(),
-                    });
-
-        var topicsWithSettings = selectedTopics
-            .Select(t => (
-                topic: new Topic(t.Id, t.Title, t.Description),
-                settings: creationSettings[t.Id]))
-            .ToList();
-
-        var generatedTopicQuestions = await questionsGenerator.GenerateTopicsQuestions(topicsWithSettings, cancellationToken);
-
-        var roadmapTest = new CreateIntermediateAssessment.RoadmapAssessmentDto
-        {
-            RoadmapId = snapshot.Id,
-            WorkspaceId = request.WorkspaceId.ToString(),
-            Type = TestType.ToString(),
-            TopicQuestions = generatedTopicQuestions,
-            TopicSettings = creationSettings,
-            TestConfig = new CreateIntermediateAssessment.RoadmapAssessmentConfigDto
-            {
-                DifficultyLevel = Difficulty.Medium.ToDifficultyString()
-            },
-        };
-
-        var entity = new RoadmapAssessment
-        {
-            RoadmapWorkspaceId = request.WorkspaceId,
-            TestType = RoadmapAssessmentType.Initial.ToFriendlyString(),
-        };
-
-        await entity.SetRoadmapTest(roadmapTest.ToEntityModel(), cancellationToken);
-        await repository.AddAsync(entity, cancellationToken);
-        await repository.SaveChangesAsync(cancellationToken);
-
-        return entity.Id;
+        var workspaceSnapshot = await workspaceEditor.GetActualRoadmapWorkspaceSnapshot(request.WorkspaceId, cancellationToken);
+        if (!workspaceSnapshot.HasEnoughDataToCreateAssessment()) throw new NoContentException();
+        var selectedLearningItems = PickLearningItemsForAssessment(workspaceSnapshot, RoadmapAssessmentConstant.DefaultQuestionsAmount);
+        return await questionsGenerator.GenerateAndSaveInitialAssessment(repository, request.WorkspaceId, workspaceSnapshot.Id, selectedLearningItems, cancellationToken);
     }
 
     private static readonly double[] DefaultProportions = { 0.50, 0.30, 0.20 };

@@ -45,7 +45,7 @@ public sealed class CreateRoadmapWorkspaceTests : IClassFixture<LearningPlatform
 
         using var scope = _configuredFactory.Services.CreateScope();
         var roadmapWorkspaceEditorRepository = scope.ServiceProvider.GetRequiredService<IRoadmapWorkspaceEditor>();
-        var actualRoadmapWorkspace = await roadmapWorkspaceEditorRepository.GetActualRoadmapSnapshot(workspaceId, CancellationToken.None);
+        var actualRoadmapWorkspace = await roadmapWorkspaceEditorRepository.GetActualRoadmapWorkspaceSnapshot(workspaceId, CancellationToken.None);
         actualRoadmapWorkspace.LearningItems.ShouldBeEmpty();
         actualRoadmapWorkspace.LearningItemsConnections.ShouldBeEmpty();
         actualRoadmapWorkspace.Version.ShouldBe(RoadmapWorkspaceConstants.InitialVersion);

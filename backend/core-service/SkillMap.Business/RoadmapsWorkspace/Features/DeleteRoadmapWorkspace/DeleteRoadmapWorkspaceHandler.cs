@@ -4,12 +4,11 @@ using MediatR;
 
 using SkillMap.Business.Abstractions;
 using SkillMap.Core.RoadmapsWorkspace;
-using SkillMap.Shared.Results;
 
 namespace SkillMap.Business.RoadmapsWorkspace.Features.DeleteRoadmapFork;
 
 [UsedImplicitly]
-internal sealed class DeleteRoadmapWorkspaceHandler(IRepository<RoadmapWorkspace> repository) : IRequestHandler<DeleteWorkspaceCommand>
+internal sealed class DeleteRoadmapWorkspaceHandler(IRepository<RoadmapWorkspace> repository, IRoadmapWorkspaceImagesService roadmapWorkspaceImageService) : IRequestHandler<DeleteWorkspaceCommand>
 {
     public async Task Handle(DeleteWorkspaceCommand request, CancellationToken cancellationToken)
     {
@@ -26,5 +25,15 @@ internal sealed class DeleteRoadmapWorkspaceHandler(IRepository<RoadmapWorkspace
         }
 
         await repository.SaveChangesAsync(cancellationToken);
+
+        if (!request.IsSoftDelete && !string.IsNullOrEmpty(workspace.ImageUrl))
+        {
+            var isSuccess = await roadmapWorkspaceImageService.DeleteImageAsync(workspace.ImageUrl, cancellationToken);
+            if (!isSuccess)
+            {
+                // log error + some return or dead letter box
+            }
+        }
+
     }
 }

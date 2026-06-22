@@ -9,7 +9,4 @@ public class UpdateRoadmapWorkspaceRequest
 
     [JsonPropertyName("description")]
     public string? Description { get; set; }
-
-    [JsonPropertyName("imageUrl")]
-    public string? ImageUrl { get; set; }
 }
